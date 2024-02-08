@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/action_all"
+        android:title="All Products" />
+    <item android:id="@+id/action_stock"
+        android:title="In Stock" />
+    <item android:id="@+id/action_outstock"
+        android:title="Out of Stock" />
+
+</menu>

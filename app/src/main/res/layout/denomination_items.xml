@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/rootlayout"
+    android:layout_height="45dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:text="SNo"
+        android:layout_marginLeft="5dp"
+        android:id="@+id/sno"
+        android:visibility="gone"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:layout_weight="0.9"
+        android:textColor="@color/black_87"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:id="@+id/currency"
+        android:text="Currency"
+        android:textSize="12sp"
+        android:layout_weight="1"
+        android:textColor="@color/black_87"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/currency_count"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:visibility="gone"
+        android:layout_weight="1"
+        android:textColor="@color/black_87"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/count"
+        android:inputType="number"
+        android:selectAllOnFocus="true"
+        android:textStyle="bold"
+        android:background="@drawable/editext_border"
+        android:textSize="12sp"
+        android:layout_weight="1"
+        android:textColor="@color/black_87"
+        android:layout_height="35dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/total"
+        android:textStyle="bold"
+        android:text="Total"
+        android:textSize="12sp"
+        android:layout_weight="1"
+        android:textColor="@color/black_87"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

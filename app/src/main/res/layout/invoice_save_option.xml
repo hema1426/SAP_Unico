@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Save Invoice"
+        android:padding="10dp"
+        android:id="@+id/save_title"
+        android:drawableLeft="@drawable/ic_bookmark"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/primary"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"/>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:background="#d3d3d3"
+        android:layout_marginTop="5dp"
+        android:layout_height="1dip"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:padding="10dp"
+        android:id="@+id/save_message"
+        android:textColor="@color/black_87"
+        android:text="Are you Sure want to Save Invoice ?"
+        android:layout_height="wrap_content"/>
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:text="Invoice Print"
+        android:id="@+id/invoice_print_check"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:id="@+id/signature_layout"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Signature"
+            android:textColor="@color/black_87"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:background="#f4f4f4"
+            android:id="@+id/signature_capture"
+            android:layout_height="80dp"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:id="@+id/print_layout"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@color/black_87"
+            android:layout_height="wrap_content"
+            android:text="No Of Copies" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/decrease"
+                android:layout_width="40dp"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:layout_height="40dp"
+                android:background="@drawable/red_button_backgrund"
+                android:onClick="decreaseInteger"
+                android:text="-" />
+
+            <TextView
+                android:id="@+id/no_of_copy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="40dp"
+                android:textColor="@color/black_87"
+                android:layout_marginRight="40dp"
+                android:text="1"
+                android:textStyle="bold"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/increase"
+                android:layout_width="40dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:background="@drawable/green_button_background"
+                android:layout_height="40dp"
+                android:textSize="12sp"
+                android:onClick="increaseInteger"
+                android:text="+" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_gravity="right"
+        android:padding="10dp"
+        android:gravity="right"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:text="Cancel"
+            android:textStyle="bold"
+            android:id="@+id/btn_cancel"
+            android:layout_marginRight="20dp"
+            android:background="?actionBarItemBackground"
+            android:textSize="12sp"
+            android:layout_height="40dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:text="Signature"
+            android:textStyle="bold"
+            android:id="@+id/btn_signature"
+            android:layout_marginRight="20dp"
+            android:background="?actionBarItemBackground"
+            android:textSize="12sp"
+            android:layout_height="40dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:text="SAVE"
+            android:textSize="12sp"
+            android:id="@+id/btn_ok"
+            android:background="@drawable/blue_button_background"
+            android:textStyle="bold"
+            android:layout_height="40dp"/>
+
+    </LinearLayout>
+</LinearLayout>

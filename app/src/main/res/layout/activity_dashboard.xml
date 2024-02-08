@@ -1,0 +1,775 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.DashboardFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:background="@drawable/dashboard_bg"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:background="#006DDB"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_height="50dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:id="@+id/user_name"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
+                        android:drawablePadding="5dp"
+                        android:padding="5dp"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        android:textColor="@color/white"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:visibility="gone"
+                    android:layout_weight="0"
+                    android:layout_gravity="center"
+                    android:background="@drawable/border_layout"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Filter"
+                        android:layout_height="wrap_content"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:src="@drawable/ic_filter"
+                        android:layout_marginLeft="5dp"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="0dip"
+                    android:layout_weight="1"
+                    android:layout_height="0dip"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="2dp"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="23 JUL 2020"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:paddingRight="5dp"
+                        android:textSize="12sp"
+                        android:id="@+id/date"
+                        android:textColor="@color/white"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:paddingRight="5dp"
+                        android:textSize="12sp"
+                        android:id="@+id/time"
+                        android:textColor="@color/white"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content"/>
+
+
+                    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                        android:id="@+id/spinnerPart"
+                        android:layout_width="200dp"
+                        android:visibility="gone"
+                        android:padding="5dp"
+                        android:focusableInTouchMode="true"
+                        android:filterTouchesWhenObscured="true"
+                        android:layout_weight="1"
+                        android:layout_height="40dp"
+                        tools:ignore="HardcodedText" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="50dp"
+                        android:src="@mipmap/ic_launcher"
+                        android:visibility="gone"
+                        android:padding="5dp"
+                        android:layout_weight="1"
+                        android:layout_gravity="center|right"
+                        android:layout_marginLeft="5dp"
+                        android:layout_height="50dp"/>
+
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:background="#8000"
+                android:visibility="gone"
+                android:id="@+id/customer_translayout"
+                android:orientation="vertical"
+                android:layout_height="match_parent"/>
+
+        </FrameLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:id="@+id/company_logo"
+                android:layout_height="150dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:text="Winapp Solutions Pte Ltd"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:textSize="20sp"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/root_layout"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_marginTop="0dp"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/dashboard_items"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:fillViewport="true"
+            android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/catalog_layout"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:id="@+id/catalog_card"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="#FFFFFF"
+                    card_view:cardCornerRadius="5dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:orientation="vertical"
+                        android:layout_height="120dp">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:src="@drawable/ic_new_catalog"
+                            android:layout_height="50dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Catalog"
+                            android:textStyle="bold"
+                            android:textColor="#212121"
+                            android:textSize="12sp"
+                            android:layout_marginTop="20dp"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dp"
+                        android:background="@color/secondaryColor"
+                        android:layout_gravity="right"
+                        android:layout_height="120dp"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/sales_order_layout"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:layout_marginTop="0dp"
+                    android:id="@+id/sales_order_card"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/ic_new_sales"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Sales Orders"
+                            android:textColor="#212121"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dp"
+                        android:background="#D35400"
+                        android:layout_gravity="right"
+                        android:layout_height="120dp"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/invoice_layout"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    android:id="@+id/invoice_card"
+                    card_view:cardBackgroundColor="#FFFFFF"
+                    card_view:cardCornerRadius="5dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:orientation="vertical"
+                        android:layout_height="120dp">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:src="@drawable/ic_new_invoice"
+                            android:layout_height="50dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Invoices"
+                            android:textStyle="bold"
+                            android:textColor="#212121"
+                            android:textSize="12sp"
+                            android:layout_marginTop="20dp"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dp"
+                        android:background="#16A085"
+                        android:layout_gravity="right"
+                        android:layout_height="120dp"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/receipt_layout"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="#FFFFFF"
+                    android:id="@+id/receipt_card"
+                    card_view:cardCornerRadius="5dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:orientation="vertical"
+                        android:layout_height="120dp">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:src="@drawable/ic_new_receipt"
+                            android:layout_height="50dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Receipts"
+                            android:textStyle="bold"
+                            android:textColor="#212121"
+                            android:textSize="12sp"
+                            android:layout_marginTop="20dp"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dp"
+                        android:background="#EC7063"
+                        android:layout_gravity="right"
+                        android:layout_height="120dp"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/delivery_order_layout"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="#FFFFFF"
+                    android:id="@+id/delivery_order_card"
+                    card_view:cardCornerRadius="5dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="120dp">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:src="@drawable/ic_new_delivery_order"
+                            android:layout_height="50dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Delivery Order"
+                            android:textStyle="bold"
+                            android:textColor="#212121"
+                            android:textSize="12sp"
+                            android:layout_marginTop="20dp"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dp"
+                        android:background="#A569BD"
+                        android:layout_gravity="right"
+                        android:layout_height="120dp"/>
+
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/sales_return_layout"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="#FFFFFF"
+                    android:id="@+id/sales_return_card"
+                    card_view:cardCornerRadius="5dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:orientation="vertical"
+                        android:layout_height="120dp">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:src="@drawable/ic_new_return"
+                            android:layout_height="50dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Sales Return"
+                            android:textStyle="bold"
+                            android:textColor="#212121"
+                            android:textSize="12sp"
+                            android:layout_marginTop="20dp"
+                            android:layout_height="wrap_content"/>
+
+
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dp"
+                        android:background="#D4AC0D"
+                        android:layout_gravity="right"
+                        android:layout_height="120dp"/>
+
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/product_layout"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="#FFFFFF"
+                    android:id="@+id/product_card"
+                    card_view:cardCornerRadius="5dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/ic_new_package"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Products"
+                            android:textColor="#212121"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dp"
+                        android:background="#5DADE2"
+                        android:layout_gravity="right"
+                        android:layout_height="120dp"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/customer_layout"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:id="@+id/order_history_card"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="#FFFFFF"
+                    card_view:cardCornerRadius="5dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:orientation="vertical"
+                        android:layout_height="120dp">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:src="@drawable/ic_new_history"
+                            android:layout_height="50dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Customers"
+                            android:textStyle="bold"
+                            android:textColor="#212121"
+                            android:textSize="12sp"
+                            android:layout_marginTop="20dp"
+                            android:layout_height="wrap_content"/>
+
+
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dp"
+                        android:background="#28B463"
+                        android:layout_gravity="right"
+                        android:layout_height="120dp"/>
+
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/settings_layout"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:id="@+id/settings_card"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="#FFFFFF"
+                    card_view:cardCornerRadius="5dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:orientation="vertical"
+                        android:layout_height="120dp">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:src="@drawable/ic_new_settings"
+                            android:layout_height="50dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Settings"
+                            android:textStyle="bold"
+                            android:textColor="#212121"
+                            android:textSize="12sp"
+                            android:layout_marginTop="20dp"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dp"
+                        android:background="#5D6D7E"
+                        android:layout_gravity="right"
+                        android:layout_height="120dp"/>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </LinearLayout>
+
+
+        </LinearLayout>
+
+        </ScrollView>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:padding="5dp"
+        android:textColor="#212121"
+        android:drawablePadding="5dp"
+        android:drawableLeft="@drawable/ic_copyright"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="@string/copy_rights"
+        android:layout_gravity="bottom|center"
+        android:layout_height="wrap_content"/>
+
+</FrameLayout>

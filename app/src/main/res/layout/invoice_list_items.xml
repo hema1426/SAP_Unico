@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardlist_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
+    android:layout_marginLeft="2dp"
+    android:layout_marginRight="2dp"
+    android:layout_margin="0dp"
+    android:layout_marginTop="0dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical"
+    card_view:cardBackgroundColor="@android:color/white"
+    card_view:cardCornerRadius="0dp"
+    card_view:cardElevation="@dimen/cardview_default_elevation"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:padding="10dp"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Michel"
+                android:id="@+id/name"
+                android:textSize="20sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textColor="#212121"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Michel"
+                android:id="@+id/so_no"
+                android:layout_marginTop="10dp"
+                android:textSize="18sp"
+                android:textColor="@color/secondaryColor"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Date"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:id="@+id/date"
+            android:layout_weight="1"
+            android:textColor="#212121"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"/>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Balance"
+            android:textSize="20sp"
+            android:id="@+id/balance"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="#212121"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Nettotal"
+            android:textSize="20sp"
+            android:id="@+id/net_total"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="#212121"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:text="Balance"
+                android:textSize="20sp"
+                android:id="@+id/status"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="#212121"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"/>
+
+
+
+            <LinearLayout
+                android:layout_width="80dp"
+                android:padding="5dp"
+                android:visibility="gone"
+                android:paddingRight="5dp"
+                android:background="@drawable/ivoice_status_failed"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_height="30dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@drawable/ic_baseline_cancel_24"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Paid"
+                android:layout_marginLeft="5dp"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:textColor="#212121"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:background="#d3d3d3"
+        android:layout_gravity="bottom"
+        android:layout_height="1dip"/>
+</androidx.cardview.widget.CardView>

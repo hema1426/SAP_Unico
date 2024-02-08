@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3655D2</color>
+    <color name="colorPrimaryDark">#040478</color>
+    <color name="colorAccent">#3655D2</color>
+    <color name="secondaryColor">#0860A4</color>
+
+    <color name="lit_grey_new">#F2F2F2</color>
+    <color name="lit_blue">#DFEBFC</color>
+    <color name="bluen">#3359de</color>
+    <color name="gray">#808080</color>
+    <color name="black">#212121</color>
+    <color name="lit_grey">#e0e0e0</color>
+    <color name="btn_green">#2ecc11</color>
+    <color name="hashcolor">#D0D2D4</color>
+
+    <!-- App Main Palette -->
+    <color name="primary">@color/primaryDark</color>
+    <color name="primaryDark">@color/blue_700</color>
+    <color name="textPrimary">@color/text_black_primary</color>
+    <color name="colorGreen">#2ECC71</color>
+
+    <!-- Text -->
+    <color name="text_black_primary">@color/black_87</color>
+
+    <color name="text_white_primary">@color/white</color>
+
+    <!-- Blue -->
+    <color name="blue_500">#76D7C4</color>
+    <color name="blue_700">#1976D2</color>
+
+    <!-- Black and White -->
+    <color name="white">#FFF</color>
+    <color name="black_alpha_40">#66000000</color>
+    <color name="black_alpha_60">#99000000</color>
+
+    <color name="black_87">#DE000000</color>
+    <color name="btn_pink1">#D25387</color>
+    <color name="colorgreen">#55A128</color>
+
+    <color name="lit_green_dark">#0092BE</color>
+</resources>

@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activity.MainActivity">
+
+    <item
+        android:id="@+id/action_total"
+        android:title="cart"
+        android:actionLayout="@layout/net_total_layout"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_cart"
+        android:icon="@drawable/ic_supermarket"
+        android:title="Cart"
+        app:actionLayout="@layout/count_layout"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/ic_baseline_add_24"
+        android:title="Add"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+</menu>

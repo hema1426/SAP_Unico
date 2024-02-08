@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    tools:context="com.winapp.saperp.activity.SettingActivity">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    tools:context="com.winapp.saperp.activity.SettingActivity">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="General"
+        android:layout_marginLeft="10dp"
+        android:visibility="gone"
+        android:textSize="14sp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/secondaryColor"
+        android:layout_height="wrap_content"/>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/title1"
+            android:textColor="#212121"
+            android:text="Show Categories View"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@id/title1"
+            android:textColor="#757575"
+            android:text="Show the Catagories view"
+            android:layout_height="wrap_content"/>
+
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        android:background="#f2f2f2"
+        android:layout_height="1dip"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="General Product Setting"
+        android:layout_marginLeft="10dp"
+        android:textSize="14sp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/secondaryColor"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/title3"
+            android:textSize="12sp"
+            android:textColor="#212121"
+            android:text="Product settings for user based"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/description"
+            android:layout_below="@id/title3"
+            android:textSize="10sp"
+            android:textColor="#757575"
+            android:text="Allow negative stock, edit price,Catalog to Invoice"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:layout_width="100dp"
+            android:tag="invoice_switch"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:text="Login"
+            android:id="@+id/login"
+            android:textSize="12sp"
+            android:background="@drawable/round_button"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_height="30dp"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        android:id="@+id/product_setting_layout"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/title4"
+                android:textSize="12sp"
+                android:textColor="#212121"
+                android:text="Allow Negative Stock"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:textSize="10sp"
+                android:layout_below="@id/title4"
+                android:textColor="#757575"
+                android:text="Allow negative stock to invoice"
+                android:layout_height="wrap_content"/>
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:tag="allow_negative_switch"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:id="@+id/allow_negative_stock"
+                android:layout_centerInParent="true"
+                android:layout_height="wrap_content"/>
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:background="#f2f2f2"
+            android:layout_height="1dip"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/title"
+                android:textSize="12sp"
+                android:textColor="#212121"
+                android:text="Catalog to Invoice"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:textSize="10sp"
+                android:layout_below="@id/title"
+                android:textColor="#757575"
+                android:text="Converting catalog to invoice save"
+                android:layout_height="wrap_content"/>
+
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:tag="invoice_switch"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:id="@+id/invoice_switch"
+                android:layout_centerInParent="true"
+                android:layout_height="wrap_content"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/title_1"
+                android:textSize="12sp"
+                android:textColor="#212121"
+                android:text="Offline Download"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:textSize="10sp"
+                android:layout_below="@id/title_1"
+                android:textColor="#757575"
+                android:text="Download the products Images offline"
+                android:layout_height="wrap_content"/>
+
+
+            <Button
+                android:layout_width="100dp"
+                android:tag="invoice_switch"
+                android:textColor="@color/white"
+                android:layout_marginRight="10dp"
+                android:text="Download"
+                android:id="@+id/download"
+                android:textSize="12sp"
+                android:background="@drawable/round_button"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_height="30dp"/>
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="#f2f2f2"
+        android:layout_height="1dip"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/refesh_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Refresh Data"
+            android:textColor="#212121"
+            android:textSize="12sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textSize="10sp"
+            android:layout_below="@id/refesh_title"
+            android:textColor="#757575"
+            android:text="Refresh the Products and Customer Details"
+            android:layout_height="wrap_content"/>
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:id="@+id/refresh_item"
+            android:background="?actionBarItemBackground"
+            android:src="@drawable/ic_refresh"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="#f2f2f2"
+        android:layout_height="1dip"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/invoice_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:textSize="12sp"
+            android:text="Set Default Invoice Save"
+            android:textColor="#212121" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/invoice_title"
+            android:layout_marginLeft="10dp"
+            android:text="Create Invoice default when Save"
+            android:textColor="#757575"
+            android:textSize="10sp"
+           />
+
+        <Switch
+            android:id="@+id/create_invoice_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"
+            android:tag="create_invoice_switch" />
+
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="#f2f2f2"
+        android:layout_height="1dip"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/categories_title"
+            android:textColor="#212121"
+            android:text="Set Catagory Default"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@id/categories_title"
+            android:textColor="#757575"
+            android:text="Set default Catagories view"
+            android:layout_height="wrap_content"/>
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:tag="category_switch"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:id="@+id/categories_switch"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        android:background="#f2f2f2"
+        android:layout_height="1dip"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Printer Setting"
+        android:layout_marginLeft="10dp"
+        android:textSize="14sp"
+        android:layout_above="@id/title2"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/secondaryColor"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/title2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Scan Nearby printer to print the contents"
+            android:textColor="#212121"
+            android:textSize="12sp" />
+
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_below="@+id/title2"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioGroup">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TSC Printer"
+                android:id="@+id/tsc_printer"
+                android:checked="true"
+                android:textSize="12dp" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Zebra Printer"
+                android:visibility="gone"
+                android:checked="false"
+                android:id="@+id/zebra_printer"
+                android:textSize="12dp"
+                />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:visibility="gone"
+                android:text="3 Inch Bluetooth Generic"
+                android:id="@+id/inch_3printer"
+                android:textSize="12dp"
+                />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:visibility="gone"
+                android:text="2.5 Inch Bluetooth Generic"
+                android:id="@+id/inch_2.5printer"
+                android:textSize="12dp"
+                />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/sub_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title2"
+            android:layout_marginLeft="10dp"
+            android:text="Printer Type"
+            android:textColor="#757575"
+            android:textSize="10sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:id="@+id/mac_address_layout"
+            android:layout_below="@id/radioGroup"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:textSize="12sp"
+                android:layout_marginTop="10dp"
+                android:text="Printer MAC Address:"
+                android:layout_height="wrap_content"/>
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_marginLeft="20dp"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:enabled="false"
+                android:padding="10dp"
+                android:textColor="@color/primaryDark"
+                android:background="@drawable/edit_text_corner"
+                android:layout_marginRight="20dp"
+                android:id="@+id/mac_address"
+                android:layout_marginTop="10dp"
+                android:layout_height="50dp"/>
+
+        </LinearLayout>
+
+
+        <Button
+            android:layout_width="100dp"
+            android:tag="invoice_switch"
+            android:textColor="@color/white"
+            android:layout_marginRight="10dp"
+            android:text="Scan"
+            android:id="@+id/scan"
+            android:textSize="12sp"
+            android:background="@drawable/round_button"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_height="30dp"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="#f2f2f2"
+        android:layout_height="1dip"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Set Default Print Invoice"
+                        android:textSize="13dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Saving default check in invoice"
+                        android:layout_marginTop="5dp"
+                        android:textSize="12dp"
+                        android:textColor="@color/black"/>
+
+                </LinearLayout>
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/invSwitch"
+                    android:layout_width="0dp"
+                    android:tag="invSwitch"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:background="#f2f2f2"
+            android:layout_height="1dip"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Set Default Print Sales Order"
+                        android:textSize="13dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Saving default check in Sales Order"
+                        android:layout_marginTop="5dp"
+                        android:textSize="12dp"
+                        android:textColor="@color/black"/>
+
+                </LinearLayout>
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/salesSwitch"
+                    android:layout_width="0dp"
+                    android:tag="salesSwitch"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:background="#f2f2f2"
+            android:layout_height="1dip"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Set Default Print Receipt"
+                        android:textSize="13dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Saving default check in Receipt"
+                        android:layout_marginTop="5dp"
+                        android:textSize="12dp"
+                        android:textColor="@color/black"/>
+
+                </LinearLayout>
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/receiptSwitch"
+                    android:layout_width="0dp"
+                    android:tag="receiptSwitch"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:background="#f2f2f2"
+            android:visibility="gone"
+            android:layout_height="1dip"/>
+    </LinearLayout>
+
+</LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:tag="settings_changes"
+        android:layout_gravity="bottom"
+        android:textColor="@color/white"
+        android:text="Save Changes"
+        android:textStyle="bold"
+        android:id="@+id/save_changes"
+        android:background="#2ECC71"
+        android:textSize="12sp"
+        android:layout_height="40dp"/>
+
+
+</FrameLayout>

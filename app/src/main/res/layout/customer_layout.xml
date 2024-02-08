@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/customer_progress"
+            android:visibility="gone"
+            layout="@layout/progress_bar"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:gravity="center"
+            android:id="@+id/empty_layout"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="No Customer Found !"
+                android:textSize="12sp"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/rootLayout"
+            android:focusableInTouchMode="true"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:layout_width="250dp"
+                    android:id="@+id/customer_search"
+                    android:layout_weight="1"
+                    android:textSize="10sp"
+                    android:layout_marginTop="10dp"
+                    android:drawableRight="@drawable/ic_baseline_search_24"
+                    android:hint="Search Customer"
+                    android:padding="10dp"
+                    android:background="@drawable/rounded_search"
+                    android:layout_height="wrap_content"/>
+
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:text="Cancel"
+                    android:id="@+id/btn_cancel"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    android:textSize="10sp"
+                    android:textColor="@color/colorPrimary"
+                    android:background="?actionBarItemBackground"
+                    android:textAllCaps="false"
+                    android:layout_height="wrap_content"/>
+
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/customerView"
+                android:layout_marginTop="10dp"
+                tools:listitem="@layout/customers_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardlist_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
+    android:layout_marginLeft="2dp"
+    android:layout_marginRight="2dp"
+    android:layout_margin="5dp"
+    android:layout_marginTop="2dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical"
+    card_view:cardBackgroundColor="#f3f3f3"
+    card_view:cardCornerRadius="6dp"
+    card_view:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:id="@+id/root_layout"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="75dp"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:background="@drawable/scheduling_corner"
+            android:layout_height="90dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Friday"
+                android:id="@+id/day"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="24"
+                android:textStyle="bold"
+                android:id="@+id/date"
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="July 2020"
+                android:id="@+id/year"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:paddingRight="5dp"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="12:30 AM"
+                android:textStyle="bold"
+                android:id="@+id/time"
+                android:textSize="12sp"
+                android:layout_marginLeft="5dp"
+                android:textColor="@color/secondaryColor"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Product Company Group"
+                android:textStyle="bold"
+                android:id="@+id/name"
+                android:layout_centerInParent="true"
+                android:textSize="12sp"
+                android:layout_marginLeft="5dp"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:layout_width="60dp"
+                android:text="Open"
+                android:layout_alignParentRight="true"
+                android:id="@+id/status"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:background="@drawable/scheduling_corner"
+                android:layout_height="30dp"/>
+
+
+        </RelativeLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
+

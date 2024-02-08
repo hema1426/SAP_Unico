@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    tools:context=".activity.CustomerSelectActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Brands"
+        android:id="@+id/brand_title"
+        android:textStyle="bold"
+        android:textColor="@color/colorAccent"
+        android:textSize="12sp"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/_5sdp"
+        android:background="@drawable/layout_border_radious_hash">
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinner_group"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_25sdp"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:focusableInTouchMode="true"
+        android:weightSum="3"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:id="@+id/product_search"
+            android:layout_weight="2"
+            android:textSize="12sp"
+            android:drawableRight="@drawable/ic_baseline_search_24"
+            android:hint="Search product or product code"
+            android:padding="10dp"
+            android:background="@drawable/rounded_search"
+            android:layout_height="40dp"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:text="Cancel"
+            android:id="@+id/btn_sorting"
+            android:visibility="gone"
+            android:src="@drawable/ic_sort_descending"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:layout_gravity="right|center"
+            android:textColor="@color/colorPrimary"
+            android:background="?actionBarItemBackground"
+            android:textAllCaps="false"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:text="Cancel"
+            android:textSize="12sp"
+            android:textColor="@color/colorPrimary"
+            android:textAllCaps="false"
+            android:background="?attr/actionBarItemBackground"
+            android:layout_weight="1"
+            android:id="@+id/cancel_sheet"
+            android:layout_height="wrap_content"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:backgroundTint="@color/white"
+            app:fabSize="mini"
+            android:layout_gravity="right|center"
+            android:src="@drawable/ic_filter"
+            android:layout_margin="10dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:visibility="gone"
+        android:id="@+id/empty_layout"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textStyle="normal"
+            android:textColor="#212121"
+            android:text="No Product found!"
+            android:textSize="12sp"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="30dp"
+        android:id="@+id/product_layout"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/total_products"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textSize="10sp"
+            android:textColor="@color/colorPrimary" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/productList"
+            android:paddingBottom="40dp"
+            tools:listitem="@layout/select_product_items"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</LinearLayout>

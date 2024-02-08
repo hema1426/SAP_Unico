@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/url_validation_bg"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:paddingRight="20dp"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:paddingBottom="20dp"
+            android:paddingLeft="20sp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="150dp"
+                android:src="@drawable/logo"
+                android:visibility="gone"
+                android:layout_height="150dp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:padding="10dp"
+                android:layout_marginTop="20sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:text="WINAPP SOLUTIONS PTE LTD"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:layout_height="wrap_content"/>
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_marginTop="300dp"
+                style="@style/TextAppearance.AppCompat.Medium.Inverse"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textStyle="bold"
+                android:textColor="#006DDB"
+                android:id="@+id/indicator_text"
+                android:text="Your data has been validating..please wait..."
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:layout_marginTop="100sp"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_baseline_link_24"
+                    android:layout_height="wrap_content"/>
+
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:hint="Domain Url"
+                    android:padding="10dp"
+                    android:id="@+id/domain_url"
+                    android:textColorHint="#757575"
+                    android:layout_marginLeft="5dp"
+                    android:background="#f3f3f3"
+                    android:textSize="14sp"
+                    android:inputType="textUri"
+                    android:maxLines="1"
+                    android:elevation="3dp"
+                    android:layout_height="45dp"/>
+
+            </LinearLayout>
+
+
+            <Button
+                android:layout_width="200dp"
+                android:layout_marginTop="60sp"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:textColor="@color/white"
+                android:id="@+id/btn_validate"
+                android:textSize="14sp"
+                android:text="Validate"
+                android:textAllCaps="false"
+                android:background="@drawable/button_order"
+                android:layout_height="40dp"/>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

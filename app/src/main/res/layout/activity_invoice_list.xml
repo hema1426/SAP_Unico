@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<FrameLayout
+    android:layout_width="match_parent"
+    android:background="#F2F2F2"
+    android:id="@+id/rootLayout"
+    android:layout_height="match_parent">
+
+
+    <!-- Define the progress bar layout  -->
+    <include
+        android:id="@+id/progress_layout"
+        android:visibility="gone"
+        layout="@layout/progress_bar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:id="@+id/empty_layout"
+        android:gravity="center"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="No Invoice Found !"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:textSize="20sp"
+            android:layout_height="35dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginLeft="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="0dp"
+        android:orientation="vertical">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:tabTextAppearance="@style/TabLayoutTextStyle"
+            app:tabIndicatorColor="#52BE80"
+            app:tabIndicatorHeight="5dp"
+            app:tabMode="fixed"
+            app:tabGravity="fill"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:id="@+id/operation_layout"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="right"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_print_24" />
+
+            <View
+                android:layout_width="1dip"
+                android:background="@color/secondaryColor"
+                android:layout_marginLeft="30dp"
+                android:layout_height="40dp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/ic_share"
+                android:layout_height="wrap_content"/>
+
+            <View
+                android:layout_width="1dip"
+                android:background="@color/secondaryColor"
+                android:layout_marginLeft="20dp"
+                android:layout_height="40dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Sort By "
+                android:layout_marginLeft="20dp"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/ic_sort_descending"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:paddingRight="5dp"
+        android:visibility="gone"
+        android:paddingTop="5dp"
+        android:paddingLeft="5dp"
+        android:layout_height="match_parent">
+
+        <!-- Top Sliding Banners -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                    <androidx.cardview.widget.CardView
+                        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/cardlist_item"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="2dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginRight="2dp"
+                        android:layout_margin="0dp"
+                        android:layout_marginTop="0dp"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:orientation="vertical"
+                        card_view:cardBackgroundColor="@android:color/white"
+                        card_view:cardCornerRadius="0dp"
+                        card_view:cardElevation="@dimen/cardview_default_elevation"
+                        tools:ignore="MissingDefaultResource">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:padding="10dp"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:text="Invoice No"
+                                android:id="@+id/name"
+                                android:layout_weight="1"
+                                android:textSize="20sp"
+                                android:textColor="#212121"
+                                android:textStyle="bold"
+                                android:layout_height="wrap_content"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:text="Date"
+                                android:textSize="20sp"
+                                android:gravity="center"
+                                android:id="@+id/date"
+                                android:layout_weight="1"
+                                android:textColor="#212121"
+                                android:textStyle="bold"
+                                android:layout_height="wrap_content"/>
+
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:text="Balance"
+                                android:textSize="20sp"
+                                android:id="@+id/address"
+                                android:gravity="center"
+                                android:layout_weight="1"
+                                android:textColor="#212121"
+                                android:textStyle="bold"
+                                android:layout_height="wrap_content"/>
+
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:text="Net Total"
+                                android:textSize="20sp"
+                                android:id="@+id/balance"
+                                android:gravity="center"
+                                android:layout_weight="1"
+                                android:textColor="#212121"
+                                android:textStyle="bold"
+                                android:layout_height="wrap_content"/>
+
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:text="Status"
+                                android:id="@+id/net_total"
+                                android:gravity="center"
+                                android:textSize="20sp"
+                                android:layout_weight="1"
+                                android:textColor="#212121"
+                                android:textStyle="bold"
+                                android:layout_height="wrap_content"/>
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:background="#d3d3d3"
+                            android:layout_gravity="bottom"
+                            android:layout_height="1dip"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/invoiceList"
+                        android:paddingBottom="80dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:text="Feature Products"
+                        android:textSize="16sp"
+                        android:visibility="gone"
+                        android:layout_marginLeft="4dp"
+                        android:id="@+id/feature_title"
+                        android:padding="5dp"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_below="@+id/indicator"
+                        android:layout_height="wrap_content"/>
+
+
+                </LinearLayout>
+            </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom|center"
+        android:background="#006DDB"
+        android:visibility="gone"
+        android:gravity="end"
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:layout_height="40dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Total Outstanding :"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:paddingRight="20sp"
+            android:id="@+id/net_total_value"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <include
+        android:id="@+id/search_filter"
+        android:visibility="gone"
+        layout="@layout/invoice_filter_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="#8000"
+        android:visibility="gone"
+        android:id="@+id/trans_layout"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" />
+
+
+</FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/design_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp"
+        app:elevation="4dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <include
+            android:id="@+id/customer_layout"
+            android:visibility="gone"
+            layout="@layout/activity_customer_select"/>
+
+
+        <include
+            android:id="@+id/invoice_option"
+            android:visibility="gone"
+            layout="@layout/invoice_edit_options"/>
+
+    </RelativeLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

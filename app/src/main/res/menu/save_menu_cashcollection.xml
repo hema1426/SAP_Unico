@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activity.MainActivity">
+
+    <item
+        android:id="@+id/action_flter"
+        android:icon="@drawable/ic_filter_outline"
+        android:title="Search"
+        android:visible="false"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_more"
+        android:icon="@drawable/ic_baseline_read_more_24"
+        android:title="Search"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_baseline_save_24"
+        android:title="Save"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+
+</menu>

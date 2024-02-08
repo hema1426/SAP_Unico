@@ -1,0 +1,451 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.winapp.saperp.fragments.TotalFragment">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Overall Details"
+        android:textColor="@color/colorPrimary"
+        android:padding="10dp"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_marginLeft="20dp"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:padding="10dp"
+        android:id="@+id/close_layout"
+        android:layout_gravity="right"
+        android:src="@drawable/ic_baseline_cancel_24"
+        android:layout_height="wrap_content"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="40dp"
+        android:background="@color/white"
+        android:layout_height="wrap_content"
+        tools:context="com.winapp.saperp.activity.CashCollectionActivity">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:background="@color/white"
+            android:paddingBottom="5dp"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:padding="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="@android:color/white"
+                    card_view:cardCornerRadius="0dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:tag="select"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:src="@drawable/ic_total_outstanding"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Total Outstanding"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:textColor="#212121"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="0.00"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/total_outstanding"
+                            android:textStyle="bold"
+                            android:textColor="#006DDB"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+                    <View
+                        android:layout_width="5dip"
+                        android:layout_marginTop="40dp"
+                        android:background="#DF2701"
+                        android:layout_height="40dp"/>
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:padding="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="@android:color/white"
+                    card_view:cardCornerRadius="0dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="190dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:tag="select">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_paid_amount" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Paid Amount"
+                            android:textColor="#212121"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/total_paid_amount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="0.00"
+                            android:textColor="#006DDB"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dip"
+                        android:layout_marginTop="40dp"
+                        android:background="#05841A"
+                        android:layout_height="40dp"/>
+
+
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:padding="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="4dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="@android:color/white"
+                    card_view:cardCornerRadius="0dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:tag="select"
+                        android:id="@+id/invoice_tab"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:src="@drawable/ic_discount_amount"
+                            android:id="@+id/invoice_icon"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Discount Amount"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:textColor="#212121"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="0.00"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/discount_amount"
+                            android:textStyle="bold"
+                            android:textColor="#006DDB"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dip"
+                        android:layout_marginTop="40dp"
+                        android:background="#F29900"
+                        android:layout_height="40dp"/>
+
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:background="@color/white"
+            android:paddingBottom="5dp"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="250dp"
+                android:padding="5dp"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="5dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="@android:color/white"
+                    card_view:cardCornerRadius="0dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:tag="select"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:src="@drawable/ic_balance_amount"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Balance Amount"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:textColor="#212121"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="0.00"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/balance_amount"
+                            android:textStyle="bold"
+                            android:textColor="#006DDB"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="5dip"
+                        android:layout_marginTop="40dp"
+                        android:background="#DF01DF"
+                        android:layout_height="40dp"/>
+
+
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="250dp"
+                android:padding="5dp"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_margin="5dp"
+                    android:layout_marginTop="0dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    card_view:cardBackgroundColor="@android:color/white"
+                    card_view:cardCornerRadius="0dp"
+                    card_view:cardElevation="@dimen/cardview_default_elevation"
+                    tools:ignore="MissingDefaultResource">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:tag="select"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:src="@drawable/ic_return_amt"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Return Amount"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:textColor="#212121"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="0.00"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/return_amount"
+                            android:textStyle="bold"
+                            android:textColor="#006DDB"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+                    <View
+                        android:layout_width="5dip"
+                        android:layout_marginTop="40dp"
+                        android:background="#01A2DF"
+                        android:layout_height="40dp"/>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:background="#d3d3d3"
+            android:layout_height="1dip"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Attach Image"
+            android:padding="10dp"
+            android:textSize="12sp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginLeft="20dp"
+            android:layout_height="wrap_content"/>
+
+
+        <Button
+            android:layout_width="200dp"
+            android:text="Get Image"
+            android:textSize="12sp"
+            android:id="@+id/get_image"
+            android:layout_gravity="center"
+            android:background="@color/main_blue_color"
+            android:textColor="@color/white"
+            android:layout_height="40dp"/>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:id="@+id/image_layout"
+            android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:scaleType="fitXY"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:id="@+id/receipt_image"
+            android:layout_height="200dp"/>
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_gravity="right"
+                android:id="@+id/delete_image"
+                android:background="#8000"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_baseline_close_24"
+                android:layout_height="wrap_content"/>
+
+
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="10dp"
+            android:paddingBottom="20dp"
+            android:textColor="@color/red_btn_bg_color"
+            android:textSize="10sp"
+            android:text="* Note : You can capture image to upload . Ex: Cheque Image"
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+</FrameLayout>

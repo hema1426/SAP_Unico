@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/drawermenu_group_1"
+        >
+        <item
+            android:id="@+id/navigation_item_home"
+            android:checked="true"
+            android:icon="@drawable/ic_baseline_home_work_24"
+            android:title="Home" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_4"
+        >
+        <item
+            android:id="@+id/navigation_item_schedule"
+            android:visible="false"
+            android:icon="@drawable/ic_calendar_menu"
+            android:title="Schedulde" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_0"
+        >
+        <item
+            android:id="@+id/navigation_item_catalog"
+            android:visible="false"
+            android:icon="@drawable/ic_catalog"
+            android:title="Catalog" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_02"
+        >
+        <item
+            android:id="@+id/navigation_item_catagories"
+            android:visible="false"
+            android:icon="@drawable/ic_categories"
+            android:title="All Categories" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_33"
+        >
+        <item
+            android:id="@+id/navigation_item_customer"
+            android:icon="@drawable/invoice_user"
+            android:title="Customers" />
+
+    </group>
+
+
+    <group
+        android:id="@+id/drawermenu_group_7"
+        >
+        <item
+            android:id="@+id/navigation_item_salesorder"
+            android:icon="@drawable/ic_sales_order_menu"
+            android:title="Sales Order" />
+
+    </group>
+
+
+    <group
+        android:id="@+id/drawermenu_group_5"
+        >
+        <item
+            android:id="@+id/navigation_item_invoice"
+            android:icon="@drawable/ic_invoice_menu"
+            android:title="Invoices" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_51"
+        >
+        <item
+            android:id="@+id/navigation_item_sales_return"
+            android:visible="false"
+            android:icon="@drawable/ic_sales_return"
+            android:title="Sales Return" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_34"
+        >
+        <item
+            android:id="@+id/navigation_product_analysis"
+            android:visible="false"
+            android:icon="@drawable/ic_sales_order_menu"
+            android:title="Products Analysis" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_9"
+        >
+        <item
+            android:id="@+id/navigation_item_receipts"
+            android:icon="@drawable/ic_receipt"
+            android:title="Receipts" />
+
+    </group>
+
+
+    <group
+        android:id="@+id/drawermenu_group_3"
+        >
+        <item
+            android:id="@+id/navigation_item_dashboard"
+            android:visible="false"
+            android:icon="@drawable/ic_dashboard_menu"
+            android:title="Dashboard" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_6">
+        <item
+            android:icon="@drawable/ic_calendar_menu"
+            android:id="@+id/navigation_settlement"
+            android:title="Settlement" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_67">
+        <item
+            android:icon="@drawable/ic_baseline_transform_24"
+            android:id="@+id/navigation_transfer"
+            android:title="Transfer" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_60">
+        <item
+            android:icon="@drawable/ic_baseline_transform_24"
+            android:id="@+id/navigation_stock_request"
+            android:title="Stock Request" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_61">
+        <item
+            android:icon="@drawable/ic_receipt"
+            android:id="@+id/navigation_reports"
+            android:title="Reports" />
+
+    </group>
+
+
+    <group
+        android:id="@+id/drawermenu_group_8"
+        android:visible="false"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/navigation_item_graphical"
+            android:icon="@drawable/ic_action_bookmark"
+            android:title="Graphical" />
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_2">
+        <item
+            android:id="@+id/navigation_item_settings"
+            android:icon="@drawable/ic_baseline_settings_24"
+            android:title="Settings" />
+
+        <item
+            android:id="@+id/navigation_item_help"
+            android:visible="false"
+            android:icon="@drawable/ic_action_help"
+            android:title="Help" />
+
+    </group>
+
+    <group
+        android:id="@+id/drawermenu_group_35"
+        >
+        <item
+            android:id="@+id/navigation_item_signout"
+            android:icon="@drawable/ic_logout"
+            android:title="Sign out" />
+
+    </group>
+
+
+</menu>

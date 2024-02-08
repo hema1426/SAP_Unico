@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/action_roadmap"
+        android:title="Normal" />
+    <item android:id="@+id/action_satellite"
+        android:title="Satellite" />
+    <item android:id="@+id/action_hybrid"
+        android:visible="false"
+        android:title="Hybrid" />
+    <item android:id="@+id/action_terrain"
+        android:title="Terrain" />
+</menu>

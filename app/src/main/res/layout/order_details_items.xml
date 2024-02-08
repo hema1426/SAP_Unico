@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardlist_item"
+    android:layout_width="match_parent"
+    android:clickable="true"
+    android:layout_margin="1dp"
+    android:layout_height="wrap_content"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical"
+    card_view:cardCornerRadius="0dp"
+    card_view:cardElevation="0.5dp"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/rootLayout"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:padding="1dp"
+            android:layout_height="wrap_content">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:id="@+id/product_check"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Fairness Cream"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/product_name"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <Space
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:layout_height="0dip"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Amount"
+                android:id="@+id/customer_code"
+                android:textSize="12sp"
+                android:layout_marginRight="20dp"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:id="@+id/more_icon"
+                android:visibility="gone"
+                android:src="@drawable/ic_baseline_more_vert_24"
+                android:background="?actionBarItemBackground"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:background="#f3f3f3"
+            android:visibility="gone"
+            android:layout_marginTop="5dp"
+            android:layout_height="1dip"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="1dp"
+            android:paddingBottom="5dp"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="45dp"
+                android:maxLines="2"
+                android:maxWidth="250dp"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:text="CTN : "
+                android:textSize="10sp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:maxLines="2"
+                android:maxWidth="250dp"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:id="@+id/ctn_qty"
+                android:text="5"
+                android:textSize="10sp"
+                android:layout_height="wrap_content"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:maxLines="2"
+                android:maxWidth="250dp"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:text="PCS : "
+                android:textSize="10sp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:maxLines="2"
+                android:maxWidth="250dp"
+                android:ellipsize="end"
+                android:text="5"
+                android:textStyle="bold"
+                android:id="@+id/pcs_qty"
+                android:textSize="10sp"
+                android:layout_height="wrap_content"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:maxLines="2"
+                android:maxWidth="250dp"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:text="QTY : "
+                android:textSize="10sp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:maxLines="2"
+                android:maxWidth="250dp"
+                android:textStyle="bold"
+                android:id="@+id/net_qty"
+                android:ellipsize="end"
+                android:text="10"
+                android:textSize="10sp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginRight="20dp"
+                android:text="$200"
+                android:id="@+id/net_amount"
+                android:layout_weight="1"
+                android:layout_gravity="right"
+                android:textColor="#212121"
+                android:gravity="right"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:paddingBottom="10dp"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/outstanding_icon"
+                android:src="@drawable/ic_pay"
+                android:layout_height="15dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:maxLines="2"
+                android:maxWidth="250dp"
+                android:ellipsize="end"
+                android:text="Outstanding Amount :"
+                android:textSize="10sp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:maxLines="2"
+                android:maxWidth="250dp"
+                android:textStyle="bold"
+                android:textColor="#006DDB"
+                android:ellipsize="end"
+                android:id="@+id/outstanding_amount"
+                android:textSize="12sp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,53 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activity.MainActivity">
+
+    <item
+        android:id="@+id/action_total"
+        android:title="cart"
+        android:actionLayout="@layout/net_total_layout"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_cart"
+        android:icon="@drawable/ic_supermarket"
+        android:title="Cart"
+        app:actionLayout="@layout/count_layout"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        android:title="Search"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+
+    <item
+        android:title="Choose Location"
+        android:iconTint="@color/white"
+        android:icon="@drawable/ic_baseline_location_on_24"
+        android:orderInCategory="100"
+        android:id="@+id/choose_location"
+        app:showAsAction="always" />
+
+    <item
+        android:title="Choose Company"
+        android:icon="@drawable/ic_baseline_apartment_24"
+        android:orderInCategory="100"
+        android:id="@+id/choose_company"
+        app:showAsAction="always" />
+
+    <item
+        android:title="Order Sync"
+        android:orderInCategory="100"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
+        android:title="Collection Sync"
+        android:visible="false"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+</menu>

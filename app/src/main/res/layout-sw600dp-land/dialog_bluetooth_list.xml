@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/black_87"
+    android:orientation="vertical"
+    tools:ignore="MissingDefaultResource">
+
+    <ListView
+        android:id="@+id/lvPairedDevices"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:stackFromBottom="true" />
+
+    <Button
+        android:id="@+id/btBluetoothScan"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@color/colorPrimary"
+        android:padding="15dp"
+        android:textSize="16sp"
+        android:text="扫描"
+        android:textColor="@color/white" />
+
+</LinearLayout>

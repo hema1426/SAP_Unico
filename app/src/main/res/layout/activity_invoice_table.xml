@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    tools:context=".fragments.TableListFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:id="@+id/buttonPanel"
+        android:weightSum="4"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="100dp"
+            android:text="Sales order"
+            android:textSize="12sp"
+            android:textAllCaps="false"
+            android:layout_weight="1"
+            android:background="@drawable/corner_button_unselect"
+            android:layout_height="40dp"/>
+
+        <Button
+            android:layout_width="100dp"
+            android:text="Invoice"
+            android:textAllCaps="false"
+            android:layout_weight="1"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginLeft="10dp"
+            android:textSize="12sp"
+            android:background="@drawable/corner_button_select"
+            android:layout_height="40dp"/>
+
+        <Button
+            android:layout_width="100dp"
+            android:text="Outstanding"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/corner_button_unselect"
+            android:layout_height="40dp"/>
+
+        <Button
+            android:layout_width="100dp"
+            android:text="Graphical"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/corner_button_unselect"
+            android:layout_height="40dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_below="@+id/buttonPanel"
+        android:id="@+id/addresspanel"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp"
+            android:padding="10dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="To :"
+                android:textSize="16sp"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Ajmal Trading"
+                android:textAllCaps="true"
+                android:layout_marginLeft="3dp"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:textSize="16sp"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="445,New Lane"
+                android:textAllCaps="true"
+                android:padding="5dp"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="+65 1132424242"
+                android:textAllCaps="true"
+                android:padding="5dp"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Singapore"
+                android:textAllCaps="true"
+                android:padding="5dp"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:layout_height="0dip"/>
+
+        <LinearLayout
+            android:layout_width="130dp"
+            android:layout_gravity="right|center"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="5dp"
+            android:background="@drawable/price_corner_second"
+            android:gravity="center"
+            android:layout_height="70dp">
+            <LinearLayout
+                android:layout_width="120dp"
+                android:layout_gravity="right|center"
+                android:background="@drawable/price_corner_layout"
+                android:orientation="vertical"
+                android:layout_height="70dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Total Due :"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/secondaryColor"
+                    android:layout_height="wrap_content"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="$ 275"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="20dp"
+                    android:textColor="@color/white"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:id="@+id/productpanel"
+        android:layout_below="@+id/addresspanel"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="INVOICE DATE :"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="#212121"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text=" 18/07/2020"
+            android:textSize="13sp"
+            android:textColor="#757575"
+            android:layout_height="wrap_content"/>
+
+        <Space
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:layout_height="0dip"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="PRODUCT :"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="#212121"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Fair and handsome"
+            android:textSize="13sp"
+            android:textColor="#757575"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:id="@+id/topline"
+        android:layout_below="@+id/productpanel"
+        android:background="@color/secondaryColor"
+        android:layout_height="5dip"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:paddingBottom="120dp"
+        android:id="@+id/tablepanel"
+        android:layout_below="@+id/topline"
+        android:layout_height="wrap_content" >
+
+        <TableLayout
+            android:id="@+id/tableInvoices"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="0dp"
+            android:stretchColumns="*"
+            >
+        </TableLayout>
+    </ScrollView>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_width="match_parent"
+            android:id="@+id/blowline"
+            android:layout_below="@+id/tablepanel"
+            android:background="@color/secondaryColor"
+            android:layout_height="5dip"/>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="right"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="SubTotal :"
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="0dp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="$275"
+                android:textAllCaps="true"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="right"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Tax :"
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="0dp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="$0"
+                android:textAllCaps="true"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="right"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Discount :"
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="0dp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="$0"
+                android:textAllCaps="true"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            android:background="#757575"
+            android:layout_height="0.5dip"/>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="right"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Net total :"
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="0dp"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="$275"
+                android:textAllCaps="true"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

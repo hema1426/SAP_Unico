@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:id="@+id/rootLayout"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <!-- Define the progress bar layout  -->
+        <include
+            android:id="@+id/progress_layout"
+            android:visibility="gone"
+            layout="@layout/progress_bar"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:id="@+id/empty_layout"
+            android:gravity="center"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="No Products found !"
+                android:layout_marginTop="10dp"
+                android:textColor="#212121"
+                android:textSize="14sp"
+                android:layout_height="35dp"/>
+
+        </LinearLayout>
+
+        <!-- visible the Recyclerview when all content loaded -->
+            <!-- Top Sliding Banners -->
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/reorderList"
+                        android:paddingBottom="80dp"
+                        tools:listitem="@layout/reorder_cart_items"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:id="@+id/check_out_layout"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:background="#f3f3f3"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="match_parent"
+                android:background="#006DDB"
+                android:layout_height="2dip"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:paddingBottom="10dp"
+                android:padding="5dp"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Products Details"
+                    android:padding="10dp"
+                    android:visibility="gone"
+                    android:textSize="14sp"
+                    android:layout_height="wrap_content"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:background="#f3f3f3"
+                    android:visibility="gone"
+                    android:layout_height="1dip"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="20dp"
+                    android:padding="0dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Sub total"
+                        android:textSize="14sp"
+                        android:textColor="#006DDB"
+                        android:layout_gravity="center"
+                        android:textStyle="bold"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="0.0"
+                        android:textSize="14sp"
+                        android:layout_gravity="center"
+                        android:id="@+id/balance_value"
+                        android:gravity="right"
+                        android:textStyle="bold"
+                        android:textColor="#212121"
+                        android:layout_height="wrap_content"/>
+
+
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="0dip"
+                    android:layout_weight="1"
+                    android:layout_height="0dip"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="5dp"
+                    android:padding="0dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="GST "
+                        android:textSize="14sp"
+                        android:layout_gravity="center"
+                        android:textStyle="bold"
+                        android:id="@+id/tax_title"
+                        android:textColor="#006DDB"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        android:id="@+id/tax_type"
+                        android:textStyle="bold"
+                        android:textColor="#212121"
+                        android:layout_height="wrap_content"/>
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="0.0"
+                        android:layout_gravity="center"
+                        android:textSize="14sp"
+                        android:id="@+id/tax"
+                        android:textStyle="bold"
+                        android:textColor="#212121"
+                        android:layout_height="wrap_content"/>
+
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:background="#f3f3f3"
+                    android:visibility="gone"
+                    android:layout_marginTop="10dp"
+                    android:layout_height="1dip"/>
+
+                <Space
+                    android:layout_width="0dip"
+                    android:layout_weight="1"
+                    android:layout_height="0dip"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="5dp"
+                    android:padding="0dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Total Amount"
+                        android:textSize="14sp"
+                        android:padding="5dp"
+                        android:textColor="#006DDB"
+                        android:layout_gravity="center"
+                        android:textStyle="bold"
+                        android:layout_height="wrap_content"/>
+
+
+                    <Space
+                        android:layout_width="0dip"
+                        android:layout_weight="1"
+                        android:layout_height="0dip"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="0.0"
+                        android:textSize="14sp"
+                        android:layout_gravity="center"
+                        android:id="@+id/net_total"
+                        android:gravity="right"
+                        android:textStyle="bold"
+                        android:textColor="#212121"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="2dp"
+                android:visibility="gone"
+                android:layout_marginRight="2dp"
+                android:layout_margin="5dp"
+                android:layout_marginTop="2dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:orientation="vertical"
+                card_view:cardBackgroundColor="@android:color/white"
+                card_view:cardCornerRadius="4dp"
+                card_view:cardElevation="@dimen/cardview_default_elevation">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:paddingBottom="20dp"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/net_amount"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:padding="5dp"
+                        android:textSize="12sp"
+                        android:layout_gravity="center"
+                        android:textStyle="bold"
+                        android:text="Net Amount"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="#8000"
+        android:visibility="gone"
+        android:id="@+id/trans_layout"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" />
+
+</RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/design_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp"
+        app:elevation="4dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <include
+            android:id="@+id/invoice_save_option"
+            layout="@layout/invoice_save_print_option"/>
+
+    </RelativeLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,134 @@
+<resources>
+    <string name="app_name">SAP-ERP</string>
+
+    <string name="tools_text_account_information_username">User Name</string>
+    <string name="tools_text_account_information_email">Test@yahoo.com</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="error_email">Email id is Empty</string>
+    <string name="error_password">Password is Empty</string>
+    <string name="invalid_email">Invalid Email id</string>
+    <string name="invalid_password">Invalid Password</string>
+    <string name="all_prodcuts">All Products</string>
+    <string name="title_activity_profile">Profile</string>
+    <string name="is_not_valid_mac_address"> is not a valid MAC Address</string>
+
+
+    <string name="register">Don\'t have an Account? <font fgcolor='#FF4CD964'>Register.</font></string> <!--green-->
+    <string name="login">Have an Account? <font fgcolor='#FF4CD964'>Login.</font></string> <!--green-->
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string-array name="choice_items">
+        <item>Inclusive Tax</item>
+        <item>Exclusive Tax</item>
+        <item>Zero Tax</item>
+    </string-array>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="customer_name">Customer Name <font color='#FF0000'> * </font></string>
+    <string name="postal_code">Postal Code <font color='#FF0000'> * </font></string>
+    <string name="country">Country <font color='#FF0000'> * </font></string>
+    <string name="address">Address <font color='#FF0000'> * </font></string>
+    <string name="tax">Tax <font color='#FF0000'> * </font></string>
+    <string name="customer_code">Customer Code</string>
+
+    <string name="bank_prompt">Choose a Option</string>
+
+    <string name="mapbox_access_token">pk.eyJ1Ijoic2F0aGlzaGt1bWFyaW5mbyIsImEiOiJja2ptcTd5NjUwa25yMnF0Zmo3bzVvd3lnIn0.icLPLvbPfS90BwOV01wnuA</string>
+    <string-array name="bank_arrays">
+        <item>CASH</item>
+        <item>CHEQUE</item>
+        <item>Bank Transfer</item>
+    </string-array>
+
+    <string name="invoice_prompt">Choose a Status</string>
+    <string name="user_prompt">Choose a User</string>
+    <string name="cash_collected">Cash Collected</string>
+    <string name="invoice_print">Invoice Print</string>
+    <string name="delivery_order_print">Delivery Order Print</string>
+    <string name="save_and_print">Save and Print</string>
+    <string name="no_of_copies">No of Copies ?</string>
+    <string name="email_invoice">Email Invoice</string>
+    <string name="do_you_want_to_save">Do you want to save ?</string>
+    <string name="save">Save</string>
+    <string name="todo">TODO</string>
+    <string name="no">NO</string>
+    <string name="yes">YES</string>
+    <string name="_1">1</string>
+    <string name="reorder_confirmation">Reorder Confirmation</string>
+    <string name="cancel">Cancel</string>
+    <string name="are_you_want_to_sure_reorder_this_products">Are you want to sure reorder this products?</string>
+    <string name="with_quantity">Add With Quantity?</string>
+    <string name="check_all_products">Check All Products</string>
+
+    <string-array name="invoice_arrays">
+        <item>ALL</item>
+        <item>PAID</item>
+        <item>UNPAID</item>
+    </string-array>
+
+    <string-array name="sales_arrays">
+        <item>ALL</item>
+        <item>OPEN</item>
+        <item>CLOSED</item>
+    </string-array>
+
+    <string-array name="stock_item">
+        <item>Select</item>
+        <item>Damage</item>
+        <item>Expiry</item>
+        <item>Extra</item>
+        <item>Replaced</item>
+    </string-array>
+    <string name="title_activity_maps">Map</string>
+    <string name="copy_rights">Copyright 2024 Winapp solutions Pte Ltd</string>
+    <string name="gst">GST</string>
+    <string name="unit">Unit</string>
+    <string name="unit_qty">Unit Qty</string>
+    <string name="supplier">Supplier</string>
+    <string name="search_supplier_name">Search Supplier Name</string>
+    <string name="add">Add</string>
+    <string name="remarks">Remarks</string>
+    <string name="search_barcode">Search Barcode</string>
+    <string name="search">Search</string>
+    <string name="products_loading">loading</string>
+    <string name="add_products">Add Products +</string>
+    <string name="transfer_in">TRANSFER IN</string>
+    <string name="transfer_out">TRANSFER OUT</string>
+
+    <string name="stock_hand">Stock in Hand : </string>
+    <string name="qty_txt">Qty : </string>
+    <string name="brand">Select Brand</string>
+    <string name="search_pdt">Search Product</string>
+    <string name="code">Code</string>
+    <string name="product">Product</string>
+    <string name="qty">Qty</string>
+    <string name="u_price">U/Price</string>
+    <string name="return_new">Return</string>
+    <string name="foc">FOC</string>
+    <string name="net_qty">Net Qty</string>
+    <string name="unit_price">Unit Price</string>
+    <string name="qty_new">Qty</string>
+    <string name="disc">Disc</string>
+    <string name="sub_total">Sub Total</string>
+    <string name="gst_new">GST</string>
+    <string name="net_total">Net Total</string>
+
+</resources>
