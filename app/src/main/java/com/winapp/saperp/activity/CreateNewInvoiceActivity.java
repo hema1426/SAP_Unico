@@ -1,6 +1,5 @@
 package com.winapp.saperp.activity;
 
-import static com.winapp.saperp.activity.AddInvoiceActivity.activityFrom;
 import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
 import androidx.annotation.NonNull;
@@ -47,6 +46,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
@@ -59,12 +59,12 @@ import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.NewProductSummaryAdapter;
 import com.winapp.saperp.adapter.SelectProductAdapter;
 import com.winapp.saperp.db.DBHelper;
-import com.winapp.saperp.fragments.CustomerFragment;
 import com.winapp.saperp.model.AppUtils;
 import com.winapp.saperp.model.CartModel;
 import com.winapp.saperp.model.CreateInvoiceModel;
 import com.winapp.saperp.model.CustomerDetails;
 import com.winapp.saperp.model.CustomerModel;
+import com.winapp.saperp.model.DeliveryAddressModel;
 import com.winapp.saperp.model.HomePageModel;
 import com.winapp.saperp.model.InvoicePrintPreviewModel;
 import com.winapp.saperp.model.ItemGroupList;
@@ -111,7 +111,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     private RecyclerView productSummaryView;
     private String companyCode;
     private String username;
-    private HashMap<String ,String> user;
+    private HashMap<String, String> user;
     private SessionManager session;
     private SweetAlertDialog pDialog;
     public static ArrayList<ProductsModel> productList;
@@ -147,8 +147,8 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     private TextView noproductText;
     private String productId;
     private String productName;
-    boolean isCartonQtyEdit=false;
-    boolean isQtyEdit=false;
+    boolean isCartonQtyEdit = false;
+    boolean isQtyEdit = false;
     private TextWatcher qtyTextWatcher;
     private TextWatcher cartonTextWatcher;
     private TextWatcher lqtyTextWatcher;
@@ -158,17 +158,22 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     private Switch exchangeSwitch;
     private Switch returnSwitch;
     private EditText focEditText;
+
+    private ImageView downArrow_inv_layl;
+
+    private LinearLayout hide_disc_layl;
+
     private EditText exchangeEditext;
     private EditText discountEditext;
     private EditText returnEditext;
     private ImageView scanProduct;
-    int RESULT_CODE=12;
+    int RESULT_CODE = 12;
     private String locationCode;
     private TextView stockQtyValue;
     private LinearLayout stockLayout;
     private TextWatcher cqtyTW, lqtyTW, qtyTW;
-    private String beforeLooseQty,ss_Cqty;
-    boolean isAllowLowStock=false;
+    private String beforeLooseQty, ss_Cqty;
+    boolean isAllowLowStock = false;
     private LinearLayout focLayout;
     private FloatingActionButton sortButton;
     private LinearLayout emptyLayout;
@@ -177,17 +182,17 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     private boolean isViewShown = false;
     public String selectCustomerId;
     static ProgressDialog progressDialog;
-    public static String stockProductView="2";
+    public static String stockProductView = "2";
 
-    boolean isReverseCalculationEnabled=true;
-    boolean isCartonPriceEdit=true;
-    boolean isPriceEdit=true;
+    boolean isReverseCalculationEnabled = true;
+    boolean isCartonPriceEdit = true;
+    boolean isPriceEdit = true;
     public CheckBox salesReturn;
     public TextView salesReturnText;
     public TextView minimumSellingPriceText;
     public static EditText barcodeText;
     public static String customerCode;
-    public static boolean isPrintEnable=false;
+    public static boolean isPrintEnable = false;
     private ImageView cancelSheet;
     public static TextView selectedBank;
     private Button cancelButton;
@@ -197,27 +202,29 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     private AlertDialog signatureAlert;
     public CheckBox invoicePrintCheck;
 
-    static double currentLocationLatitude=0.0;
-    static double currentLocationLongitude=0.0;
-    public static String signatureString="";
+    static double currentLocationLatitude = 0.0;
+    static double currentLocationLongitude = 0.0;
+    public static String signatureString = "";
     public static String imageString;
 
-    public static String current_latitude="0.00";
-    public static String current_longitude="0.00";
+    public static String current_latitude = "0.00";
+    public static String current_longitude = "0.00";
     public static String currentDate;
     public String companyName;
-    public static JSONObject customerResponse=new JSONObject();
+    public String remarkStr;
+
+    public static JSONObject customerResponse = new JSONObject();
 
     private String printerMacId;
     private String printerType;
     private SharedPreferences sharedPreferences;
     private EditText remarkText;
-    private String activityFrom="";
+    private String activityFrom = "";
     public TextView saveTitle;
     private TextView saveMessage;
-    private String editSoNumber="";
-    private String editDoNumber="";
-    private String orderNo="";
+    private String editSoNumber = "";
+    private String editDoNumber = "";
+    private String orderNo = "";
     public TextView returnAdj;
     public LinearLayout returnLayoutView;
     public Button cancelReturn;
@@ -231,29 +238,38 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     private int mYear, mMonth, mDay, mHour, mMinute;
     private ArrayList<ItemGroupList> itemGroup;
     private Spinner groupspinner;
-    private String currentSaveDateTime="";
+    private String currentSaveDateTime = "";
     private ArrayList<InvoicePrintPreviewModel> invoiceHeaderDetails;
     private ArrayList<InvoicePrintPreviewModel.InvoiceList> invoicePrintList;
-    private ArrayList<InvoicePrintPreviewModel.SalesReturnList> salesReturnList ;
+    private ArrayList<InvoicePrintPreviewModel.SalesReturnList> salesReturnList;
     private ArrayList<SalesOrderPrintPreviewModel> salesOrderHeaderDetails;
     private ArrayList<SalesOrderPrintPreviewModel.SalesList> salesPrintList;
     private LinearLayout signatureLayout;
     public ImageView signatureCapture;
-    private String creditLimitAmount="0.00";
-    private String outstandingAmount="0.00";
-    public boolean isCheckedInvoicePrint=false;
-    public boolean isCheckedSalesPrint=false;
+    private String creditLimitAmount = "0.00";
+    private String outstandingAmount = "0.00";
+    public boolean isCheckedInvoicePrint = false;
+    public boolean isCheckedSalesPrint = false;
+    public boolean isUomSetting = false;
+    public boolean isDeliveryAddrSetting = false;
+
     public ArrayList<SettingsModel> settings;
     public MenuItem save_btn;
     boolean b = false;
     private Spinner uomSpinner;
+
+    private Spinner delivery_addrSpinner;
+
     private ArrayList<UomModel> uomList;
-    private String uomCode="";
-    private String uomName="";
+    private ArrayList<DeliveryAddressModel> deliveryAddrList;
+    private String uomCode = "";
+    private String uomName = "";
+    private String deliverAddrNameStr = "";
     public TextView uomTextView;
-    private boolean isEditItem=false;
+    private boolean isEditItem = false;
     private EditText orderNoText;
 
+    private LinearLayout uomSpinnerLayl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,95 +277,122 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_new_invoice);
         getSupportActionBar().setTitle("Invoice");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        session=new SessionManager(this);
-        user=session.getUserDetails();
-        dbHelper=new DBHelper(this);
-        progressDialog =new ProgressDialog(this);
-        companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
-        companyName=user.get(SessionManager.KEY_COMPANY_NAME);
-        username=user.get(SessionManager.KEY_USER_NAME);
-        locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
-        returnLayout=findViewById(R.id.return_layout);
-        showHideButton=findViewById(R.id.show_hide);
-        productSummaryView=findViewById(R.id.product_summary);
-        productListView=findViewById(R.id.productList);
-        btnCancel=findViewById(R.id.cancel_sheet);
-        searchProduct=findViewById(R.id.search_product);
-        productNameEditext=findViewById(R.id.product_search);
-        transLayout=findViewById(R.id.trans_layout);
-        totalProducts=findViewById(R.id.total_products);
-        productAutoComplete=findViewById(R.id.product_name);
-        groupspinner=findViewById(R.id.spinner_group);
-        cartonPrice=findViewById(R.id.carton_price);
-        priceText=findViewById(R.id.price);
-        loosePrice=findViewById(R.id.loose_price);
-        pcsPerCarton=findViewById(R.id.pcs_per_ctn);
-        uomText=findViewById(R.id.uom);
-        stockCount=findViewById(R.id.stock_count);
-        qtyValue=findViewById(R.id.qty);
-        subTotalValue=findViewById(R.id.balance_value);
-        taxValueText=findViewById(R.id.tax);
-        netTotalValue=findViewById(R.id.net_total);
-        taxTitle=findViewById(R.id.tax_title);
-        addProduct=findViewById(R.id.add_product);
-        itemCount=findViewById(R.id.item_count);
-        noproductText=findViewById(R.id.no_product_text);
-        focSwitch=findViewById(R.id.foc_switch);
-        exchangeSwitch=findViewById(R.id.exchange_switch);
-        returnSwitch=findViewById(R.id.return_switch);
-        focEditText=findViewById(R.id.foc);
-        exchangeEditext=findViewById(R.id.exchange_text);
-        returnEditext=findViewById(R.id.return_text);
-        discountEditext=findViewById(R.id.discount_text);
-        scanProduct=findViewById(R.id.scan_product);
-        stockQtyValue=findViewById(R.id.stock_qty);
-        stockLayout=findViewById(R.id.stock_layout);
-        focLayout=findViewById(R.id.foc_layout);
-        emptyLayout=findViewById(R.id.empty_layout);
-        sortButton=findViewById(R.id.fab);
-        productLayout=findViewById(R.id.product_layout);
-        salesReturn=findViewById(R.id.sales_return);
-        salesReturnText=findViewById(R.id.sales_return_text);
-        minimumSellingPriceText=findViewById(R.id.minimum_selling_price);
-        barcodeText=findViewById(R.id.barcode_text);
-        returnQtyText=findViewById(R.id.return_qty);
-        customerNameText=findViewById(R.id.customer_name_text);
-        remarkText=findViewById(R.id.remarks);
-        returnAdj=findViewById(R.id.return_adj);
-        returnLayoutView=findViewById(R.id.return_layout_view);
-        cancelReturn=findViewById(R.id.cancel_return);
-        saveReturn=findViewById(R.id.save_return);
-        netReturnQty=findViewById(R.id.net_return_qty);
-        expiryReturnQty=findViewById(R.id.saleable_return_qty);
-        damageReturnQty=findViewById(R.id.damage_qty);
-        invoiceDate=findViewById(R.id.invoice_date);
-        uomSpinner=findViewById(R.id.uom_spinner);
-        uomTextView=findViewById(R.id.uom_txt);
-        orderNoText=findViewById(R.id.order_no);
+        session = new SessionManager(this);
+        user = session.getUserDetails();
+        dbHelper = new DBHelper(this);
+        progressDialog = new ProgressDialog(this);
+        companyCode = user.get(SessionManager.KEY_COMPANY_CODE);
+        companyName = user.get(SessionManager.KEY_COMPANY_NAME);
+        username = user.get(SessionManager.KEY_USER_NAME);
+        locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
+        returnLayout = findViewById(R.id.return_layout);
+        showHideButton = findViewById(R.id.show_hide);
+        productSummaryView = findViewById(R.id.product_summary);
+        productListView = findViewById(R.id.productList);
+        btnCancel = findViewById(R.id.cancel_sheet);
+        searchProduct = findViewById(R.id.search_product);
+        productNameEditext = findViewById(R.id.product_search);
+        transLayout = findViewById(R.id.trans_layout);
+        totalProducts = findViewById(R.id.total_products);
+        productAutoComplete = findViewById(R.id.product_name);
+        groupspinner = findViewById(R.id.spinner_group);
+        cartonPrice = findViewById(R.id.carton_price);
+        priceText = findViewById(R.id.price);
+        loosePrice = findViewById(R.id.loose_price);
+        pcsPerCarton = findViewById(R.id.pcs_per_ctn);
+        uomText = findViewById(R.id.uom);
+        stockCount = findViewById(R.id.stock_count);
+        qtyValue = findViewById(R.id.qty);
+        subTotalValue = findViewById(R.id.balance_value);
+        taxValueText = findViewById(R.id.tax);
+        netTotalValue = findViewById(R.id.net_total);
+        taxTitle = findViewById(R.id.tax_title);
+        addProduct = findViewById(R.id.add_product);
+        itemCount = findViewById(R.id.item_count);
+        noproductText = findViewById(R.id.no_product_text);
+        focSwitch = findViewById(R.id.foc_switch);
+        exchangeSwitch = findViewById(R.id.exchange_switch);
+        returnSwitch = findViewById(R.id.return_switch);
+        focEditText = findViewById(R.id.foc);
+        exchangeEditext = findViewById(R.id.exchange_text);
+        returnEditext = findViewById(R.id.return_text);
+        discountEditext = findViewById(R.id.discount_text);
+        scanProduct = findViewById(R.id.scan_product);
+        stockQtyValue = findViewById(R.id.stock_qty);
+        stockLayout = findViewById(R.id.stock_layout);
+        focLayout = findViewById(R.id.foc_layout);
+        emptyLayout = findViewById(R.id.empty_layout);
+        sortButton = findViewById(R.id.fab);
+        productLayout = findViewById(R.id.product_layout);
+        salesReturn = findViewById(R.id.sales_return);
+        salesReturnText = findViewById(R.id.sales_return_text);
+        minimumSellingPriceText = findViewById(R.id.minimum_selling_price);
+        barcodeText = findViewById(R.id.barcode_text);
+        returnQtyText = findViewById(R.id.return_qty);
+        customerNameText = findViewById(R.id.customer_name_text);
+        remarkText = findViewById(R.id.remarks);
+        returnAdj = findViewById(R.id.return_adj);
+        returnLayoutView = findViewById(R.id.return_layout_view);
+        cancelReturn = findViewById(R.id.cancel_return);
+        saveReturn = findViewById(R.id.save_return);
+        netReturnQty = findViewById(R.id.net_return_qty);
+        expiryReturnQty = findViewById(R.id.saleable_return_qty);
+        damageReturnQty = findViewById(R.id.damage_qty);
+        invoiceDate = findViewById(R.id.invoice_date);
+        uomSpinner = findViewById(R.id.uom_spinner);
+        delivery_addrSpinner =findViewById(R.id.delivery_addr_spinner);
+        uomTextView = findViewById(R.id.uom_txt);
+        orderNoText = findViewById(R.id.order_no);
         //signatureLayout=findViewById(R.id.signature_layout);
+        uomSpinnerLayl  = findViewById(R.id.uomSpinnerLay);
+//        downArrow_inv_layl = findViewById(R.id.downArrow_inv_lay);
+//        hide_disc_layl = findViewById(R.id.hide_disc_lay);
+        settings = new ArrayList<>();
+        settings = dbHelper.getSettings();
+
+        Log.w("compcode..",""+companyCode);
 
 
-        settings=new ArrayList<>();
-        settings=dbHelper.getSettings();
-
-
-        products=new ArrayList<>();
+        products = new ArrayList<>();
         productAutoComplete.clearFocus();
         barcodeText.requestFocus();
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
-        printerType=sharedPreferences.getString("printer_type","");
-        printerMacId=sharedPreferences.getString("mac_address","");
+        printerType = sharedPreferences.getString("printer_type", "");
+        printerMacId = sharedPreferences.getString("mac_address", "");
 
         productAutoComplete.setEnabled(false);
 
-      //  PrinterUtils printerUtils=new PrinterUtils(this,printerMacId);
-      //  printerUtils.connectPrinter();
+//        downArrow_inv_layl.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (downArrow_inv_layl.getTag().equals("hide")){
+//                    downArrow_inv_layl.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
+//                    downArrow_inv_layl.setTag("show");
+//
+//                    hide_disc_layl.setVisibility(View.VISIBLE);
+//                    Utils.slideUp(hide_disc_layl);
+//                }else {
+//                    Utils.slideDown(hide_disc_layl);
+//                    hide_disc_layl.setVisibility(View.GONE);
+//                    downArrow_inv_layl.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
+//                    downArrow_inv_layl.setTag("hide");
+//
+//                }
+//            }
+//        });
+
+
+          PrinterUtils printerUtils=new PrinterUtils(this,printerMacId);
+        //  printerUtils.connectPrinter();
 
         focEditText.setEnabled(false);
         exchangeEditext.setEnabled(false);
         discountEditext.setEnabled(false);
         returnEditext.setEnabled(false);
+//        qtyValue.setEnabled(false);
+//        priceText.setEnabled(false);
+
 
         Date c = Calendar.getInstance().getTime();
         System.out.println("Current time => " + c);
@@ -361,80 +404,124 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         invoiceDate.setText(formattedDate);
 
 
-        if (getIntent()!=null){
+        if (getIntent() != null) {
             customerNameText.setText(getIntent().getStringExtra("customerName"));
-            customerCode=getIntent().getStringExtra("customerCode");
-            activityFrom=getIntent().getStringExtra("from");
-            editSoNumber=getIntent().getStringExtra("editSoNumber");
-            currentSaveDateTime=getIntent().getStringExtra("currentDateTime");
-            editDoNumber=getIntent().getStringExtra("editDoNumber");
-            orderNo=getIntent().getStringExtra("orderNo");
-            Log.w("GivenActivityFrom::",activityFrom.toString());
-            if (activityFrom.equals("iv")){
+            customerCode = getIntent().getStringExtra("customerCode");
+            activityFrom = getIntent().getStringExtra("from");
+            editSoNumber = getIntent().getStringExtra("editSoNumber");
+            currentSaveDateTime = getIntent().getStringExtra("currentDateTime");
+            editDoNumber = getIntent().getStringExtra("editDoNumber");
+            orderNo = getIntent().getStringExtra("orderNo");
+            Log.w("GivenActivityFrom::", activityFrom.toString());
+            if (activityFrom.equals("iv")) {
                 getSupportActionBar().setTitle("Invoice");
                 priceText.setEnabled(true);
-            } else if (activityFrom.equals("ConvertInvoice")){
+                remarkText.setVisibility(View.VISIBLE);
+            } else if (activityFrom.equals("ConvertInvoice")) {
                 priceText.setEnabled(true);
                 orderNoText.setText(orderNo);
-                getSupportActionBar().setTitle("Covert Invoice -"+editSoNumber);
-            }else if (activityFrom.equals("SalesEdit")){
+                getSupportActionBar().setTitle("Covert Invoice -" + editSoNumber);
+            } else if (activityFrom.equals("SalesEdit")) {
                 priceText.setEnabled(true);
                 orderNoText.setText(orderNo);
                 returnQtyText.setVisibility(View.GONE);
                 getSupportActionBar().setTitle("SalesOrder Edit");
-            }else if (activityFrom.equals("so")){
+            } else if (activityFrom.equals("so")) {
                 priceText.setEnabled(true);
                 returnQtyText.setVisibility(View.GONE);
                 getSupportActionBar().setTitle("SalesOrder");
-            }else if (activityFrom.equals("do")){
+            } else if (activityFrom.equals("do")) {
                 priceText.setEnabled(true);
                 returnQtyText.setVisibility(View.GONE);
                 returnAdj.setVisibility(View.GONE);
                 getSupportActionBar().setTitle("Delivery Order");
-            }else if (activityFrom.equals("doEdit")){
+            } else if (activityFrom.equals("doEdit")) {
                 priceText.setEnabled(true);
                 orderNoText.setText(orderNo);
                 returnQtyText.setVisibility(View.GONE);
                 returnAdj.setVisibility(View.GONE);
                 getSupportActionBar().setTitle("Delivery Order Edit");
             }
-        }else {
+        } else {
             orderNoText.setText("");
         }
 
-        ArrayList<SettingsModel> settings=dbHelper.getSettings();
-        if (settings!=null) {
+        ArrayList<SettingsModel> settings = dbHelper.getSettings();
+        if (settings != null) {
             if (settings.size() > 0) {
                 for (SettingsModel model : settings) {
-                   if (model.getSettingName().equals("invSwitch")) {
-                        Log.w("SettingName:", model.getSettingName());
-                        Log.w("SettingValue:", model.getSettingValue());
+                    if (model.getSettingName().equals("invSwitch")) {
+                        Log.w("SettingNameI:", model.getSettingName());
+                        Log.w("SettingValueI:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
-                            isCheckedInvoicePrint=true;
-                        }else {
-                            isCheckedInvoicePrint=false;
+                            isCheckedInvoicePrint = true;
+                        } else {
+                            isCheckedInvoicePrint = false;
                         }
-                    }else if (model.getSettingName().equals("salesSwitch")) {
-                        Log.w("SettingName:", model.getSettingName());
-                        Log.w("SettingValue:", model.getSettingValue());
+                    } else if (model.getSettingName().equals("salesSwitch")) {
+                        Log.w("SettingNameI:", model.getSettingName());
+                        Log.w("SettingValueI:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
-                            isCheckedSalesPrint=true;
-                        }else {
-                            isCheckedSalesPrint=false;
+                            isCheckedSalesPrint = true;
+                        } else {
+                            isCheckedSalesPrint = false;
+                        }
+                    } else if (model.getSettingName().equals("UomSwitch")) {
+                        Log.w("SettingNameI:", model.getSettingName());
+                        Log.w("SettingValueI:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            isUomSetting = true;
+                        } else {
+                            isUomSetting = false;
                         }
                     }
+                    else if (model.getSettingName().equals("deliveryAddressSwitch")) {
+                        Log.w("SettingNameI:", model.getSettingName());
+                        Log.w("SettingValueI:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            isDeliveryAddrSetting = true;
+                        } else {
+                            isDeliveryAddrSetting = false;
+                        }
+                    }
+
                 }
             }
         }
 
-        JSONObject jsonObject=new JSONObject();
+        Log.w("settingVal",""+isUomSetting+"  .. "+isDeliveryAddrSetting);
+        if(isUomSetting){
+            uomSpinnerLayl.setVisibility(View.VISIBLE);
+        }
+        else {
+            uomSpinnerLayl.setVisibility(View.GONE);
+        }
+        if (isDeliveryAddrSetting) {
+            delivery_addrSpinner.setVisibility(View.VISIBLE);
+        }
+        else {
+            delivery_addrSpinner.setVisibility(View.GONE);
+        }
+
+        JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("User",username);
-            jsonObject.put("CardCode",customerCode);
+            jsonObject.put("User", username);
+            jsonObject.put("CardCode", customerCode);
             getAllProducts(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("CustomerCode", customerCode);
+            getDeliveryAddress(jsonObj);
+
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
 
         try {
             getGrouplist();
@@ -442,14 +529,14 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE);
         selectCustomerId = sharedPreferences.getString("customerId", "");
         if (selectCustomerId != null && !selectCustomerId.isEmpty()) {
             customerDetails = dbHelper.getCustomer(selectCustomerId);
-            getCustomerDetails(selectCustomerId,false,"");
+            getCustomerDetails(selectCustomerId, false, "");
         }
 
-        View bottomSheet =findViewById(R.id.design_bottom_sheet);
+        View bottomSheet = findViewById(R.id.design_bottom_sheet);
         bottomSheet.setBackgroundColor(Color.parseColor("#F2F2F2"));
         behavior = BottomSheetBehavior.from(bottomSheet);
         behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -509,16 +596,18 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
+
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
+
             @Override
             public void afterTextChanged(Editable editable) {
-                String product =editable.toString();
-                if (!product.isEmpty()){
+                String product = editable.toString();
+                if (!product.isEmpty()) {
                     filter(product);
-                }else {
+                } else {
                     setAdapter(AppUtils.getProductsList());
                 }
             }
@@ -529,6 +618,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
+
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -537,15 +627,15 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable editable) {
                 setCalculationView();
-                if (!editable.toString().isEmpty()){
+                if (!editable.toString().isEmpty()) {
                     expiryReturnQty.setText(editable.toString());
-                }else {
+                } else {
                     expiryReturnQty.setText("");
                 }
             }
         });
 
-        expiryQtyTextWatcher =new TextWatcher() {
+        expiryQtyTextWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -558,28 +648,28 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!returnQtyText.getText().toString().isEmpty()){
-                    String netreturnqty=returnQtyText.getText().toString();
-                    int net_qty=Integer.parseInt(netreturnqty);
-                    if(!s.toString().isEmpty()){
-                        int damageqty=Integer.parseInt(s.toString());
-                        if (net_qty > damageqty){
-                            int value=net_qty-damageqty;
+                if (!returnQtyText.getText().toString().isEmpty()) {
+                    String netreturnqty = returnQtyText.getText().toString();
+                    int net_qty = Integer.parseInt(netreturnqty);
+                    if (!s.toString().isEmpty()) {
+                        int damageqty = Integer.parseInt(s.toString());
+                        if (net_qty > damageqty) {
+                            int value = net_qty - damageqty;
                             damageReturnQty.removeTextChangedListener(damageQtyTextWatcher);
                             damageReturnQty.setText(String.valueOf(value));
                             damageReturnQty.addTextChangedListener(damageQtyTextWatcher);
-                        }else if (net_qty==damageqty){
+                        } else if (net_qty == damageqty) {
                             damageReturnQty.removeTextChangedListener(damageQtyTextWatcher);
                             damageReturnQty.setText("0");
                             damageReturnQty.addTextChangedListener(damageQtyTextWatcher);
-                        }else if (net_qty < damageqty){
+                        } else if (net_qty < damageqty) {
                             expiryReturnQty.setText("0");
                             damageReturnQty.removeTextChangedListener(damageQtyTextWatcher);
                             damageReturnQty.setText(netreturnqty);
                             damageReturnQty.addTextChangedListener(damageQtyTextWatcher);
-                            Toast.makeText(getApplicationContext(),"Return Qty Exceed...",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Return Qty Exceed...", Toast.LENGTH_SHORT).show();
                         }
-                    }else {
+                    } else {
                         damageReturnQty.removeTextChangedListener(damageQtyTextWatcher);
                         damageReturnQty.setText(netreturnqty);
                         damageReturnQty.addTextChangedListener(damageQtyTextWatcher);
@@ -625,7 +715,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         });*/
 
 
-        damageQtyTextWatcher=new TextWatcher() {
+        damageQtyTextWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -639,28 +729,28 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
 
-                if (!returnQtyText.getText().toString().isEmpty()){
-                    String netreturnqty=returnQtyText.getText().toString();
-                    int net_qty=Integer.parseInt(netreturnqty);
-                    if(!s.toString().isEmpty()){
-                        int damageqty=Integer.parseInt(s.toString());
-                        if (net_qty > damageqty){
-                            int value=net_qty-damageqty;
+                if (!returnQtyText.getText().toString().isEmpty()) {
+                    String netreturnqty = returnQtyText.getText().toString();
+                    int net_qty = Integer.parseInt(netreturnqty);
+                    if (!s.toString().isEmpty()) {
+                        int damageqty = Integer.parseInt(s.toString());
+                        if (net_qty > damageqty) {
+                            int value = net_qty - damageqty;
                             expiryReturnQty.removeTextChangedListener(expiryQtyTextWatcher);
                             expiryReturnQty.setText(String.valueOf(value));
                             expiryReturnQty.addTextChangedListener(expiryQtyTextWatcher);
-                        }else if (net_qty==damageqty){
+                        } else if (net_qty == damageqty) {
                             expiryReturnQty.removeTextChangedListener(expiryQtyTextWatcher);
                             expiryReturnQty.setText("0");
                             expiryReturnQty.addTextChangedListener(expiryQtyTextWatcher);
-                        }else if (net_qty < damageqty){
+                        } else if (net_qty < damageqty) {
                             damageReturnQty.setText("0");
                             expiryReturnQty.removeTextChangedListener(expiryQtyTextWatcher);
                             expiryReturnQty.setText(netreturnqty);
                             expiryReturnQty.addTextChangedListener(expiryQtyTextWatcher);
-                            Toast.makeText(getApplicationContext(),"Return Qty Exceed...",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Return Qty Exceed...", Toast.LENGTH_SHORT).show();
                         }
-                    }else {
+                    } else {
                         expiryReturnQty.removeTextChangedListener(expiryQtyTextWatcher);
                         expiryReturnQty.setText(netreturnqty);
                         expiryReturnQty.addTextChangedListener(expiryQtyTextWatcher);
@@ -707,12 +797,11 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         });*/
 
 
-
         focEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
+
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -722,7 +811,16 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 //setCalculation();
                 setCalculationView();
-                //setButtonView();
+                if(!editable.toString().isEmpty()){
+                    addProduct.setAlpha(0.9F);
+                    addProduct.setEnabled(true);
+                }
+                else {
+                    addProduct.setAlpha(0.4F);
+                    addProduct.setEnabled(false);
+                }
+
+              //  setButtonView();
             }
         });
 
@@ -763,22 +861,22 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 getLowStockSetting();
                 setCalculationView();
 
-                if (companyCode.equals("SUPERSTAR TRADERS PTE LTD")){
-                    if (activityFrom.equals("iv") || activityFrom.equals("so") || activityFrom.equals("SalesEdit")){
-                      //  if (!isAllowLowStock){
-                            checkLowStock();
-                       // }
+                if (companyCode.equals("SUPERSTAR TRADERS PTE LTD")) {
+                    if (activityFrom.equals("iv") || activityFrom.equals("so") || activityFrom.equals("SalesEdit")) {
+                        //  if (!isAllowLowStock){
+                        checkLowStock();
+                        // }
                     }
-                }else {
-                    if (companyCode.equals("AADHI INTERNATIONAL PTE LTD")){
-                        if (activityFrom.equals("iv") || activityFrom.equals("so") || activityFrom.equals("SalesEdit")){
-                            if (!isAllowLowStock){
+                } else {
+                    if (companyCode.equals("AADHI INTERNATIONAL PTE LTD")) {
+                        if (activityFrom.equals("iv") || activityFrom.equals("so") || activityFrom.equals("SalesEdit")) {
+                            if (!isAllowLowStock) {
                                 checkLowStock();
                             }
                         }
-                    }else {
-                        if (activityFrom.equals("iv")){
-                            if (!isAllowLowStock){
+                    } else {
+                        if (activityFrom.equals("iv")) {
+                            if (!isAllowLowStock) {
                                 checkLowStock();
                             }
                         }
@@ -791,12 +889,13 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
         productAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
-                String selectProduct = (String)parent.getItemAtPosition(position);
+                String selectProduct = (String) parent.getItemAtPosition(position);
                 String[] product = selectProduct.split("~", 0);
-                productId=product[1].trim();
-                productName=product[0].trim();
+                productId = product[1].trim();
+                productName = product[0].trim();
+
                 qtyValue.requestFocus();
-                Log.w("Selected_product",product[1]);
+                Log.w("Selected_product", product[1]);
                 setProductResult(product[1].trim());
               /*  try {
                     getProductPrice(productId);
@@ -811,50 +910,67 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         addProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String s=productAutoComplete.getText().toString();
-                if (!qtyValue.getText().toString().isEmpty() && !s.isEmpty() && !qtyValue.getText().toString().equals("0") && !qtyValue.getText().toString().equals("00") && !qtyValue.getText().toString().equals("000") && !qtyValue.getText().toString().equals("0000") && !netTotalValue.getText().toString().equals("0.00")){
-                    if (addProduct.getText().toString().equals("Update")){
-                        // if (!cartonPrice.getText().toString().isEmpty() && !cartonPrice.getText().toString().equals("0.00") && !cartonPrice.getText().toString().equals("0.0") && !cartonPrice.getText().toString().equals("0")){
-                        if (priceText.getText() != null && !priceText.getText().toString().isEmpty()) {
-                            if (Double.parseDouble(priceText.getText().toString()) > 0) {
-                                double minimumsellingprice=Double.parseDouble(minimumSellingPriceText.getText().toString());
-                                if (minimumsellingprice <= Double.parseDouble(priceText.getText().toString())){
-                                    insertProducts();
-                                }else {
-                                    showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
-                                }
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Price should not be zero", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Enter the price", Toast.LENGTH_SHORT).show();
-                        }
-                    }else {
-                        if (priceText.getText().toString() != null && !priceText.getText().toString().isEmpty()) {
-                            if (Double.parseDouble(priceText.getText().toString()) > 0) {
-                                double minimumsellingprice=Double.parseDouble(minimumSellingPriceText.getText().toString());
-                                if (minimumsellingprice <= Double.parseDouble(priceText.getText().toString())){
-                                    addProduct("Add");
-                                }else {
-                                    showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
-                                }
-                            } else {
-                                if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnQtyText.getText() != null && !returnQtyText.getText().toString().isEmpty() && !returnQtyText.getText().toString().equals("0"))) {
-                                    addProduct("Add");
+                String s = productAutoComplete.getText().toString();
+                Log.w("addpdt",""+productAutoComplete.getText().toString());
+                if (!productAutoComplete.getText().toString().isEmpty()) {
+
+                    if (!qtyValue.getText().toString().isEmpty() && !s.isEmpty() && !qtyValue.getText().toString().equals("0") && !qtyValue.getText().toString().equals("00") &&
+                            !qtyValue.getText().toString().equals("000") && !qtyValue.getText().toString().equals("0000") &&
+                            !netTotalValue.getText().toString().equals("0.00")) {
+
+                        if (addProduct.getText().toString().equals("Update")) {
+                            // if (!cartonPrice.getText().toString().isEmpty() && !cartonPrice.getText().toString().equals("0.00") && !cartonPrice.getText().toString().equals("0.0") && !cartonPrice.getText().toString().equals("0")){
+                            if (priceText.getText() != null && !priceText.getText().toString().isEmpty()) {
+                                if (Double.parseDouble(priceText.getText().toString()) > 0) {
+                                    double minimumsellingprice = Double.parseDouble(minimumSellingPriceText.getText().toString());
+                                    if (minimumsellingprice <= Double.parseDouble(priceText.getText().toString())) {
+                                        insertProducts();
+                                        qtyValue.setEnabled(true);
+                                        priceText.setEnabled(true);
+
+                                    } else {
+                                        showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
+                                    }
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Price should not be zero", Toast.LENGTH_SHORT).show();
                                 }
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Enter the price", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(getApplicationContext(), "Enter the price", Toast.LENGTH_SHORT).show();
+                            if (priceText.getText().toString() != null && !priceText.getText().toString().isEmpty()) {
+                                if (Double.parseDouble(priceText.getText().toString()) > 0) {
+                                    double minimumsellingprice = Double.parseDouble(minimumSellingPriceText.getText().toString());
+                                    if (minimumsellingprice <= Double.parseDouble(priceText.getText().toString())) {
+                                        addProduct("Add");
+                                        qtyValue.setEnabled(true);
+                                        priceText.setEnabled(true);
+
+                                    } else {
+                                        showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
+                                    }
+                                } else {
+                                    if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) ||
+                                            (returnQtyText.getText() != null && !returnQtyText.getText().toString().isEmpty() && !returnQtyText.getText().toString().equals("0"))) {
+                                        addProduct("Add");
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Price should not be zero", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Enter the price", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } else {
+                        if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnQtyText.getText() != null && !returnQtyText.getText().toString().isEmpty() && !returnQtyText.getText().toString().equals("0"))) {
+                            addProduct("Add");
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Price should not be zero", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }else {
-                    if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnQtyText.getText() != null && !returnQtyText.getText().toString().isEmpty() && !returnQtyText.getText().toString().equals("0"))) {
-                        addProduct("Add");
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Price should not be zero", Toast.LENGTH_SHORT).show();
-                    }
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Select product", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -948,13 +1064,13 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Enter the price", Toast.LENGTH_SHORT).show();
         }*/
 
-    public void showSignatureAlert(){
+    public void showSignatureAlert() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         final View customLayout = getLayoutInflater().inflate(R.layout.signature_layout, null);
         alertDialog.setView(customLayout);
-        final Button acceptButton=customLayout.findViewById(R.id.buttonYes);
-        final Button cancelButton=customLayout.findViewById(R.id.buttonNo);
-        final Button clearButton=customLayout.findViewById(R.id.buttonClear);
+        final Button acceptButton = customLayout.findViewById(R.id.buttonYes);
+        final Button cancelButton = customLayout.findViewById(R.id.buttonNo);
+        final Button clearButton = customLayout.findViewById(R.id.buttonClear);
         LinearLayout mContent = customLayout.findViewById(R.id.signature_layout);
         CaptureSignatureView mSig = new CaptureSignatureView(this, null);
         mContent.addView(mSig, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -964,10 +1080,10 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 // byte[] signature = captureSignatureView.getBytes();
                 Bitmap signature = mSig.getBitmap();
                 signatureCapture.setImageBitmap(signature);
-                signatureString= ImageUtil.convertBimaptoBase64(signature);
+                signatureString = ImageUtil.convertBimaptoBase64(signature);
                 Utils.setSignature(signatureString);
                 signatureAlert.dismiss();
-                Log.w("SignatureString:",signatureString);
+                Log.w("SignatureString:", signatureString);
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -979,7 +1095,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                signatureString="";
+                signatureString = "";
                 Utils.setSignature("");
                 mSig.ClearCanvas();
             }
@@ -989,56 +1105,56 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         signatureAlert.show();
     }
 
-    public void setProductsDisplay(String action){
+    public void setProductsDisplay(String action) {
         try {
             // productsAdapterNew.setWithFooter(false);
             // sortAdapter.resetPosition();
             ArrayList<ProductsModel> filterdNames = new ArrayList<>();
             //   for (ProductsModel s : selectProductAdapter.getProductsList()) {
             for (ProductsModel s : AppUtils.getProductsList()) {
-                if (action.equals("In Stock")){
-                    if (s.getStockQty()!=null && !s.getStockQty().equals("null")){
-                        if (Double.parseDouble(s.getStockQty())>0){
+                if (action.equals("In Stock")) {
+                    if (s.getStockQty() != null && !s.getStockQty().equals("null")) {
+                        if (Double.parseDouble(s.getStockQty()) > 0) {
                             filterdNames.add(s);
                         }
                     }
-                }else if (action.equals("Out of Stock")){
-                    if (s.getStockQty()!=null && !s.getStockQty().equals("null")) {
+                } else if (action.equals("Out of Stock")) {
+                    if (s.getStockQty() != null && !s.getStockQty().equals("null")) {
                         if (Double.parseDouble(s.getStockQty()) < 0 || Double.parseDouble(s.getStockQty()) == 0) {
                             filterdNames.add(s);
                         }
                     }
-                }else {
+                } else {
                     filterdNames.add(s);
                 }
             }
 
             // Setting filter option in Localdb
-            if (action.equals("In Stock")){
-                dbHelper.insertSettings("stock_view","1");
-            }else if (action.equals("Out of Stock")){
-                dbHelper.insertSettings("stock_view","0");
-            }else {
-                dbHelper.insertSettings("stock_view","2");
+            if (action.equals("In Stock")) {
+                dbHelper.insertSettings("stock_view", "1");
+            } else if (action.equals("Out of Stock")) {
+                dbHelper.insertSettings("stock_view", "0");
+            } else {
+                dbHelper.insertSettings("stock_view", "2");
             }
             //calling a method of the adapter class and passing the filtered list
-            if (filterdNames.size()>0){
+            if (filterdNames.size() > 0) {
                /* for (ProductsModel model:filterdNames){
                     Log.w("products_Option_values:",model.getProductName());
                 }*/
-                if (selectProductAdapter!=null){
+                if (selectProductAdapter != null) {
                     selectProductAdapter.filterList(filterdNames);
                 }
                 selectProductAdapter.filterList(filterdNames);
                 productLayout.setVisibility(View.VISIBLE);
                 emptyLayout.setVisibility(View.GONE);
-                totalProducts.setText(filterdNames.size()+" Products");
-            }else {
+                totalProducts.setText(filterdNames.size() + " Products");
+            } else {
                 productLayout.setVisibility(View.GONE);
                 emptyLayout.setVisibility(View.VISIBLE);
-                totalProducts.setText(filterdNames.size()+" Products");
+                totalProducts.setText(filterdNames.size() + " Products");
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             Log.e("Error_in_filter", Objects.requireNonNull(ex.getMessage()));
         }
     }
@@ -1051,14 +1167,14 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         DateFormat outputFormat = new SimpleDateFormat("yyyyMMdd");
         String resultDate = "";
         try {
-            resultDate=outputFormat.format(inputFormat.parse(strDate));
+            resultDate = outputFormat.format(inputFormat.parse(strDate));
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return resultDate;
     }
 
-    public void getDate(TextView dateEditext){
+    public void getDate(TextView dateEditext) {
         // Get Current Date
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);
@@ -1070,19 +1186,20 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         dateEditext.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
-                        currentDate=convertDate(dateEditext.getText().toString());
-                        Log.w("CurrentDateView:",currentDate);
+                        currentDate = convertDate(dateEditext.getText().toString());
+                        Log.w("CurrentDateView:", currentDate);
                     }
                 }, mYear, mMonth, mDay);
-       // datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        // datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
     }
 
-    public void setProductResult(String productId){
+    public void setProductResult(String productId) {
         try {
             getLowStockSetting();
-            for (ProductsModel model:AppUtils.getProductsList()) {
-                Log.w("Product_Code:", model.getProductCode());
+            for (ProductsModel model : AppUtils.getProductsList()) {
+                Log.w("product_Code:", model.getProductCode());
+
                 if (model.getProductCode().equals(productId.trim())) {
                     if (model.getStockQty() != null && !model.getStockQty().equals("null")) {
                         if (Double.parseDouble(model.getStockQty()) == 0 || Double.parseDouble(model.getStockQty()) < 0) {
@@ -1093,50 +1210,53 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                             stockQtyValue.setText(model.getStockQty());
                         }
                     }
-                   // stockLayout.setVisibility(View.VISIBLE);
+                    // stockLayout.setVisibility(View.VISIBLE);
 
                     if (Double.parseDouble(model.getStockQty()) == 0 || Double.parseDouble(model.getStockQty()) < 0) {
-                        if (isAllowLowStock){
+                        if (isAllowLowStock) {
                             productAutoComplete.clearFocus();
                             cartonPrice.setText(model.getUnitCost());
-                            if (model.getLastPrice()!=null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00){
+
+                            if (model.getLastPrice() != null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00) {
                                 priceText.setText(model.getLastPrice());
-                            }else {
+                            } else {
                                 priceText.setText(model.getUnitCost());
                             }
                             loosePrice.setText(model.getUnitCost());
-                           // uomText.setText(model.getUomCode());
+                            // uomText.setText(model.getUomCode());
                             stockCount.setText(model.getStockQty());
                             pcsPerCarton.setText(model.getPcsPerCarton());
-
-                            qtyValue.setEnabled(true);
-                            qtyValue.setText("");
-
-                            qtyValue.requestFocus();
-                            openKeyborard(qtyValue);
-                            qtyValue.setSelection(qtyValue.getText().length());
 
                             focEditText.setEnabled(true);
                             exchangeEditext.setEnabled(true);
                             discountEditext.setEnabled(true);
                             returnEditext.setEnabled(true);
 
-                        }else {
+                        } else {
                             Toast.makeText(getApplicationContext(), "Low Stock Please check", Toast.LENGTH_SHORT).show();
                             productAutoComplete.clearFocus();
                             productAutoComplete.setText("");
                             qtyValue.setEnabled(false);
                         }
+
+                        qtyValue.setEnabled(true);
+                        qtyValue.setText("");
+
+                        qtyValue.requestFocus();
+                        openKeyborard(qtyValue);
+                        qtyValue.setSelection(qtyValue.getText().length());
+
                     } else {
                         productAutoComplete.clearFocus();
                         cartonPrice.setText(model.getUnitCost());
-                        if (model.getLastPrice()!=null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00){
+
+                        if (model.getLastPrice() != null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00) {
                             priceText.setText(model.getLastPrice());
-                        }else {
+                        } else {
                             priceText.setText(model.getUnitCost());
                         }
                         loosePrice.setText(model.getUnitCost());
-                       // uomText.setText(model.getUomCode());
+                        // uomText.setText(model.getUomCode());
                         stockCount.setText(model.getStockQty());
                         pcsPerCarton.setText(model.getPcsPerCarton());
 
@@ -1150,16 +1270,22 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                         discountEditext.setEnabled(true);
                         returnEditext.setEnabled(true);
                     }
+
                 } else {
                     Log.w("Not_found", "Product");
                 }
+                qtyValue.setEnabled(true);
+
+                qtyValue.requestFocus();
+                openKeyborard(qtyValue);
+                qtyValue.setSelection(qtyValue.getText().length());
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
         }
 
     }
 
-    public void showAlert(){
+    public void showAlert() {
         new SweetAlertDialog(getApplicationContext(), SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("Warning !")
                 .setContentText("Net total should not be zero or Atleast add one Qty")
@@ -1172,7 +1298,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 }).show();
     }
 
-    public void showAlertForDeleteProduct(){
+    public void showAlertForDeleteProduct() {
         new SweetAlertDialog(getApplicationContext(), SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("Warning !")
                 .setContentText("Products Will be cleared are you sure want to back?")
@@ -1186,10 +1312,10 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 }).show();
     }
 
-    public void showMinimumSellingpriceAlert(String sellingPrice){
+    public void showMinimumSellingpriceAlert(String sellingPrice) {
         AlertDialog.Builder builder1 = new AlertDialog.Builder(CreateNewInvoiceActivity.this);
         builder1.setTitle("Warning !");
-        builder1.setMessage(productName+"-"+"Minimum Selling Price is : $ "+Utils.twoDecimalPoint(Double.parseDouble(sellingPrice)));
+        builder1.setMessage(productName + "-" + "Minimum Selling Price is : $ " + Utils.twoDecimalPoint(Double.parseDouble(sellingPrice)));
         builder1.setCancelable(false);
         builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -1200,23 +1326,23 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         alert11.show();
     }
 
-    public void addProduct(String action){
-        if (isProductExist(productId)){
-            Log.w("ProductIdView:",productId);
-            if (!qtyValue.getText().toString().isEmpty() && Double.parseDouble(qtyValue.getText().toString()) > 0){
-                showExistingProductAlert(productId,productName);
-            }else {
+    public void addProduct(String action) {
+        if (isProductExist(productId)) {
+            Log.w("ProductIdView:", productId);
+            if (!qtyValue.getText().toString().isEmpty() && Double.parseDouble(qtyValue.getText().toString()) > 0) {
+                showExistingProductAlert(productId, productName);
+            } else {
                 insertProducts();
             }
-        }else {
+        } else {
             insertProducts();
         }
     }
 
-    public void showExistingProductAlert(String productId,String productName){
+    public void showExistingProductAlert(String productId, String productName) {
         AlertDialog.Builder builder1 = new AlertDialog.Builder(getApplicationContext());
         builder1.setTitle("Warning !");
-        builder1.setMessage(productName+" - "+productId+ "\nAlready Exist Do you want to replace ? ");
+        builder1.setMessage(productName + " - " + productId + "\nAlready Exist Do you want to replace ? ");
         builder1.setCancelable(false);
         builder1.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -1234,87 +1360,87 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         alert11.show();
     }
 
-    public void insertProducts(){
+    public void insertProducts() {
         try {
-            String focType="pcs";
-            String exchangeType="pcs";
-            String returnType="pcs";
-            String discount="0";
-            String return_qty="0";
-            String lPriceCalc="0";
-            String foc="0";
-            String price_value ="0";
+            String focType = "pcs";
+            String exchangeType = "pcs";
+            String returnType = "pcs";
+            String discount = "0";
+            String return_qty = "0";
+            String lPriceCalc = "0";
+            String foc = "0";
+            String price_value = "0";
 
-            if (focSwitch.isChecked()){
-                focType="ctn";
+            if (focSwitch.isChecked()) {
+                focType = "ctn";
             }
-            if (exchangeSwitch.isChecked()){
-                exchangeType="ctn";
+            if (exchangeSwitch.isChecked()) {
+                exchangeType = "ctn";
             }
-            if (returnSwitch.isChecked()){
-                returnType="ctn";
-            }
-
-            String ctn_qty="0";
-            String qty_value ="0";
-
-            if (!qtyValue.getText().toString().isEmpty()){
-                qty_value =qtyValue.getText().toString();
+            if (returnSwitch.isChecked()) {
+                returnType = "ctn";
             }
 
-            if (!discountEditext.getText().toString().isEmpty()){
-                discount=discountEditext.getText().toString();
-            }
-            if (!returnQtyText.getText().toString().isEmpty()){
-                return_qty=returnQtyText.getText().toString();
-            }
+            String ctn_qty = "0";
+            String qty_value = "0";
 
-
-            if (!priceText.getText().toString().isEmpty()){
-                price_value =priceText.getText().toString();
+            if (!qtyValue.getText().toString().isEmpty()) {
+                qty_value = qtyValue.getText().toString();
             }
 
-            if (!focEditText.getText().toString().isEmpty()){
-                foc=focEditText.getText().toString();
+            if (!discountEditext.getText().toString().isEmpty()) {
+                discount = discountEditext.getText().toString();
+            }
+            if (!returnQtyText.getText().toString().isEmpty()) {
+                return_qty = returnQtyText.getText().toString();
             }
 
 
-            double priceValue=0.0;
-            double net_qty=Double.parseDouble(qty_value) - Double.parseDouble(return_qty);
+            if (!priceText.getText().toString().isEmpty()) {
+                price_value = priceText.getText().toString();
+            }
 
-           double return_amt=(Double.parseDouble(return_qty)*Double.parseDouble(price_value));
-           double total=(net_qty * Double.parseDouble(price_value));
-           double sub_total=total-return_amt-Double.parseDouble(discount);
+            if (!focEditText.getText().toString().isEmpty()) {
+                foc = focEditText.getText().toString();
+            }
 
 
-            boolean insertStatus=
+            double priceValue = 0.0;
+            double net_qty = Double.parseDouble(qty_value) - Double.parseDouble(return_qty);
+
+            double return_amt = (Double.parseDouble(return_qty) * Double.parseDouble(price_value));
+            double total = (net_qty * Double.parseDouble(price_value));
+            double sub_total = total - return_amt - Double.parseDouble(discount);
+
+
+            boolean insertStatus =
                     dbHelper.insertCreateInvoiceCart(
-                    productId.toString().trim(),
-                    productName,
-                    uomText.getText().toString(),
+                            productId.toString().trim(),
+                            productName,
+                            uomText.getText().toString(),
                             uomTextView.getText().toString(),
-                    qty_value,
-                    return_qty,
-                    String.valueOf(net_qty),
-                    foc,
-                    price_value,
+                            qty_value,
+                            return_qty,
+                            String.valueOf(net_qty),
+                            foc,
+                            price_value,
                             stockQtyValue.getText().toString(),
-                    String.valueOf(total),
-                    subTotalValue.getText().toString(),
-                    taxValueText.getText().toString(),
-                    netTotalValue.getText().toString()
+                            String.valueOf(total),
+                            subTotalValue.getText().toString(),
+                            taxValueText.getText().toString(),
+                            netTotalValue.getText().toString()
 
-            );
+                    );
 
             // Adding Return Qty Table values
-           if (Integer.parseInt(return_qty) > 0){
-               dbHelper.updateReturnQty("Delete","0","Saleable Return",productId);
-               dbHelper.updateReturnQty("Delete","0","Damaged/Expired",productId);
-               dbHelper.insertReturnProduct(productId,productName,expiryReturnQty.getText().toString(),"Saleable Return");
-               dbHelper.insertReturnProduct(productId,productName,damageReturnQty.getText().toString(),"Damaged/Expired");
-           }
+            if (Integer.parseInt(return_qty) > 0) {
+                dbHelper.updateReturnQty("Delete", "0", "Saleable Return", productId);
+                dbHelper.updateReturnQty("Delete", "0", "Damaged/Expired", productId);
+                dbHelper.insertReturnProduct(productId, productName, expiryReturnQty.getText().toString(), "Saleable Return");
+                dbHelper.insertReturnProduct(productId, productName, damageReturnQty.getText().toString(), "Damaged/Expired");
+            }
 
-            if (insertStatus){
+            if (insertStatus) {
                 subTotalValue.setText("0.0");
                 taxValueText.setText("0.00");
                 netTotalValue.setText("0.0");
@@ -1326,7 +1452,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 stockCount.setText("");
                 stockQtyValue.setText("");
                 qtyValue.clearFocus();
-                isEditItem=false;
+                isEditItem = false;
                 productAutoComplete.clearFocus();
                 focEditText.setText("");
                 exchangeEditext.setText("");
@@ -1336,58 +1462,63 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 exchangeSwitch.setChecked(false);
                 returnSwitch.setChecked(false);
                 stockLayout.setVisibility(View.GONE);
-               // priceText.setEnabled(false);
-               // qtyValue.setEnabled(false);
+                // priceText.setEnabled(false);
+                // qtyValue.setEnabled(false);
                 focEditText.setEnabled(false);
                 exchangeEditext.setEnabled(false);
                 discountEditext.setEnabled(false);
+                addProduct.setText("Add");
                 hideKeyboard();
                 getProducts();
-            }else {
-                Toast.makeText(getApplicationContext(),"Error in Add product",Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Error in Add product", Toast.LENGTH_LONG).show();
             }
-        }catch (Exception ec){
-           Log.e("Error_InsertProduct:",ec.getMessage());
+        } catch (Exception ec) {
+            Log.e("Error_InsertProduct:", ec.getMessage());
         }
     }
 
     @SuppressLint("SetTextI18n")
     private void getProducts() {
-            ArrayList<CreateInvoiceModel> products=dbHelper.getAllInvoiceProducts();
-            if (products.size()>0){
-            itemCount.setText("Products ( "+products.size()+" )");
+        ArrayList<CreateInvoiceModel> products = dbHelper.getAllInvoiceProducts();
+
+        if (products.size() > 0) {
+            itemCount.setText("Products ( " + products.size() + " )");
             productSummaryView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
-            productSummaryAdapter=new NewProductSummaryAdapter(this,products, new NewProductSummaryAdapter.CallBack() {
+            productSummaryAdapter = new NewProductSummaryAdapter(this, products, new NewProductSummaryAdapter.CallBack() {
                 @Override
                 public void searchCustomer(String letter, int pos) {
                 }
+
                 @Override
                 public void removeItem(String pid) {
                     showRemoveItemAlert(pid);
                 }
+
                 @Override
                 public void editItem(CreateInvoiceModel model) {
-                    isEditItem=true;
+                    isEditItem = true;
                     salesReturn.setChecked(false);
                     salesReturn.setEnabled(false);
-                    productId=model.getProductCode();
-                    productName=model.getProductName();
-                    JSONObject jsonObject=new JSONObject();
-                    try {
-                        jsonObject.put("CustomerCode",selectCustomerId);
-                        jsonObject.put("ItemCode",model.getProductCode());
-                        getUOM(jsonObject);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    productId = model.getProductCode();
+                    productName = model.getProductName();
+
+                    JSONObject jsonObject = new JSONObject();
+//                    try {
+//                        jsonObject.put("CustomerCode", selectCustomerId);
+//                        jsonObject.put("ItemCode", model.getProductCode());
+//                        getUOM(jsonObject);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
 
                     uomText.setText(model.getUomCode());
-                    uomName=model.getUomCode();
-                    Log.w("EditUomText:",model.getUomCode());
+                    uomName = model.getUomCode();
+                    Log.w("EditUomText:", model.getUomCode());
                     uomTextView.setText(model.getUomText());
                     qtyValue.setText("");
 
-                    double netqty=Double.parseDouble(model.getNetQty());
+                    double netqty = Double.parseDouble(model.getNetQty());
 
                   /*  if (model.getMinimumSellingPrice()!=null && !model.getMinimumSellingPrice().isEmpty()){
                         minimumSellingPriceText.setText(model.getMinimumSellingPrice());
@@ -1399,7 +1530,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                     qtyValue.setText(Utils.getQtyValue(String.valueOf(netqty)));
                     qtyValue.addTextChangedListener(qtyTW);
 
-                    productAutoComplete.setText(model.getProductName()+"-"+model.getProductCode());
+                    productAutoComplete.setText(model.getProductName() + "-" + model.getProductCode());
 
                     priceText.setText(model.getPrice());
                     addProduct.setText("Update");
@@ -1408,15 +1539,15 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                     qtyValue.setSelection(qtyValue.getText().length());
                     qtyValue.setEnabled(true);
 
-                    if (model.getFocQty()!=null && !model.getFocQty().isEmpty() && !model.getFocQty().equals("null")){
+                    if (model.getFocQty() != null && !model.getFocQty().isEmpty() && !model.getFocQty().equals("null")) {
                         focEditText.setText(model.getFocQty());
-                    }else {
+                    } else {
                         focEditText.setText("0");
                     }
 
-                    if (model.getReturnQty()!=null && !model.getReturnQty().isEmpty() && !model.getReturnQty().equals("null")){
+                    if (model.getReturnQty() != null && !model.getReturnQty().isEmpty() && !model.getReturnQty().equals("null")) {
                         returnQtyText.setText(model.getReturnQty());
-                    }else {
+                    } else {
                         returnQtyText.setText("0");
                     }
 
@@ -1444,7 +1575,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                         }
                     }*/
 
-                  //  setCalculationView();
+                    //  setCalculationView();
 
                 }
             });
@@ -1452,7 +1583,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             noproductText.setVisibility(View.GONE);
             productSummaryView.setVisibility(View.VISIBLE);
             itemCount.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             itemCount.setVisibility(View.GONE);
             noproductText.setVisibility(View.VISIBLE);
             productSummaryView.setVisibility(View.GONE);
@@ -1462,7 +1593,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         setSummaryTotal();
     }
 
-    public void showRemoveItemAlert(final String pid){
+    public void showRemoveItemAlert(final String pid) {
 
         try {
             new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
@@ -1489,68 +1620,70 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                         }
                     })
                     .show();
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+        }
 
     }
 
-    public void hideKeyboard(){
+    public void hideKeyboard() {
         try {
             View view = this.getCurrentFocus();
             if (view != null) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         } catch (Exception e) {
         }
     }
 
-    public void setSummaryTotal(){
+    public void setSummaryTotal() {
         try {
             ArrayList<CreateInvoiceModel> localCart;
             localCart = dbHelper.getAllInvoiceProducts();
-            double net_sub_total=0.0;
-            double net_tax=0.0;
-            double net_total=0.0;
-            if (localCart.size()>0){
-                for (CreateInvoiceModel model:localCart){
-                    if (model.getSubTotal()!=null &&!model.getSubTotal().isEmpty()){
-                        net_sub_total+=Double.parseDouble(model.getSubTotal());
+            double net_sub_total = 0.0;
+            double net_tax = 0.0;
+            double net_total = 0.0;
+            if (localCart.size() > 0) {
+                for (CreateInvoiceModel model : localCart) {
+                    if (model.getSubTotal() != null && !model.getSubTotal().isEmpty()) {
+                        net_sub_total += Double.parseDouble(model.getSubTotal());
                     }
-                    if (model.getGstAmount()!=null && !model.getGstAmount().isEmpty()){
-                        net_tax+=Double.parseDouble(model.getGstAmount());
+                    if (model.getGstAmount() != null && !model.getGstAmount().isEmpty()) {
+                        net_tax += Double.parseDouble(model.getGstAmount());
                     }
-                    if (model.getNetTotal()!=null && !model.getNetTotal().isEmpty()){
-                        net_total+=Double.parseDouble(model.getNetTotal());
+                    if (model.getNetTotal() != null && !model.getNetTotal().isEmpty()) {
+                        net_total += Double.parseDouble(model.getNetTotal());
                     }
                 }
-                SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE);
                 selectCustomerId = sharedPreferences.getString("customerId", "");
-                customerDetails=dbHelper.getCustomer(selectCustomerId);
-                String taxValue =customerDetails.get(0).getTaxPerc();
-                String taxType=customerDetails.get(0).getTaxType();
+                customerDetails = dbHelper.getCustomer(selectCustomerId);
+                String taxValue = customerDetails.get(0).getTaxPerc();
+                String taxType = customerDetails.get(0).getTaxType();
 
-                Log.w("GivenEditTax:",net_tax+"");
-                Log.w("GivenNetTotalValues:",net_total+"");
+                Log.w("GivenEditTax:", net_tax + "");
+                Log.w("GivenNetTotalValues:", net_total + "");
 
 
-                if (taxType.equals("I")){
+                if (taxType.equals("I")) {
                     setCalculationSummaryView(net_total);
-                }else {
+                } else {
                     setCalculationSummaryView(net_sub_total);
                 }
 
             }
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+        }
     }
 
-    public void clearFields(){
+    public void clearFields() {
         subTotalValue.setText("0.0");
         taxValueText.setText("0.00");
         netTotalValue.setText("0.0");
         productAutoComplete.setText("");
         priceText.setText("0.00");
         qtyValue.setText("");
-        isEditItem=false;
+        isEditItem = false;
         pcsPerCarton.setText("");
         uomText.setText("");
         uomTextView.setText("");
@@ -1560,44 +1693,44 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         focEditText.setText("");
         returnQtyText.setText("");
         stockLayout.setVisibility(View.GONE);
-       // priceText.setEnabled(false);
+        // priceText.setEnabled(false);
         getProducts();
         setSummaryTotal();
     }
 
     public boolean isProductExist(String productId) {
-        boolean isExist=false;
+        boolean isExist = false;
         try {
             ArrayList<CartModel> localCart = dbHelper.getAllCartItems();
             if (localCart.size() > 0) {
                 for (CartModel cart : localCart) {
-                    if (cart.getCART_COLUMN_PID()!=null){
+                    if (cart.getCART_COLUMN_PID() != null) {
                         if (cart.getCART_COLUMN_PID().equals(productId)) {
-                            Log.w("ProductIdPrint:",cart.getCART_COLUMN_PID());
+                            Log.w("ProductIdPrint:", cart.getCART_COLUMN_PID());
                             isExist = true;
                             break;
                         }
                     }
                 }
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             Log.e("Exp_to_check_product:", Objects.requireNonNull(ex.getMessage()));
         }
         return isExist;
     }
 
-    public void checkLowStock(){
-        double stock=0.0;
-        double qty=0.0;
-        if (!stockQtyValue.getText().toString().isEmpty()){
-            if (!stockQtyValue.getText().toString().isEmpty()){
-                stock=Double.parseDouble(stockQtyValue.getText().toString());
+    public void checkLowStock() {
+        double stock = 0.0;
+        double qty = 0.0;
+        if (!stockQtyValue.getText().toString().isEmpty()) {
+            if (!stockQtyValue.getText().toString().isEmpty()) {
+                stock = Double.parseDouble(stockQtyValue.getText().toString());
             }
-            if (!qtyValue.getText().toString().isEmpty()){
-                qty=Double.parseDouble(qtyValue.getText().toString());
+            if (!qtyValue.getText().toString().isEmpty()) {
+                qty = Double.parseDouble(qtyValue.getText().toString());
             }
-            if (stock < qty){
-                Toast.makeText(getApplicationContext(),"Low Stock please check",Toast.LENGTH_SHORT).show();
+            if (stock < qty) {
+                Toast.makeText(getApplicationContext(), "Low Stock please check", Toast.LENGTH_SHORT).show();
                 qtyValue.removeTextChangedListener(qtyTW);
                 qtyValue.setText("");
                 qtyValue.addTextChangedListener(qtyTW);
@@ -1610,16 +1743,16 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     /**
      * Get = the low stock invoice setting to allow the Negative stock allow the invoice
      */
-    public void getLowStockSetting(){
-        ArrayList<SettingsModel> settings=dbHelper.getSettings();
-        if (settings.size()>0) {
+    public void getLowStockSetting() {
+        ArrayList<SettingsModel> settings = dbHelper.getSettings();
+        if (settings.size() > 0) {
             for (SettingsModel model : settings) {
                 if (model.getSettingName().equals("allow_negative_switch")) {
-                    isAllowLowStock= model.getSettingValue().equals("1");
+                    isAllowLowStock = model.getSettingValue().equals("1");
                 }
             }
-        }else {
-            isAllowLowStock=false;
+        } else {
+            isAllowLowStock = false;
         }
     }
 
@@ -1627,109 +1760,108 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         try {
             double taxAmount1 = 0.0, netTotal1 = 0.0;
 
-        SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
-        String selectCustomerId = sharedPreferences.getString("customerId", "");
-        if (selectCustomerId != null && !selectCustomerId.isEmpty()) {
-            customerDetails = dbHelper.getCustomer(selectCustomerId);
-        }
-        String taxValue=customerDetails.get(0).getTaxPerc();
-        String taxType=customerDetails.get(0).getTaxType();
-        Log.w("TaxType-Summary:",taxType);
-        Log.w("TaxValue12-Summary:",taxValue);
+            SharedPreferences sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE);
+            String selectCustomerId = sharedPreferences.getString("customerId", "");
+            if (selectCustomerId != null && !selectCustomerId.isEmpty()) {
+                customerDetails = dbHelper.getCustomer(selectCustomerId);
+            }
+            String taxValue = customerDetails.get(0).getTaxPerc();
+            String taxType = customerDetails.get(0).getTaxType();
+            Log.w("TaxType-Summary:", taxType);
+            Log.w("TaxValue12-Summary:", taxValue);
 
-        Log.w("SubTotalValues:",String.valueOf(subTotal));
+            Log.w("SubTotalValues:", String.valueOf(subTotal));
 
             String Prodtotal = twoDecimalPoint(subTotal);
 
-        if (!taxType.matches("") && !taxValue.matches("")) {
-            double taxValueCalc = Double.parseDouble(taxValue);
+            if (!taxType.matches("") && !taxValue.matches("")) {
+                double taxValueCalc = Double.parseDouble(taxValue);
 
-            if (taxType.matches("E")) {
+                if (taxType.matches("E")) {
 
-                taxAmount1 = (subTotal * taxValueCalc) / 100;
-                String prodTax = twoDecimalPoint(taxAmount1);
-                taxValueText.setText("" + prodTax);
+                    taxAmount1 = (subTotal * taxValueCalc) / 100;
+                    String prodTax = twoDecimalPoint(taxAmount1);
+                    taxValueText.setText("" + prodTax);
 
-                netTotal1 = subTotal + taxAmount1;
-                String ProdNetTotal = twoDecimalPoint(netTotal1);
-                netTotalValue.setText("" + ProdNetTotal);
-                taxTitle.setText("GST ( Exc ) : "+(int)Double.parseDouble(taxValue)+" % ");
-                subTotalValue.setText(Utils.twoDecimalPoint(subTotal));
+                    netTotal1 = subTotal + taxAmount1;
+                    String ProdNetTotal = twoDecimalPoint(netTotal1);
+                    netTotalValue.setText("" + ProdNetTotal);
+                    taxTitle.setText("GST ( Exc ) : " + (int) Double.parseDouble(taxValue) + " % ");
+                    subTotalValue.setText(Utils.twoDecimalPoint(subTotal));
 
-            } else if (taxType.matches("I")) {
+                } else if (taxType.matches("I")) {
 
-                taxAmount1 = (subTotal * taxValueCalc) / (100 + taxValueCalc);
-                String prodTax = twoDecimalPoint(taxAmount1);
+                    taxAmount1 = (subTotal * taxValueCalc) / (100 + taxValueCalc);
+                    String prodTax = twoDecimalPoint(taxAmount1);
 
-                taxValueText.setText("" + prodTax);
-                // netTotal1 = subTotal + taxAmount1;
-                netTotal1 = subTotal;
-                String ProdNetTotal = twoDecimalPoint(netTotal1);
-                netTotalValue.setText("" + ProdNetTotal);
+                    taxValueText.setText("" + prodTax);
+                    // netTotal1 = subTotal + taxAmount1;
+                    netTotal1 = subTotal;
+                    String ProdNetTotal = twoDecimalPoint(netTotal1);
+                    netTotalValue.setText("" + ProdNetTotal);
 
-                double dTotalIncl = netTotal1 - taxAmount1;
-                String totalIncl = twoDecimalPoint(dTotalIncl);
-                Log.d("totalIncl", "" + totalIncl);
+                    double dTotalIncl = netTotal1 - taxAmount1;
+                    String totalIncl = twoDecimalPoint(dTotalIncl);
+                    Log.d("totalIncl", "" + totalIncl);
 
-                double sub_total=subTotal-taxAmount1;
-                taxTitle.setText("GST ( Inc ) : "+(int)Double.parseDouble(taxValue)+" % ");
-                subTotalValue.setText(Utils.twoDecimalPoint(sub_total));
+                    double sub_total = subTotal - taxAmount1;
+                    taxTitle.setText("GST ( Inc ) : " + (int) Double.parseDouble(taxValue) + " % ");
+                    subTotalValue.setText(Utils.twoDecimalPoint(sub_total));
 
 
-            } else if (taxType.matches("Z")) {
+                } else if (taxType.matches("Z")) {
 
+                    taxValueText.setText("0.0");
+                    // netTotal1 = subTotal + taxAmount;
+                    netTotal1 = subTotal;
+                    String ProdNetTotal = twoDecimalPoint(netTotal1);
+                    netTotalValue.setText("" + ProdNetTotal);
+                    subTotalValue.setText(Utils.twoDecimalPoint(subTotal));
+                    taxTitle.setText("GST ( Zero )");
+
+                } else {
+                    taxValueText.setText("0.0");
+                    netTotalValue.setText("" + Prodtotal);
+                    subTotalValue.setText(Utils.twoDecimalPoint(subTotal));
+                    taxTitle.setText("GST ( Zero )");
+                }
+
+            } else if (taxValue.matches("")) {
                 taxValueText.setText("0.0");
-                // netTotal1 = subTotal + taxAmount;
-                netTotal1 = subTotal;
-                String ProdNetTotal = twoDecimalPoint(netTotal1);
-                netTotalValue.setText("" + ProdNetTotal);
+                netTotalValue.setText("" + Prodtotal);
                 subTotalValue.setText(Utils.twoDecimalPoint(subTotal));
                 taxTitle.setText("GST ( Zero )");
-
             } else {
                 taxValueText.setText("0.0");
                 netTotalValue.setText("" + Prodtotal);
                 subTotalValue.setText(Utils.twoDecimalPoint(subTotal));
                 taxTitle.setText("GST ( Zero )");
             }
+        } catch (Exception e) {
 
-        } else if (taxValue.matches("")) {
-            taxValueText.setText("0.0");
-            netTotalValue.setText("" + Prodtotal);
-            subTotalValue.setText(Utils.twoDecimalPoint(subTotal));
-            taxTitle.setText("GST ( Zero )");
-        } else {
-            taxValueText.setText("0.0");
-            netTotalValue.setText("" + Prodtotal);
-            subTotalValue.setText(Utils.twoDecimalPoint(subTotal));
-            taxTitle.setText("GST ( Zero )");
         }
-         } catch (Exception e) {
-
-         }
     }
-
 
 
     public void setCalculationView() {
         try {
             double taxAmount = 0.0, netTotal = 0.0;
             double taxAmount1 = 0.0, netTotal1 = 0.0;
-            double return_qty=0;
-            double pcspercarton=0.0;
-            double cqtyCalc=0;
-            double lqtyCalc=0;
-            double net_qty=0.0;
+            double return_qty = 0;
+            double pcspercarton = 0.0;
+            double cqtyCalc = 0;
+            double lqtyCalc = 0;
+            double net_qty = 0.0;
 
-            SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE);
             String selectCustomerId = sharedPreferences.getString("customerId", "");
             if (selectCustomerId != null && !selectCustomerId.isEmpty()) {
                 customerDetails = dbHelper.getCustomer(selectCustomerId);
             }
-            String taxValue=customerDetails.get(0).getTaxPerc();
-            String taxType=customerDetails.get(0).getTaxType();
-            Log.w("TaxType12:",taxType);
-            Log.w("TaxValue12:",taxValue);
+            String taxValue = customerDetails.get(0).getTaxPerc();
+            String taxType = customerDetails.get(0).getTaxType();
+            Log.w("TaxType12:", taxType);
+            Log.w("TaxValue12:", taxValue);
 
             String price = priceText.getText().toString();
             String qty = qtyValue.getText().toString();
@@ -1745,19 +1877,19 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
             double cPriceCalc = Double.parseDouble(price);
 
-            if (!returnQtyText.getText().toString().isEmpty() && !returnQtyText.getText().toString().equals("null")){
-                return_qty=Double.parseDouble(returnQtyText.getText().toString());
+            if (!returnQtyText.getText().toString().isEmpty() && !returnQtyText.getText().toString().equals("null")) {
+                return_qty = Double.parseDouble(returnQtyText.getText().toString());
                 netReturnQty.setText(String.valueOf(return_qty));
-            }else {
+            } else {
                 netReturnQty.setText("0");
                 expiryReturnQty.setText("");
                 damageReturnQty.setText("");
             }
 
-            net_qty=(Double.parseDouble(qty) - return_qty);
+            net_qty = (Double.parseDouble(qty) - return_qty);
 
             double tt = net_qty * cPriceCalc;
-            Log.w("TOTALVALUES:",String.valueOf(tt));
+            Log.w("TOTALVALUES:", String.valueOf(tt));
 
             String Prodtotal = twoDecimalPoint(tt);
 
@@ -1781,8 +1913,8 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             }*/
 
             // sl_total_inclusive.setText("" + sbTtl);
-            tt=subTotal;
-            Log.w("SubTotalValues:",String.valueOf(subTotal));
+            tt = subTotal;
+            Log.w("SubTotalValues:", String.valueOf(subTotal));
 
             if (!taxType.matches("") && !taxValue.matches("")) {
                 double taxValueCalc = Double.parseDouble(taxValue);
@@ -1796,7 +1928,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                     netTotal1 = subTotal + taxAmount1;
                     String ProdNetTotal = twoDecimalPoint(netTotal1);
                     netTotalValue.setText("" + ProdNetTotal);
-                    taxTitle.setText("GST ( Exc ) :"+(int)Double.parseDouble(taxValue)+" % ");
+                    taxTitle.setText("GST ( Exc ) :" + (int) Double.parseDouble(taxValue) + " % ");
                     subTotalValue.setText(Utils.twoDecimalPoint(subTotal));
 
                 } else if (taxType.matches("I")) {
@@ -1814,8 +1946,8 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                     String totalIncl = twoDecimalPoint(dTotalIncl);
                     Log.d("totalIncl", "" + totalIncl);
 
-                    double sub_total=subTotal-taxAmount1;
-                    taxTitle.setText("GST ( Inc ) : "+(int)Double.parseDouble(taxValue)+" % ");
+                    double sub_total = subTotal - taxAmount1;
+                    taxTitle.setText("GST ( Inc ) : " + (int) Double.parseDouble(taxValue) + " % ");
                     subTotalValue.setText(Utils.twoDecimalPoint(sub_total));
 
 
@@ -1849,89 +1981,136 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             }
             setButtonView();
         } catch (Exception e) {
-            Log.w("Error_Throwing::",e.getMessage());
+            Log.w("Error_Throwing::", e.getMessage());
         }
     }
 
 
-    public void setButtonView(){
-        if (Double.parseDouble(netTotalValue.getText().toString()) > 0.00){
+    public void setButtonView() {
+
+        if ((!focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0"))) {
             addProduct.setAlpha(0.9F);
             addProduct.setEnabled(true);
-        }else {
-            if ((!focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (!returnQtyText.getText().toString().isEmpty() && !returnQtyText.getText().toString().equals("0"))){
-                if (!qtyValue.getText().toString().isEmpty() && !qtyValue.getText().toString().equals("0") && Integer.parseInt(priceText.getText().toString()) > 0){
-                    if (!priceText.getText().toString().isEmpty() && Double.parseDouble(priceText.getText().toString()) > 0.00){
+        }
+        if (Double.parseDouble(netTotalValue.getText().toString()) > 0.00) {
+            addProduct.setAlpha(0.9F);
+            addProduct.setEnabled(true);
+        } else {
+            if (!productNameEditext.getText().toString().isEmpty()) {
+              //  if ((!focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (!returnQtyText.getText().toString().isEmpty() && !returnQtyText.getText().toString().equals("0"))) {
+                    if (!qtyValue.getText().toString().isEmpty() && !qtyValue.getText().toString().equals("0") && Integer.parseInt(priceText.getText().toString()) > 0) {
+                        if (!priceText.getText().toString().isEmpty() && Double.parseDouble(priceText.getText().toString()) > 0.00) {
+                            addProduct.setAlpha(0.9F);
+                            addProduct.setEnabled(true);
+                        } else {
+                            addProduct.setAlpha(0.4F);
+                            addProduct.setEnabled(false);
+                            Toast.makeText(getApplicationContext(), "Price is Empty..!", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
                         addProduct.setAlpha(0.9F);
                         addProduct.setEnabled(true);
-                    }else {
-                        addProduct.setAlpha(0.4F);
-                        addProduct.setEnabled(false);
-                        Toast.makeText(getApplicationContext(),"Price is Empty..!",Toast.LENGTH_SHORT).show();
                     }
-                }else {
-                    addProduct.setAlpha(0.9F);
-                    addProduct.setEnabled(true);
-                }
-            }else {
-                addProduct.setAlpha(0.4F);
-                addProduct.setEnabled(false);
+       //         }
+
+//                else {
+//                    addProduct.setAlpha(0.4F);
+//                    addProduct.setEnabled(false);
+//                }
             }
-        }
+            else{
+                    addProduct.setAlpha(0.4F);
+                    addProduct.setEnabled(false);
+                }
+            }
     }
 
-    public void getUOM(JSONObject jsonObject){
+
+//    public void setButtonView() {
+//        Log.w("focentr22","");
+//        if (Double.parseDouble(netTotalValue.getText().toString()) > 0.00) {
+//            addProduct.setAlpha(0.9F);
+//            addProduct.setEnabled(true);
+//        } else {
+//            if (!productNameEditext.getText().toString().isEmpty()) {
+//                if ((!focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0"))) {
+//                    Log.w("focentr","");
+//                    addProduct.setAlpha(0.9F);
+//                    addProduct.setEnabled(true);
+//                }
+//                else {
+//                    if (!qtyValue.getText().toString().isEmpty() && !qtyValue.getText().toString().equals("0") && Integer.parseInt(priceText.getText().toString()) > 0) {
+//                        if (!priceText.getText().toString().isEmpty() && Double.parseDouble(priceText.getText().toString()) > 0.00) {
+//                            addProduct.setAlpha(0.9F);
+//                            addProduct.setEnabled(true);
+//                        } else {
+//                            addProduct.setAlpha(0.4F);
+//                            addProduct.setEnabled(false);
+//                            Toast.makeText(getApplicationContext(), "Price is Empty..!", Toast.LENGTH_SHORT).show();
+//                        }
+//                    } else {
+//                        addProduct.setAlpha(0.9F);
+//                        addProduct.setEnabled(true);
+//                    }
+//                }
+//            }
+//            else{
+//                addProduct.setAlpha(0.4F);
+//                addProduct.setEnabled(false);
+//            }
+//        }
+//    }
+
+
+    public void getDeliveryAddress(JSONObject jsonObject) {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"ItemUOMDetails";
+        String url = Utils.getBaseUrl(this) + "CustomerAddress";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_SAP_UOM_URL:",url+jsonObject.toString());
-        uomList=new ArrayList<>();
+        Log.w("Given_delive_addrs_URL:", url + jsonObject.toString());
+        deliveryAddrList = new ArrayList<>();
 
         SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("Loading UOM...");
+        pDialog.setTitleText("Loading Address...");
         pDialog.setCancelable(false);
         pDialog.show();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
-            try{
-                Log.w("Response_SAP_UOM:",response.toString());
+            try {
+                Log.w("Res_delive_addrs:", response.toString());
                 // Loop through the array elements
-                JSONArray uomArray=response.optJSONArray("responseData");
-                if (uomArray!=null && uomArray.length() > 0){
-                    for (int j = 0; j< uomArray.length(); j++){
+                JSONArray uomArray = response.optJSONArray("responseData");
+                if (uomArray != null && uomArray.length() > 0) {
+                    for (int j = 0; j < uomArray.length(); j++) {
                         JSONObject uomObject = uomArray.getJSONObject(j);
-                        UomModel uomModel =new UomModel();
-                        uomModel.setUomCode(uomObject.optString("uomCode"));
-                        uomModel.setUomName(uomObject.optString("uomName"));
-                        uomModel.setUomEntry(uomObject.optString("uomEntry"));
-                        uomModel.setAltQty(uomObject.optString("altQty"));
-                        uomModel.setBaseQty(uomObject.optString("baseQty"));
-                        uomModel.setPrice(uomObject.optString("price"));
-                        uomList.add(uomModel);
+                        DeliveryAddressModel model = new DeliveryAddressModel();
+                        model.setDeliveryAddress(uomObject.optString("address"));
+//                        model.setDeliveryAddressCode(uomObject.optString("uomName"));
+                        deliveryAddrList.add(model);
                     }
                 }
 
-                Log.w("UOM_TEXT:",uomArray.toString());
+                Log.w("deliveryTxt:", uomArray.toString());
                 pDialog.dismiss();
-                if (uomList.size()>0){
-                    runOnUiThread(() -> {
-                        setUomList(uomList);
-                    });
+
+                if (deliveryAddrList.size() > 0) {
+//                    runOnUiThread(() -> {
+                        setDeliveryAddrList(deliveryAddrList);
+                  //  });
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }, error -> {
             // Do something when error occurred
-             pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
-        }){
+            pDialog.dismiss();
+            Log.w("Error_throwing:", error.toString());
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
-                String creds = String.format("%s:%s", Constants.API_SECRET_CODE,Constants.API_SECRET_PASSWORD);
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
                 String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
                 params.put("Authorization", auth);
                 return params;
@@ -1942,10 +2121,12 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -1955,62 +2136,142 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void getAllProducts(JSONObject jsonObject){
+    public void getUOM(JSONObject jsonObject) {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"CustomerProductList";
+        String url = Utils.getBaseUrl(this) + "ItemUOMDetails";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_SAP_PROUCT_URL:",url+jsonObject.toString());
-        productList=new ArrayList<>();
-        products=new ArrayList<>();
+        Log.w("Given_UOM_URL:", url + jsonObject.toString());
+
+        SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading UOM...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
+            try {
+                uomList = new ArrayList<>();
+
+                Log.w("Res_UOM:", response.toString());
+                // Loop through the array elements
+                JSONArray uomArray = response.optJSONArray("responseData");
+                if (uomArray != null && uomArray.length() > 0) {
+                    for (int j = 0; j < uomArray.length(); j++) {
+                        JSONObject uomObject = uomArray.getJSONObject(j);
+                        UomModel uomModel = new UomModel();
+                        uomModel.setUomCode(uomObject.optString("uomCode"));
+                        uomModel.setUomName(uomObject.optString("uomName"));
+                        uomModel.setUomEntry(uomObject.optString("uomEntry"));
+                        uomModel.setAltQty(uomObject.optString("altQty"));
+                        uomModel.setBaseQty(uomObject.optString("baseQty"));
+                        uomModel.setPrice(uomObject.optString("price"));
+                        uomList.add(uomModel);
+                    }
+                }
+
+                Log.w("UOM_TEXT:", uomArray.toString());
+                pDialog.dismiss();
+                if (uomList.size() > 0) {
+                    runOnUiThread(() -> {
+                        setUomList(uomList);
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, error -> {
+            // Do something when error occurred
+            pDialog.dismiss();
+            Log.w("Error_throwing:", error.toString());
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void getAllProducts(JSONObject jsonObject) {
+        // Initialize a new RequestQueue instance
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url = Utils.getBaseUrl(this) + "CustomerProductList";
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_SAP_PROUCT_URL:", url + jsonObject.toString());
+        productList = new ArrayList<>();
+        products = new ArrayList<>();
         //  SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         //  pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         //  pDialog.setTitleText("Loading Products...");
         //  pDialog.setCancelable(false);
         //  pDialog.show();
-          JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
-                    try{
-                     //   progressDialog.dismiss();
-                        //  {"productCode":"FG\/001245","productName":"RUM","companyName":"","supplierCategoryNumber":"","uomCode":"Ctn",
-                        //  "uomName":"Carton","cartonPrice":"3000.000000","piecePrice":"0.000000","pcsPerCarton":"100.000000",
-                        //  "price":"100.000000","taxType":"E","havTax":"Y","taxCode":"SR","taxRate":"7.000000","barCode":"",
-                        //  "isActive":"N","createUser":"1","createDate":"13\/07\/2021","modifyDate":"29\/07\/2021","remarks":"",
-                        //  "warehouse":"01","stockInHand":"0.000000","averagePrice":0,"manageBatchOrSerial":"None","manageBatchNumber":"N",
-                        //  "manageSerialNumber":"N","batchNumber":"","expiryDate":null,"manufactureDate":"31\/07\/2021","imageURL":""}
-                        Log.w("Response_SAP_PRODUCTS:",response.toString());
-                        // Loop through the array elements
-                        JSONArray productArray=response.optJSONArray("responseData");
-                        for(int i = 0; i< Objects.requireNonNull(productArray).length(); i++){
-                            // Get current json object
-                            JSONObject productObject = productArray.getJSONObject(i);
-                            ProductsModel product =new ProductsModel();
-                            if (productObject.optString("isActive").equals("N")) {
-                                product.setCompanyCode("1");
-                                // Adding bp name for products
-                                if (productObject.optString("bP_Description")!=null && !productObject.optString("bP_Description").isEmpty() && !productObject.optString("bP_Description").equals("null")){
-                                    product.setProductName(productObject.optString("bP_Description"));
-                                }else {
-                                    product.setProductName(productObject.optString("productName"));
-                                }
-                                product.setProductCode(productObject.optString("productCode"));
-                                product.setWeight("");
-                                product.setProductImage(productObject.optString("imageURL"));
-                                product.setWholeSalePrice("0.00");
-                                product.setRetailPrice(productObject.optDouble("retailPrice"));
-                                product.setCartonPrice(productObject.optString("cartonPrice"));
-                                product.setPcsPerCarton(productObject.optString("pcsPerCarton"));
-                                product.setUnitCost(productObject.optString("price"));
-                                product.setLastPrice(productObject.optString("lastSalesPrice"));
-                                product.setMinimumSellingPrice(productObject.optString("minimumSellingPrice"));
-                                if (!productObject.optString("stockInHand").equals("null")){
-                                    product.setStockQty(productObject.optString("stockInHand"));
-                                }else {
-                                    product.setStockQty("0");
-                                }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
+            try {
+                //   progressDialog.dismiss();
+                //  {"productCode":"FG\/001245","productName":"RUM","companyName":"","supplierCategoryNumber":"","uomCode":"Ctn",
+                //  "uomName":"Carton","cartonPrice":"3000.000000","piecePrice":"0.000000","pcsPerCarton":"100.000000",
+                //  "price":"100.000000","taxType":"E","havTax":"Y","taxCode":"SR","taxRate":"7.000000","barCode":"",
+                //  "isActive":"N","createUser":"1","createDate":"13\/07\/2021","modifyDate":"29\/07\/2021","remarks":"",
+                //  "warehouse":"01","stockInHand":"0.000000","averagePrice":0,"manageBatchOrSerial":"None","manageBatchNumber":"N",
+                //  "manageSerialNumber":"N","batchNumber":"","expiryDate":null,"manufactureDate":"31\/07\/2021","imageURL":""}
+                Log.w("Response_SAP_PRODUCTS:", response.toString());
+                // Loop through the array elements
+                JSONArray productArray = response.optJSONArray("responseData");
+                for (int i = 0; i < Objects.requireNonNull(productArray).length(); i++) {
+                    // Get current json object
+                    JSONObject productObject = productArray.getJSONObject(i);
+                    ProductsModel product = new ProductsModel();
+                    if (productObject.optString("isActive").equals("N")) {
+                        product.setCompanyCode("1");
+                        // Adding bp name for products
+                        if (productObject.optString("bP_Description") != null && !productObject.optString("bP_Description").isEmpty() && !productObject.optString("bP_Description").equals("null")) {
+                            product.setProductName(productObject.optString("bP_Description"));
+                        } else {
+                            product.setProductName(productObject.optString("productName"));
+                        }
+                        product.setProductCode(productObject.optString("productCode"));
+                        product.setWeight("");
+                        product.setProductImage(productObject.optString("imageURL"));
+                        product.setWholeSalePrice("0.00");
+                        product.setRetailPrice(productObject.optDouble("retailPrice"));
+                        product.setCartonPrice(productObject.optString("cartonPrice"));
+                        product.setPcsPerCarton(productObject.optString("pcsPerCarton"));
+                        product.setUnitCost(productObject.optString("price"));
+                        product.setLastPrice(productObject.optString("lastSalesPrice"));
+                        product.setMinimumSellingPrice(productObject.optString("minimumSellingPrice"));
+                        product.setDefaultUom(productObject.optString("defaultPurchaseUOM"));
 
-                                product.setUomCode(productObject.optString("uomCode"));
-                                //  product.setProductBarcode(productObject.optString("BarCode")); Add values In Futue
-                                product.setProductBarcode("");
+                        if (!productObject.optString("stockInHand").equals("null")) {
+                            product.setStockQty(productObject.optString("stockInHand"));
+                        } else {
+                            product.setStockQty("0");
+                        }
+
+                        product.setUomCode(productObject.optString("uomCode"));
+                        //  product.setProductBarcode(productObject.optString("BarCode")); Add values In Futue
+                        product.setProductBarcode("");
 
                               /*  ArrayList<UomModel> uomList=new ArrayList<>();
                                 JSONArray uomArray=productObject.optJSONArray("uomDetails");
@@ -2029,32 +2290,32 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                                 }
                                 product.setUomText(uomList.toString());
                                 product.setProductUOMList(uomList);*/
-                                productList.add(product);
-                            }
-                        }
-                        HomePageModel.productsList=new ArrayList<>();
-                        setAdapter(productList);
-                        HomePageModel.productsList.addAll(productList);
-                       // pDialog.dismiss();
-                        if (productList.size()>0){
-                            runOnUiThread(() -> {
-                                AppUtils.setProductsList(productList);
-                              // progressDialog.dismiss();
-                                // dbHelper.insertProducts(getActivity(),productList);
-                            });
-                        }
-                    }catch (Exception e){
-                        e.printStackTrace();
+                        productList.add(product);
                     }
-                }, error -> {
+                }
+                HomePageModel.productsList = new ArrayList<>();
+                setAdapter(productList);
+                HomePageModel.productsList.addAll(productList);
+                // pDialog.dismiss();
+                if (productList.size() > 0) {
+                    runOnUiThread(() -> {
+                        AppUtils.setProductsList(productList);
+                        // progressDialog.dismiss();
+                        // dbHelper.insertProducts(getActivity(),productList);
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, error -> {
             // Do something when error occurred
-           // pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
-        }){
+            // pDialog.dismiss();
+            Log.w("Error_throwing:", error.toString());
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
-                String creds = String.format("%s:%s", Constants.API_SECRET_CODE,Constants.API_SECRET_PASSWORD);
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
                 String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
                 params.put("Authorization", auth);
                 return params;
@@ -2065,10 +2326,12 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -2082,15 +2345,15 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     private void setAdapter(ArrayList<ProductsModel> productList) {
         // Get the Settings to Display the Product list with the Settings
 
-        if (settings.size()>0) {
+        if (settings.size() > 0) {
             for (SettingsModel model : settings) {
                 if (model.getSettingName().equals("stock_view")) {
-                    if (model.getSettingValue().equals("1")){
-                        stockProductView="1";
-                    }else if (model.getSettingValue().equals("2")){
-                        stockProductView="2";
-                    }else {
-                        stockProductView="0";
+                    if (model.getSettingValue().equals("1")) {
+                        stockProductView = "1";
+                    } else if (model.getSettingValue().equals("2")) {
+                        stockProductView = "2";
+                    } else {
+                        stockProductView = "0";
                     }
                 }
             }
@@ -2098,36 +2361,36 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         // Filter the products list depending the Settings
         ArrayList<ProductsModel> filteredProducts = new ArrayList<>();
         //   for (ProductsModel s : selectProductAdapter.getProductsList()) {
-        if (productList!=null && productList.size()>0){
+        if (productList != null && productList.size() > 0) {
             for (ProductsModel product : productList) {
-                if (stockProductView.equals("1")){
-                    if (product.getStockQty()!=null && !product.getStockQty().equals("null")){
-                        if (Double.parseDouble(product.getStockQty())>0){
+                if (stockProductView.equals("1")) {
+                    if (product.getStockQty() != null && !product.getStockQty().equals("null")) {
+                        if (Double.parseDouble(product.getStockQty()) > 0) {
                             filteredProducts.add(product);
                         }
                     }
-                }else if (stockProductView.equals("0")){
-                    if (product.getStockQty()!=null && !product.getStockQty().equals("null")) {
+                } else if (stockProductView.equals("0")) {
+                    if (product.getStockQty() != null && !product.getStockQty().equals("null")) {
                         if (Double.parseDouble(product.getStockQty()) < 0 || Double.parseDouble(product.getStockQty()) == 0) {
                             filteredProducts.add(product);
                         }
                     }
-                }else {
+                } else {
                     filteredProducts.add(product);
                 }
             }
         }
 
-        if (filteredProducts.size()>0){
+        if (filteredProducts.size() > 0) {
             productLayout.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
-        }else {
+        } else {
             productLayout.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
         }
 
         productListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        selectProductAdapter=new SelectProductAdapter(this,filteredProducts, new SelectProductAdapter.CallBack() {
+        selectProductAdapter = new SelectProductAdapter(this, filteredProducts, new SelectProductAdapter.CallBack() {
             @Override
             public void searchProduct(ProductsModel model) {
                 // Need to implement the Product price Later
@@ -2136,25 +2399,27 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }*/
-                productAutoComplete.setText(model.getProductName()+" - "+model.getProductCode());
-                productId=model.getProductCode();
-                productName=model.getProductName();
-                JSONObject jsonObject=new JSONObject();
-                try {
-                    jsonObject.put("CustomerCode",selectCustomerId);
-                    jsonObject.put("ItemCode",model.getProductCode());
-                    getUOM(jsonObject);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                productAutoComplete.setText(model.getProductName() + " - " + model.getProductCode());
+                productId = model.getProductCode();
+                productName = model.getProductName();
+                if(isUomSetting) {
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("CustomerCode", selectCustomerId);
+                        jsonObject.put("ItemCode", model.getProductCode());
+                        getUOM(jsonObject);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-               // setUomList(model.getProductUOMList());
+                // setUomList(model.getProductUOMList());
                 uomTextView.setText(model.getUomText());
-                if (model.getLastPrice()!=null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00){
+                if (model.getLastPrice() != null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00) {
                     priceText.setText(model.getLastPrice());
-                }else {
+                } else {
                     priceText.setText(model.getUnitCost());
                 }
-              //  uomText.setText(model.getUomCode());
+                //  uomText.setText(model.getUomCode());
                 stockCount.setText(model.getStockQty());
                 // looseQtyValue.setEnabled(true);
                 qtyValue.setText("");
@@ -2163,15 +2428,14 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 discountEditext.setEnabled(true);
                 returnQtyText.setEnabled(true);
 
-
-                if (model.getMinimumSellingPrice()!=null && !model.getMinimumSellingPrice().isEmpty()){
+                if (model.getMinimumSellingPrice() != null && !model.getMinimumSellingPrice().isEmpty()) {
                     minimumSellingPriceText.setText(model.getMinimumSellingPrice());
-                }else {
+                } else {
                     minimumSellingPriceText.setText("0.00");
                 }
 
                 stockLayout.setVisibility(View.VISIBLE);
-                if (model.getStockQty()!=null && !model.getStockQty().equals("null")) {
+                if (model.getStockQty() != null && !model.getStockQty().equals("null")) {
                     if (Double.parseDouble(model.getStockQty()) == 0 || Double.parseDouble(model.getStockQty()) < 0) {
                         stockQtyValue.setText(model.getStockQty());
                         stockQtyValue.setTextColor(Color.parseColor("#D24848"));
@@ -2187,28 +2451,28 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         });
 
         // products.add(productObject.optString("ProductName")+" - "+productObject.optString("ProductCode"));
-        products=new ArrayList<>();
-        if (filteredProducts!=null && filteredProducts.size()>0){
-            for (ProductsModel product:filteredProducts){
-                products.add(product.getProductName()+" ~ "+product.getProductCode());
+        products = new ArrayList<>();
+        if (filteredProducts != null && filteredProducts.size() > 0) {
+            for (ProductsModel product : filteredProducts) {
+                products.add(product.getProductName() + " ~ " + product.getProductCode());
             }
         }
 
         productListView.setAdapter(selectProductAdapter);
-        autoCompleteAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, products){
+        autoCompleteAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, products) {
             public View getView(int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
                 ((TextView) v).setTextSize(14);
             /*    Typeface Type = getFont () ;  // custom method to get a font from "assets" folder
                 ((TextView) v).setTypeface(Type);
                 ((TextView) v).setTextColor(YourColor);*/
-                ((TextView) v) .setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);
+                ((TextView) v).setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
                 return v;
             }
         };
         productAutoComplete.setThreshold(1);
         productAutoComplete.setAdapter(autoCompleteAdapter);
-        totalProducts.setText(filteredProducts.size()+" Products");
+        totalProducts.setText(filteredProducts.size() + " Products");
         //dialog.dismiss();
     }
 
@@ -2216,8 +2480,8 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
         // JSONObject rootJsonObject = new JSONObject();
         JSONObject rootJsonObject = new JSONObject();
-        JSONArray invoiceDetailsArray =new JSONArray();
-        JSONObject invoiceObject =new JSONObject();
+        JSONArray invoiceDetailsArray = new JSONArray();
+        JSONObject invoiceObject = new JSONObject();
 
         //  {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"CUS\/686","customerName":"VH FACTORY","groupCode":"100",
         //  "contactPerson":"","creditLimit":"150.000000","currencyCode":"SGD","currencyName":"Singapore Dollar","taxType":"","taxCode":"SR",
@@ -2225,8 +2489,8 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         //  "address":"","street":"","city":"","state":"","zipCode":"","country":"","createDate":"13\/07\/2021","updateDate":"30\/07\/2021",
         //  "active":"N","remark":""}]}
 
-        JSONArray detailsArray=customerResponse.optJSONArray("responseData");
-        JSONObject object=detailsArray.optJSONObject(0);
+        JSONArray detailsArray = customerResponse.optJSONArray("responseData");
+        JSONObject object = detailsArray.optJSONObject(0);
 
         try {
             // Sales Header Add values
@@ -2247,32 +2511,32 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 rootJsonObject.put("invoiceNumber", "");
                 rootJsonObject.put("mode", "I");
             }*/
-            if (activityFrom.equals("SalesEdit")){
+            if (activityFrom.equals("SalesEdit")) {
                 rootJsonObject.put("soNumber", editSoNumber.toString());
                 rootJsonObject.put("mode", "E");
                 rootJsonObject.put("status", "O");
-            }else {
+            } else {
                 rootJsonObject.put("soNumber", "");
                 rootJsonObject.put("mode", "I");
                 rootJsonObject.put("status", "");
             }
 
-            if (currentSaveDateTime==null || currentSaveDateTime.isEmpty()){
+            if (currentSaveDateTime == null || currentSaveDateTime.isEmpty()) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
                 String currentDateandTime = sdf.format(new Date());
-                currentSaveDateTime=currentDateandTime;
+                currentSaveDateTime = currentDateandTime;
             }
 
-            rootJsonObject.put("customerReferenceNo",orderNoText.getText().toString());
+            rootJsonObject.put("customerReferenceNo", orderNoText.getText().toString());
             rootJsonObject.put("soDate", currentDate);
-            rootJsonObject.put("currentDateTime",currentSaveDateTime);
+            rootJsonObject.put("currentDateTime", currentSaveDateTime);
             rootJsonObject.put("customerCode", object.get("customerCode"));
             rootJsonObject.put("customerName", object.get("customerName"));
             rootJsonObject.put("address", object.get("address"));
             rootJsonObject.put("street", object.get("street"));
             rootJsonObject.put("city", object.get("city"));
             rootJsonObject.put("creditLimit", object.get("creditLimit"));
-            rootJsonObject.put("remark", remarkText.getText().toString());
+            rootJsonObject.put("remark", remarkStr);
             rootJsonObject.put("currencyName", "Singapore Dollar");
 
             rootJsonObject.put("taxTotal", taxValueText.getText().toString());
@@ -2283,11 +2547,11 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             rootJsonObject.put("billDiscount", "0.00");
 
 
-            rootJsonObject.put("totalDiscount","0");
+            rootJsonObject.put("totalDiscount", "0");
             rootJsonObject.put("billDiscountPercentage", "0.00");
             rootJsonObject.put("deliveryCode", SettingUtils.getDeliveryAddressCode());
             rootJsonObject.put("delCustomerName", "");
-            rootJsonObject.put("delAddress1", object.optString("delAddress1"));
+            rootJsonObject.put("delAddress1", deliverAddrNameStr);
             rootJsonObject.put("delAddress2 ", object.optString("delAddress2"));
             rootJsonObject.put("delAddress3 ", object.optString("delAddress3"));
             rootJsonObject.put("delPhoneNo", object.optString("contactNo"));
@@ -2297,84 +2561,84 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             rootJsonObject.put("taxPerc", object.optString("taxPercentage"));
             rootJsonObject.put("taxCode", object.optString("taxCode"));
             rootJsonObject.put("currencyCode", object.optString("currencyCode"));
-            rootJsonObject.put("currencyValue","");
+            rootJsonObject.put("currencyValue", "");
             rootJsonObject.put("CurrencyRate", "1");
             rootJsonObject.put("postalCode", object.optString("postalCode"));
-            rootJsonObject.put("createUser",username);
-            rootJsonObject.put("modifyUser",username);
-            rootJsonObject.put("companyName",companyName);
-            rootJsonObject.put("stockUpdated","1");
-            rootJsonObject.put("invoiceType","M");
-            rootJsonObject.put("companyCode",companyCode);
-            rootJsonObject.put("locationCode",locationCode);
-            rootJsonObject.put("signature",signatureString);
-            rootJsonObject.put("latitude",current_latitude);
-            rootJsonObject.put("longitude",current_longitude);
+            rootJsonObject.put("createUser", username);
+            rootJsonObject.put("modifyUser", username);
+            rootJsonObject.put("companyName", companyName);
+            rootJsonObject.put("stockUpdated", "1");
+            rootJsonObject.put("invoiceType", "M");
+            rootJsonObject.put("companyCode", companyCode);
+            rootJsonObject.put("locationCode", locationCode);
+            rootJsonObject.put("signature", signatureString);
+            rootJsonObject.put("latitude", current_latitude);
+            rootJsonObject.put("longitude", current_longitude);
 
             // Sales Details Add to the Objects
-            ArrayList<CreateInvoiceModel> localCart=dbHelper.getAllInvoiceProducts();
-            int index=1;
-            for (CreateInvoiceModel model:localCart){
-                invoiceObject=new JSONObject();
+            ArrayList<CreateInvoiceModel> localCart = dbHelper.getAllInvoiceProducts();
+            int index = 1;
+            for (CreateInvoiceModel model : localCart) {
+                invoiceObject = new JSONObject();
              /*   if (activityFrom.equals("InvoiceEdit")){
                     rootJsonObject.put("invoiceNumber", AddInvoiceActivity.editInvoiceNumber);
                 }else {
                     rootJsonObject.put("invoiceNumber", "");
                 }*/
-                invoiceObject.put("companyCode",companyCode);
+                invoiceObject.put("companyCode", companyCode);
                 invoiceObject.put("invoiceDate", currentDate);
-                invoiceObject.put("slNo",index);
-                invoiceObject.put("productCode",model.getProductCode());
-                invoiceObject.put("productName",model.getProductName());
-                invoiceObject.put("qty",String.valueOf(model.getActualQty()));
+                invoiceObject.put("slNo", index);
+                invoiceObject.put("productCode", model.getProductCode());
+                invoiceObject.put("productName", model.getProductName());
+                invoiceObject.put("qty", String.valueOf(model.getActualQty()));
                 // convert into int
-                invoiceObject.put("price",Utils.fourDecimalPoint(Double.parseDouble(model.getPrice())));
-                invoiceObject.put("total",Utils.twoDecimalPoint(Double.parseDouble(model.getTotal())));
-                invoiceObject.put("itemDiscount","0.00");
-                invoiceObject.put("totalTax",Utils.twoDecimalPoint(Double.parseDouble(model.getGstAmount())));
-                invoiceObject.put("subTotal",Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
-                invoiceObject.put("netTotal",Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
-                invoiceObject.put("taxType",object.optString("taxType"));
-                invoiceObject.put("taxPerc",object.optString("taxPercentage"));
+                invoiceObject.put("price", Utils.fourDecimalPoint(Double.parseDouble(model.getPrice())));
+                invoiceObject.put("total", Utils.twoDecimalPoint(Double.parseDouble(model.getTotal())));
+                invoiceObject.put("itemDiscount", "0.00");
+                invoiceObject.put("totalTax", Utils.twoDecimalPoint(Double.parseDouble(model.getGstAmount())));
+                invoiceObject.put("subTotal", Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
+                invoiceObject.put("netTotal", Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
+                invoiceObject.put("taxType", object.optString("taxType"));
+                invoiceObject.put("taxPerc", object.optString("taxPercentage"));
 
-                double return_subtotal=0;
-                if (model.getReturnQty()!=null && !model.getReturnQty().isEmpty()  && !model.getReturnQty().equals("null")){
-                    return_subtotal=Double.parseDouble(model.getReturnQty()) * Double.parseDouble(model.getPrice());
+                double return_subtotal = 0;
+                if (model.getReturnQty() != null && !model.getReturnQty().isEmpty() && !model.getReturnQty().equals("null")) {
+                    return_subtotal = Double.parseDouble(model.getReturnQty()) * Double.parseDouble(model.getPrice());
                 }
 
                 assert model.getReturnQty() != null;
-                if (!model.getReturnQty().isEmpty() && !model.getReturnQty().toString().equals("null")){
+                if (!model.getReturnQty().isEmpty() && !model.getReturnQty().toString().equals("null")) {
                     invoiceObject.put("returnLQty", model.getReturnQty());
                     invoiceObject.put("returnQty", model.getReturnQty());
-                }else {
+                } else {
                     invoiceObject.put("returnLQty", "0");
                     invoiceObject.put("returnQty", "0");
                 }
 
-                if (!model.getFocQty().toString().isEmpty() &&!model.getFocQty().equals("null")){
+                if (!model.getFocQty().toString().isEmpty() && !model.getFocQty().equals("null")) {
                     invoiceObject.put("focQty", model.getFocQty());
-                }else {
+                } else {
                     invoiceObject.put("focQty", "0");
                 }
 
 
-                invoiceObject.put("returnSubTotal",return_subtotal+"");
-                invoiceObject.put("returnNetTotal", return_subtotal+"");
-                invoiceObject.put("taxCode",object.optString("taxCode"));
-                invoiceObject.put("uomCode",model.getUomCode());
-                invoiceObject.put("itemRemarks","");
-                invoiceObject.put("locationCode",locationCode);
-                invoiceObject.put("createUser",username);
-                invoiceObject.put("modifyUser",username);
+                invoiceObject.put("returnSubTotal", return_subtotal + "");
+                invoiceObject.put("returnNetTotal", return_subtotal + "");
+                invoiceObject.put("taxCode", object.optString("taxCode"));
+                invoiceObject.put("uomCode", model.getUomCode());
+                invoiceObject.put("itemRemarks", "");
+                invoiceObject.put("locationCode", locationCode);
+                invoiceObject.put("createUser", username);
+                invoiceObject.put("modifyUser", username);
                 invoiceDetailsArray.put(invoiceObject);
                 index++;
             }
 
             rootJsonObject.put("PostingSalesOrderDetails", invoiceDetailsArray);
 
-            Log.w("RootJsonForSave:",rootJsonObject.toString());
+            Log.w("RootJsonForSaveSO:", rootJsonObject.toString());
 
-            saveSalesOrder(rootJsonObject,"SalesOrder",copy);
+            saveSalesOrder(rootJsonObject, "SalesOrder", copy);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2383,8 +2647,8 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     }
 
 
-    public void viewCloseBottomSheet(){
-       // hideKeyboard();
+    public void viewCloseBottomSheet() {
+        // hideKeyboard();
         productNameEditext.setText("");
         selectProductAdapter.notifyDataSetChanged();
         if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -2394,16 +2658,16 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         }
 
         // Showing the Products Depending the Settings Values
-        ArrayList<SettingsModel> settings=dbHelper.getSettings();
-        if (settings.size()>0) {
+        ArrayList<SettingsModel> settings = dbHelper.getSettings();
+        if (settings.size() > 0) {
             for (SettingsModel model : settings) {
                 if (model.getSettingName().equals("stock_view")) {
-                    if (model.getSettingValue().equals("1")){
-                        stockProductView="1";
-                    }else if (model.getSettingValue().equals("2")){
-                        stockProductView="2";
-                    }else {
-                        stockProductView="0";
+                    if (model.getSettingValue().equals("1")) {
+                        stockProductView = "1";
+                    } else if (model.getSettingValue().equals("2")) {
+                        stockProductView = "2";
+                    } else {
+                        stockProductView = "0";
                     }
                 }
             }
@@ -2411,52 +2675,57 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         // Filter the products list depending the Settings
         ArrayList<ProductsModel> filteredProducts = new ArrayList<>();
         //   for (ProductsModel s : selectProductAdapter.getProductsList()) {
-        if (AppUtils.getProductsList()!=null && AppUtils.getProductsList().size()>0){
+        if (AppUtils.getProductsList() != null && AppUtils.getProductsList().size() > 0) {
             for (ProductsModel product : AppUtils.getProductsList()) {
-                if (stockProductView.equals("1")){
-                    if (product.getStockQty()!=null && !product.getStockQty().equals("null")){
-                        if (Double.parseDouble(product.getStockQty())>0){
+                Log.w("apiPdtDefa_uom", "" + product.getDefaultUom());
+                if (stockProductView.equals("1")) {
+                    if (product.getStockQty() != null && !product.getStockQty().equals("null")) {
+                        if (Double.parseDouble(product.getStockQty()) > 0) {
+                            Log.w("apiPdtUOm", "" + product.getUomCode() + product.getUomText());
                             filteredProducts.add(product);
                         }
                     }
-                }else if (stockProductView.equals("0")){
-                    if (product.getStockQty()!=null && !product.getStockQty().equals("null")) {
+                } else if (stockProductView.equals("0")) {
+                    if (product.getStockQty() != null && !product.getStockQty().equals("null")) {
                         if (Double.parseDouble(product.getStockQty()) < 0 || Double.parseDouble(product.getStockQty()) == 0) {
                             filteredProducts.add(product);
                         }
                     }
-                }else {
+                } else {
                     filteredProducts.add(product);
                 }
             }
         }
 
 
-        if (filteredProducts.size()>0){
+        if (filteredProducts.size() > 0) {
             productLayout.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
-        }else {
+        } else {
             productLayout.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
         }
 
         productListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        selectProductAdapter=new SelectProductAdapter(this,filteredProducts, new SelectProductAdapter.CallBack() {
+        selectProductAdapter = new SelectProductAdapter(this, filteredProducts, new SelectProductAdapter.CallBack() {
             @Override
             public void searchProduct(ProductsModel model) {
-                productsModel=model;
-                productId=productsModel.getProductCode();
-
-               // setUomList(model.getProductUOMList());
+                productsModel = model;
+                productId = productsModel.getProductCode();
+                Log.w("pdtsInv", "" + model.getProductName() + "  .. " + model.getUomCode());
+                // setUomList(model.getProductUOMList());
                 uomTextView.setText(model.getUomText());
 
-                JSONObject jsonObject=new JSONObject();
-                try {
-                    jsonObject.put("CustomerCode",selectCustomerId);
-                    jsonObject.put("ItemCode",model.getProductCode());
-                    getUOM(jsonObject);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(isUomSetting) {
+
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("CustomerCode", selectCustomerId);
+                        jsonObject.put("ItemCode", model.getProductCode());
+                        getUOM(jsonObject);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 // Need to implement the product price concept in SAP
@@ -2466,26 +2735,26 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }*/
 
-                if (model.getMinimumSellingPrice()!=null && !model.getMinimumSellingPrice().isEmpty()){
+                if (model.getMinimumSellingPrice() != null && !model.getMinimumSellingPrice().isEmpty()) {
                     minimumSellingPriceText.setText(model.getMinimumSellingPrice());
-                }else {
+                } else {
                     minimumSellingPriceText.setText("0.00");
                 }
-                productName=productsModel.getProductName();
-                productAutoComplete.setText(model.getProductName()+" - "+model.getProductCode());
-              //  cartonPrice.setText(model.getUnitCost()+"");
-              //  loosePrice.setText(model.getUnitCost());
-                if (model.getLastPrice()!=null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00){
+                productName = productsModel.getProductName();
+                productAutoComplete.setText(model.getProductName() + " - " + model.getProductCode());
+                //  cartonPrice.setText(model.getUnitCost()+"");
+                //  loosePrice.setText(model.getUnitCost());
+                if (model.getLastPrice() != null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00) {
                     priceText.setText(model.getLastPrice());
-                }else {
+                } else {
                     priceText.setText(model.getUnitCost());
                 }
-               // uomText.setText(model.getUomCode());
+                // uomText.setText(model.getUomCode());
                 stockCount.setText(model.getStockQty());
                 pcsPerCarton.setText(model.getPcsPerCarton());
                 qtyValue.setEnabled(true);
                 qtyValue.requestFocus();
-              //  behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                //  behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 openKeyborard(qtyValue);
 
                 // looseQtyValue.setEnabled(true);
@@ -2495,8 +2764,9 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 discountEditext.setEnabled(true);
                 returnEditext.setEnabled(true);
 
+
                 stockLayout.setVisibility(View.VISIBLE);
-                if (model.getStockQty()!=null && !model.getStockQty().equals("null")) {
+                if (model.getStockQty() != null && !model.getStockQty().equals("null")) {
                     if (Double.parseDouble(model.getStockQty()) == 0 || Double.parseDouble(model.getStockQty()) < 0) {
                         stockQtyValue.setText(model.getStockQty());
                         stockQtyValue.setTextColor(Color.parseColor("#D24848"));
@@ -2509,73 +2779,154 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             }
         });
         productListView.setAdapter(selectProductAdapter);
-        totalProducts.setText(filteredProducts.size()+" Products");
+        totalProducts.setText(filteredProducts.size() + " Products");
         // get the Customer name from the local db
     }
 
-    private void setUomList(ArrayList<UomModel> uomList){
-        try {
-            Log.w("UOMList:",uomList.toString());
-            ArrayAdapter<UomModel> adapter=new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,uomList);
-            uomSpinner.setAdapter(adapter);
-            setUOMCode(uomList);
-        }catch (Exception exception){}
-    }
+    private void setDeliveryAddrList(ArrayList<DeliveryAddressModel> addrList) {
+         DeliveryAddressModel addressModel = new DeliveryAddressModel();
+         addressModel.setDeliveryAddress("Select Delivery Address");
+         addressModel.setDeliveryAddressCode("");
 
-    private void setUOMCode(ArrayList<UomModel> uomList){
-        uomSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//        Log.w("deladdrList:", addrList.toString());
+//        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.cust_spinner_item);
+
+//        for (int i = 0; i < addrList.size(); i++) {
+//            adapter.add(addrList.get(i).getDeliveryAddress());
+//        }
+        ArrayList<DeliveryAddressModel> deliveryAddressModels = new ArrayList<>();
+        deliveryAddressModels.add(0,addressModel);
+        deliveryAddressModels.addAll(addrList);
+        ArrayAdapter<DeliveryAddressModel> adapter = new ArrayAdapter<>(this, R.layout.cust_spinner_item, deliveryAddressModels);
+
+        delivery_addrSpinner.setAdapter(adapter);
+
+        if (productsModel != null) {
+            //setuom
+            Log.w("cg_addrsiz1", addrList.size() + "");
+            for (int i = 0; i < addrList.size(); i++) {
+                Log.w("cg_addrsiz", addrList.size() + "");
+
+
+                delivery_addrSpinner.setSelection(i);
+
+//                if (addrList.get(i).getDeliveryAddress().equals(productsModel.getDefaultUom())) {
+//                    Log.d("cg_addr_", productsModel.getDefaultUom());
+//                    delivery_addrSpinner.setSelection(i);
+//                    break;
+//                }
+            }
+        }
+        delivery_addrSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (isEditItem){
-                    selectValue(uomList,uomName);
-                }else {
-                    uomName=uomSpinner.getSelectedItem().toString();
-                    uomText.setText(uomList.get(position).getUomCode());
-                    priceText.setText(uomList.get(position).getPrice());
-                    Log.w("UOMQtyValue:",uomList.get(position).getUomEntry());
-                    Log.w("SelectedUOM:",uomName+"");
+                if (isEditItem) {
+                    int index = 0;
+
+                    for (DeliveryAddressModel model : deliveryAddressModels) {
+                        if (model.getDeliveryAddress().equalsIgnoreCase(deliverAddrNameStr)) {
+                            delivery_addrSpinner.setSelection(index);
+                            deliverAddrNameStr = model.getDeliveryAddress();
+//                            uomText.setText(model.getUomCode());
+//                            priceText.setText(model.getPrice());
+                            Log.w("selectAddrEd :", deliverAddrNameStr + "");
+                            break;
+                        }
+                        index++;
+                    }
+
+                } else {
+                    deliverAddrNameStr = delivery_addrSpinner.getSelectedItem().toString();
+//                    priceText.setText(uomList.get(position).getPrice());
+                    Log.w("deliAddr :", deliveryAddressModels.get(position).getDeliveryAddress());
+                    Log.w("SelectAddr:", deliverAddrNameStr + "");
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
     }
 
-    private void selectValue(ArrayList<UomModel> uomList, String  value) {
+    private void setUomList(ArrayList<UomModel> uomList) {
+
+            Log.w("UOMList:", uomList.toString());
+            ArrayAdapter<UomModel> adapter = new ArrayAdapter<>(this, R.layout.cust_spinner_item, uomList);
+            uomSpinner.setAdapter(adapter);
+            setUOMCode(uomList);
+            if (productsModel != null) {
+                //setuom
+                Log.d("cg_uomsiz1", uomList.size() + "");
+                for (int i = 0; i < uomList.size(); i++) {
+                    Log.w("cg_uomsiz", uomList.size() + "");
+                    if (uomList.get(i).getUomCode().equals(productsModel.getDefaultUom())) {
+                        Log.w("cg_uoomcode_", productsModel.getDefaultUom());
+                        uomSpinner.setSelection(i);
+                        uomText.setText(uomList.get(i).getUomCode());
+                        priceText.setText(uomList.get(i).getPrice());
+                        break;
+                    }
+                }
+            }
+    }
+
+    private void setUOMCode(ArrayList<UomModel> uomList) {
+        uomSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isEditItem) {
+                    selectValue(uomList, uomName);
+                } else {
+                    uomName = uomSpinner.getSelectedItem().toString();
+                    uomText.setText(uomList.get(position).getUomCode());
+                    priceText.setText(uomList.get(position).getPrice());
+                    Log.w("UOMQtyValue:", uomList.get(position).getUomEntry());
+                    Log.w("SelectedUOM:", uomName + "");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    private void selectValue(ArrayList<UomModel> uomList, String value) {
         try {
-            int index=0;
-            for (UomModel model:uomList){
-                if (model.getUomCode().equalsIgnoreCase(value)){
+            int index = 0;
+            for (UomModel model : uomList) {
+                if (model.getUomCode().equalsIgnoreCase(value)) {
                     uomSpinner.setSelection(index);
-                    uomName=model.getUomCode();
+                    uomName = model.getUomCode();
                     uomText.setText(model.getUomCode());
                     priceText.setText(model.getPrice());
-                    Log.w("SelectedUOMEdit:",uomName+"");
+                    Log.w("SelectedUOMEdit:", uomName + "");
                     break;
                 }
                 index++;
             }
-        }catch (Exception exception){}
+        } catch (Exception exception) {
+        }
     }
 
-    public void openKeyborard(EditText editText){
+    public void openKeyborard(EditText editText) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
     }
 
     private void filter(String text) {
         try {
-            settings=dbHelper.getSettings();
-            if (settings.size()>0) {
+            settings = dbHelper.getSettings();
+            if (settings.size() > 0) {
                 for (SettingsModel model : settings) {
                     if (model.getSettingName().equals("stock_view")) {
-                        if (model.getSettingValue().equals("1")){
-                            stockProductView="1";
-                        }else if (model.getSettingValue().equals("2")){
-                            stockProductView="2";
-                        }else {
-                            stockProductView="0";
+                        if (model.getSettingValue().equals("1")) {
+                            stockProductView = "1";
+                        } else if (model.getSettingValue().equals("2")) {
+                            stockProductView = "2";
+                        } else {
+                            stockProductView = "0";
                         }
                     }
                 }
@@ -2588,19 +2939,19 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 //if the existing elements contains the search input
                 if (s.getProductName().toLowerCase().contains(text.toLowerCase()) || s.getProductCode().toLowerCase().contains(text.toLowerCase())) {
                     //adding the element to filtered list
-                    if (stockProductView.equals("1")){
-                        if (s.getStockQty()!=null && !s.getStockQty().equals("null")){
-                            if (Double.parseDouble(s.getStockQty())>0){
+                    if (stockProductView.equals("1")) {
+                        if (s.getStockQty() != null && !s.getStockQty().equals("null")) {
+                            if (Double.parseDouble(s.getStockQty()) > 0) {
                                 filterProducts.add(s);
                             }
                         }
-                    }else if (stockProductView.equals("0")){
-                        if (s.getStockQty()!=null && !s.getStockQty().equals("null")) {
+                    } else if (stockProductView.equals("0")) {
+                        if (s.getStockQty() != null && !s.getStockQty().equals("null")) {
                             if (Double.parseDouble(s.getStockQty()) < 0 || Double.parseDouble(s.getStockQty()) == 0) {
                                 filterProducts.add(s);
                             }
                         }
-                    }else {
+                    } else {
                         filterProducts.add(s);
                     }
                 }
@@ -2609,9 +2960,9 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             selectProductAdapter.filterList(filterProducts);
 
             //setAdapter(filterProducts);
-            totalProducts.setText(filterProducts.size()+" Products");
+            totalProducts.setText(filterProducts.size() + " Products");
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             Log.e("Error_in_filter", Objects.requireNonNull(ex.getMessage()));
         }
     }
@@ -2628,63 +2979,68 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
             case R.id.action_save:
                 save_btn.setEnabled(b);
-                ArrayList<CreateInvoiceModel> localCart=dbHelper.getAllInvoiceProducts();
-                if (localCart.size()>0){
-                    if (activityFrom.equals("iv") || activityFrom.equals("ConvertInvoice")) {
-                        if (createInvoiceValidation()){
-                            showSaveAlert();
-                        }else {
-                            showAlertForCreditLimit();
-                        }
-                    }else {
+                ArrayList<CreateInvoiceModel> localCart = dbHelper.getAllInvoiceProducts();
+                if (localCart.size() > 0) {
+                    if (activityFrom.equals("iv")
+                            || activityFrom.equals("ConvertInvoice")) {
+                        showSaveAlert();
+
+//                        if (createInvoiceValidation()) {
+//                            showSaveAlert();
+//                        }
+//                        else {
+//                            showAlertForCreditLimit();
+//                        }
+                    }
+                    else {
                         showSaveAlert();
                     }
-                }else {
-                    Toast.makeText(getApplicationContext(),"Add the Product First...!",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Add the Product First...!", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-      //  return super.onOptionsItemSelected(item);
+        //  return super.onOptionsItemSelected(item);
     }
 
     public boolean createInvoiceValidation() {
-        boolean canCreateInvoice=false;
+        boolean canCreateInvoice = false;
         if (Double.parseDouble(creditLimitAmount) == 0.00) {
-            canCreateInvoice=true;
-        }else if (Double.parseDouble(creditLimitAmount) > 0.00){
-            if (Double.parseDouble(outstandingAmount) < Double.parseDouble(creditLimitAmount)){
-                double remainingAmount=Double.parseDouble(creditLimitAmount) - Double.parseDouble(outstandingAmount);
-                double net_total=Double.parseDouble(netTotalValue.getText().toString());
-                if (remainingAmount >= net_total ){
-                    canCreateInvoice=true;
-                }else {
-                   canCreateInvoice=false;
+            canCreateInvoice = true;
+        } else if (Double.parseDouble(creditLimitAmount) > 0.00) {
+            if (Double.parseDouble(outstandingAmount) < Double.parseDouble(creditLimitAmount)) {
+                double remainingAmount = Double.parseDouble(creditLimitAmount) - Double.parseDouble(outstandingAmount);
+                double net_total = Double.parseDouble(netTotalValue.getText().toString());
+                if (remainingAmount >= net_total) {
+                    canCreateInvoice = true;
+                } else {
+                    canCreateInvoice = false;
                 }
-            }else {
-                canCreateInvoice=false;
+            } else {
+                canCreateInvoice = false;
             }
         }
         return canCreateInvoice;
     }
 
 
-    public void showAlertForCreditLimit(){
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(CreateNewInvoiceActivity.this);
-        builder1.setTitle("Information");
-        builder1.setMessage(customerNameText.getText().toString()+"- Your Credit Limit exceed Can't create Invoice");
-        builder1.setCancelable(false);
-        builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alert11 = builder1.create();
-        alert11.show();
-    }
+//    public void showAlertForCreditLimit() {
+//        AlertDialog.Builder builder1 = new AlertDialog.Builder(CreateNewInvoiceActivity.this);
+//        builder1.setTitle("Information");
+//        builder1.setMessage(customerNameText.getText().toString() + "- Your Credit Limit exceed Can't create Invoice");
+//        builder1.setCancelable(false);
+//        builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int id) {
+//                dialog.cancel();
+//            }
+//        });
+//        AlertDialog alert11 = builder1.create();
+//        alert11.show();
+//    }
 
-    public void showSaveAlert(){
+    public void showSaveAlert() {
         try {
             // create an alert builder
             AlertDialog.Builder builder = new AlertDialog.Builder(CreateNewInvoiceActivity.this);
@@ -2693,53 +3049,53 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             final View customLayout = getLayoutInflater().inflate(R.layout.invoice_save_option, null);
             builder.setView(customLayout);
             // add a button
-            okButton=customLayout.findViewById(R.id.btn_ok);
-            cancelButton=customLayout.findViewById(R.id.btn_cancel);
-            invoicePrintCheck=customLayout.findViewById(R.id.invoice_print_check);
-            saveMessage=customLayout.findViewById(R.id.save_message);
-            saveTitle=customLayout.findViewById(R.id.save_title);
-            signatureCapture=customLayout.findViewById(R.id.signature_capture);
-            TextView noOfCopy=customLayout.findViewById(R.id.no_of_copy);
-            Button copyPlus=customLayout.findViewById(R.id.increase);
-            Button copyMinus=customLayout.findViewById(R.id.decrease);
-            Button signatureButton=customLayout.findViewById(R.id.btn_signature);
-            LinearLayout copyLayout=customLayout.findViewById(R.id.print_layout);
+            okButton = customLayout.findViewById(R.id.btn_ok);
+            cancelButton = customLayout.findViewById(R.id.btn_cancel);
+            invoicePrintCheck = customLayout.findViewById(R.id.invoice_print_check);
+            saveMessage = customLayout.findViewById(R.id.save_message);
+            saveTitle = customLayout.findViewById(R.id.save_title);
+            signatureCapture = customLayout.findViewById(R.id.signature_capture);
+            TextView noOfCopy = customLayout.findViewById(R.id.no_of_copy);
+            Button copyPlus = customLayout.findViewById(R.id.increase);
+            Button copyMinus = customLayout.findViewById(R.id.decrease);
+            Button signatureButton = customLayout.findViewById(R.id.btn_signature);
+            LinearLayout copyLayout = customLayout.findViewById(R.id.print_layout);
             //invoicePrintCheck.setVisibility(View.GONE);
-            if (activityFrom.equals("so") || activityFrom.equals("SalesEdit")){
+            if (activityFrom.equals("so") || activityFrom.equals("SalesEdit")) {
                 saveTitle.setText("Save SalesOrder");
                 saveMessage.setText("Are you sure want to save SalesOrder?");
                 invoicePrintCheck.setText("SalesOrder Print");
-                if (isCheckedSalesPrint){
+                if (isCheckedSalesPrint) {
                     invoicePrintCheck.setChecked(true);
-                    isPrintEnable=true;
+                    isPrintEnable = true;
                     copyLayout.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     invoicePrintCheck.setChecked(false);
-                    isPrintEnable=false;
+                    isPrintEnable = false;
                     copyLayout.setVisibility(View.GONE);
                 }
-            }else if (activityFrom.equals("do") ||  activityFrom.equals("doEdit")){
+            } else if (activityFrom.equals("do") || activityFrom.equals("doEdit")) {
                 saveTitle.setText("Save Delivery Order");
                 saveMessage.setText("Are you sure want to save Delivery Order?");
                 invoicePrintCheck.setText("Delivery Order Print");
                 invoicePrintCheck.setVisibility(View.GONE);
-                if (isCheckedSalesPrint){
+                if (isCheckedSalesPrint) {
                     invoicePrintCheck.setChecked(true);
-                    isPrintEnable=true;
+                    isPrintEnable = true;
                     copyLayout.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     invoicePrintCheck.setChecked(false);
-                    isPrintEnable=false;
+                    isPrintEnable = false;
                     copyLayout.setVisibility(View.GONE);
                 }
             } else {
-                if (isCheckedInvoicePrint){
+                if (isCheckedInvoicePrint) {
                     invoicePrintCheck.setChecked(true);
-                    isPrintEnable=true;
+                    isPrintEnable = true;
                     copyLayout.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     invoicePrintCheck.setChecked(false);
-                    isPrintEnable=false;
+                    isPrintEnable = false;
                     copyLayout.setVisibility(View.GONE);
                 }
             }
@@ -2752,11 +3108,11 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             invoicePrintCheck.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (invoicePrintCheck.isChecked()){
-                        isPrintEnable=true;
+                    if (invoicePrintCheck.isChecked()) {
+                        isPrintEnable = true;
                         copyLayout.setVisibility(View.VISIBLE);
-                    }else {
-                        isPrintEnable=false;
+                    } else {
+                        isPrintEnable = false;
                         copyLayout.setVisibility(View.GONE);
                     }
                 }
@@ -2765,21 +3121,21 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             copyPlus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String copyvalue=noOfCopy.getText().toString();
-                    int copy=Integer.parseInt(copyvalue);
+                    String copyvalue = noOfCopy.getText().toString();
+                    int copy = Integer.parseInt(copyvalue);
                     copy++;
-                    noOfCopy.setText(copy+"");
+                    noOfCopy.setText(copy + "");
                 }
             });
 
             copyMinus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (!noOfCopy.getText().toString().equals("1")){
-                        String copyvalue=noOfCopy.getText().toString();
-                        int copy=Integer.parseInt(copyvalue);
+                    if (!noOfCopy.getText().toString().equals("1")) {
+                        String copyvalue = noOfCopy.getText().toString();
+                        int copy = Integer.parseInt(copyvalue);
                         copy--;
-                        noOfCopy.setText(copy+"");
+                        noOfCopy.setText(copy + "");
                     }
                 }
             });
@@ -2792,39 +3148,40 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 try {
                     if (companyCode.equals("AADHI INTERNATIONAL PTE LTD")) {
                         if (activityFrom.equals("iv") || activityFrom.equals("ConvertInvoice")) {
-                            if (signatureString!=null && !signatureString.isEmpty()){
+                            if (signatureString != null && !signatureString.isEmpty()) {
                                 alert.dismiss();
-                                if (activityFrom.equals("iv") || activityFrom.equals("ConvertInvoice")){
+                                if (activityFrom.equals("iv") || activityFrom.equals("ConvertInvoice")) {
                                     createInvoiceJson(Integer.parseInt(noOfCopy.getText().toString()));
-                                }else if (activityFrom.equals("so") || activityFrom.equals("SalesEdit")){
+                                } else if (activityFrom.equals("so") || activityFrom.equals("SalesEdit")) {
                                     createSalesOrderJson(Integer.parseInt(noOfCopy.getText().toString()));
-                                }else if (activityFrom.equals("do") || activityFrom.equals("doEdit")){
+                                } else if (activityFrom.equals("do") || activityFrom.equals("doEdit")) {
                                     createDOJson(Integer.parseInt(noOfCopy.getText().toString()));
                                 }
-                            }else {
-                                Toast.makeText(getApplicationContext(),"Add Signature to Save Invoice",Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Add Signature to Save Invoice", Toast.LENGTH_SHORT).show();
                             }
-                        }else {
+                        } else {
                             alert.dismiss();
-                            if (activityFrom.equals("iv") || activityFrom.equals("ConvertInvoice")){
+                            if (activityFrom.equals("iv") || activityFrom.equals("ConvertInvoice")) {
                                 createInvoiceJson(Integer.parseInt(noOfCopy.getText().toString()));
-                            }else if (activityFrom.equals("so") || activityFrom.equals("SalesEdit")){
+                            } else if (activityFrom.equals("so") || activityFrom.equals("SalesEdit")) {
                                 createSalesOrderJson(Integer.parseInt(noOfCopy.getText().toString()));
-                            }else if (activityFrom.equals("do") || activityFrom.equals("doEdit")){
+                            } else if (activityFrom.equals("do") || activityFrom.equals("doEdit")) {
                                 createDOJson(Integer.parseInt(noOfCopy.getText().toString()));
                             }
                         }
-                    }else {
+                    } else {
                         alert.dismiss();
-                        if (activityFrom.equals("iv") || activityFrom.equals("ConvertInvoice")){
+                        if (activityFrom.equals("iv") || activityFrom.equals("ConvertInvoice")) {
                             createInvoiceJson(Integer.parseInt(noOfCopy.getText().toString()));
-                        }else if (activityFrom.equals("so") || activityFrom.equals("SalesEdit")){
+                        } else if (activityFrom.equals("so") || activityFrom.equals("SalesEdit")) {
                             createSalesOrderJson(Integer.parseInt(noOfCopy.getText().toString()));
-                        }else if (activityFrom.equals("do") || activityFrom.equals("doEdit")){
+                        } else if (activityFrom.equals("do") || activityFrom.equals("doEdit")) {
                             createDOJson(Integer.parseInt(noOfCopy.getText().toString()));
                         }
                     }
-                }catch (Exception exception){}
+                } catch (Exception exception) {
+                }
             });
 
             cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -2834,17 +3191,18 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                     alert.cancel();
                 }
             });
-        }catch (Exception exception){}
+        } catch (Exception exception) {
+        }
     }
 
 
-    public  void saveSalesOrder(JSONObject jsonBody,String action,int copy){
+    public void saveSalesOrder(JSONObject jsonBody, String action, int copy) {
         try {
             pDialog = new SweetAlertDialog(CreateNewInvoiceActivity.this, SweetAlertDialog.PROGRESS_TYPE);
             pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-            if (action.equals("SalesOrder")){
+            if (action.equals("SalesOrder")) {
                 pDialog.setTitleText("Saving Sales Order...");
-            }else if (action.equals("DeliveryOrder")){
+            } else if (action.equals("DeliveryOrder")) {
                 pDialog.setTitleText("Saving Delivery Order...");
             } else {
                 pDialog.setTitleText("Saving Invoice...");
@@ -2852,19 +3210,19 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             pDialog.setCancelable(false);
             pDialog.show();
             RequestQueue requestQueue = Volley.newRequestQueue(this);
-            Log.w("GivenInvoiceRequest:",jsonBody.toString());
-            String URL="";
-            if (action.equals("SalesOrder")){
-                URL=Utils.getBaseUrl(this)+"PostingSalesOrder";
-            }else if (action.equals("DeliveryOrder")){
-                URL=Utils.getBaseUrl(this)+"PostingDeliveryOrder";
+            Log.w("GivenSalesOrdReq :", jsonBody.toString());
+            String URL = "";
+            if (action.equals("SalesOrder")) {
+                URL = Utils.getBaseUrl(this) + "PostingSalesOrder";
+            } else if (action.equals("DeliveryOrder")) {
+                URL = Utils.getBaseUrl(this) + "PostingDeliveryOrder";
             } else {
-                URL=Utils.getBaseUrl(this)+"PostingInvoice";
+                URL = Utils.getBaseUrl(this) + "PostingInvoice";
             }
-            Log.w("Given_InvoiceApi:",URL);
+            Log.w("Given_InvoiceApi:", URL);
             //    {"statusCode":2,"statusMessage":"Failed","responseData":{"docNum":null,"error":"Invoice :One of the base documents has already been closed  [INV1.BaseEntry][line: 1]"}}
-            JsonObjectRequest salesOrderRequest = new JsonObjectRequest(Request.Method.POST, URL,jsonBody, response -> {
-                Log.w("Invoice_ResponseSap:",response.toString());
+            JsonObjectRequest salesOrderRequest = new JsonObjectRequest(Request.Method.POST, URL, jsonBody, response -> {
+                Log.w("Invoice_ResponseSap:", response.toString());
                 Utils.clearCustomerSession(this);
                 AppUtils.setProductsList(null);
                 dbHelper.removeAllReturn();
@@ -2872,43 +3230,43 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 // {"statusCode":1,"statusMessage":"Invoice Created Successfully","responseData":{"docNum":"35","error":null}}
                 pDialog.dismiss();
                 save_btn.setEnabled(true);
-                String statusCode=response.optString("statusCode");
-                String message=response.optString("statusMessage");
+                String statusCode = response.optString("statusCode");
+                String message = response.optString("statusMessage");
                 JSONObject responseData = null;
                 try {
-                    responseData=response.getJSONObject("responseData");
+                    responseData = response.getJSONObject("responseData");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if (statusCode.equals("1")){
-                    if (action.equals("SalesOrder") || action.equals("SalesEdit")){
-                        if (isPrintEnable){
+                if (statusCode.equals("1")) {
+                    if (action.equals("SalesOrder") || action.equals("SalesEdit")) {
+                        if (isPrintEnable) {
                             try {
                                 dbHelper.removeAllInvoiceItems();
-                                JSONObject object=response.optJSONObject("responseData");
-                                String doucmentNo =object.optString("docNum");
+                                JSONObject object = response.optJSONObject("responseData");
+                                String doucmentNo = object.optString("docNum");
                                 //   String result=object.optString("Result");
                                 if (!doucmentNo.isEmpty()) {
-                                   // getSalesOrderDetails(doucmentNo, copy);
-                                    Intent intent=new Intent(this,SalesOrderListActivity.class);
-                                    intent.putExtra("printSoNumber",doucmentNo);
-                                    intent.putExtra("noOfCopy",String.valueOf(copy));
+                                    // getSalesOrderDetails(doucmentNo, copy);
+                                    Intent intent = new Intent(this, SalesOrderListActivity.class);
+                                    intent.putExtra("printSoNumber", doucmentNo);
+                                    intent.putExtra("noOfCopy", String.valueOf(copy));
                                     startActivity(intent);
                                     finish();
-                                }else {
-                                    Toast.makeText(getApplicationContext(),"Error in getting printing data",Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Error in getting printing data", Toast.LENGTH_SHORT).show();
                                     redirectActivity();
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        }else {
+                        } else {
                             dbHelper.removeAllInvoiceItems();
                             redirectActivity();
                         }
-                        isPrintEnable=false;
-                    }else if (action.equals("DeliveryOrder") || action.equals("DeliveryOrderEdit")){
-                        Intent intent=new Intent(getApplicationContext(),DeliveryOrderListActivity.class);
+                        isPrintEnable = false;
+                    } else if (action.equals("DeliveryOrder") || action.equals("DeliveryOrderEdit")) {
+                        Intent intent = new Intent(getApplicationContext(), DeliveryOrderListActivity.class);
                         startActivity(intent);
                         finish();
                       /*  if (isPrintEnable){
@@ -2931,55 +3289,55 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                             dbHelper.removeAllItems();
                             redirectActivity();
                         }*/
-                        isPrintEnable=false;
+                        isPrintEnable = false;
                     } else {
-                        if (isPrintEnable){
+                        if (isPrintEnable) {
                             try {
                                 //updateStockQty();
                                 dbHelper.removeAllInvoiceItems();
-                                JSONObject object=response.optJSONObject("responseData");
-                                String doucmentNo =object.optString("docNum");
+                                JSONObject object = response.optJSONObject("responseData");
+                                String doucmentNo = object.optString("docNum");
                                 //   String result=object.optString("Result");
                                 if (!doucmentNo.isEmpty()) {
-                                    getInvoicePrintDetails(doucmentNo,copy);
-                                    Intent intent=new Intent(getApplicationContext(),NewInvoiceListActivity.class);
+                                    getInvoicePrintDetails(doucmentNo, copy);
+                                    Intent intent = new Intent(getApplicationContext(), NewInvoiceListActivity.class);
                                     startActivity(intent);
                                     finish();
-                                }else {
-                                    Toast.makeText(getApplicationContext(),"Error in getting printing data",Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Error in getting printing data", Toast.LENGTH_SHORT).show();
                                     redirectActivity();
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        }else {
+                        } else {
                             dbHelper.removeAllInvoiceItems();
                             redirectActivity();
                         }
-                        isPrintEnable=false;
+                        isPrintEnable = false;
                     }
-                }else {
+                } else {
 //                    Log.w("ErrorValues:",responseData.optString("error"));
-                    JSONObject jsonObject=new JSONObject();
+                    JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("User",username);
-                        jsonObject.put("CardCode",customerCode);
-                        jsonObject.put("ItemGroupCode","All");
+                        jsonObject.put("User", username);
+                        jsonObject.put("CardCode", customerCode);
+                        jsonObject.put("ItemGroupCode", "All");
                         getAllProducts(jsonObject);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    if (responseData!=null){
-                        Toast.makeText(getApplicationContext(),responseData.optString("error"),Toast.LENGTH_LONG).show();
-                    }else {
-                        Toast.makeText(getApplicationContext(),"Error in Saving Data...",Toast.LENGTH_SHORT).show();
+                    if (responseData != null) {
+                        Toast.makeText(getApplicationContext(), responseData.optString("error"), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Error in Saving Data...", Toast.LENGTH_SHORT).show();
                     }
                 }
             }, error -> {
-                Log.w("SalesOrder_Response:",error.toString());
+                Log.w("SalesOrder_Response:", error.toString());
                 save_btn.setEnabled(true);
-                Toast.makeText(getApplicationContext(),error.toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
                 pDialog.dismiss();
             }) {
                 /* @Override
@@ -2990,6 +3348,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 public String getBodyContentType() {
                     return "application/json";
                 }
+
                 @Override
                 public Map<String, String> getHeaders() {
                     HashMap<String, String> params = new HashMap<>();
@@ -3004,10 +3363,12 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 public int getCurrentTimeout() {
                     return 50000;
                 }
+
                 @Override
                 public int getCurrentRetryCount() {
                     return 50000;
                 }
+
                 @Override
                 public void retry(VolleyError error) throws VolleyError {
                 }
@@ -3018,38 +3379,38 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         }
     }
 
-    public  void getCustomerDetails(String customerCode,boolean isloader,String from) {
+    public void getCustomerDetails(String customerCode, boolean isloader, String from) {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Initialize a new JsonArrayRequest instance
-        JSONObject jsonObject=new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("CustomerCode",customerCode);
+            jsonObject.put("CustomerCode", customerCode);
             // jsonObject.put("CompanyCode",companyCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("JsonValueForCustomer:",jsonObject.toString());
-        String url= Utils.getBaseUrl(getApplicationContext()) +"Customer";
-        Log.w("Given_url:",url);
-        ProgressDialog progressDialog=new ProgressDialog(getApplicationContext());
+        Log.w("JsonValueForCustomer:", jsonObject.toString());
+        String url = Utils.getBaseUrl(getApplicationContext()) + "Customer";
+        Log.w("Given_url:", url);
+        ProgressDialog progressDialog = new ProgressDialog(getApplicationContext());
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Customer Details Loading...");
-        if (isloader){
+        if (isloader) {
             progressDialog.show();
         }
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
-                    try{
+                    try {
                         progressDialog.dismiss();
-                        Log.w("SAP-response_customer:",response.toString());
-                        ArrayList<CustomerModel> customerList=new ArrayList<>();
-                        String statusCode=response.optString("statusCode");
-                        if (statusCode.equals("1")){
-                            customerResponse=response;
-                            JSONArray customerDetailArray=response.optJSONArray("responseData");
-                            for (int i=0;i<customerDetailArray.length();i++){
-                                JSONObject object=customerDetailArray.optJSONObject(i);
+                        Log.w("res_custPdt:", response.toString());
+                        ArrayList<CustomerModel> customerList = new ArrayList<>();
+                        String statusCode = response.optString("statusCode");
+                        if (statusCode.equals("1")) {
+                            customerResponse = response;
+                            JSONArray customerDetailArray = response.optJSONArray("responseData");
+                            for (int i = 0; i < customerDetailArray.length(); i++) {
+                                JSONObject object = customerDetailArray.optJSONObject(i);
                                 //  if (customerObject.optBoolean("IsActive")) {
                                 CustomerModel model = new CustomerModel();
                                 model.setCustomerCode(object.optString("customerCode"));
@@ -3064,8 +3425,8 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                                 model.setTaxCode(object.optString("taxCode"));
                                 model.setCreditLimitAmount(object.optString("creditLimit"));
 
-                                creditLimitAmount=object.optString("creditLimit");
-                                outstandingAmount=object.optString("outstandingAmount");
+                                creditLimitAmount = object.optString("creditLimit");
+                                outstandingAmount = object.optString("outstandingAmount");
 
                                 //  model.setCustomerBarcode(object.optString("BarCode"));
                                 // model.setCustomerBarcode(String.valueOf(i));
@@ -3077,20 +3438,20 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                                 customerList.add(model);
                                 // }
                             }
-                        }else {
-                            Toast.makeText(getApplicationContext(),"Error,in getting Customer list",Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Error,in getting Customer list", Toast.LENGTH_LONG).show();
                         }
                         // pDialog.dismiss();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             // Do something when error occurred
             //  pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
+            Log.d("Error_throwing:", error.toString());
             progressDialog.dismiss();
             // Toast.makeText(getActivity(),error.toString(),Toast.LENGTH_LONG).show();
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -3100,20 +3461,10 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 return params;
             }
         };
-        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
 
-            }
-        });
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
@@ -3124,16 +3475,16 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         groupspinner.setAdapter(myAdapter);
         groupspinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                JSONObject jsonObject=new JSONObject();
+                JSONObject jsonObject = new JSONObject();
                 try {
-                    String itemCode=itemGroup.get(i).getGroupCode();
-                    Log.e("selectspinn",""+ itemCode);
-                  //  if (!itemCode.equals("Select Brand")){
-                        jsonObject.put("User",username);
-                        jsonObject.put("CardCode",customerCode);
-                        jsonObject.put("ItemGroupCode",itemCode);
-                        getAllProducts(jsonObject);
-                  //  }
+                    String itemCode = itemGroup.get(i).getGroupCode();
+                    Log.e("selectspinn", "" + itemCode);
+                    //  if (!itemCode.equals("Select Brand")){
+                    jsonObject.put("User", username);
+                    jsonObject.put("CardCode", customerCode);
+                    jsonObject.put("ItemGroupCode", itemCode);
+                    getAllProducts(jsonObject);
+                    //  }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -3148,26 +3499,26 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     private ArrayList<ItemGroupList> getGrouplist() throws JSONException {
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(getApplicationContext()) +"ItemGroupList";
+        String url = Utils.getBaseUrl(getApplicationContext()) + "ItemGroupList";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url_group:",url);
-    //    pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-     //   pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-     //   pDialog.setTitleText("Loading Groups...");
-      //  pDialog.setCancelable(false);
-      //  pDialog.show();
-        itemGroup =new ArrayList<>();
-      //  itemGroup.add(new ItemGroupList("Select Brand", "Select Brand"));
+        Log.w("Given_url_group:", url);
+        //    pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        //   pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        //   pDialog.setTitleText("Loading Groups...");
+        //  pDialog.setCancelable(false);
+        //  pDialog.show();
+        itemGroup = new ArrayList<>();
+        //  itemGroup.add(new ItemGroupList("Select Brand", "Select Brand"));
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
-                    try{
-                        Log.w("grouplist:",response.toString());
+                    try {
+                        Log.w("grouplist:", response.toString());
 
-                       // pDialog.dismiss();
-                        String statusCode=response.optString("statusCode");
-                        String statusMessage=response.optString("statusMessage");
-                        if (statusCode.equals("1")){
-                            JSONArray  groupArray=response.optJSONArray("responseData");
+                        // pDialog.dismiss();
+                        String statusCode = response.optString("statusCode");
+                        String statusMessage = response.optString("statusMessage");
+                        if (statusCode.equals("1")) {
+                            JSONArray groupArray = response.optJSONArray("responseData");
 
                             for (int i = 0; i < groupArray.length(); i++) {
                                 JSONObject jsonObject = groupArray.getJSONObject(i);
@@ -3176,213 +3527,9 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                                 ItemGroupList itemGroupList = new ItemGroupList(groupCode, groupName);
                                 itemGroup.add(itemGroupList);
                             }
-                            if (itemGroup.size()>0){
+                            if (itemGroup.size() > 0) {
                                 setupGroup(itemGroup);
                             }
-                        }
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }, error -> {
-            // Do something when error occurred
-           //  pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
-        }){
-            @Override
-            public Map<String, String> getHeaders() {
-                HashMap<String, String> params = new HashMap<>();
-                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
-                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
-                params.put("Authorization", auth);
-                return params;
-            }
-        };
-        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-
-            }
-        });
-        // Add JsonArrayRequest to the RequestQueue
-        requestQueue.add(jsonObjectRequest);
-        return itemGroup;
-    }
-
-    public void redirectActivity(){
-        orderNoText.setText("");
-        Intent intent;
-        if (activityFrom.equals("iv")){
-            intent = new Intent(CreateNewInvoiceActivity.this, NewInvoiceListActivity.class);
-        }else {
-            intent = new Intent(CreateNewInvoiceActivity.this, SalesOrderListActivity.class);
-        }
-        startActivity(intent);
-        finish();
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            int count=dbHelper.numberOfRowsInInvoice();
-            if (count>0){
-                showDeleteAlert();
-            }else {
-                finish();
-            }
-            return true;
-        }else if(keyCode == KeyEvent.KEYCODE_HOME){
-            finish();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.save_menu, menu);
-        save_btn = menu.findItem(R.id.action_save);
-        return true;
-    }
-
-    public void showDeleteAlert(){
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(CreateNewInvoiceActivity.this);
-        builder1.setMessage("Data Will be Cleared are you sure want to back?");
-        builder1.setCancelable(false);
-        builder1.setPositiveButton("Yes",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dbHelper.removeAllInvoiceItems();
-                        dbHelper.removeAllReturn();
-                        finish();
-                        dialog.cancel();
-                    }
-                });
-
-        builder1.setNegativeButton(
-                "No",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alert11 = builder1.create();
-        alert11.show();
-    }
-
-    private void getInvoicePrintDetails(String invoiceNumber,int copy) throws JSONException {
-        // Initialize a new RequestQueue instance
-        JSONObject jsonObject = new JSONObject();
-        // jsonObject.put("CompanyCode", companyId);
-        jsonObject.put("InvoiceNo", invoiceNumber);
-        jsonObject.put("LocationCode",locationCode);
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url = Utils.getBaseUrl(this) + "InvoiceDetails";
-        // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:", url);
-
-        invoiceHeaderDetails = new ArrayList<>();
-        invoicePrintList = new ArrayList<>();
-        salesReturnList=new ArrayList<>();
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
-                    try {
-                        Log.w("DetailsResponse::", response.toString());
-                        String statusCode=response.optString("statusCode");
-                        if (statusCode.equals("1")){
-                            JSONArray responseData=response.getJSONArray("responseData");
-                            JSONObject object=responseData.optJSONObject(0);
-
-                            InvoicePrintPreviewModel model = new InvoicePrintPreviewModel();
-                            model.setInvoiceNumber(object.optString("invoiceNumber"));
-                            model.setInvoiceDate(object.optString("invoiceDate"));
-                            model.setCustomerCode(object.optString("customerCode"));
-                            model.setCustomerName(object.optString("customerName"));
-                            model.setOverAllTotal(object.optString("overAllTotal"));
-                            model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
-                            model.setAddress2(object.optString("address2"));
-                            model.setAddress3(object.optString("address3"));
-                            // model.setDeliveryAddress(model.getAddress());
-                            model.setSubTotal(object.optString("subTotal"));
-                            model.setNetTax(object.optString("taxTotal"));
-                            model.setNetTotal(object.optString("netTotal"));
-                            model.setPaymentTerm(object.optString("paymentTerm"));
-                            model.setTaxType(object.optString("taxType"));
-                            model.setTaxValue(object.optString("taxPerc"));
-                            model.setOutStandingAmount(object.optString("totalOutstandingAmount"));
-                            model.setBalanceAmount(object.optString("balanceAmount"));
-                            Utils.setInvoiceOutstandingAmount(object.optString("balanceAmount"));
-                            Utils.setInvoiceMode("Invoice");
-                            model.setBillDiscount(object.optString("billDiscount"));
-                            model.setItemDiscount(object.optString("totalDiscount"));
-                            model.setSoNumber(object.optString("soNumber"));
-                            model.setSoDate(object.optString("soDate"));
-                            model.setDoDate(object.optString("doDate"));
-                            model.setDoNumber(object.optString("doNumber"));
-                            String signFlag=object.optString("signFlag");
-                            if (signFlag.equals("Y")){
-                                String signature=object.optString("signature");
-                                Utils.setSignature(signature);
-                                createSignature();
-                            }else {
-                                Utils.setSignature("");
-                            }
-
-                            JSONArray detailsArray=object.optJSONArray("invoiceDetails");
-                            for (int i=0;i<detailsArray.length();i++){
-                                JSONObject detailObject=detailsArray.optJSONObject(i);
-                                InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();                                        invoiceListModel.setProductCode(detailObject.optString("productCode"));
-                                invoiceListModel.setDescription(detailObject.optString("productName"));
-                                invoiceListModel.setLqty(detailObject.optString("unitQty"));
-                                invoiceListModel.setCqty(detailObject.optString("cartonQty"));
-                                invoiceListModel.setNetQty(detailObject.optString("quantity"));
-                                invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
-                                invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
-                                invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
-                                invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
-                                invoiceListModel.setUnitPrice(detailObject.optString("price"));
-
-                                double qty1 = Double.parseDouble(detailObject.optString("quantity"));
-                                double price1 = Double.parseDouble(detailObject.optString("price"));
-                                double nettotal1 = qty1 * price1;
-                                invoiceListModel.setTotal(detailObject.optString("lineTotal"));
-                                invoiceListModel.setPricevalue(String.valueOf(price1));
-
-                                invoiceListModel.setUomCode(detailObject.optString("uomCode"));
-                                invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
-                                invoiceListModel.setItemtax(detailObject.optString("totalTax"));
-                                invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
-                                invoicePrintList.add(invoiceListModel);
-
-                                model.setInvoiceList(invoicePrintList);
-                                invoiceHeaderDetails.add(model);
-                            }
-
-                            JSONArray SRArray=object.optJSONArray("sR_Details");
-                            assert SRArray != null;
-                            if (SRArray.length() > 0){
-                                JSONObject SRoblect = SRArray.optJSONObject(0);
-                                InvoicePrintPreviewModel.SalesReturnList salesReturnModel = new InvoicePrintPreviewModel.SalesReturnList();
-                                salesReturnModel.setSalesReturnNumber(SRoblect.optString("salesReturnNumber"));
-                                salesReturnModel.setsRSubTotal(SRoblect.optString("sR_SubTotal"));
-                                salesReturnModel.setsRTaxTotal(SRoblect.optString("sR_TaxTotal"));
-                                salesReturnModel.setsRNetTotal(SRoblect.optString("sR_NetTotal"));
-                                salesReturnList.add(salesReturnModel);
-                            }
-
-                            model.setSalesReturnList(salesReturnList);
-                            invoiceHeaderDetails.add(model);
-                            printInvoice(copy);
-                        }else {
-                            Toast.makeText(getApplicationContext(),"Error in printing Data...",Toast.LENGTH_SHORT).show();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -3419,55 +3566,264 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         });
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
+        return itemGroup;
     }
-    public void printInvoice(int copy){
+
+    public void redirectActivity() {
+        orderNoText.setText("");
+        Intent intent;
+        if (activityFrom.equals("iv")) {
+            intent = new Intent(CreateNewInvoiceActivity.this, NewInvoiceListActivity.class);
+        } else {
+            intent = new Intent(CreateNewInvoiceActivity.this, SalesOrderListActivity.class);
+        }
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            int count = dbHelper.numberOfRowsInInvoice();
+            if (count > 0) {
+                showDeleteAlert();
+            } else {
+                finish();
+            }
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_HOME) {
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.save_menu, menu);
+        save_btn = menu.findItem(R.id.action_save);
+        return true;
+    }
+
+    public void showDeleteAlert() {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(CreateNewInvoiceActivity.this);
+        builder1.setMessage("Data Will be Cleared are you sure want to back?");
+        builder1.setCancelable(false);
+        builder1.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dbHelper.removeAllInvoiceItems();
+                        dbHelper.removeAllReturn();
+                        finish();
+                        dialog.cancel();
+                    }
+                });
+
+        builder1.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+    }
+
+    private void getInvoicePrintDetails(String invoiceNumber, int copy) throws JSONException {
+        // Initialize a new RequestQueue instance
+        JSONObject jsonObject = new JSONObject();
+        // jsonObject.put("CompanyCode", companyId);
+        jsonObject.put("InvoiceNo", invoiceNumber);
+        jsonObject.put("LocationCode", locationCode);
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url = Utils.getBaseUrl(this) + "InvoiceDetails";
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_urlInv:", url + " .." + jsonObject);
+
+        invoiceHeaderDetails = new ArrayList<>();
+        invoicePrintList = new ArrayList<>();
+        salesReturnList = new ArrayList<>();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
+            try {
+                Log.w("DetailsResponse:: ", response.toString());
+                String statusCode = response.optString("statusCode");
+                if (statusCode.equals("1")) {
+                    JSONArray responseData = response.getJSONArray("responseData");
+                    JSONObject object = responseData.optJSONObject(0);
+
+                    InvoicePrintPreviewModel model = new InvoicePrintPreviewModel();
+                    model.setInvoiceNumber(object.optString("invoiceNumber"));
+                    model.setInvoiceDate(object.optString("invoiceDate"));
+                    model.setCustomerCode(object.optString("customerCode"));
+                    model.setCustomerName(object.optString("customerName"));
+                    model.setOverAllTotal(object.optString("overAllTotal"));
+                    model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
+                    model.setAddress2(object.optString("address2"));
+                    model.setAddress3(object.optString("address3"));
+                    // model.setDeliveryAddress(model.getAddress());
+                    model.setSubTotal(object.optString("subTotal"));
+                    model.setNetTax(object.optString("taxTotal"));
+                    model.setNetTotal(object.optString("netTotal"));
+                    model.setPaymentTerm(object.optString("paymentTerm"));
+                    model.setTaxType(object.optString("taxType"));
+                    model.setTaxValue(object.optString("taxPerc"));
+                    model.setOutStandingAmount(object.optString("totalOutstandingAmount"));
+                    model.setBalanceAmount(object.optString("balanceAmount"));
+                    Utils.setInvoiceOutstandingAmount(object.optString("balanceAmount"));
+                    Utils.setInvoiceMode("Invoice");
+                    model.setBillDiscount(object.optString("billDiscount"));
+                    model.setItemDiscount(object.optString("totalDiscount"));
+                    model.setSoNumber(object.optString("soNumber"));
+                    model.setSoDate(object.optString("soDate"));
+                    model.setDoDate(object.optString("doDate"));
+                    model.setDoNumber(object.optString("doNumber"));
+                    String signFlag = object.optString("signFlag");
+                    if (signFlag.equals("Y")) {
+                        String signature = object.optString("signature");
+                        Utils.setSignature(signature);
+                        createSignature();
+                    } else {
+                        Utils.setSignature("");
+                    }
+
+                    JSONArray detailsArray = object.optJSONArray("invoiceDetails");
+                    for (int i = 0; i < detailsArray.length(); i++) {
+                        JSONObject detailObject = detailsArray.optJSONObject(i);
+                        InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                        invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                        invoiceListModel.setDescription(detailObject.optString("productName"));
+                        invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                        invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                        invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                        invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
+                        invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                        invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                        invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                        invoiceListModel.setUnitPrice(detailObject.optString("price"));
+
+                        double qty1 = Double.parseDouble(detailObject.optString("quantity"));
+                        double price1 = Double.parseDouble(detailObject.optString("price"));
+                        double nettotal1 = qty1 * price1;
+                        invoiceListModel.setTotal(detailObject.optString("lineTotal"));
+                        invoiceListModel.setPricevalue(String.valueOf(price1));
+
+                        invoiceListModel.setUomCode(detailObject.optString("uomCode"));
+                        invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                        invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                        invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                        invoicePrintList.add(invoiceListModel);
+
+                        model.setInvoiceList(invoicePrintList);
+                        invoiceHeaderDetails.add(model);
+                    }
+
+                    JSONArray SRArray = object.optJSONArray("sR_Details");
+                    assert SRArray != null;
+                    if (SRArray.length() > 0) {
+                        JSONObject SRoblect = SRArray.optJSONObject(0);
+                        InvoicePrintPreviewModel.SalesReturnList salesReturnModel = new InvoicePrintPreviewModel.SalesReturnList();
+                        salesReturnModel.setSalesReturnNumber(SRoblect.optString("salesReturnNumber"));
+                        salesReturnModel.setsRSubTotal(SRoblect.optString("sR_SubTotal"));
+                        salesReturnModel.setsRTaxTotal(SRoblect.optString("sR_TaxTotal"));
+                        salesReturnModel.setsRNetTotal(SRoblect.optString("sR_NetTotal"));
+                        salesReturnList.add(salesReturnModel);
+                    }
+
+                    model.setSalesReturnList(salesReturnList);
+                    invoiceHeaderDetails.add(model);
+                    printInvoice(copy);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error in printing Data...", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, error -> {
+            // Do something when error occurred
+            //  pDialog.dismiss();
+            Log.w("Error_throwing:", error.toString());
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void printInvoice(int copy) {
         try {
            /* if (pDialog!=null && pDialog.isShowing()){
                 pDialog.dismiss();
             }*/
-            new PrinterUtils(this,printerMacId).printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
+            new PrinterUtils(this, printerMacId).printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
             Utils.setSignature("");
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
-    private void createSignature(){
-        if (Utils.getSignature()!=null && !Utils.getSignature().isEmpty()){
+    private void createSignature() {
+        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
             try {
-                ImageUtil.saveStamp(this,Utils.getSignature(),"Signature");
+                ImageUtil.saveStamp(this, Utils.getSignature(), "Signature");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void getSalesOrderDetails(String soNumber,int copy) throws JSONException {
+    private void getSalesOrderDetails(String soNumber, int copy) throws JSONException {
         // Initialize a new RequestQueue instance
-        JSONObject jsonObject=new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         //  jsonObject.put("CompanyCode",companyId);
         jsonObject.put("SalesOrderNo", soNumber);
         // jsonObject.put("LocationCode",locationCode);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"SalesOrderDetails";
+        String url = Utils.getBaseUrl(this) + "SalesOrderDetails";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_url:", url);
         //   pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         //   pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         //  pDialog.setTitleText("Generating Print Preview...");
         //  pDialog.setCancelable(false);
         //  pDialog.show();
-        salesOrderHeaderDetails =new ArrayList<>();
-        salesPrintList =new ArrayList<>();
+        salesOrderHeaderDetails = new ArrayList<>();
+        salesPrintList = new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
-                    try{
+                    try {
 
-                        Log.w("Sales_Details:",response.toString());
-                        String statusCode=response.optString("statusCode");
-                        if (statusCode.equals("1")){
-                            JSONArray responseData=response.getJSONArray("responseData");
-                            JSONObject object=responseData.optJSONObject(0);
+                        Log.w("Sales_Details:", response.toString());
+                        String statusCode = response.optString("statusCode");
+                        if (statusCode.equals("1")) {
+                            JSONArray responseData = response.getJSONArray("responseData");
+                            JSONObject object = responseData.optJSONObject(0);
 
-                            SalesOrderPrintPreviewModel model=new SalesOrderPrintPreviewModel();
+                            SalesOrderPrintPreviewModel model = new SalesOrderPrintPreviewModel();
                             model.setSoNumber(object.optString("soNumber"));
                             model.setSoDate(object.optString("soDate"));
                             model.setCustomerCode(object.optString("customerCode"));
@@ -3485,19 +3841,19 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                             model.setBillDiscount(object.optString("billDiscount"));
                             model.setItemDiscount(object.optString("totalDiscount"));
                             Utils.setInvoiceMode("SalesOrder");
-                            String signFlag=object.optString("signFlag");
-                            if (signFlag.equals("Y")){
-                                String signature=object.optString("signature");
+                            String signFlag = object.optString("signFlag");
+                            if (signFlag.equals("Y")) {
+                                String signature = object.optString("signature");
                                 Utils.setSignature(signature);
                                 createSignature();
-                            }else {
+                            } else {
                                 Utils.setSignature("");
                             }
 
 
-                            JSONArray detailsArray=object.optJSONArray("salesOrderDetails");
-                            for (int i=0;i<detailsArray.length();i++){
-                                JSONObject detailObject=detailsArray.optJSONObject(i);
+                            JSONArray detailsArray = object.optJSONArray("salesOrderDetails");
+                            for (int i = 0; i < detailsArray.length(); i++) {
+                                JSONObject detailObject = detailsArray.optJSONObject(i);
 
                                 SalesOrderPrintPreviewModel.SalesList salesListModel = new SalesOrderPrintPreviewModel.SalesList();
                                 salesListModel.setProductCode(detailObject.optString("productCode"));
@@ -3527,7 +3883,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                                     salesListModel.setDescription(detailObject.optString("ProductName"));
                                     salesListModel.setLqty(detailObject.optString("LQty"));
                                     salesListModel.setCqty(detailObject.optString("CQty"));
-                                    salesListModel.setNetQty("-"+detailObject.optString("ReturnQty"));
+                                    salesListModel.setNetQty("-" + detailObject.optString("ReturnQty"));
 
                                     double qty12 = Double.parseDouble(detailObject.optString("ReturnQty"));
                                     double price12 = Double.parseDouble(detailObject.optString("Price"));
@@ -3549,18 +3905,18 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                             }
                             sentSalesOrderDataPrint(copy);
                             // pDialog.dismiss();
-                        }else {
+                        } else {
 
                         }
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             // Do something when error occurred
             pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
-        }){
+            Log.w("Error_throwing:", error.toString());
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -3575,10 +3931,12 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -3622,22 +3980,22 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 rootJsonObject.put("mode", "I");
                 rootJsonObject.put("soNo", editSoNumber);
                 rootJsonObject.put("invoiceNumber", "");
-                rootJsonObject.put("doNo","");
-            }else if (activityFrom.equals("ConvertInvoiceFromDO")){
+                rootJsonObject.put("doNo", "");
+            } else if (activityFrom.equals("ConvertInvoiceFromDO")) {
                 rootJsonObject.put("mode", "I");
-                rootJsonObject.put("soNo","");
-                rootJsonObject.put("doNo",editDoNumber);
+                rootJsonObject.put("soNo", "");
+                rootJsonObject.put("doNo", editDoNumber);
                 rootJsonObject.put("invoiceNumber", "");
-            } else if (activityFrom.equals("EditDo")){
+            } else if (activityFrom.equals("EditDo")) {
                 rootJsonObject.put("mode", "E");
-                rootJsonObject.put("soNo","");
-                rootJsonObject.put("doNo",editDoNumber);
+                rootJsonObject.put("soNo", "");
+                rootJsonObject.put("doNo", editDoNumber);
                 rootJsonObject.put("invoiceNumber", "");
             } else {
                 rootJsonObject.put("invoiceNumber", "");
                 rootJsonObject.put("mode", "I");
-                rootJsonObject.put("soNo","");
-                rootJsonObject.put("doNo","");
+                rootJsonObject.put("soNo", "");
+                rootJsonObject.put("doNo", "");
             }
 
             if (currentSaveDateTime == null || currentSaveDateTime.isEmpty()) {
@@ -3645,8 +4003,10 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 String currentDateandTime = sdf.format(new Date());
                 currentSaveDateTime = currentDateandTime;
             }
+            remarkStr = remarkText.getText().toString();
+            Log.w("remarkkc  ",".."+remarkStr);
 
-            rootJsonObject.put("customerReferenceNo",orderNoText.getText().toString());
+            rootJsonObject.put("customerReferenceNo", orderNoText.getText().toString());
             rootJsonObject.put("currentDateTime", currentSaveDateTime);
             rootJsonObject.put("invoiceDate", currentDate);
             rootJsonObject.put("customerCode", object.get("customerCode"));
@@ -3655,7 +4015,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             rootJsonObject.put("street", object.get("street"));
             rootJsonObject.put("city", object.get("city"));
             rootJsonObject.put("creditLimit", object.get("creditLimit"));
-            rootJsonObject.put("remark", remarkText.getText().toString());
+            rootJsonObject.put("Remark", remarkStr);
             rootJsonObject.put("currencyName", "Singapore Dollar");
 
             rootJsonObject.put("taxTotal", taxValueText.getText().toString());
@@ -3690,7 +4050,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             rootJsonObject.put("billDiscountPercentage", "0.00");
             rootJsonObject.put("deliveryCode", SettingUtils.getDeliveryAddressCode());
             rootJsonObject.put("delCustomerName", "");
-            rootJsonObject.put("delAddress1", object.optString("delAddress1"));
+            rootJsonObject.put("delAddress1", deliverAddrNameStr);
             rootJsonObject.put("delAddress2 ", object.optString("delAddress2"));
             rootJsonObject.put("delAddress3 ", object.optString("delAddress3"));
             rootJsonObject.put("delPhoneNo", object.optString("contactNo"));
@@ -3795,7 +4155,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
             rootJsonObject.put("PostingInvoiceDetails", invoiceDetailsArray);
 
-            Log.w("RootJsonForSave:", rootJsonObject.toString());
+            Log.w("RootJsonSaveInv:", rootJsonObject.toString());
 
             saveSalesOrder(rootJsonObject, "Invoice", copy);
 
@@ -3809,20 +4169,20 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     public void createDOJson(int copy) {
 
         JSONObject rootJsonObject = new JSONObject();
-        JSONArray saleDetailsArray=new JSONArray();
-        JSONObject deliveryObject =new JSONObject();
+        JSONArray saleDetailsArray = new JSONArray();
+        JSONObject deliveryObject = new JSONObject();
 
         try {
             // Sales Header Add values
 
-            JSONArray detailsArray=customerResponse.optJSONArray("responseData");
-            JSONObject object=detailsArray.optJSONObject(0);
+            JSONArray detailsArray = customerResponse.optJSONArray("responseData");
+            JSONObject object = detailsArray.optJSONObject(0);
 
-            if (activityFrom.equals("doEdit")){
+            if (activityFrom.equals("doEdit")) {
                 rootJsonObject.put("doNumber", editDoNumber.toString());
                 rootJsonObject.put("mode", "E");
                 rootJsonObject.put("status", "O");
-            }else {
+            } else {
                 rootJsonObject.put("doNumber", "");
                 rootJsonObject.put("mode", "I");
                 rootJsonObject.put("status", "");
@@ -3835,17 +4195,17 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             rootJsonObject.put("street", object.optString("street"));
             rootJsonObject.put("city", object.optString("city"));
             rootJsonObject.put("creditLimit", object.optString("creditLimit"));
-            rootJsonObject.put("remark",remarkText.getText().toString());
+            rootJsonObject.put("remark", remarkStr);
             rootJsonObject.put("currencyName", "Singapore Dollar");
             rootJsonObject.put("total", subTotalValue.getText().toString());
             rootJsonObject.put("itemDiscount", "0.00");
             rootJsonObject.put("billDiscount", "0.00");
-            rootJsonObject.put("billDiscountPercentage","0");
+            rootJsonObject.put("billDiscountPercentage", "0");
             rootJsonObject.put("subTotal", subTotalValue.getText().toString());
             rootJsonObject.put("taxTotal", taxValueText.getText().toString());
             rootJsonObject.put("netTotal", netTotalValue.getText().toString());
             rootJsonObject.put("delCustomerName", "");
-            rootJsonObject.put("delAddress1", object.optString("delAddress1"));
+            rootJsonObject.put("delAddress1", deliverAddrNameStr);
             rootJsonObject.put("delAddress2 ", object.optString("delAddress2"));
             rootJsonObject.put("delAddress3 ", object.optString("delAddress3"));
             rootJsonObject.put("delPhoneNo", object.optString("contactNo"));
@@ -3854,16 +4214,16 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             rootJsonObject.put("taxPerc", object.optString("taxPercentage"));
             rootJsonObject.put("taxCode", object.optString("taxCode"));
             rootJsonObject.put("currencyCode", object.optString("currencyCode"));
-            rootJsonObject.put("currencyValue","");
+            rootJsonObject.put("currencyValue", "");
             rootJsonObject.put("currencyRate", "1");
             rootJsonObject.put("postalCode", object.optString("postalCode"));
-            rootJsonObject.put("createUser",username);
-            rootJsonObject.put("modifyUser",username);
-            rootJsonObject.put("companyCode",companyCode);
-            rootJsonObject.put("locationCode",locationCode);
-            rootJsonObject.put("signature",signatureString);
-            rootJsonObject.put("latitude",current_latitude);
-            rootJsonObject.put("longitude",current_longitude);
+            rootJsonObject.put("createUser", username);
+            rootJsonObject.put("modifyUser", username);
+            rootJsonObject.put("companyCode", companyCode);
+            rootJsonObject.put("locationCode", locationCode);
+            rootJsonObject.put("signature", signatureString);
+            rootJsonObject.put("latitude", current_latitude);
+            rootJsonObject.put("longitude", current_longitude);
 
             // Sales Details Add to the Objects
             ArrayList<CreateInvoiceModel> localCart = dbHelper.getAllInvoiceProducts();
@@ -3932,10 +4292,10 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             }
 
 
-            rootJsonObject.put("PostingDeliveryOrderDetails",saleDetailsArray);
-            Log.w("RootSaveJson:",rootJsonObject.toString());
+            rootJsonObject.put("PostingDeliveryOrderDetails", saleDetailsArray);
+            Log.w("RootSaveJson:", rootJsonObject.toString());
 
-            saveSalesOrder(rootJsonObject,"DeliveryOrder",copy);
+            saveSalesOrder(rootJsonObject, "DeliveryOrder", copy);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -3945,18 +4305,18 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     }
 
     private void sentSalesOrderDataPrint(int copy) throws IOException {
-        if (printerType.equals("TSC Printer")){
-            TSCPrinter printer=new TSCPrinter(CreateNewInvoiceActivity.this,printerMacId,"SalesOrder");
-            printer.printSalesOrder(copy,salesOrderHeaderDetails,salesPrintList);
+        if (printerType.equals("TSC Printer")) {
+            TSCPrinter printer = new TSCPrinter(CreateNewInvoiceActivity.this, printerMacId, "SalesOrder");
+            printer.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList);
             Utils.setSignature("");
-        }else if (printerType.equals("Zebra Printer")){
-            ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(CreateNewInvoiceActivity.this,printerMacId);
-            zebraPrinterActivity.printSalesOrder(copy,salesOrderHeaderDetails,salesPrintList);
+        } else if (printerType.equals("Zebra Printer")) {
+            ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(CreateNewInvoiceActivity.this, printerMacId);
+            zebraPrinterActivity.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList);
         }
     }
 
-    public void setNewPrint(){
-        PrinterUtils printerUtils=new PrinterUtils(this,printerMacId);
+    public void setNewPrint() {
+        PrinterUtils printerUtils = new PrinterUtils(this, printerMacId);
         printerUtils.printLabel();
     }
 }

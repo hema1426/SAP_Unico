@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -75,6 +76,7 @@ import com.winapp.saperp.model.ReturnProductsModel;
 import com.winapp.saperp.model.SalesOrderPrintPreviewModel;
 import com.winapp.saperp.model.SettingsModel;
 import com.winapp.saperp.thermalprinter.PrinterUtils;
+import com.winapp.saperp.utils.CaptureSignatureView;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
@@ -199,6 +201,8 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
     static double currentLocationLongitude=0.0;
     public static String signatureString="";
     public static String imageString;
+    private AlertDialog signatureAlert;
+    public ImageView signatureCapture;
 
     public static String current_latitude="0.00";
     public static String current_longitude="0.00";
@@ -324,6 +328,7 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
         exchangeEditext.setEnabled(false);
         discountEditext.setEnabled(false);
         returnEditext.setEnabled(false);
+        qtyValue.setEnabled(false);
 
         Date c = Calendar.getInstance().getTime();
         System.out.println("Current time => " + c);
@@ -399,7 +404,6 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                 Log.i("BottomSheetCallback", "slideOffset: " + slideOffset);
             }
         });
-
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -739,7 +743,9 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String s=productAutoComplete.getText().toString();
-                if (!qtyValue.getText().toString().isEmpty() && !s.isEmpty() && !qtyValue.getText().toString().equals("0") && !qtyValue.getText().toString().equals("00") && !qtyValue.getText().toString().equals("000") && !qtyValue.getText().toString().equals("0000") && !netTotalValue.getText().toString().equals("0.00")){
+                if (!qtyValue.getText().toString().isEmpty() && !s.isEmpty() && !qtyValue.getText().toString().equals("0") && !qtyValue.getText().toString().equals("00") &&
+                        !qtyValue.getText().toString().equals("000") && !qtyValue.getText().toString().equals("0000") && !netTotalValue.getText().toString().equals("0.00")){
+
                     if (addProduct.getText().toString().equals("Update")){
                         // if (!cartonPrice.getText().toString().isEmpty() && !cartonPrice.getText().toString().equals("0.00") && !cartonPrice.getText().toString().equals("0.0") && !cartonPrice.getText().toString().equals("0")){
                         if (priceText.getText() != null && !priceText.getText().toString().isEmpty()) {
@@ -2173,7 +2179,7 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
             public void searchProduct(ProductsModel model) {
                 productsModel=model;
                 productId=productsModel.getProductCode();
-
+                qtyValue.setEnabled(true);
                 // Need to implement the product price concept in SAP
               /*  try {
                     getProductPrice(productId);
@@ -2495,6 +2501,13 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
             invoicePrintCheck=customLayout.findViewById(R.id.invoice_print_check);
             saveMessage=customLayout.findViewById(R.id.save_message);
             saveTitle=customLayout.findViewById(R.id.save_title);
+            signatureCapture = customLayout.findViewById(R.id.signature_capture);
+
+            TextView noOfCopy = customLayout.findViewById(R.id.no_of_copy);
+            Button copyPlus = customLayout.findViewById(R.id.increase);
+            Button copyMinus = customLayout.findViewById(R.id.decrease);
+            Button signatureButton = customLayout.findViewById(R.id.btn_signature);
+            LinearLayout copyLayout = customLayout.findViewById(R.id.print_layout);
             //invoicePrintCheck.setVisibility(View.GONE);
             if (activityFrom.equals("sales_return")){
                 saveTitle.setText("Save Sales Return");
@@ -2529,12 +2542,80 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                     alert.dismiss();
                 }
             });
+            copyPlus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String copyvalue = noOfCopy.getText().toString();
+                    int copy = Integer.parseInt(copyvalue);
+                    copy++;
+                    noOfCopy.setText(copy + "");
+                }
+            });
+
+            copyMinus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!noOfCopy.getText().toString().equals("1")) {
+                        String copyvalue = noOfCopy.getText().toString();
+                        int copy = Integer.parseInt(copyvalue);
+                        copy--;
+                        noOfCopy.setText(copy + "");
+                    }
+                }
+            });
+            signatureButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showSignatureAlert();
+                }
+            });
+
             // create and show the alert dialog
             alert = builder.create();
             alert.show();
         }catch (Exception exception){}
     }
 
+    public void showSignatureAlert() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        final View customLayout = getLayoutInflater().inflate(R.layout.signature_layout, null);
+        alertDialog.setView(customLayout);
+        final Button acceptButton = customLayout.findViewById(R.id.buttonYes);
+        final Button cancelButton = customLayout.findViewById(R.id.buttonNo);
+        final Button clearButton = customLayout.findViewById(R.id.buttonClear);
+        LinearLayout mContent = customLayout.findViewById(R.id.signature_layout);
+        CaptureSignatureView mSig = new CaptureSignatureView(this, null);
+        mContent.addView(mSig, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // byte[] signature = captureSignatureView.getBytes();
+                Bitmap signature = mSig.getBitmap();
+                signatureCapture.setImageBitmap(signature);
+                signatureString = ImageUtil.convertBimaptoBase64(signature);
+                Utils.setSignature(signatureString);
+                signatureAlert.dismiss();
+                Log.w("SignatureString:", signatureString);
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signatureAlert.dismiss();
+            }
+        });
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signatureString = "";
+                Utils.setSignature("");
+                mSig.ClearCanvas();
+            }
+        });
+        signatureAlert = alertDialog.create();
+        signatureAlert.setCanceledOnTouchOutside(false);
+        signatureAlert.show();
+    }
 
     public  void saveSalesOrder(JSONObject jsonBody,String action,int copy){
         try {

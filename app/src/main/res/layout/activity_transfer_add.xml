@@ -264,7 +264,7 @@
                 android:layout_width="@dimen/_120sdp"
                 android:layout_height="@dimen/_25sdp"
                 android:layout_marginTop="@dimen/_20sdp"
-                android:background="@drawable/round_accent_2"
+                android:background="@drawable/round_accent"
                 android:fontFamily="sans-serif-medium"
                 android:layout_gravity="center"
                 android:text="Add Product"

@@ -162,124 +162,135 @@ public class NavigationActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 menuItem.setChecked(true);
-                switch (menuItem.getItemId()) {
-                    case R.id.navigation_item_home:
-                        // setFragment(new HomeFragment());
-                        Intent intent = new Intent(NavigationActivity.this, DashboardActivity.class);
-                        startActivity(intent);
-                        drawerLayout.closeDrawers();
-                       // mCurrentSelectedPosition = 0;
-                        return true;
-                    case R.id.navigation_item_schedule:
-                        // setFragment(new SchedulingFragment());
-                        intent=new Intent(NavigationActivity.this,SchedulingActivity.class);
-                        startActivity(intent);
-                        drawerLayout.closeDrawers();
-                       // mCurrentSelectedPosition = 1;
-                        return true;
-                    case R.id.navigation_item_catalog:
-                        //setFragment(new DashboardFragment());
-                        intent=new Intent(NavigationActivity.this,MainHomeActivity.class);
-                        startActivity(intent);
-                       // mCurrentSelectedPosition = 2;
-                        drawerLayout.closeDrawers();
-                        return true;
-                    case R.id.navigation_item_invoice:
-                        //setFragment(new TableListFragment());
-                        intent=new Intent(NavigationActivity.this,NewInvoiceListActivity.class);
-                        startActivity(intent);
-                       // mCurrentSelectedPosition = 3;
-                        drawerLayout.closeDrawers();
-                        return true;
-                    case R.id.navigation_item_settings:
-                        intent=new Intent(NavigationActivity.this, SettingActivity.class);
-                        startActivity(intent);
-                       // mCurrentSelectedPosition = 4;
-                        drawerLayout.closeDrawers();
-                        return true;
-                    case R.id.navigation_item_salesorder:
-                        intent=new Intent(NavigationActivity.this,SalesOrderListActivity.class);
-                        startActivity(intent);
-                       // mCurrentSelectedPosition = 5;
-                        drawerLayout.closeDrawers();
-                        return true;
-                    case R.id.navigation_item_dashboard:
-                        intent=new Intent(NavigationActivity.this, GraphDashboardActivity.class);
-                        startActivity(intent);
-                       // mCurrentSelectedPosition = 6;
-                        drawerLayout.closeDrawers();
-                        return true;
-                    case R.id.navigation_item_customer:
-                        Intent intent1 = new Intent(NavigationActivity.this, CustomerListActivity.class);
-                        intent1.putExtra("from","cus");
-                        intent1.putExtra("Message","Open");
-                        startActivity(intent1);
-                        //mCurrentSelectedPosition = 7;
-                        drawerLayout.closeDrawers();
-                        return true;
-                    case R.id.navigation_item_receipts:
-                        intent=new Intent(NavigationActivity.this, ReceiptsListActivity.class);
-                        startActivity(intent);
-                       // mCurrentSelectedPosition=9;
-                        drawerLayout.closeDrawers();
-                        return true;
-                    case R.id.navigation_item_catagories:
-                        intent=new Intent(NavigationActivity.this, CategoriesActivity.class);
-                        startActivity(intent);
-                       // mCurrentSelectedPosition=8;
-                        drawerLayout.closeDrawers();
-                        return true;
-
-                    case R.id.navigation_item_sales_return:
-                      /*  intent=new Intent(NavigationActivity.this, SalesReturnActivity.class);
+                int itemId = menuItem.getItemId();
+                if (itemId == R.id.navigation_item_home) {// setFragment(new HomeFragment());
+                    Intent intent = new Intent(NavigationActivity.this, DashboardActivity.class);
+                    startActivity(intent);
+                    drawerLayout.closeDrawers();
+                    // mCurrentSelectedPosition = 0;
+                    return true;
+                } else if (itemId == R.id.navigation_item_schedule) {
+                    Intent intent;// setFragment(new SchedulingFragment());
+                    intent = new Intent(NavigationActivity.this, SchedulingActivity.class);
+                    startActivity(intent);
+                    drawerLayout.closeDrawers();
+                    // mCurrentSelectedPosition = 1;
+                    return true;
+                } else if (itemId == R.id.navigation_item_catalog) {
+                    Intent intent;//setFragment(new DashboardFragment());
+                    intent = new Intent(NavigationActivity.this, MainHomeActivity.class);
+                    startActivity(intent);
+                    // mCurrentSelectedPosition = 2;
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_item_invoice) {
+                    Intent intent;//setFragment(new TableListFragment());
+                    intent = new Intent(NavigationActivity.this, NewInvoiceListActivity.class);
+                    startActivity(intent);
+                    // mCurrentSelectedPosition = 3;
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_item_settings) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, SettingActivity.class);
+                    startActivity(intent);
+                    // mCurrentSelectedPosition = 4;
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_item_salesorder) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, SalesOrderListActivity.class);
+                    startActivity(intent);
+                    // mCurrentSelectedPosition = 5;
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_item_dashboard) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, GraphDashboardActivity.class);
+                    startActivity(intent);
+                    // mCurrentSelectedPosition = 6;
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_item_customer) {
+                    Intent intent1 = new Intent(NavigationActivity.this, CustomerListActivity.class);
+                    intent1.putExtra("from", "cus");
+                    intent1.putExtra("Message", "Open");
+                    startActivity(intent1);
+                    //mCurrentSelectedPosition = 7;
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_item_receipts) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, ReceiptsListActivity.class);
+                    startActivity(intent);
+                    // mCurrentSelectedPosition=9;
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_item_catagories) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, CategoriesActivity.class);
+                    startActivity(intent);
+                    // mCurrentSelectedPosition=8;
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_item_sales_return) {
+                    Intent intent;/*  intent=new Intent(NavigationActivity.this, SalesReturnActivity.class);
                         startActivity(intent);
                         drawerLayout.closeDrawers();*/
-                        intent=new Intent(NavigationActivity.this, NewSalesReturnListActivity.class);
-                        startActivity(intent);
-                        drawerLayout.closeDrawers();
-                        return true;
-
-                    case R.id.navigation_product_analysis:
-                        intent=new Intent(NavigationActivity.this, ProductStockAnalysisActivity.class);
-                        startActivity(intent);
-                        drawerLayout.closeDrawers();
-                        return true;
-
-                    case R.id.navigation_settlement:
-                        intent=new Intent(NavigationActivity.this, SettlementListActivity.class);
-                        startActivity(intent);
-                        drawerLayout.closeDrawers();
-                        return true;
-
-                    case R.id.navigation_reports:
-                        intent=new Intent(NavigationActivity.this, ReportsActivity.class);
-                        startActivity(intent);
-                        drawerLayout.closeDrawers();
-                        return true;
-
-                    case R.id.navigation_transfer:
-                        intent=new Intent(NavigationActivity.this,TransferListProductActivity.class);
-                        intent.putExtra("docNum","");
-                        intent.putExtra("transferType","");
-                        startActivity(intent);
-                        drawerLayout.closeDrawers();
-                        return true;
-
-                    case R.id.navigation_stock_request:
-                        intent=new Intent(NavigationActivity.this,StockRequestListActivity.class);
-                        intent.putExtra("docNum","");
-                        intent.putExtra("transferType","");
-                        startActivity(intent);
-                        drawerLayout.closeDrawers();
-                        return true;
-
-                    case R.id.navigation_item_signout:
-                        showSignoutAlert();
-                        drawerLayout.closeDrawers();
-                        return true;
-                    default:
-                        return true;
+                    intent = new Intent(NavigationActivity.this, NewSalesReturnListActivity.class);
+                    startActivity(intent);
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_product_analysis) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, ProductStockAnalysisActivity.class);
+                    startActivity(intent);
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_settlement) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, SettlementListActivity.class);
+                    startActivity(intent);
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_reports) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, ReportsActivity.class);
+                    startActivity(intent);
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_transfer) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, TransferListProductActivity.class);
+                    intent.putExtra("docNum", "");
+                    intent.putExtra("transferType", "");
+                    startActivity(intent);
+                    drawerLayout.closeDrawers();
+                    return true;
+                } else if (itemId == R.id.navigation_stock_request) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, StockRequestListActivity.class);
+                    intent.putExtra("docNum", "");
+                    intent.putExtra("transferType", "");
+                    startActivity(intent);
+                    drawerLayout.closeDrawers();
+                    return true;
+                }else if (itemId == R.id.navigation_expense) {
+                    Intent intent;
+                    intent = new Intent(NavigationActivity.this, NewExpenseModuleListActivity.class);
+                    intent.putExtra("docNum", "");
+                    intent.putExtra("transferType", "");
+                    startActivity(intent);
+                    drawerLayout.closeDrawers();
+                    return true;
                 }
+
+                else if (itemId == R.id.navigation_item_signout) {
+                    showSignoutAlert();
+                    drawerLayout.closeDrawers();
+                    return true;
+                }
+                return true;
             }
         });
     }
@@ -299,8 +310,8 @@ public class NavigationActivity extends AppCompatActivity {
                 "YES",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        loginPrefsEditor.clear();
-                        loginPrefsEditor.commit();
+//                        loginPrefsEditor.clear();
+//                        loginPrefsEditor.commit();
                         Utils.clearCustomerSession(NavigationActivity.this);
                         helper.removeAllItems();
                         session.logoutUser();

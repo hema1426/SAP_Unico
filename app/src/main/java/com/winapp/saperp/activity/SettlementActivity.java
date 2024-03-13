@@ -82,8 +82,8 @@ public class SettlementActivity extends AppCompatActivity {
     private TextView expenseTotal;
     private TextView netTotal;
     private Button saveSettlement;
-    private String net_total_value="0.00";
-    private String expense_net_total="0.00";
+    private String net_total_value = "0.00";
+    private String expense_net_total = "0.00";
     private String action="";
     private String editSettlementNumber;
     private String editSettlementDate;
@@ -113,7 +113,7 @@ public class SettlementActivity extends AppCompatActivity {
         denominationLayout=findViewById(R.id.denomination_layout);
         expenseLayout=findViewById(R.id.expense_layout);
         currencyTotal=findViewById(R.id.currency_total);
-        netTotal=findViewById(R.id.net_total);
+        netTotal=findViewById(R.id.net_totalSettle);
         expenseTotal=findViewById(R.id.expense_total);
         saveSettlement=findViewById(R.id.save_settlement);
         rootLayout=findViewById(R.id.rootLayout);
@@ -745,7 +745,7 @@ public class SettlementActivity extends AppCompatActivity {
         try {
             double total_currency=0.0;
             double expense_amount=0.0;
-            double net_total=0.0;
+            double net_total;
             for (CurrencyModel model:currencyDenominationAdapter.getCurrencyList()){
                 total_currency+=Double.parseDouble(model.getTotal());
             }
@@ -757,8 +757,9 @@ public class SettlementActivity extends AppCompatActivity {
             }
             expenseTotal.setText("Expense Total : $ "+Utils.twoDecimalPoint(expense_amount));
             net_total=total_currency + expense_amount;
+            Log.w("settlenettot",""+net_total);
 
-            netTotal.setText("Net Total : $ "+Utils.twoDecimalPoint(net_total));
+            netTotal.setText("$ "+net_total);
             net_total_value=Utils.twoDecimalPoint(net_total);
             expense_net_total=Utils.twoDecimalPoint(expense_amount);
 

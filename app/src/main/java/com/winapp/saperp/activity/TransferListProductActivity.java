@@ -144,7 +144,7 @@ public class TransferListProductActivity extends NavigationActivity implements V
 
         if (getIntent()!=null){
             String docNumber=getIntent().getStringExtra("docNum");
-            assert docNumber != null;
+          //  assert docNumber != null;
             if (docNumber!=null && !docNumber.isEmpty()){
                 transferType=getIntent().getStringExtra("transferType");
                 try {

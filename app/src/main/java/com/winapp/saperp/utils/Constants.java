@@ -53,6 +53,9 @@ public class Constants {
 
     public static String WINAPP_DEMO_URL="http://43.228.126.51:83/api/";
 
+    //shaban LIVE URL    http://129.150.58.169:95
+    public static String SHABAN_LIVE_URL="http://129.150.58.169:95/api/";
+
 
     // Live URL
     public static String NEW_LIVE_URL_AADHI ="http://18.143.95.61:81/api/";

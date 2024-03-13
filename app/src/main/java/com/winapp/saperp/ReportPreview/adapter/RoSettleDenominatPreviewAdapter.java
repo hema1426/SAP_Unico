@@ -4,6 +4,7 @@ import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,12 +81,13 @@ public class RoSettleDenominatPreviewAdapter extends RecyclerView.Adapter<RoSett
             denomi_sno.setText(String.valueOf(pos+1));
 
             denomi_name.setText(denominationItem.getDenomination());
-            if(denominationItem.getCount().isEmpty() && !denominationItem.getCount().equalsIgnoreCase("null")) {
-                denomi_count.setText(denominationItem.getCount());
-            }
-            else{
-                denomi_count.setText("0");
-            }
+            denomi_count.setText(denominationItem.getCount());
+//            if(denominationItem.getCount().isEmpty() && !denominationItem.getCount().equalsIgnoreCase("null")) {
+//                denomi_count.setText(denominationItem.getCount());
+//            }
+//            else{
+//                denomi_count.setText("0");
+//            }
             denomi_total.setText(twoDecimalPoint(Double.parseDouble(denominationItem.getTotal())));
         }
 

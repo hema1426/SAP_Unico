@@ -36,7 +36,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -156,6 +155,10 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
     public SwitchCompat inv_switch;
     public SwitchCompat sales_switch;
     public SwitchCompat receipt_switch;
+    public SwitchCompat uom_Switch;
+    public SwitchCompat creditLimit_Switch;
+    public SwitchCompat deliveryAddress_Switch;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,19 +215,25 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         inv_switch = findViewById(R.id.invSwitch);
         sales_switch = findViewById(R.id.salesSwitch);
         receipt_switch = findViewById(R.id.receiptSwitch);
+        uom_Switch = findViewById(R.id.UomSwitch);
+        creditLimit_Switch = findViewById(R.id.creditLimitSwitch);
+        deliveryAddress_Switch = findViewById(R.id.deliveryAddressSwitch);
 
         inv_switch.setOnCheckedChangeListener(this);
         sales_switch.setOnCheckedChangeListener(this);
         receipt_switch.setOnCheckedChangeListener(this);
+        uom_Switch.setOnCheckedChangeListener(this);
+        creditLimit_Switch.setOnCheckedChangeListener(this);
+        deliveryAddress_Switch.setOnCheckedChangeListener(this);
 
         session=new SessionManager(this);
         user=session.getUserDetails();
         companyId=user.get(SessionManager.KEY_COMPANY_CODE);
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
 
-        printerType=sharedPreferences.getString("printer_type","");
-        printerMacId=sharedPreferences.getString("mac_address","");
-        isLProductSettingLogin=sharedPreferences.getString("isProductSettingLogin","");
+        printerType = sharedPreferences.getString("printer_type","");
+        printerMacId = sharedPreferences.getString("mac_address","");
+        isLProductSettingLogin = sharedPreferences.getString("isProductSettingLogin","");
 
         ArrayList<SettingsModel> settings=dbHelper.getSettings();
         if (settings!=null) {
@@ -254,13 +263,41 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
                         }else {
                             sales_switch.setChecked(false);
                         }
-                    }else if (model.getSettingName().equals("receiptSwitch")) {
+                    }
+                    else if (model.getSettingName().equals("receiptSwitch")) {
                         Log.w("SettingName:", model.getSettingName());
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             receipt_switch.setChecked(true);
                         }else {
                             receipt_switch.setChecked(false);
+                        }
+                    }
+                    else if (model.getSettingName().equals("UomSwitch")) {
+                        Log.w("SettingName:", model.getSettingName());
+                        Log.w("SettingValue:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            uom_Switch.setChecked(true);
+                        }else {
+                            uom_Switch.setChecked(false);
+                        }
+                    }
+                    else if (model.getSettingName().equals("creditLimitSwitch")) {
+                        Log.w("SettingName:", model.getSettingName());
+                        Log.w("SettingValue:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            creditLimit_Switch.setChecked(true);
+                        }else {
+                            creditLimit_Switch.setChecked(false);
+                        }
+                    }
+                    else if (model.getSettingName().equals("deliveryAddressSwitch")) {
+                        Log.w("SettingName:", model.getSettingName());
+                        Log.w("SettingValue:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            deliveryAddress_Switch.setChecked(true);
+                        }else {
+                            deliveryAddress_Switch.setChecked(false);
                         }
                     }
                 }
@@ -1036,6 +1073,27 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
                     dbHelper.insertSettings(receipt_switch.getTag().toString(),"1");
                 }else {
                     dbHelper.insertSettings(receipt_switch.getTag().toString(),"0");
+                }
+                break;
+            case R.id.UomSwitch:
+                if (isChecked){
+                    dbHelper.insertSettings(uom_Switch.getTag().toString(),"1");
+                }else {
+                    dbHelper.insertSettings(uom_Switch.getTag().toString(),"0");
+                }
+                break;
+            case R.id.creditLimitSwitch:
+                if (isChecked){
+                    dbHelper.insertSettings(creditLimit_Switch.getTag().toString(),"1");
+                }else {
+                    dbHelper.insertSettings(creditLimit_Switch.getTag().toString(),"0");
+                }
+                break;
+            case R.id.deliveryAddressSwitch:
+                if (isChecked){
+                    dbHelper.insertSettings(deliveryAddress_Switch.getTag().toString(),"1");
+                }else {
+                    dbHelper.insertSettings(deliveryAddress_Switch.getTag().toString(),"0");
                 }
                 break;
          }

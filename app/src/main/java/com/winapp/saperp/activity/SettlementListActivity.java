@@ -211,7 +211,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url= Utils.getBaseUrl(this) +"SettlementList";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_Settlement_URL:",url);
+        Log.w("Given_Settlement_URL:",url+".."+jsonObject);
         settlementList=new ArrayList<>();
         dialog=new ProgressDialog(this);
         dialog.setMessage("Getting Settlements...");

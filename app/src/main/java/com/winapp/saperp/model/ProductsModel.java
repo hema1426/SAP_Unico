@@ -27,6 +27,7 @@ public class ProductsModel {
     private String productBarcode;
     private String lastPrice;
     private String uomText;
+    private String defaultUom;
 
     private ArrayList<UomModel> productUOMList;
 
@@ -220,5 +221,13 @@ public class ProductsModel {
 
     public void setFocQty(String focQty) {
         this.focQty = focQty;
+    }
+
+    public String getDefaultUom() {
+        return defaultUom;
+    }
+
+    public void setDefaultUom(String defaultUom) {
+        this.defaultUom = defaultUom;
     }
 }

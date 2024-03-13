@@ -165,8 +165,10 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
             public void onClick(View view) {
                 getLowStockSetting();
                 if (model.getStockQty()!=null && !model.getStockQty().isEmpty() && !model.getStockQty().equals("null")){
+                    Log.w("stokpdtqty",""+model.getStockQty());
                     if (Double.parseDouble(model.getStockQty()) == 0 || Double.parseDouble(model.getStockQty()) < 0 ) {
-                        if (context instanceof SalesReturnActivity || context instanceof NewSalesReturnProductAddActivity || context instanceof TransferProductAddActivity){
+                        if (context instanceof SalesReturnActivity || context instanceof NewSalesReturnProductAddActivity || context instanceof TransferProductAddActivity){                    Log.w("stokpdtqty",""+model.getStockQty());
+
                             callBack.searchProduct(model);
                         }else {
                             if (context instanceof AddInvoiceActivity){
@@ -204,7 +206,7 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
                             }
                         }
                     }else {
-                        callBack.searchProduct(model);
+                       callBack.searchProduct(model);
                     }
                 }else {
                     callBack.searchProduct(model);

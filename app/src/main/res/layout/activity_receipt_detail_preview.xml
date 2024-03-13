@@ -45,6 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7sp"
                 android:singleLine="true"
+                android:visibility="gone"
                 android:text="Company Address2"
                 android:textColor="@color/black"
                 android:textSize="12dp" />

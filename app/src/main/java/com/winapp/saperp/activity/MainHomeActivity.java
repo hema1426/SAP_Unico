@@ -225,7 +225,6 @@ public class MainHomeActivity extends NavigationActivity implements NavigationVi
                 selectCustomer.setText(customerDetails.get(0).getCustomerName());
             }
         }*/
-
      //   if (productList != null && productList.size() == 0) {
         //   getAllProducts("1");
       //  }
@@ -952,7 +951,7 @@ public class MainHomeActivity extends NavigationActivity implements NavigationVi
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url=Utils.getBaseUrl(this) +"ProductApi/GetProduct_All_ByFacets?Requestdata="+jsonObject.toString();
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_product_url:",url);
+        Log.w("Given_product_url:",url+" .."+jsonObject);
         ArrayList<ProductsModel> productList=new ArrayList<>();
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
                 Request.Method.GET,

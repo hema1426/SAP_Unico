@@ -3,6 +3,9 @@ package com.winapp.saperp.thermalprinter;
 import android.app.Application;
 import android.content.Context;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+
 /**
  * Created by yechao on 2020/3/26/026.
  * Describe :
@@ -15,6 +18,9 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
+        FirebaseApp.initializeApp(this);
+
+       // FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true);
     }
 
     public static Context getContext() {

@@ -712,7 +712,7 @@ public class PrinterUtils extends AppCompatActivity {
 
         y += LINE_SPACING;
         TscDll.sendcommand("BAR 0,"+y+",800,2\n");*/
-
+// todo
         if(invoiceHeaderDetails.get(0).getSalesReturnList().size()>0){
             if (invoiceHeaderDetails.get(0).getTaxType().equalsIgnoreCase("I")){
                 y += 20;

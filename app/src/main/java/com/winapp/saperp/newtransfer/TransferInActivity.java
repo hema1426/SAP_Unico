@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,7 +45,9 @@ import com.winapp.saperp.activity.TransferProductAddActivity;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.model.CreateInvoiceModel;
 import com.winapp.saperp.model.ItemGroupList;
+import com.winapp.saperp.utils.CaptureSignatureView;
 import com.winapp.saperp.utils.Constants;
+import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 
@@ -103,6 +106,10 @@ public class TransferInActivity extends AppCompatActivity {
     private AlertDialog alert;
     public CheckBox invoicePrintCheck;
     public TextView saveTitle;
+    public ImageView signatureCapture;
+    public static String signatureString="";
+    public static String imageString;
+    private AlertDialog signatureAlert;
     private TextView saveMessage;
     private String transferType;
     private String islocationPermission;
@@ -342,6 +349,14 @@ public class TransferInActivity extends AppCompatActivity {
             invoicePrintCheck=customLayout.findViewById(R.id.invoice_print_check);
             saveMessage=customLayout.findViewById(R.id.save_message);
             saveTitle=customLayout.findViewById(R.id.save_title);
+            signatureCapture = customLayout.findViewById(R.id.signature_capture);
+
+            TextView noOfCopy = customLayout.findViewById(R.id.no_of_copy);
+            Button copyPlus = customLayout.findViewById(R.id.increase);
+            Button copyMinus = customLayout.findViewById(R.id.decrease);
+            Button signatureButton = customLayout.findViewById(R.id.btn_signature);
+            LinearLayout copyLayout = customLayout.findViewById(R.id.print_layout);
+
             //invoicePrintCheck.setVisibility(View.GONE);
             if (mode.equals("Transfer In") || mode.equals("Transfer Out") || mode.equals("Covert Transfer")){
                 saveTitle.setText("Save Transfer");
@@ -370,6 +385,34 @@ public class TransferInActivity extends AppCompatActivity {
                     }
                 }catch (Exception exception){}
             });
+            copyPlus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String copyvalue = noOfCopy.getText().toString();
+                    int copy = Integer.parseInt(copyvalue);
+                    copy++;
+                    noOfCopy.setText(copy + "");
+                }
+            });
+
+            copyMinus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!noOfCopy.getText().toString().equals("1")) {
+                        String copyvalue = noOfCopy.getText().toString();
+                        int copy = Integer.parseInt(copyvalue);
+                        copy--;
+                        noOfCopy.setText(copy + "");
+                    }
+                }
+            });
+            signatureButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showSignatureAlert();
+                }
+            });
+
             cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -382,6 +425,46 @@ public class TransferInActivity extends AppCompatActivity {
         }catch (Exception exception){}
     }
 
+    public void showSignatureAlert() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        final View customLayout = getLayoutInflater().inflate(R.layout.signature_layout, null);
+        alertDialog.setView(customLayout);
+        final Button acceptButton = customLayout.findViewById(R.id.buttonYes);
+        final Button cancelButton = customLayout.findViewById(R.id.buttonNo);
+        final Button clearButton = customLayout.findViewById(R.id.buttonClear);
+        LinearLayout mContent = customLayout.findViewById(R.id.signature_layout);
+        CaptureSignatureView mSig = new CaptureSignatureView(this, null);
+        mContent.addView(mSig, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // byte[] signature = captureSignatureView.getBytes();
+                Bitmap signature = mSig.getBitmap();
+                signatureCapture.setImageBitmap(signature);
+                signatureString = ImageUtil.convertBimaptoBase64(signature);
+                Utils.setSignature(signatureString);
+                signatureAlert.dismiss();
+                Log.w("SignatureString:", signatureString);
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signatureAlert.dismiss();
+            }
+        });
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signatureString = "";
+                Utils.setSignature("");
+                mSig.ClearCanvas();
+            }
+        });
+        signatureAlert = alertDialog.create();
+        signatureAlert.setCanceledOnTouchOutside(false);
+        signatureAlert.show();
+    }
 
     private void createJsonObject() throws JSONException {
         transferInDetailsl = transferInAdapter.getTransferInlist();
@@ -596,7 +679,7 @@ public class TransferInActivity extends AppCompatActivity {
 
             RequestQueue requestQueue = Volley.newRequestQueue(this);
             url= Utils.getBaseUrl(this) +"ProductList";
-            Log.w("pdtlist_url:", url);
+            Log.w("pdtlist_url:", url+jsonObj);
             pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
             pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
             pDialog.setTitleText("Loading...");

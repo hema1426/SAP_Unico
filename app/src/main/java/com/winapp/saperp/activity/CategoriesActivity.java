@@ -42,6 +42,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.CustomerNameAdapter;
 import com.winapp.saperp.adapter.ViewPagerAdapter;
@@ -83,10 +84,10 @@ public class CategoriesActivity extends AppCompatActivity {
     private int noOfTabs = 3;
     private SweetAlertDialog pDialog;
     private SessionManager session;
-    private HashMap<String ,String> user;
+    private HashMap<String, String> user;
     private String companyCode;
     public ArrayList<AllCategories> allCategoriesList;
-    private ArrayList<String> categories=new ArrayList<>();
+    private ArrayList<String> categories = new ArrayList<>();
     public static TextView textCartItemCount;
     public static int mCartItemCount = 0;
     public static DBHelper helper;
@@ -113,9 +114,9 @@ public class CategoriesActivity extends AppCompatActivity {
     private Spinner customerGroupSpinner;
     private ArrayList<CustomerGroupModel> customersGroupList;
     private String username;
-    public static JSONObject customerResponse=new JSONObject();
-    private String creditLimitAmount="0.00";
-    private String outstandingAmount="0.00";
+    public static JSONObject customerResponse = new JSONObject();
+    private String creditLimitAmount = "0.00";
+    private String outstandingAmount = "0.00";
     private String locationCode;
 
     @Override
@@ -124,27 +125,27 @@ public class CategoriesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_categories);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Catalog");
-        session=new SessionManager(this);
-        dbHelper=new DBHelper(this);
-        user=session.getUserDetails();
-        username=user.get(SessionManager.KEY_USER_NAME);
-        locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
-        companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
+        session = new SessionManager(this);
+        dbHelper = new DBHelper(this);
+        user = session.getUserDetails();
+        username = user.get(SessionManager.KEY_USER_NAME);
+        locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
+        companyCode = user.get(SessionManager.KEY_COMPANY_CODE);
         tabLayout = findViewById(R.id.tabs);
         viewPager = findViewById(R.id.viewpager);
         userName = findViewById(R.id.user_name);
-        emptyLayout=findViewById(R.id.empty_layout);
+        emptyLayout = findViewById(R.id.empty_layout);
         helper = new DBHelper(this);
         selectCustomer = findViewById(R.id.select_customer);
         dateText = findViewById(R.id.date);
-        progressLayout=findViewById(R.id.customer_progress);
-        rootLayout=findViewById(R.id.rootLayout);
-        sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
+        progressLayout = findViewById(R.id.customer_progress);
+        rootLayout = findViewById(R.id.rootLayout);
+        sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE);
         customerView = findViewById(R.id.customerView);
         userName.setText(user.get(SessionManager.KEY_USER_NAME));
-        customerLayout=findViewById(R.id.customer_layout);
-        descriptionLayout=findViewById(R.id.description_layout_portrait);
-        customerGroupSpinner=findViewById(R.id.customer_group);
+        customerLayout = findViewById(R.id.customer_layout);
+        descriptionLayout = findViewById(R.id.description_layout_portrait);
+        customerGroupSpinner = findViewById(R.id.customer_group);
 
         customerNameEdittext = findViewById(R.id.customer_search);
         btnCancel = findViewById(R.id.btn_cancel);
@@ -154,7 +155,7 @@ public class CategoriesActivity extends AppCompatActivity {
         if (customerId != null && !customerId.equals("empty") && !customerId.isEmpty()) {
             customerDetails = dbHelper.getCustomer(customerId);
             selectCustomer.setText(customerDetails.get(0).getCustomerName());
-        }else {
+        } else {
             selectCustomer.setText("Select Customer");
         }
 
@@ -188,7 +189,7 @@ public class CategoriesActivity extends AppCompatActivity {
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         customerNameEdittext.setText("");
                         // Then just use the following:
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(rootLayout.getWindowToken(), 0);
                         Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_COLLAPSED");
                         break;
@@ -218,9 +219,11 @@ public class CategoriesActivity extends AppCompatActivity {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
+
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
+
             @Override
             public void afterTextChanged(Editable editable) {
                 String cusname = editable.toString();
@@ -239,19 +242,21 @@ public class CategoriesActivity extends AppCompatActivity {
 
 
         getCategories();
-       // new GetCategoriesTask().execute();
+        // new GetCategoriesTask().execute();
 
-        if (activityFrom!=null){
+        if (activityFrom != null) {
             if (activityFrom.equals("InvoiceEdit")
                     || activityFrom.equals("SalesEdit")
                     || activityFrom.equals("ConvertInvoice")
                     || activityFrom.equals("ReOrderInvoice")
                     || activityFrom.equals("ReOrderSales")
-            ){
+            ) {
                 dbHelper.removeAllItems();
                 Utils.clearCustomerSession(this);
             }
         }
+        //  FirebaseCrashlytics.getInstance().sendUnsentReports();
+        //   throw new ArithmeticException("Test fix"); // Force a crash
     }
 
     private void filter(String text) {
@@ -261,7 +266,8 @@ public class CategoriesActivity extends AppCompatActivity {
             //looping through existing elements
             for (CustomerModel s : customerList) {
                 //if the existing elements contains the search input
-                if (s.getCustomerName().toLowerCase().contains(text.toLowerCase()) || s.getCustomerCode().toLowerCase().contains(text.toLowerCase())) {
+                if (s.getCustomerName().toLowerCase().contains(text.toLowerCase())
+                        || s.getCustomerCode().toLowerCase().contains(text.toLowerCase())) {
                     //adding the element to filtered list
                     filterdNames.add(s);
                 }
@@ -275,54 +281,54 @@ public class CategoriesActivity extends AppCompatActivity {
     }
 
 
-    public void getCustomersGroups(String username){
+    public void getCustomersGroups(String username) {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url=Utils.getBaseUrl(this) +"BPGroupList";
-        customerList=new ArrayList<>();
-        allCustomersList=new ArrayList<>();
-        JSONObject jsonObject=new JSONObject();
+        String url = Utils.getBaseUrl(this) + "BPGroupList";
+        customerList = new ArrayList<>();
+        allCustomersList = new ArrayList<>();
+        JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("User",username);
-            jsonObject.put("LocationCode",locationCode);
+            jsonObject.put("User", username);
+            jsonObject.put("LocationCode", locationCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_url:",url);
-        dialog=new ProgressDialog(CategoriesActivity.this);
+        Log.w("Given_url:", url);
+        dialog = new ProgressDialog(CategoriesActivity.this);
         dialog.setMessage("Loading Customers Groups...");
         dialog.setCancelable(false);
         dialog.show();
-        customersGroupList=new ArrayList<>();
+        customersGroupList = new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
                     try {
                         Log.w("SAP_CUSTOMERS_GROUP:", response.toString());
-                        String statusCode=response.optString("statusCode");
-                        if (statusCode.equals("1")){
-                            JSONArray customerDetailArray=response.optJSONArray("responseData");
-                            for (int i=0;i<customerDetailArray.length();i++){
-                                JSONObject object=customerDetailArray.optJSONObject(i);
+                        String statusCode = response.optString("statusCode");
+                        if (statusCode.equals("1")) {
+                            JSONArray customerDetailArray = response.optJSONArray("responseData");
+                            for (int i = 0; i < customerDetailArray.length(); i++) {
+                                JSONObject object = customerDetailArray.optJSONObject(i);
                                 CustomerGroupModel model = new CustomerGroupModel();
                                 model.setCustomerGroupCode(object.optString("groupCode"));
                                 model.setCustomerGroupName(object.optString("groupName"));
                                 customersGroupList.add(model);
                             }
-                        }else {
-                            Toast.makeText(getApplicationContext(),"Error,in getting Customer Group list",Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Error,in getting Customer Group list", Toast.LENGTH_LONG).show();
                         }
-                        if (customersGroupList.size()>0){
+                        if (customersGroupList.size() > 0) {
                             setCustomerGroupSpinner(customersGroupList);
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 },
                 error -> {
                     dialog.dismiss();
                     // Do something when error occurred
-                    Log.w("Error_throwing:",error.toString());
-                }){
+                    Log.w("Error_throwing:", error.toString());
+                }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -337,10 +343,12 @@ public class CategoriesActivity extends AppCompatActivity {
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -350,16 +358,17 @@ public class CategoriesActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void setCustomerGroupSpinner(ArrayList<CustomerGroupModel> customersGroupList){
-        ArrayAdapter<CustomerGroupModel> adapter=new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1,customersGroupList);
+    public void setCustomerGroupSpinner(ArrayList<CustomerGroupModel> customersGroupList) {
+        ArrayAdapter<CustomerGroupModel> adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, customersGroupList);
         customerGroupSpinner.setAdapter(adapter);
         customerGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String groupCode=customersGroupList.get(position).getCustomerGroupCode();
-                String groupName=customersGroupList.get(position).getCustomerGroupName();
+                String groupCode = customersGroupList.get(position).getCustomerGroupCode();
+                String groupName = customersGroupList.get(position).getCustomerGroupName();
                 getCustomers(groupCode);
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -371,155 +380,158 @@ public class CategoriesActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                synchronized (this){
-                    RequestQueue requestQueue = Volley.newRequestQueue(CategoriesActivity.this);
-                    String url=Utils.getBaseUrl(CategoriesActivity.this) +"CustomerList";
-                    customerList=new ArrayList<>();
-                    customerList.clear();
-                    allCustomersList=new ArrayList<>();
-                    dialog.setMessage("Loading Customers...");
-                    if (dialog!=null && !dialog.isShowing()){
-                        runOnUiThread(() -> dialog.show());
-                    }
-                    JSONObject jsonObject=new JSONObject();
-                    try {
-                        jsonObject.put("GroupCode",groupCode);
-                        jsonObject.put("LocationCode",locationCode);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    Log.w("AllCustomerUrl:",url);
-                    JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
-                            response -> {
-                                try {
-                                    Log.w("Response_is:", response.toString());
-                                    // Loop through the array elements
-                                    String statusCode=response.optString("statusCode");
-                                    if (statusCode.equals("1")){
-                                        JSONArray customerDetailArray=response.optJSONArray("responseData");
-                                        for (int i=0;i<customerDetailArray.length();i++){
-                                            JSONObject object=customerDetailArray.optJSONObject(i);
-                                            CustomerModel model = new CustomerModel();
-
-                                            model.setCustomerCode(object.optString("customerCode"));
-                                            model.setCustomerName(object.optString("customerName"));
-                                            model.setAddress1(object.optString("address"));
-                                            model.setAddress2(object.optString("street"));
-                                            model.setAddress3(object.optString("city"));
-                                            model.setCustomerAddress(object.optString("address"));
-                                            model.setHaveTax(object.optString("HaveTax"));
-                                            model.setTaxType(object.optString("taxType"));
-                                            model.setTaxPerc(object.optString("taxPercentage"));
-                                            model.setTaxCode(object.optString("taxCode"));
-
-                                            if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {
-                                                model.setOutstandingAmount("0.00");
-                                            } else {
-                                                model.setOutstandingAmount(object.optString("outstandingAmount"));
-                                            }
-                                            customerList.add(model);
-                                        }
-                                    }else {
-                                        Toast.makeText(getApplicationContext(),"Error,in getting Customer list",Toast.LENGTH_LONG).show();
-                                    }
-                                    HomePageModel.customerList = new ArrayList<>();
-                                    HomePageModel.customerList.addAll(customerList);
-                                    if (dialog!=null && dialog.isShowing()){
-                                        runOnUiThread(() -> dialog.dismiss());
-                                    }
-                                    setAdapter(customerList);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            },
-                            error -> {
-                                // Do something when error occurred
-                                if (dialog!=null && dialog.isShowing()){
-                                    runOnUiThread(() -> dialog.dismiss());
-                                }
-                                Log.w("Error_throwing:", error.toString());
-                            }) {
-                        @Override
-                        public Map<String, String> getHeaders() {
-                            HashMap<String, String> params = new HashMap<>();
-                            String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
-                            String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
-                            params.put("Authorization", auth);
-                            return params;
-                        }
-                    };
-                    jsonArrayRequest.setRetryPolicy(new RetryPolicy() {
-                        @Override
-                        public int getCurrentTimeout() {
-                            return 50000;
-                        }
-
-                        @Override
-                        public int getCurrentRetryCount() {
-                            return 50000;
-                        }
-
-                        @Override
-                        public void retry(VolleyError error) throws VolleyError {
-
-                        }
-                    });
-                    // Add JsonArrayRequest to the RequestQueue
-                    requestQueue.add(jsonArrayRequest);
+//                synchronized (this) {
+                RequestQueue requestQueue = Volley.newRequestQueue(CategoriesActivity.this);
+                String url = Utils.getBaseUrl(CategoriesActivity.this) + "CustomerList";
+                customerList = new ArrayList<>();
+                customerList.clear();
+                allCustomersList = new ArrayList<>();
+//                dialog.setMessage("Loading Customers...");
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (dialog != null && !dialog.isShowing()) {
+//                            dialog.show();
+//                        }
+//                    }
+//                });
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("GroupCode", groupCode);
+                    jsonObject.put("LocationCode", locationCode);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+                Log.w("AllCustomerUrl:", url);
+                JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
+                        response -> {
+                            try {
+                                Log.w("Response_is:", response.toString());
+                                // Loop through the array elements
+                                String statusCode = response.optString("statusCode");
+                                if (statusCode.equals("1")) {
+                                    JSONArray customerDetailArray = response.optJSONArray("responseData");
+                                    for (int i = 0; i < customerDetailArray.length(); i++) {
+                                        JSONObject object = customerDetailArray.optJSONObject(i);
+                                        CustomerModel model = new CustomerModel();
+
+                                        model.setCustomerCode(object.optString("customerCode"));
+                                        model.setCustomerName(object.optString("customerName"));
+                                        model.setAddress1(object.optString("address"));
+                                        model.setAddress2(object.optString("street"));
+                                        model.setAddress3(object.optString("city"));
+                                        model.setCustomerAddress(object.optString("address"));
+                                        model.setHaveTax(object.optString("HaveTax"));
+                                        model.setTaxType(object.optString("taxType"));
+                                        model.setTaxPerc(object.optString("taxPercentage"));
+                                        model.setTaxCode(object.optString("taxCode"));
+
+                                        if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {
+                                            model.setOutstandingAmount("0.00");
+                                        } else {
+                                            model.setOutstandingAmount(object.optString("outstandingAmount"));
+                                        }
+                                        customerList.add(model);
+                                    }
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Error,in getting Customer list", Toast.LENGTH_LONG).show();
+                                }
+                                HomePageModel.customerList = new ArrayList<>();
+                                HomePageModel.customerList.addAll(customerList);
+
+                                setAdapter(customerList);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        },
+                        error -> {
+                            // Do something when error occurred
+//                            if (dialog != null && dialog.isShowing()) {
+//                                runOnUiThread(() -> dialog.dismiss());
+//                            }
+                            Log.w("Error_throwing:", error.toString());
+                        }) {
+                    @Override
+                    public Map<String, String> getHeaders() {
+                        HashMap<String, String> params = new HashMap<>();
+                        String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                        String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                        params.put("Authorization", auth);
+                        return params;
+                    }
+                };
+                jsonArrayRequest.setRetryPolicy(new RetryPolicy() {
+                    @Override
+                    public int getCurrentTimeout() {
+                        return 50000;
+                    }
+
+                    @Override
+                    public int getCurrentRetryCount() {
+                        return 50000;
+                    }
+
+                    @Override
+                    public void retry(VolleyError error) throws VolleyError {
+
+                    }
+                });
+                // Add JsonArrayRequest to the RequestQueue
+                requestQueue.add(jsonArrayRequest);
             }
+//            }
         }).start();
     }
 
 
-    public  void getCustomerDetails(String customerCode,boolean isloader,String from) {
+    public void getCustomerDetails(String customerCode, boolean isloader, String from) {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Initialize a new JsonArrayRequest instance
-        JSONObject jsonObject=new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("CustomerCode",customerCode);
+            jsonObject.put("CustomerCode", customerCode);
             // jsonObject.put("CompanyCode",companyCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("JsonValueForCustomer:",jsonObject.toString());
-        String url= Utils.getBaseUrl(getApplicationContext()) +"Customer";
-        Log.w("Given_url:",url);
-        ProgressDialog progressDialog=new ProgressDialog(CategoriesActivity.this);
+        Log.w("JsonValueForCustomer:", jsonObject.toString());
+        String url = Utils.getBaseUrl(getApplicationContext()) + "Customer";
+        Log.w("Given_url:", url);
+        ProgressDialog progressDialog = new ProgressDialog(CategoriesActivity.this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Customer Details Loading...");
-        if (isloader){
+        if (isloader) {
             progressDialog.show();
         }
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
-                    try{
+                    try {
                         progressDialog.dismiss();
-                        Log.w("SAP-response_customer:",response.toString());
-                        ArrayList<CustomerModel> customerList=new ArrayList<>();
-                        String statusCode=response.optString("statusCode");
-                        if (statusCode.equals("1")){
-                            customerResponse=response;
-                            JSONArray customerDetailArray=response.optJSONArray("responseData");
-                            for (int i=0;i<customerDetailArray.length();i++){
-                                JSONObject object=customerDetailArray.optJSONObject(i);
+                        Log.w("SAP-response_customer:", response.toString());
+                        ArrayList<CustomerModel> customerList = new ArrayList<>();
+                        String statusCode = response.optString("statusCode");
+                        if (statusCode.equals("1")) {
+                            customerResponse = response;
+                            JSONArray customerDetailArray = response.optJSONArray("responseData");
+                            for (int i = 0; i < customerDetailArray.length(); i++) {
+                                JSONObject object = customerDetailArray.optJSONObject(i);
                                 setAllValues(object);
                             }
-                        }else {
-                            Toast.makeText(getApplicationContext(),"Error,in getting Customer list",Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Error,in getting Customer list", Toast.LENGTH_LONG).show();
                         }
                         // pDialog.dismiss();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             // Do something when error occurred
             //  pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
+            Log.w("Error_throwing:", error.toString());
             progressDialog.dismiss();
             // Toast.makeText(getActivity(),error.toString(),Toast.LENGTH_LONG).show();
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -534,10 +546,12 @@ public class CategoriesActivity extends AppCompatActivity {
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -550,29 +564,33 @@ public class CategoriesActivity extends AppCompatActivity {
     private void setAllValues(JSONObject customerObject) {
         try {
             dbHelper.removeCustomerTaxes();
-            CustomerDetails model=new CustomerDetails();
+            CustomerDetails model = new CustomerDetails();
             model.setCustomerCode(customerObject.optString("customerCode"));
             model.setCustomerName(customerObject.optString("customerName"));
             model.setCustomerAddress1(customerObject.optString("address"));
             model.setTaxPerc(customerObject.optString("taxPercentage"));
             model.setTaxType(customerObject.optString("taxType"));
             model.setTaxCode(customerObject.optString("taxCode"));
-            ArrayList<CustomerDetails> taxList =new ArrayList<>();
+            ArrayList<CustomerDetails> taxList = new ArrayList<>();
             taxList.add(model);
             dbHelper.insertCustomerTaxValues(taxList);
-        }catch (Exception exception){}
+        } catch (Exception exception) {
+        }
     }
 
     private class InsertCustomerTask extends AsyncTask<Void, Integer, String> {
         String TAG = getClass().getSimpleName();
+
         protected void onPreExecute() {
             super.onPreExecute();
         }
-        protected String doInBackground(Void...arg0) {
+
+        protected String doInBackground(Void... arg0) {
             dbHelper.removeAllCustomers();
             dbHelper.insertCustomerList(customerList);
             return "You are at PostExecute";
         }
+
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
         }
@@ -580,32 +598,35 @@ public class CategoriesActivity extends AppCompatActivity {
 
     private void setAdapter(ArrayList<CustomerModel> customerNames) {
         progressLayout.setVisibility(View.GONE);
-        if (customerList.size()> 0) {
+        if (customerList.size() > 0) {
             rootLayout.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
-        }else {
+        } else {
             rootLayout.setVisibility(View.GONE);
             emptyLayout.setEnabled(false);
             emptyLayout.setClickable(false);
             emptyLayout.setVisibility(View.VISIBLE);
         }
         customerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        customerNameAdapter = new CustomerNameAdapter(customerNames, (customerId,customerName, pos) -> {
+        customerNameAdapter = new CustomerNameAdapter(customerNames, (customerId, customerName, pos) -> {
             viewCloseBottomSheet();
-            int count =dbHelper.numberOfRows();
-            if (count>0){
+            int count = dbHelper.numberOfRows();
+            if (count > 0) {
                 showProductDeleteAlert(customerId);
-            }else {
+            } else {
                 selectCustomer.setText(customerName);
                 setCustomerDetails(customerId);
             }
 
         });
         customerView.setAdapter(customerNameAdapter);
+        if (dialog != null && dialog.isShowing())
+            dialog.dismiss();
+
     }
 
-    public void showAlertDialog(){
-        android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(CategoriesActivity.this);
+    public void showAlertDialog() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(CategoriesActivity.this);
         builder.setCancelable(false);
         builder.setTitle("Warning..!");
         builder.setMessage("All Data Will be Cleared are you sure want to back ?");
@@ -618,12 +639,12 @@ public class CategoriesActivity extends AppCompatActivity {
             finish();
         });
         builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
-        android.app.AlertDialog alertDialog=builder.create();
+        android.app.AlertDialog alertDialog = builder.create();
         alertDialog.show();
         //  getActivity().getWindow().setBackgroundDrawableResource(R.color.primaryDark);
     }
 
-    public void showProductDeleteAlert(String customerId){
+    public void showProductDeleteAlert(String customerId) {
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setTitle("Warning !");
         builder1.setMessage("Products in Cart will be removed..");
@@ -653,29 +674,29 @@ public class CategoriesActivity extends AppCompatActivity {
         alert11.show();
     }
 
-    public void setCustomerDetails(String customerId){
-        Utils.setCustomerSession(this,customerId);
-        getCustomerDetails(customerId,true,"");
+    public void setCustomerDetails(String customerId) {
+        Utils.setCustomerSession(this, customerId);
+        getCustomerDetails(customerId, true, "");
     }
 
 
     public void viewCloseBottomSheet() {
-       // hideKeyboard();
+        // hideKeyboard();
         if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         } else {
             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
         // get the Customer name from the local db
-       // customerNameEdittext.setText("");
+        // customerNameEdittext.setText("");
     }
 
-    public void getCategories(){
+    public void getCategories() {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"CategoryList";
+        String url = Utils.getBaseUrl(this) + "CategoryList";
         // Initialize a new JsonArrayRequest instance
-        allCategoriesList=new ArrayList<>();
+        allCategoriesList = new ArrayList<>();
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Categories Loading...");
@@ -683,17 +704,17 @@ public class CategoriesActivity extends AppCompatActivity {
         pDialog.show();
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
-                    try{
-                        Log.w("Response_Category:",response.toString());
+                    try {
+                        Log.w("Response_Category:", response.toString());
                         // Loop through the array elements
-                        String statusCode=response.optString("statusCode");
-                        JSONArray detailArray=response.optJSONArray("responseData");
-                        if (statusCode.equals("1")){
-                            for(int i=0;i<detailArray.length();i++){
+                        String statusCode = response.optString("statusCode");
+                        JSONArray detailArray = response.optJSONArray("responseData");
+                        if (statusCode.equals("1")) {
+                            for (int i = 0; i < detailArray.length(); i++) {
                                 // Get current json object
                                 JSONObject categoryObject = detailArray.getJSONObject(i);
                                 // if (categoryObject.optBoolean("IsActive")){
-                                AllCategories categories=new AllCategories();
+                                AllCategories categories = new AllCategories();
                                 //  categories.setCompanyCode(categoryObject.optString("CompanyCode"));
                                 categories.setCategoryCode(categoryObject.optString("categoryCode"));
                                 categories.setCateGoryGroupName(categoryObject.optString("categoryName"));
@@ -706,25 +727,25 @@ public class CategoriesActivity extends AppCompatActivity {
                                 //}
                             }
                             pDialog.dismiss();
-                            if (allCategoriesList.size()>0){
+                            if (allCategoriesList.size() > 0) {
                                 setCatagoriesTabs(allCategoriesList);
                                 viewPager.setVisibility(View.VISIBLE);
                                 emptyLayout.setVisibility(View.GONE);
-                            }else {
+                            } else {
                                 emptyLayout.setVisibility(View.VISIBLE);
                                 viewPager.setVisibility(View.GONE);
                             }
-                        }else {
+                        } else {
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 },
                 error -> {
                     // Do something when error occurred
                     pDialog.dismiss();
-                    Log.w("Error_throwing:",error.toString());
-                }){
+                    Log.w("Error_throwing:", error.toString());
+                }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -740,10 +761,12 @@ public class CategoriesActivity extends AppCompatActivity {
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -754,7 +777,7 @@ public class CategoriesActivity extends AppCompatActivity {
     }
 
     private void setCatagoriesTabs(ArrayList<AllCategories> allCategoriesList) {
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), allCategoriesList.size(),allCategoriesList);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), allCategoriesList.size(), allCategoriesList);
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         pDialog.dismiss();
@@ -767,8 +790,11 @@ public class CategoriesActivity extends AppCompatActivity {
         final MenuItem menuItem = menu.findItem(R.id.action_cart);
         View actionView = menuItem.getActionView();
         textCartItemCount = actionView.findViewById(R.id.cart_badge);
-        final MenuItem search=menu.findItem(R.id.choose_company);
+        final MenuItem search = menu.findItem(R.id.choose_company);
+        final MenuItem locati = menu.findItem(R.id.choose_location);
         search.setVisible(false);
+        locati.setVisible(false);
+
         setupBadge();
         actionView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -798,10 +824,10 @@ public class CategoriesActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        int count=dbHelper.numberOfRowsInInvoice();
-        if (count>0){
+        int count = dbHelper.numberOfRowsInInvoice();
+        if (count > 0) {
             showAlertDialog();
-        }else {
+        } else {
             finish();
         }
     }
@@ -809,14 +835,14 @@ public class CategoriesActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            int count=dbHelper.numberOfRowsInInvoice();
-            if (count>0){
+            int count = dbHelper.numberOfRowsInInvoice();
+            if (count > 0) {
                 showAlertDialog();
-            }else {
+            } else {
                 finish();
             }
             return true;
-        }else if(keyCode == KeyEvent.KEYCODE_HOME){
+        } else if (keyCode == KeyEvent.KEYCODE_HOME) {
             finish();
             return true;
         }
@@ -833,11 +859,11 @@ public class CategoriesActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem myItem = menu.findItem(R.id.action_total);
-      //  myItem.setTitle("Total: 100");
+        //  myItem.setTitle("Total: 100");
         ArrayList<CartModel> localCart = helper.getAllCartItems();
         double price = 0;
         for (int j = 0; j < localCart.size(); j++) {
-            if (localCart.get(j).getCART_COLUMN_NET_PRICE()!=null && !localCart.get(j).getCART_COLUMN_NET_PRICE().equals("null")){
+            if (localCart.get(j).getCART_COLUMN_NET_PRICE() != null && !localCart.get(j).getCART_COLUMN_NET_PRICE().equals("null")) {
                 price += Double.parseDouble(localCart.get(j).getCART_COLUMN_NET_PRICE());
             }
         }
@@ -854,22 +880,21 @@ public class CategoriesActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
 
-        if (id==android.R.id.home){
-            int count=dbHelper.numberOfRowsInInvoice();
-            if (count>0){
+        if (id == android.R.id.home) {
+            int count = dbHelper.numberOfRowsInInvoice();
+            if (count > 0) {
                 showAlertDialog();
-            }else {
+            } else {
                 finish();
             }
-        }
-        else if (id == R.id.action_cart) {
+        } else if (id == R.id.action_cart) {
             // setFragment(new SchedulingFragment());
 
             String a = "1011";
 
             return true;
         } else if (id == R.id.action_search) {
-            Intent intent=new Intent(CategoriesActivity.this,SearchProductActivity.class);
+            Intent intent = new Intent(CategoriesActivity.this, SearchProductActivity.class);
             startActivity(intent);
         }
 

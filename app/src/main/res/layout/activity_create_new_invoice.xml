@@ -177,24 +177,111 @@
                             android:layout_below="@+id/code_title"
                             android:layout_height="40dp"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Product UOM"
-                            android:layout_marginTop="5dp"
-                            android:textColor="#212121"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="101dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:text="Product UOM"
+                                android:textColor="#212121"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <Space
+                                android:layout_width="0dip"
+                                android:layout_weight="1"
+                                android:layout_height="0dp"/>
+
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginRight="10dp"
+                                android:layout_height="wrap_content">
+
+                                <LinearLayout
+
+                                    android:layout_width="match_parent"
+                                    android:gravity="center"
+                                    android:padding="5dp"
+                                    android:orientation="vertical"
+                                    android:layout_height="wrap_content">
+
+                                    <ImageView
+                                        android:id="@id/downArrow_inv_lay"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:tag="hide"
+                                        android:src="@drawable/ic_baseline_keyboard_arrow_up_24"
+                                        android:textColor="#006DDB"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+
+                                </LinearLayout>
+                            </LinearLayout>
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:id="@id/hide_disc_lay"
+                            android:layout_width="match_parent"
+                            android:padding="5dp"
+                            android:visibility="gone"
+                            android:background="#f3f3f3"
+                            android:orientation="horizontal"
+                            android:layout_height="match_parent">
+
+                            <EditText
+                                android:layout_width="0dp"
+                                android:hint="Remarks"
+                                android:layout_weight="1"
+                                android:textSize="12sp"
+                                android:id="@+id/remarks"
+                                android:textStyle="bold"
+                                android:padding="5dp"
+                                android:background="@drawable/create_invoice_background"
+                                android:layout_height="wrap_content"/>
+                            <EditText
+                                android:layout_width="0dp"
+                                android:hint="Discount"
+                                android:textSize="12sp"
+                                android:layout_weight="1"
+                                android:layout_marginLeft="@dimen/_8sdp"
+                                android:id="@+id/discount_inv"
+                                android:textStyle="bold"
+                                android:padding="5dp"
+                                android:background="@drawable/create_invoice_background"
+                                android:layout_height="wrap_content"/>
+
+                        </LinearLayout>
+                        <LinearLayout
+    android:id="@+id/uomSpinnerLay"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <Spinner
+        android:id="@+id/uom_spinner"
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/spinner_bg"
+        android:layout_height="40dp"
+        android:layout_gravity="center" />
+
+</LinearLayout>
 
                         <Spinner
-                            android:id="@+id/uom_spinner"
+                            android:id="@+id/delivery_addr_spinner"
                             android:layout_width="match_parent"
                             android:layout_marginTop="5dp"
                             android:background="@drawable/spinner_bg"
                             android:layout_height="40dp"
                             android:layout_gravity="center" />
-
-
 
                     </LinearLayout>
 
@@ -1130,17 +1217,6 @@
                         android:background="#f3f3f3"
                         android:orientation="vertical"
                         android:layout_height="match_parent">
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:hint="Remarks"
-                            android:textSize="12sp"
-                            android:visibility="gone"
-                            android:id="@+id/remarks"
-                            android:textStyle="bold"
-                            android:padding="10dp"
-                            android:background="@drawable/create_invoice_background"
-                            android:layout_height="50dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"

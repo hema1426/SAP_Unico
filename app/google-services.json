@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1001265181698",
+    "project_id": "dashboard-winapp",
+    "storage_bucket": "dashboard-winapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1001265181698:android:9b8802759817f503c8231b",
+        "android_client_info": {
+          "package_name": "com.app.winappsalesorder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARcmnrCuf8VDHEAMtRZZsI70axDvRLKt4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1001265181698:android:91a4387c0c38e683c8231b",
+        "android_client_info": {
+          "package_name": "com.winapp.saperp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARcmnrCuf8VDHEAMtRZZsI70axDvRLKt4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

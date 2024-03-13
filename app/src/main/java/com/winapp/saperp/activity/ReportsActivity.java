@@ -43,6 +43,7 @@ import com.winapp.saperp.ReportPreview.ReceiptSummaryPreviewActivity;
 import com.winapp.saperp.ReportPreview.RoCustomerPreviewActivity;
 import com.winapp.saperp.ReportPreview.RoInvoicebyProductPreviewActivity;
 import com.winapp.saperp.ReportPreview.RoInvoicebySummaryPreviewActivity;
+import com.winapp.saperp.ReportPreview.RoReceiptSettlePreviewActivity;
 import com.winapp.saperp.ReportPreview.RoSettlementPreviewActivity;
 import com.winapp.saperp.ReportPreview.SapSalesSummaryPreviewActivity;
 import com.winapp.saperp.ReportPreview.SapStockReturnPreviewActivity;
@@ -91,6 +92,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     private CheckBox receiptSummary;
     private CheckBox receiptDetails;
     private CheckBox settlementReport;
+    private CheckBox settle_receiptReport;
     private ArrayList<CustomerModel> customerList;
     private ArrayList<String> searchableCustomerList;
     private SearchableSpinner customerListSpinner;
@@ -143,6 +145,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     private JSONObject jsonBody;
     private RequestQueue requestQueue;
     private String url;
+    public  String apidateFormat;
     private DatePickerDialog datePickerDialog;
     private ArrayAdapter<String> arrayAdapter;
     private ImageView printPreview;
@@ -175,6 +178,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         receiptDetails=findViewById(R.id.receipt_details);
         receiptSummary=findViewById(R.id.receipt_summary);
         settlementReport=findViewById(R.id.settlement_report);
+        settle_receiptReport=findViewById(R.id.settle_receipt_report);
         stockSummaryReport=findViewById(R.id.stock_summary);
         badStockReturnSummary=findViewById(R.id.bad_stock_summary);
         printPreview=findViewById(R.id.preview);
@@ -190,6 +194,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         receiptSummary.setOnClickListener(this);
         receiptDetails.setOnClickListener(this);
         settlementReport.setOnClickListener(this);
+        settle_receiptReport.setOnClickListener(this);
         stockSummaryReport.setOnClickListener(this);
         badStockReturnSummary.setOnClickListener(this);
 
@@ -201,6 +206,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         System.out.println("Current time => " + c);
         SimpleDateFormat df1 = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
         currentDate = df1.format(c);
+        apidateFormat =df1.format(c);
 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         String formattedDate = df.format(c);
@@ -248,6 +254,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 receiptDetails.setChecked(false);
                 receiptSummary.setChecked(false);
                 settlementReport.setChecked(false);
+                settle_receiptReport.setChecked(false);
                 showFilterAlertDialog(view,"Invoice By Products");
             }
         }else if (view.getId()==R.id.invoice_by_summary){
@@ -257,6 +264,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 receiptDetails.setChecked(false);
                 receiptSummary.setChecked(false);
                 settlementReport.setChecked(false);
+                settle_receiptReport.setChecked(false);
                 showFilterAlertDialog(view,"Invoice By Summary");
             }
 
@@ -267,6 +275,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 receiptDetails.setChecked(false);
                 receiptSummary.setChecked(false);
                 settlementReport.setChecked(false);
+                settle_receiptReport.setChecked(false);
                 showFilterAlertDialog(view,"Customer Statement");
             }
         }else if (view.getId()==R.id.receipt_details){
@@ -276,6 +285,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 receiptSummary.setChecked(false);
                 customerStatement.setChecked(false);
                 settlementReport.setChecked(false);
+                settle_receiptReport.setChecked(false);
                 showFilterAlertDialog(view,"Receipt Details");
             }
         }else if (view.getId()==R.id.receipt_summary){
@@ -285,6 +295,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 receiptDetails.setChecked(false);
                 customerStatement.setChecked(false);
                 settlementReport.setChecked(false);
+                settle_receiptReport.setChecked(false);
                 showFilterAlertDialog(view,"Receipt Summary");
             }
         }else if (view.getId()==R.id.settlement_report){
@@ -294,9 +305,21 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 invoiceByProduct.setChecked(false);
                 receiptDetails.setChecked(false);
                 customerStatement.setChecked(false);
+                settle_receiptReport.setChecked(false);
                 showFilterAlertDialog(view,"Settlement Report");
             }
-        }else if (view.getId()==R.id.stock_summary){
+        }else if (view.getId()==R.id.settle_receipt_report){
+            if (settle_receiptReport.isChecked()){
+                invoiceSummary.setChecked(false);
+                receiptSummary.setChecked(false);
+                invoiceByProduct.setChecked(false);
+                receiptDetails.setChecked(false);
+                customerStatement.setChecked(false);
+                settlementReport.setChecked(false);
+                showFilterAlertDialog(view,"Settlement With Receipt");
+            }
+        }
+        else if (view.getId()==R.id.stock_summary){
             try {
                 showFilterAlertDialog(view,"Stock Summary");
             } catch (Exception e) {
@@ -382,7 +405,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             increaseButton=customLayout.findViewById(R.id.increase);
             noOfCopyText=customLayout.findViewById(R.id.no_of_copy);
             LinearLayout stattusLayout=customLayout.findViewById(R.id.status_layout);
-            LinearLayout customerListLayout=customLayout.findViewById(R.id.customer_list_layout);
+            LinearLayout customerListLayout =customLayout.findViewById(R.id.customer_list_layout);
             LinearLayout userListLayout=customLayout.findViewById(R.id.user_list_layout);
             customerListSpinner.setTitle("Select Customer");
            // customerListSpinner.setVisibility(View.GONE);
@@ -412,7 +435,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             status.get().add("NOT PAID");
             setStatusList(status.get());
 
-            if (title.equals("Receipt Details") || title.equals("Receipt Summary") || title.equals("Stock Summary") || title.equals("Bad Stock Report") || title.equals("Customer Statement")){
+            if (title.equals("Receipt Details") || title.equals("Receipt Summary") || title.equals("Stock Summary")
+                    || title.equals("Bad Stock Report") || title.equals("Customer Statement")){
                 stattusLayout.setVisibility(View.GONE);
             }else {
                 stattusLayout.setVisibility(View.VISIBLE);
@@ -420,6 +444,14 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
 
             if (title.equals("Stock Summary") || title.equals("Bad Stock Report")){
                 customerListSpinner.setVisibility(View.GONE);
+            }
+
+            if (title.equals("Settlement With Receipt")){
+                customerListSpinner.setVisibility(View.GONE);
+                stattusLayout.setVisibility(View.GONE);
+                toDate.setVisibility(View.GONE);
+                userName.setVisibility(View.VISIBLE);
+                //  userListLayout.setVisibility(View.VISIBLE);
             }
 
             Date c = Calendar.getInstance().getTime();
@@ -455,6 +487,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                     String[] customername = new String[0];
                     if (!fromDate.getText().toString().isEmpty()){
                         from_date=fromDate.getText().toString();
+
                     }
                     if (!toDate.getText().toString().isEmpty()){
                         to_date=toDate.getText().toString();
@@ -543,7 +576,9 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                     progressDialog.show();
                                     if (isPrintEnable){
                                         try {
-                                            getCustomerStatement(customer_id, customername[0].toString(), fromDateString, toDateString, "O", Integer.parseInt(noOfCopyText.getText().toString()));
+                                            getCustomerStatement(customer_id, customername[0].toString(),
+                                                    fromDateString, toDateString, "O",
+                                                    Integer.parseInt(noOfCopyText.getText().toString()));
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
@@ -591,7 +626,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                 progressDialog.show();
                                 if (isPrintEnable){
                                     try {
-                                        getReceiptSummary(customer_id, fromDateString, toDateString, Integer.parseInt(noOfCopyText.getText().toString()));
+                                        getReceiptSummary(customer_id, fromDateString, toDateString,
+                                                Integer.parseInt(noOfCopyText.getText().toString()));
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -614,7 +650,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                 progressDialog.show();
                                 if (isPrintEnable){
                                     try {
-                                        getSettlementReport(customer_id,from_date,to_date,Integer.parseInt(noOfCopyText.getText().toString()));
+                                        getSettlementReport(customer_id,from_date,to_date,
+                                                Integer.parseInt(noOfCopyText.getText().toString()));
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -631,13 +668,31 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                 }
                                 break;
 
+                            case "Settlement With Receipt":
+                                dialog.dismiss();
+                                progressDialog.setMessage("Printing in Progress...!");
+                                progressDialog.show();
+                                if (isPrintEnable){
+                                    try {
+                                        getSettleReceiptReport(fromDateString,Integer.parseInt(noOfCopyText.getText().toString()));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }else {
+                                    Intent intent=new Intent(ReportsActivity.this, RoReceiptSettlePreviewActivity.class);
+                                    intent.putExtra("fromDate",apidateFormat);
+                                    intent.putExtra("userName",username);
+                                    startActivity(intent);
+                                }
+                                break;
                             case "Bad Stock Report":
                                 dialog.dismiss();
                                 progressDialog.setMessage("Printing in Progress...!");
                                 progressDialog.show();
                                 if (isPrintEnable){
                                     try {
-                                        StockBadRequestReturn(Integer.parseInt(noOfCopyText.getText().toString()),"DM","Damaged/Expired",fromDateString,toDateString);
+                                        StockBadRequestReturn(Integer.parseInt(noOfCopyText.getText().toString()),"DM","Damaged/Expired"
+                                                ,fromDateString,toDateString);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -711,12 +766,23 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         datePickerDialog = new DatePickerDialog(ReportsActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        Date selectedMonthYearDate ;
+
+                        try {
+                            selectedMonthYearDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                                    .parse(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        //                                        userSelectedDate = selectedMonthYearDate;
                         dateEditext.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                        if (selectedMonthYearDate != null) {
+                            apidateFormat = new SimpleDateFormat("yyyyMMdd", Locale.US).format(selectedMonthYearDate);
+                        }
                     }
                 }, mYear, mMonth, mDay);
         datePickerDialog.show();
     }
-
     private void getSettlementReport(String customer_id,String from_date,String to_date,int copy) throws JSONException {
         try {
             jsonObject=new JSONObject();
@@ -779,6 +845,117 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                             SettlementReceiptModel.Expense expense=new SettlementReceiptModel.Expense();
                             expense.setExpeneName(expenseObject.optString("GroupName"));
                             expense.setExpenseTotal(expenseObject.optString("NetTotal"));
+                            // Adding the expense Details to Arraylist
+                            settlementExpenses.add(expense);
+                        }
+                    }
+                    pDialog.dismiss();
+                    clearAllSelection();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }, error -> {
+                // Do something when error occurred
+                pDialog.dismiss();
+                Log.w("Error_throwing:",error.toString());
+            }){
+                @Override
+                public Map<String, String> getHeaders() {
+                    HashMap<String, String> params = new HashMap<>();
+                    String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                    String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                    params.put("Authorization", auth);
+                    return params;
+                }
+            };
+
+            jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+                @Override
+                public int getCurrentTimeout() {
+                    return 50000;
+                }
+                @Override
+                public int getCurrentRetryCount() {
+                    return 50000;
+                }
+                @Override
+                public void retry(VolleyError error) throws VolleyError {
+                }
+            });
+            // Add JsonArrayRequest to the RequestQueue
+            requestQueue.add(jsonObjectRequest);
+        }catch (Exception e){}
+    }
+
+    private void getSettleReceiptReport(String from_date,int copy) throws JSONException {
+        try {
+            jsonObject=new JSONObject();
+            jsonObject.put("Date",from_date);
+            jsonObject.put("User",username);
+
+            requestQueue = Volley.newRequestQueue(this);
+            url= Utils.getBaseUrl(this) +"ReportSettlementWithReceipt";
+            // Initialize a new JsonArrayRequest instance
+            Log.w("Settlement_Receip:",url + jsonObject);
+            pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+            pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+            pDialog.setTitleText("Processing Please wait...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+            ArrayList<SettlementReceiptModel> settlementReceiptDetails =new ArrayList<>();
+            ArrayList<SettlementReceiptModel.CurrencyDenomination> settlementDenomination=new ArrayList<>();
+            ArrayList<SettlementReceiptModel.Expense> settlementExpenses=new ArrayList<>();
+            jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
+                try{
+                    Log.w("SettlementResponse:",response.toString());
+                    JSONArray receiptDetailsArray=response.optJSONArray("reportSettlementWithReceiptDetails");
+                    for (int i=0;i<receiptDetailsArray.length();i++){
+                        JSONObject receiptObject=receiptDetailsArray.optJSONObject(i);
+                        SettlementReceiptModel model =new SettlementReceiptModel();
+
+                        model.setReceiptNo(receiptObject.optString("receiptNo"));
+                        model.setReceiptDate(receiptObject.optString("receiptDate"));
+                        model.setCustomerName(receiptObject.optString("customerName"));
+                        model.setCustomerCode(receiptObject.optString("customerCode"));
+                        model.setPaymode(receiptObject.optString("Paymode"));
+//                        model.setChequeDate(receiptObject.optString("ChequeDate"));
+//                        model.setBankCode(receiptObject.optString("BankCode"));
+//                        model.setChequeNo(receiptObject.optString("ChequeNo"));
+
+
+//                        model.setTotalInvoiceAmount(receiptObject.getString("totalInvoiceAmount"));
+//                        model.setTotalPaidAmount(receiptObject.getString("totalPaidAmount"));
+//                        model.setTotalLessAmount(receiptObject.getString("totalLessAmount"));
+//                        model.setTotalCashAmount(receiptObject.getString("totalTransferAmount"));
+//                        model.setTotalChequeAmount(receiptObject.getString("totalCheckAmount"));
+
+
+                        // Add the Values to main Arraylist
+                        settlementReceiptDetails.add(model);
+                    }
+
+                    JSONArray denominationArray=response.optJSONArray("reportSettlementWithReceiptDenomination");
+                    assert denominationArray != null;
+                    if (denominationArray.length()>0){
+                        for (int i=0;i<denominationArray.length();i++){
+                            JSONObject denominationObject=denominationArray.optJSONObject(i);
+                            SettlementReceiptModel.CurrencyDenomination denomination=new SettlementReceiptModel.CurrencyDenomination();
+                            denomination.setDenomination(denominationObject.optString("denomination"));
+                            denomination.setCount(denominationObject.optString("count"));
+                            denomination.setTotal(denominationObject.optString("total"));
+                            // Adding the Denomination Details to the Arraylist
+                            settlementDenomination.add(denomination);
+                        }
+                    }
+
+                    JSONArray expenseArray=response.optJSONArray("reportSettlementWithReceiptExpenses");
+                    assert expenseArray!=null;
+                    if (denominationArray.length()>0){
+                        for (int i=0;i<expenseArray.length();i++){
+                            JSONObject expenseObject=expenseArray.optJSONObject(i);
+                            SettlementReceiptModel.Expense expense=new SettlementReceiptModel.Expense();
+                            expense.setExpeneName(expenseObject.optString("expenses"));
+                            expense.setExpenseTotal(expenseObject.optString("total"));
                             // Adding the expense Details to Arraylist
                             settlementExpenses.add(expense);
                         }

@@ -26,6 +26,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -55,15 +57,15 @@ import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.CurrencyDenominationAdapter;
-import com.winapp.saperp.adapter.ExpenseAdapter;
+import com.winapp.saperp.adapter.SettleExpensePreviewAdapter;
 import com.winapp.saperp.model.CurrencyModel;
 import com.winapp.saperp.model.ExpenseModel;
 import com.winapp.saperp.model.InvoicePrintPreviewModel;
 import com.winapp.saperp.tscprinter.TSCPrinterActivity;
 import com.winapp.saperp.utils.Constants;
+import com.winapp.saperp.utils.MyKeyboard;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
-import com.winapp.saperp.zebraprinter.TSCPrinter;
 import com.winapp.saperp.zebraprinter.ZebraPrinterActivity;
 
 
@@ -94,6 +96,10 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
     private ArrayList<InvoicePrintPreviewModel.InvoiceList> invoiceList;
     private RecyclerView currencyView;
     private CurrencyDenominationAdapter denominationAdapter;
+    private RecyclerView expenseView;
+    private SettleExpensePreviewAdapter ExpensePreviewAdapter;
+
+    private LinearLayout expenslayoutl;
     private TextView settlementNumberText;
     private TextView settlementDateText;
     private TextView customerCodetext;
@@ -104,6 +110,8 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
     private TextView subtotalText;
     private TextView taxValueText;
     private TextView netTotalText;
+    private TextView expenseTotalText;
+
     private TextView outstandingText;
     private TextView taxTitle;
     private TextView itemDiscount;
@@ -141,10 +149,8 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
     public String outstanding_amount="0.0";
     private ArrayList<CurrencyModel> currencyList;
     private CurrencyDenominationAdapter currencyDenominationAdapter;
-    private ExpenseAdapter expenseAdapter;
     private ArrayList<ExpenseModel> expenseList;
     private RecyclerView denominationView;
-    private RecyclerView expenseView;
     private TextView settlementBy;
     private String locationCode;
 
@@ -176,12 +182,15 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
         subtotalText = findViewById(R.id.sub_total);
         taxValueText = findViewById(R.id.tax);
         netTotalText = findViewById(R.id.net_total);
+        expenseTotalText = findViewById(R.id.net_total);
         outstandingText = findViewById(R.id.outstanding_amount);
         taxTitle = findViewById(R.id.tax_title);
         itemDiscount = findViewById(R.id.item_disc);
         companyNametext = findViewById(R.id.company_name);
         companyAddress1Text = findViewById(R.id.address1);
         companyAddress2Text = findViewById(R.id.address2);
+        expenseView = findViewById(R.id.expenseList_settle);
+        expenslayoutl = findViewById(R.id.expenslayout);
         addressLayout = findViewById(R.id.adressLayout);
         settlementBy=findViewById(R.id.user);
         rootLayout = findViewById(R.id.rootLayout);
@@ -192,6 +201,7 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
         printLayout=findViewById(R.id.print_layout);
         cancelButton=findViewById(R.id.cancel);
         pdfView = findViewById(R.id.pdfView);
+        expenseTotalText = findViewById(R.id.expense_total);
 
         View bottomSheet = findViewById(R.id.design_bottom_sheet);
         behavior = BottomSheetBehavior.from(bottomSheet);
@@ -261,11 +271,12 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
         dialog.setMessage("Getting Settlement Details...");
         dialog.setCancelable(false);
         dialog.show();
-        Log.w("Given_url:",url);
+        Log.w("Given_settle_print:",url+".. "+jsonObject);
         expenseList=new ArrayList<>();
         expenseList.clear();
         currencyList=new ArrayList<>();
         currencyList.clear();
+        String expenseAmt = "0.00";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST, url, jsonObject,
                 response -> {
@@ -278,6 +289,7 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
                                 JSONArray responseDataArray=response.getJSONArray("responseData");
                                 JSONObject responseObject=responseDataArray.getJSONObject(0);
                                 String settlementAmount=responseObject.optString("totalAmount");
+
                                 JSONArray denominationArray=responseObject.optJSONArray("settlementDetails");
                                 for (int i = 0; i< Objects.requireNonNull(denominationArray).length(); i++){
                                     JSONObject currencyObject = denominationArray.optJSONObject(i);
@@ -310,13 +322,14 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            //setExpenseAdapter(expenseList);
+                                            expenslayoutl.setVisibility(View.VISIBLE);
+                                            setExpensePreviewAdapter(expenseList);
+                                            expenseTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(responseObject.optString("totalExpense"))));
                                         }
                                     });
                                 }
                             }else {
-
-
+                                expenslayoutl.setVisibility(View.GONE);
                             }
                         }
                     }catch (Exception e){
@@ -352,6 +365,28 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
         });
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
+    }
+
+
+    private void setExpensePreviewAdapter(ArrayList<ExpenseModel> expenseList) {
+            expenseView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            ExpensePreviewAdapter = new SettleExpensePreviewAdapter(expenseList, new SettleExpensePreviewAdapter.CallBack() {
+                @Override
+                public void sortKeyboard(EditText expenseEditext) {
+                    MyKeyboard keyboard = (MyKeyboard) findViewById(R.id.keyboard);
+//                    // prevent system keyboard from appearing when EditText is tapped
+//                    expenseEditext.setRawInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                   expenseEditext.setTextIsSelectable(true);
+                    expenseEditext.setBackground(null);
+//                    // pass the InputConnection from the EditText to the keyboard
+                    InputConnection ic = expenseEditext.onCreateInputConnection(new EditorInfo());
+                    keyboard.setInputConnection(ic);
+                }
+                @Override
+                public void setExpenseTotal() {
+                }
+            });
+            expenseView.setAdapter(ExpensePreviewAdapter);
     }
 
     public void setCurrencyAdapter(JSONObject jsonObject) {

@@ -1,5 +1,6 @@
 package com.winapp.saperp.utils;
 
+import com.winapp.saperp.model.ExpensePrintPreviewModel;
 import com.winapp.saperp.model.InvoicePrintPreviewModel;
 
 import java.util.ArrayList;
@@ -52,4 +53,18 @@ public class PdfUtils {
         System.out.println("Index " + index + " "+ Str.get(index) + " " + "is the largest and is size " + largestString);
         return largestString;
     }
+
+    public static int getLength1(ArrayList<ExpensePrintPreviewModel.InvoiceList> Str) {
+        int largestString = Str.get(0).getDescription().length();
+        int index = 0;
+        for(int i = 0; i < Str.size(); i++) {
+            if(Str.get(i).getDescription().length() > largestString) {
+                largestString = Str.get(i).getDescription().length();
+                index = i;
+            }
+        }
+        System.out.println("Index " + index + " "+ Str.get(index) + " " + "is the largest and is size " + largestString);
+        return largestString;
+    }
+
 }

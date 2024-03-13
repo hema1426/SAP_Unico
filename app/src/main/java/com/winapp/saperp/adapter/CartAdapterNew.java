@@ -182,7 +182,7 @@ public class CartAdapterNew extends
                     holder.pcsLayout.setVisibility(View.VISIBLE);
                     holder.ltotalLayout.setVisibility(View.VISIBLE);
                 }else {
-                    holder.pcsLayout.setVisibility(View.INVISIBLE);
+                    holder.pcsLayout.setVisibility(View.GONE);
                     holder.ltotalLayout.setVisibility(View.INVISIBLE);
                 }
 

@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/rootLayout"
+    android:visibility="gone"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".activity.SettlementActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Settlement Number"
+                        android:textSize="12sp"
+                        android:padding="3dp"
+                        android:textStyle="bold"
+                        android:id="@+id/title1"
+                        android:textColor="@color/black_87"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:id="@+id/settlement_no"
+                        android:textColor="@color/black_87"
+                        android:layout_below="@id/title1"
+                        android:background="@drawable/border_edittext"
+                        android:layout_height="35dp"/>
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="0dp"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:padding="5dp"
+                        android:layout_centerInParent="true"
+                        android:id="@+id/save_settlement"
+                        android:text="Save Settlement"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:background="@drawable/button_background"
+                        android:layout_height="40dp"/>
+
+
+                </RelativeLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Settlement Date"
+                        android:textSize="12sp"
+                        android:padding="3dp"
+                        android:textStyle="bold"
+                        android:id="@+id/title2"
+                        android:textColor="@color/primaryDark"
+                        android:layout_height="wrap_content"/>
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/title2"
+                        android:padding="5dp"
+                        android:id="@+id/date"
+                        android:textColor="@color/black_87"
+                        android:drawableRight="@drawable/ic_baseline_date_range_24"
+                        android:background="@drawable/border_edittext"
+                        android:layout_height="wrap_content"/>
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="0dp"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="User"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:padding="3dp"
+                        android:id="@+id/title3"
+                        android:textColor="@color/primaryDark"
+                        android:layout_height="wrap_content"/>
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/title3"
+                        android:padding="5dp"
+                        android:id="@+id/username"
+                        android:textColor="@color/black_87"
+                        android:background="@drawable/border_edittext"
+                        android:layout_height="wrap_content"/>
+
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Total Cash Collect"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:padding="3dp"
+                        android:id="@+id/title4"
+                        android:textColor="@color/primaryDark"
+                        android:layout_height="wrap_content"/>
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/title4"
+                        android:padding="5dp"
+                        android:id="@+id/total_cash_collect"
+                        android:textColor="@color/black_87"
+                        android:drawableRight="@drawable/ic_baseline_attach_money_24"
+                        android:background="@drawable/border_edittext"
+                        android:layout_height="wrap_content"/>
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="0dp"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Location Code"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:padding="3dp"
+                        android:id="@+id/title5"
+                        android:textColor="@color/primaryDark"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_below="@id/title5"
+                        android:padding="5dp"
+                        android:id="@+id/location_code"
+                        android:textColor="@color/black_87"
+                        android:background="@drawable/border_edittext"
+                        android:layout_height="wrap_content"/>
+
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/button_denomination"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:text="DENOMINATION"
+                android:layout_height="50dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:id="@+id/button_expense"
+                android:background="#2ECC71"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:text="EXPENSE"
+                android:layout_height="50dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:id="@+id/denomination_layout"
+                android:layout_height="match_parent">
+                <include
+                    layout="@layout/title_layout"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:id="@+id/denomination_view"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/denomination_items"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:id="@+id/expense_layout"
+                android:layout_height="match_parent">
+
+                <include
+                    layout="@layout/title2_layout"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:id="@+id/expense_view"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/expense_items"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <include
+        layout="@layout/settlement_bottom_layout"/>
+</LinearLayout>

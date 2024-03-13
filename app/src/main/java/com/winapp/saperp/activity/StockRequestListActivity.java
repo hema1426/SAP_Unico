@@ -148,7 +148,7 @@ public class StockRequestListActivity extends NavigationActivity implements View
 
         if (getIntent()!=null){
             String docNumber=getIntent().getStringExtra("docNum");
-            assert docNumber != null;
+//            assert docNumber != null;
             if (docNumber!=null && !docNumber.isEmpty()){
                 transferType=getIntent().getStringExtra("transferType");
                 try {

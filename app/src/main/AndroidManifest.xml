@@ -62,6 +62,9 @@
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
     <application
         android:name=".thermalprinter.App"
@@ -121,11 +124,19 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ReportPreview.RoReceiptSettlePreviewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ReportPreview.RoInvoicebySummaryPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ReportPreview.RoSettlementPreviewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.NewExpensePrintPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -155,6 +166,15 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.TransferProductAddActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.NewExpenseModuleListActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.NewExpenseModuleAddActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -419,16 +439,24 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".firebase.MyFirebaseInstanceIDService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
+<!--        <service android:name=".firebase.MyFirebaseInstanceIDService"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />-->
+<!--            </intent-filter>-->
+<!--        </service>-->
+
+<!--        <meta-data-->
+<!--            android:name="firebase_crashlytics_collection_enabled"-->
+<!--            android:value="true" />-->
 
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
-            android:value="false" />
+            android:value="true" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="true" />
+
     </application>
 
 </manifest>

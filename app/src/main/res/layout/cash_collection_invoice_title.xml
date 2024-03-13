@@ -40,9 +40,9 @@
             android:gravity="left|center"
             android:textStyle="bold"
             android:layout_weight="1"
-            android:textColor="@color/black_87"
+            android:textColor="@color/colorPrimary"
             android:text="T-Type"
-            android:textSize="12sp"
+            android:textSize="@dimen/_9sdp"
             />
 
         <TextView
@@ -52,9 +52,9 @@
             android:gravity="left|center"
             android:textStyle="bold"
             android:layout_weight="1"
-            android:textColor="@color/black_87"
+            android:textColor="@color/colorPrimary"
             android:text="Inv-No"
-            android:textSize="12sp"
+            android:textSize="@dimen/_9sdp"
             />
 
         <TextView
@@ -64,9 +64,9 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textStyle="bold"
-            android:textColor="@color/black_87"
+            android:textColor="@color/colorPrimary"
             android:text="Net Total"
-            android:textSize="12sp"
+            android:textSize="@dimen/_9sdp"
             />
 
         <TextView
@@ -76,9 +76,9 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textStyle="bold"
-            android:textColor="@color/black_87"
+            android:textColor="@color/colorPrimary"
             android:text="Payable"
-            android:textSize="12sp"
+            android:textSize="@dimen/_9sdp"
             />
 
         <TextView
@@ -88,9 +88,9 @@
             android:gravity="center"
             android:layout_weight="1"
             android:textStyle="bold"
-            android:textColor="@color/black_87"
-            android:text="Discount"
-            android:textSize="12sp"
+            android:textColor="@color/colorPrimary"
+            android:text="Disc"
+            android:textSize="@dimen/_9sdp"
             />
 
 
@@ -101,9 +101,9 @@
             android:gravity="center"
             android:layout_weight="1"
             android:textStyle="bold"
-            android:textColor="@color/black_87"
+            android:textColor="@color/colorPrimary"
             android:text="Balance"
-            android:textSize="12sp"
+            android:textSize="@dimen/_9sdp"
             />
 
     </LinearLayout>

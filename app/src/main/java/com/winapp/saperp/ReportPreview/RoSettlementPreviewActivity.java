@@ -318,7 +318,7 @@ public class RoSettlementPreviewActivity extends AppCompatActivity {
         rv_settle_donaminat_listl.setAdapter(settleDenominatPreviewAdapter);
 
         for(int i = 0 ; i < denominationArrayList.size() ; i++) {
-            currencytotal += Double.parseDouble(denominationArrayList.get(0).getTotal());
+            currencytotal += Double.parseDouble(denominationArrayList.get(i).getTotal());
         }
         Log.e("currtotl",""+currencytotal +denominationArrayList.get(0).getTotal());
         currenc_total.setText(twoDecimalPoint(currencytotal));
@@ -332,7 +332,7 @@ public class RoSettlementPreviewActivity extends AppCompatActivity {
         rv_settle_expens_listl.setAdapter(settleExpensPreviewAdapter);
 
         for(int i = 0 ; i < expenseArrayList.size() ; i++) {
-            expensetotal += Double.parseDouble(expenseArrayList.get(0).getExpenseTotal());
+            expensetotal += Double.parseDouble(expenseArrayList.get(i).getExpenseTotal());
         }
         expense_total.setText(twoDecimalPoint(expensetotal));
     }
@@ -401,7 +401,9 @@ public class RoSettlementPreviewActivity extends AppCompatActivity {
         return printetCheck;
     }
 
-    public void setSettlementReportPrint(ArrayList<SettlementReceiptModel.Expense> expenseList,String  from_date,String to_date,String username,ArrayList<SettlementReceiptModel> receiptlist, ArrayList<SettlementReceiptModel.CurrencyDenomination> denomination,int copy) throws IOException {
+    public void setSettlementReportPrint(ArrayList<SettlementReceiptModel.Expense> expenseList,String  from_date,String to_date,String username,ArrayList<SettlementReceiptModel> receiptlist,
+                                         ArrayList<SettlementReceiptModel.CurrencyDenomination> denomination,
+                                         int copy) throws IOException {
         if (validatePrinterConfiguration()){
             if (printerType.equals("TSC Printer")){
                 TSCPrinter printer=new TSCPrinter(this,printerMacId);

@@ -40,6 +40,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.cete.dynamicpdf.io.G;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -67,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -175,11 +177,8 @@ public class StockProductsActivity extends NavigationActivity {
 
 //        Objects.requireNonNull(getSupportActionBar()).setTitle("Search");
         //      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        productRecyclerView.setHasFixedSize(true);
-        productRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // populateProductsData(ProductsFragment.productList);
-        productRecyclerView.setVisibility(View.VISIBLE);
 
         productRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -541,58 +540,63 @@ public class StockProductsActivity extends NavigationActivity {
     }
 
     public void setProductsDisplay(String action){
-        try {
             // productsAdapterNew.setWithFooter(false);
             // sortAdapter.resetPosition();
             ArrayList<ProductsModel> filteredProducts = new ArrayList<>();
             //   for (ProductsModel s : selectProductAdapter.getProductsList()) {
-            for (ProductsModel s : AppUtils.getProductsList()) {
-                if (action.equals("In Stock")){
-                    if (s.getStockQty()!=null && !s.getStockQty().equals("null")){
-                        if (Double.parseDouble(s.getStockQty())>0){
-                            filteredProducts.add(s);
+            Log.w("filtStock11","$ "+action);
+            if( AppUtils.getProductsList()!= null && AppUtils.getProductsList().size() >0) {
+                for (ProductsModel s : AppUtils.getProductsList()) {
+                    if (action.equals("In Stock")) {
+                        if (s.getStockQty() != null && !s.getStockQty().equals("null")) {
+                            if (Double.parseDouble(s.getStockQty()) > 0) {
+                                filteredProducts.add(s);
+                            }
                         }
-                    }
-                }else if (action.equals("Out of Stock")){
-                    if (s.getStockQty()!=null && !s.getStockQty().equals("null")) {
-                        if (Double.parseDouble(s.getStockQty()) < 0 || Double.parseDouble(s.getStockQty()) == 0) {
-                            filteredProducts.add(s);
+                    } else if (action.equals("Out of Stock")) {
+                        if (s.getStockQty() != null && !s.getStockQty().equals("null")) {
+                            if (Double.parseDouble(s.getStockQty()) < 0 || Double.parseDouble(s.getStockQty()) == 0) {
+                                filteredProducts.add(s);
+                            }
                         }
+                    } else if (action.equals("All Products")) {
+                        filteredProducts.add(s);
                     }
-                }else {
-                    filteredProducts.add(s);
                 }
-            }
 
-            // Setting filter option in Localdb
-            if (action.equals("In Stock")){
-                dbHelper.insertSettings("stock_view","1");
-            }else if (action.equals("Out of Stock")){
-                dbHelper.insertSettings("stock_view","0");
-            }else {
-                dbHelper.insertSettings("stock_view","2");
-            }
-            //calling a method of the adapter class and passing the filtered list
-            if (filteredProducts.size()>0){
-                for (ProductsModel model: filteredProducts){
-                    Log.w("products_Option_values:",model.getProductName());
+                // Setting filter option in Localdb
+                if (action.equals("In Stock")) {
+                    dbHelper.insertSettings("stock_view", "1");
+                } else if (action.equals("Out of Stock")) {
+                    dbHelper.insertSettings("stock_view", "0");
+                } else {
+                    dbHelper.insertSettings("stock_view", "2");
                 }
-                if (adapter!=null){
-                    adapter.filterList(filteredProducts);
+                //calling a method of the adapter class and passing the filtered list
+                if (filteredProducts.size() > 0) {
+//                for (ProductsModel model: filteredProducts){
+//                    Log.w("products_Option_values:",model.getProductName());
+//                }
+                    if (adapter != null) {
+                        adapter.filterList(filteredProducts);
+                    }
+                    // productLayout.setVisibility(View.VISIBLE);
+                    noOfProducts.setText(filteredProducts.size() + " Products");
+                    emptyLayout.setVisibility(View.GONE);
+                    productRecyclerView.setVisibility(View.VISIBLE);
+                    Log.e("filtepdff..", "" + filteredProducts.size());
+                } else {
+                    //productLayout.setVisibility(View.GONE);
+                    noOfProducts.setText(filteredProducts.size() + " Products");
+                    emptyLayout.setVisibility(View.VISIBLE);
+                    productRecyclerView.setVisibility(View.GONE);
+                    Log.e("filtepaa..", "" + filteredProducts.size());
+
                 }
-                adapter.filterList(filteredProducts);
-                // productLayout.setVisibility(View.VISIBLE);
-                noOfProducts.setText(filteredProducts.size()+" Products");
-                emptyLayout.setVisibility(View.GONE);
-            }else {
-                //productLayout.setVisibility(View.GONE);
-                noOfProducts.setText(filteredProducts.size()+" Products");
-                emptyLayout.setVisibility(View.VISIBLE);
             }
-        }catch (Exception ex){
-            Log.e("Error_in_filter", Objects.requireNonNull(ex.getMessage()));
-            // FirebaseCrashlytics.getInstance().recordException(ex);
-        }
+            else {
+                Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
+            }
     }
 
     private void filterCustomer(String text) {
@@ -649,6 +653,7 @@ public class StockProductsActivity extends NavigationActivity {
 
             // Get the Settings to Display the Product list with the Settings
             ArrayList<SettingsModel> settings=dbHelper.getSettings();
+
             if (settings.size()>0) {
                 for (SettingsModel model : settings) {
                     if (model.getSettingName().equals("stock_view")) {
@@ -665,6 +670,8 @@ public class StockProductsActivity extends NavigationActivity {
             // Filter the products list depending the Settings
             ArrayList<ProductsModel> filteredProducts = new ArrayList<>();
             //   for (ProductsModel s : selectProductAdapter.getProductsList()) {
+            stockProductView = "2";
+
             for (ProductsModel product : productsList) {
                 if (stockProductView.equals("1")){
                     if (product.getStockQty()!=null && !product.getStockQty().equals("null")){
@@ -759,7 +766,7 @@ public class StockProductsActivity extends NavigationActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(StockProductsActivity.this);
         String url=Utils.getBaseUrl(this) +"ProductListForTransfer";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_SAP_PROUCT_URL:",url);
+        Log.w("Given_pdt_stock_URL:",url);
         productList=new ArrayList<>();
         products=new ArrayList<>();
         dialog=new ProgressDialog(this);
@@ -775,7 +782,7 @@ public class StockProductsActivity extends NavigationActivity {
                         //  "isActive":"N","createUser":"1","createDate":"13\/07\/2021","modifyDate":"29\/07\/2021","remarks":"",
                         //  "warehouse":"01","stockInHand":"0.000000","averagePrice":0,"manageBatchOrSerial":"None","manageBatchNumber":"N",
                         //  "manageSerialNumber":"N","batchNumber":"","expiryDate":null,"manufactureDate":"31\/07\/2021","imageURL":""}
-                        Log.w("Response_SAP_PRODUCTS:",response.toString());
+                        Log.w("Res_stock_pdt:",response.toString());
                         // Loop through the array elements
                         JSONArray productArray=response.optJSONArray("responseData");
                         for(int i=0;i<productArray.length();i++){
@@ -813,9 +820,15 @@ public class StockProductsActivity extends NavigationActivity {
                                 @Override
                                 public void run() {
                                     AppUtils.setProductsList(productList);
+                                  //  setPdtAdapter(productList);
+                                    //setProductsDisplay("All Products");
                                     dialog.dismiss();
                                 }
                             });
+                        }
+                        else{
+                            emptyLayout.setVisibility(View.VISIBLE);
+                            productRecyclerView.setVisibility(View.GONE);
                         }
                     }catch (Exception e){
                         e.printStackTrace();
@@ -849,6 +862,16 @@ public class StockProductsActivity extends NavigationActivity {
         });
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonArrayRequest);
+    }
+    public void setPdtAdapter(ArrayList<ProductsModel> pdtList) {
+        // total.setText(splitModelList.get(0).getTotal());
+        emptyLayout.setVisibility(View.GONE);
+        productRecyclerView.setVisibility(View.VISIBLE);
+
+        productRecyclerView.setHasFixedSize(true);
+        productRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        adapter = new SelectProductAdapter(this, pdtList,null);
+        productRecyclerView.setAdapter(adapter);
     }
 
   /*  @Override

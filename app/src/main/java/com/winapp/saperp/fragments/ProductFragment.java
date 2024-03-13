@@ -902,38 +902,25 @@ public class ProductFragment extends Fragment {
         addProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String s=productAutoComplete.getText().toString();
-                if (!qtyValue.getText().toString().isEmpty() && !s.isEmpty() && !qtyValue.getText().toString().equals("0") && !qtyValue.getText().toString().equals("00") && !qtyValue.getText().toString().equals("000") && !qtyValue.getText().toString().equals("0000") && !netTotalValue.getText().toString().equals("0.00")){
-                    if (addProduct.getText().toString().equals("Update")){
-                        // if (!cartonPrice.getText().toString().isEmpty() && !cartonPrice.getText().toString().equals("0.00") && !cartonPrice.getText().toString().equals("0.0") && !cartonPrice.getText().toString().equals("0")){
-                        if (salesReturn.isChecked()){
-                            if (isReverseCalculationEnabled) {
-                                if (loosePrice.getText() != null && !loosePrice.getText().toString().isEmpty()) {
-                                    if (Double.parseDouble(loosePrice.getText().toString()) > 0) {
-                                        double minimumsellingprice=Double.parseDouble(minimumSellingPriceText.getText().toString());
-                                        if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())){
-                                            updateProduct();
-                                        }else {
-                                            showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
-                                        }
-                                    } else {
-                                        Toast.makeText(getActivity(), "Price should not be zero", Toast.LENGTH_SHORT).show();
-                                    }
-                                } else {
-                                    Toast.makeText(getActivity(), "Enter the price", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                updateProduct();
-                            }
-                        }else {
-                            if (Double.parseDouble(netTotalValue.getText().toString()) > 0) {
+                String s = productAutoComplete.getText().toString();
+                if (!productAutoComplete.getText().toString().isEmpty()) {
+
+                    if (!qtyValue.getText().toString().isEmpty() && !s.isEmpty() &&
+                            !qtyValue.getText().toString().equals("0") && !qtyValue.getText().toString().equals("00")
+                            && !qtyValue.getText().toString().equals("000") &&
+                            !qtyValue.getText().toString().equals("0000") &&
+                            !netTotalValue.getText().toString().equals("0.00")) {
+
+                        if (addProduct.getText().toString().equals("Update")) {
+                            // if (!cartonPrice.getText().toString().isEmpty() && !cartonPrice.getText().toString().equals("0.00") && !cartonPrice.getText().toString().equals("0.0") && !cartonPrice.getText().toString().equals("0")){
+                            if (salesReturn.isChecked()) {
                                 if (isReverseCalculationEnabled) {
                                     if (loosePrice.getText() != null && !loosePrice.getText().toString().isEmpty()) {
                                         if (Double.parseDouble(loosePrice.getText().toString()) > 0) {
-                                            double minimumsellingprice=Double.parseDouble(minimumSellingPriceText.getText().toString());
-                                            if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())){
+                                            double minimumsellingprice = Double.parseDouble(minimumSellingPriceText.getText().toString());
+                                            if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())) {
                                                 updateProduct();
-                                            }else {
+                                            } else {
                                                 showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
                                             }
                                         } else {
@@ -945,98 +932,119 @@ public class ProductFragment extends Fragment {
                                 } else {
                                     updateProduct();
                                 }
-
                             } else {
-                                Toast.makeText(getActivity(), "Enter the product price", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        //  }
-                    }else {
-                        if (salesReturn.isChecked()){
-                            if (loosePrice.getText().toString() != null && !loosePrice.getText().toString().isEmpty()) {
-                                if (Double.parseDouble(loosePrice.getText().toString()) > 0) {
-                                    double minimumsellingprice=Double.parseDouble(minimumSellingPriceText.getText().toString());
-                                    if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())){
-                                        addProduct("Add");
-                                    }else {
-                                        showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
-                                    }
-                                } else {
-                                    if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnEditext.getText() != null && !returnEditext.getText().toString().isEmpty() && !returnEditext.getText().toString().equals("0"))) {
-                                        addProduct("Add");
-                                    } else {
-                                        Toast.makeText(getActivity(), "Price should not be zero", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            } else {
-                                Toast.makeText(getActivity(), "Enter the price", Toast.LENGTH_SHORT).show();
-                            }
-                        }else {
-                            if (Double.parseDouble(netTotalValue.getText().toString()) > 0) {
-                                if (isReverseCalculationEnabled) {
-                                    if (loosePrice.getText().toString() != null && !loosePrice.getText().toString().isEmpty()) {
-                                        if (Double.parseDouble(loosePrice.getText().toString()) > 0) {
-                                            double minimumsellingprice=Double.parseDouble(minimumSellingPriceText.getText().toString());
-                                            if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())){
-                                                addProduct("Add");
-                                            }else {
-                                                showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
-                                            }
-                                        } else {
-                                            if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnEditext.getText() != null && !returnEditext.getText().toString().isEmpty() && !returnEditext.getText().toString().equals("0"))) {
-                                                addProduct("Add");
+                                if (Double.parseDouble(netTotalValue.getText().toString()) > 0) {
+                                    if (isReverseCalculationEnabled) {
+                                        if (loosePrice.getText() != null && !loosePrice.getText().toString().isEmpty()) {
+                                            if (Double.parseDouble(loosePrice.getText().toString()) > 0) {
+                                                double minimumsellingprice = Double.parseDouble(minimumSellingPriceText.getText().toString());
+                                                if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())) {
+                                                    updateProduct();
+                                                } else {
+                                                    showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
+                                                }
                                             } else {
                                                 Toast.makeText(getActivity(), "Price should not be zero", Toast.LENGTH_SHORT).show();
                                             }
+                                        } else {
+                                            Toast.makeText(getActivity(), "Enter the price", Toast.LENGTH_SHORT).show();
                                         }
                                     } else {
-                                        Toast.makeText(getActivity(), "Enter the price", Toast.LENGTH_SHORT).show();
+                                        updateProduct();
+                                    }
+
+                                } else {
+                                    Toast.makeText(getActivity(), "Enter the product price", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            //  }
+                        } else {
+                            if (salesReturn.isChecked()) {
+
+                                if (loosePrice.getText().toString() != null && !loosePrice.getText().toString().isEmpty()) {
+                                    if (Double.parseDouble(loosePrice.getText().toString()) > 0) {
+                                        double minimumsellingprice = Double.parseDouble(minimumSellingPriceText.getText().toString());
+                                        if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())) {
+                                            addProduct("Add");
+                                        } else {
+                                            showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
+                                        }
+                                    } else {
+                                        if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnEditext.getText() != null && !returnEditext.getText().toString().isEmpty() && !returnEditext.getText().toString().equals("0"))) {
+                                            addProduct("Add");
+                                        } else {
+                                            Toast.makeText(getActivity(), "Price should not be zero", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 } else {
-                                    if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnEditext.getText() != null && !returnEditext.getText().toString().isEmpty() && !returnEditext.getText().toString().equals("0"))) {
-                                        if (!qtyValue.getText().toString().isEmpty() && !qtyValue.getText().toString().equals("0")) {
-                                            if (Double.parseDouble(netTotalValue.getText().toString()) > 0) {
-                                                double minimumsellingprice=Double.parseDouble(minimumSellingPriceText.getText().toString());
-                                                if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())){
-                                                    addProduct("Add");
-                                                }else {
-                                                    showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
-                                                }
-                                            } else {
-                                                Toast.makeText(getActivity(), "Enter the price of the product", Toast.LENGTH_SHORT).show();
-                                            }
-                                        } else {
-                                            double minimumsellingprice=Double.parseDouble(minimumSellingPriceText.getText().toString());
-                                            if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())){
-                                                addProduct("Add");
-                                            }else {
-                                                showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
-                                            }
-                                        }
-                                    } else {
-                                        if (qtyValue.getText() != null && !qtyValue.getText().toString().isEmpty() && !qtyValue.getText().toString().equals("0")) {
-                                            if (Double.parseDouble(netTotalValue.getText().toString()) > 0) {
-                                                double minimumsellingprice=Double.parseDouble(minimumSellingPriceText.getText().toString());
-                                                if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())){
-                                                    addProduct("Add");
-                                                }else {
-                                                    showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
-                                                }
-                                            } else {
-                                                Toast.makeText(getActivity(), "Enter the price of the product", Toast.LENGTH_SHORT).show();
-                                            }
-                                        } else {
-                                            showAlert();
-                                        }
-                                    }
+                                    Toast.makeText(getActivity(), "Enter the price", Toast.LENGTH_SHORT).show();
                                 }
                             } else {
-                                Toast.makeText(getActivity(), "Enter the product price", Toast.LENGTH_SHORT).show();
+                                if (Double.parseDouble(netTotalValue.getText().toString()) > 0) {
+                                    if (isReverseCalculationEnabled) {
+                                        if (loosePrice.getText().toString() != null && !loosePrice.getText().toString().isEmpty()) {
+                                            if (Double.parseDouble(loosePrice.getText().toString()) > 0) {
+                                                double minimumsellingprice = Double.parseDouble(minimumSellingPriceText.getText().toString());
+                                                if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())) {
+                                                    addProduct("Add");
+                                                } else {
+                                                    showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
+                                                }
+                                            } else {
+                                                if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnEditext.getText() != null && !returnEditext.getText().toString().isEmpty() && !returnEditext.getText().toString().equals("0"))) {
+                                                    addProduct("Add");
+                                                } else {
+                                                    Toast.makeText(getActivity(), "Price should not be zero", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        } else {
+                                            Toast.makeText(getActivity(), "Enter the price", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } else {
+                                        if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnEditext.getText() != null && !returnEditext.getText().toString().isEmpty() && !returnEditext.getText().toString().equals("0"))) {
+                                            if (!qtyValue.getText().toString().isEmpty() && !qtyValue.getText().toString().equals("0")) {
+                                                if (Double.parseDouble(netTotalValue.getText().toString()) > 0) {
+                                                    double minimumsellingprice = Double.parseDouble(minimumSellingPriceText.getText().toString());
+                                                    if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())) {
+                                                        addProduct("Add");
+                                                    } else {
+                                                        showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
+                                                    }
+                                                } else {
+                                                    Toast.makeText(getActivity(), "Enter the price of the product", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } else {
+                                                double minimumsellingprice = Double.parseDouble(minimumSellingPriceText.getText().toString());
+                                                if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())) {
+                                                    addProduct("Add");
+                                                } else {
+                                                    showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
+                                                }
+                                            }
+                                        } else {
+                                            if (qtyValue.getText() != null && !qtyValue.getText().toString().isEmpty() && !qtyValue.getText().toString().equals("0")) {
+                                                if (Double.parseDouble(netTotalValue.getText().toString()) > 0) {
+                                                    double minimumsellingprice = Double.parseDouble(minimumSellingPriceText.getText().toString());
+                                                    if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())) {
+                                                        addProduct("Add");
+                                                    } else {
+                                                        showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
+                                                    }
+                                                } else {
+                                                    Toast.makeText(getActivity(), "Enter the price of the product", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } else {
+                                                showAlert();
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    Toast.makeText(getActivity(), "Enter the product price", Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        }
 
-                    }
-                }else {
+                        }
+                    } else {
 
                   /*  if (!qtyValue.getText().toString().isEmpty() && !qtyValue.getText().toString().equals("0") && (!focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (!returnEditext.getText().toString().isEmpty() && !returnEditext.getText().toString().equals("0")) ){
                         addProduct("Add");
@@ -1048,26 +1056,31 @@ public class ProductFragment extends Fragment {
                         }
                     }
 */
-                    if ((focEditText.getText()!=null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnEditext.getText()!=null && !returnEditext.getText().toString().isEmpty() && !returnEditext.getText().toString().equals("0"))) {
-                        if (!qtyValue.getText().toString().isEmpty() && !qtyValue.getText().toString().equals("0")){
-                            if (Double.parseDouble(netTotalValue.getText().toString()) > 0){
-                                double minimumsellingprice=Double.parseDouble(minimumSellingPriceText.getText().toString());
-                                if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())){
-                                    addProduct("Add");
-                                }else {
-                                    showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
+                        if ((focEditText.getText() != null && !focEditText.getText().toString().isEmpty() && !focEditText.getText().toString().equals("0")) || (returnEditext.getText() != null && !returnEditext.getText().toString().isEmpty() && !returnEditext.getText().toString().equals("0"))) {
+                            if (!qtyValue.getText().toString().isEmpty() && !qtyValue.getText().toString().equals("0")) {
+                                if (Double.parseDouble(netTotalValue.getText().toString()) > 0) {
+                                    double minimumsellingprice = Double.parseDouble(minimumSellingPriceText.getText().toString());
+                                    if (minimumsellingprice <= Double.parseDouble(loosePrice.getText().toString())) {
+                                        addProduct("Add");
+                                    } else {
+                                        showMinimumSellingpriceAlert(minimumSellingPriceText.getText().toString());
+                                    }
+                                } else {
+                                    Toast.makeText(getActivity(), "Enter the price of the product", Toast.LENGTH_SHORT).show();
                                 }
-                            }else {
-                                Toast.makeText(getActivity(),"Enter the price of the product",Toast.LENGTH_SHORT).show();
+                            } else {
+                                addProduct("Add");
                             }
-                        }else {
-                            addProduct("Add");
+                        } else {
+                            showAlert();
                         }
-                    }else {
-                        showAlert();
                     }
                 }
+                else {
+                    Toast.makeText(getActivity(), "Select product", Toast.LENGTH_SHORT).show();
+                }
             }
+
         });
 
         productAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -2103,6 +2116,7 @@ public class ProductFragment extends Fragment {
             salesReturn.setEnabled(true);
             salesReturn.setChecked(false);
             getProducts();
+            hideKeyboard();
             setSummaryTotal();
         }else {
             Toast.makeText(getActivity(),"Error in Add product",Toast.LENGTH_LONG).show();
@@ -3081,7 +3095,7 @@ public class ProductFragment extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         String url=Utils.getBaseUrl(getContext()) +"ProductList";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_SAP_PROUCT_URL:",url);
+        Log.w("Given_pdttUrl:",url);
         productList=new ArrayList<>();
         products=new ArrayList<>();
         dialog=new ProgressDialog(getContext());

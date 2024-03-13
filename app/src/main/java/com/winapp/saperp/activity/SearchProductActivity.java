@@ -756,7 +756,7 @@ public class SearchProductActivity extends NavigationActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(SearchProductActivity.this);
         String url=Utils.getBaseUrl(this) +"ProductList";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_SAP_PROUCT_URL:",url);
+        Log.w("Given_pdt_url:",url);
         productList=new ArrayList<>();
         products=new ArrayList<>();
         dialog=new ProgressDialog(this);

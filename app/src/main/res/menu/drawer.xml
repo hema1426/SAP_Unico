@@ -156,6 +156,14 @@
 
     </group>
 
+    <group
+        android:id="@+id/drawermenu_group_62">
+        <item
+            android:icon="@drawable/ic_sales_order_menu"
+            android:id="@+id/navigation_expense"
+            android:title="Expense" />
+
+    </group>
 
     <group
         android:id="@+id/drawermenu_group_8"

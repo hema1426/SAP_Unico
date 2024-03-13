@@ -89,7 +89,9 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        return invoiceList.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+        return (invoiceList != null && invoiceList.get(position) != null) ? VIEW_TYPE_ITEM : VIEW_TYPE_LOADING;
+
+        //return invoiceList.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 
     @Override
@@ -101,6 +103,8 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             View view = LayoutInflater.from(mContext).inflate(R.layout.layout_loading_item, parent, false);
             return new LoadingViewHolder(view);
         }
+//        View view = LayoutInflater.from(mContext).inflate(R.layout.invoice_new_items, parent, false);
+//        return new UserViewHolder(view);
         return null;
     }
 

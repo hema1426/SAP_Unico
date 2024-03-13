@@ -9,6 +9,7 @@
         android:fillViewport="true"
         android:paddingBottom="50dp"
         android:layout_height="wrap_content">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
@@ -21,6 +22,14 @@
             android:background="@color/white"
             android:paddingBottom="5dp"
             android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:padding="10dp"
+                android:id="@+id/close_layout"
+                android:layout_gravity="right"
+                android:visibility="gone"
+                android:src="@drawable/ic_baseline_cancel_24"
+                android:layout_height="wrap_content"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -367,6 +376,47 @@
                 </androidx.cardview.widget.CardView>
             </LinearLayout>
         </LinearLayout>
+
+        <Button
+            android:layout_width="200dp"
+            android:text="Get Image"
+            android:textSize="12sp"
+            android:id="@+id/get_image"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:background="@color/main_blue_color"
+            android:textColor="@color/white"
+            android:layout_height="40dp"/>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:id="@+id/image_layout"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="200dp"
+                android:scaleType="fitXY"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:id="@+id/receipt_image"
+                android:layout_height="200dp"/>
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_gravity="right"
+                android:id="@+id/delete_image"
+                android:background="#8000"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_baseline_close_24"
+                android:layout_height="wrap_content"/>
+
+
+        </FrameLayout>
+
+
     </LinearLayout>
 
     </ScrollView>

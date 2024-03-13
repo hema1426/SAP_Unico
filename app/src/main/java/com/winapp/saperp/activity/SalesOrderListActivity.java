@@ -441,10 +441,12 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                         if (editSo.equals("true")){
                             getSalesOrderDetails(soNumber.getText().toString(),"Edit");
                         }else {
-                            Toast.makeText(getApplicationContext(),"You Don't have permission to Edit",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),
+                                    "You Don't have permission to Edit",Toast.LENGTH_SHORT).show();
                         }
                     }else {
-                        Toast.makeText(getApplicationContext(),"This Sales order already Closed",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),
+                                "This Sales order already Closed",Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -461,7 +463,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                         if (editSo.equals("true")){
                             getSalesOrderDetails(soNumber.getText().toString(),"Edit");
                         }else {
-                            Toast.makeText(getApplicationContext(),"You Don't have permission to Edit",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),
+                                    "You Don't have permission to Edit",Toast.LENGTH_SHORT).show();
                         }
                     }else {
                         Toast.makeText(getApplicationContext(),"This Sales order already Closed",Toast.LENGTH_SHORT).show();
@@ -480,7 +483,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                     if (editSo.equals("true")) {
                         showRemoveAlert(soNumber.getText().toString());
                     }else {
-                        Toast.makeText(getApplicationContext(),"You Don't have permission to Delete",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),
+                                "You Don't have permission to Delete",Toast.LENGTH_SHORT).show();
                     }
                 }else {
                     Toast.makeText(getApplicationContext(),"Can't Delete Closed SalesOrder",Toast.LENGTH_SHORT).show();
@@ -496,7 +500,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                     if (editSo.equals("true")) {
                         showRemoveAlert(soNumber.getText().toString());
                     }else {
-                        Toast.makeText(getApplicationContext(),"You Don't have permission to Delete",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),
+                                "You Don't have permission to Delete",Toast.LENGTH_SHORT).show();
                     }
                 }else {
                     Toast.makeText(getApplicationContext(),"Can't Delete Closed SalesOrder",Toast.LENGTH_SHORT).show();
@@ -1318,10 +1323,12 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("SalesOrderNo",soNumber);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"EditSODetails";
+        //    EditSODetails
+        //    EditSODetailsWithFOC
+        String url= Utils.getBaseUrl(this) +"EditSODetailsWithFOC";
         Log.w("JsonValue:",jsonObject.toString());
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_url_conv_inv:",url);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Getting SalesOrder Details...");
@@ -1330,7 +1337,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
                     try{
-                        Log.w("SalesOrder_DetailsSAP:",response.toString());
+                        Log.w("So_Details_conv_inv:",response.toString());
                         if (response.length()>0){
                             String statusCode=response.optString("statusCode");
                             if (statusCode.equals("1")){

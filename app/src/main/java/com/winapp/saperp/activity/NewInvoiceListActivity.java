@@ -147,7 +147,7 @@ import java.util.Objects;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import timber.log.Timber;
 
-public class NewInvoiceListActivity extends NavigationActivity implements View.OnClickListener,TabLayout.OnTabSelectedListener, OnPageChangeListener, OnLoadCompleteListener,AdapterView.OnItemSelectedListener {
+public class NewInvoiceListActivity extends NavigationActivity implements View.OnClickListener, TabLayout.OnTabSelectedListener, OnPageChangeListener, OnLoadCompleteListener, AdapterView.OnItemSelectedListener {
 
     // Define the Button Variables
     private TextView allInvoiceButton;
@@ -161,9 +161,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     private InvoiceAdapter invoiceAdapter;
     private ArrayList<InvoiceModel> invoiceList;
     private SweetAlertDialog pDialog;
-    int pageNo=1;
+    int pageNo = 1;
     private SessionManager session;
-    private HashMap<String,String > user;
+    private HashMap<String, String> user;
     private String companyId;
     //This is our tablayout
     private TabLayout tabLayout;
@@ -205,7 +205,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     private EditText toDate;
     private Spinner invoiceStatus;
     private int mYear, mMonth, mDay, mHour, mMinute;
-    public static boolean isSearchCustomerNameClicked=false;
+    public static boolean isSearchCustomerNameClicked = false;
     private Button searchButton;
     private Button cancelSearch;
     static View invoiceOptionLayout;
@@ -222,8 +222,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     private FloatingActionButton doPrintPreview;
     private FloatingActionButton cancelInvoice;
     public static String invoiceCustomerCodeValue;
-    public  static String invoiceCustomerValue;
-    public static String  invoiceNumberValue;
+    public static String invoiceCustomerValue;
+    public static String invoiceNumberValue;
     public static LinearLayout editInvoiceLayout;
     public static LinearLayout deleteInvoiceLayout;
     public static LinearLayout cashCollectionLayout;
@@ -241,10 +241,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     private String printerType;
     private SharedPreferences sharedPreferences;
     private View progressLayout;
-    private static String visibleFragment="invoices";
-    public boolean redirectInvoice=false;
-    public static String selectCustomerId="";
-    private int customerSelectCode=23;
+    private static String visibleFragment = "invoices";
+    public boolean redirectInvoice = false;
+    public static String selectCustomerId = "";
+    private int customerSelectCode = 23;
 
     public static int REQUEST_PERMISSIONS = 154;
 
@@ -265,21 +265,21 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     private String company_address2;
     private String company_address3;
     private ProgressDialog pdfGenerateDialog;
-    public String oustandingAmount="0.0";
+    public String oustandingAmount = "0.0";
     public TextView emptyTextView;
 
-    public boolean isInvoicePrint=true;
+    public boolean isInvoicePrint = true;
     private String username;
     private ProgressDialog pd;
     LinearLayout shareLayout;
     LinearLayout printLayout;
     Button cancelButton;
-    public String shareMode="Share";
-    public String createInvoiceSetting="false";
-    private ArrayList<InvoicePrintPreviewModel.SalesReturnList> salesReturnList ;
+    public String shareMode = "Share";
+    public String createInvoiceSetting = "false";
+    private ArrayList<InvoicePrintPreviewModel.SalesReturnList> salesReturnList;
 
-    private String selectCustomerCode="";
-    private String selectCustomerName="";
+    private String selectCustomerCode = "";
+    private String selectCustomerName = "";
 
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -289,9 +289,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             MANAGE_EXTERNAL_STORAGE
     };
 
-    private int FILTER_CUSTOMER_CODE=134;
+    private int FILTER_CUSTOMER_CODE = 134;
     private Spinner salesManSpinner;
-    private String selectedUser="";
+    private String selectedUser = "";
     private ArrayList<UserListModel> usersList;
     public String locationCode;
 
@@ -311,83 +311,83 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         pd.setIndeterminate(true);
         pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         pd.setCancelable(false);
-        pd.setButton(DialogInterface.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton){
+        pd.setButton(DialogInterface.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
                 dialog.dismiss();
             }
         });
         pd.setProgressNumberFormat("%1d KB/%2d KB");
 
-        pdfGenerateDialog=new ProgressDialog(this);
+        pdfGenerateDialog = new ProgressDialog(this);
         pdfGenerateDialog.setCancelable(false);
         pdfGenerateDialog.setMessage("Invoice Pdf generating please wait...");
 
-        allInvoiceButton=findViewById(R.id.btn_all_invoice);
-        paidInvoiceButton=findViewById(R.id.btn_paid_invoice);
-        outstandingInvoiceButton=findViewById(R.id.btn_outstanding_invoice);
+        allInvoiceButton = findViewById(R.id.btn_all_invoice);
+        paidInvoiceButton = findViewById(R.id.btn_paid_invoice);
+        outstandingInvoiceButton = findViewById(R.id.btn_outstanding_invoice);
         allInvoiceButton.setOnClickListener(this);
         paidInvoiceButton.setOnClickListener(this);
         outstandingInvoiceButton.setOnClickListener(this);
-        invoiceView=findViewById(R.id.invoice_view);
-        paidView=findViewById(R.id.paid_view);
-        invoiceListView =findViewById(R.id.invoiceList);
-        session=new SessionManager(this);
-        user=session.getUserDetails();
-        companyId=user.get(SessionManager.KEY_COMPANY_CODE);
-        username=user.get(SessionManager.KEY_USER_NAME);
-        operationLayout=findViewById(R.id.operation_layout);
-        emptyLayout=findViewById(R.id.empty_layout);
-        emptyTextView=findViewById(R.id.empty_text);
-        customerNameEdittext=findViewById(R.id.customer_search);
-        netTotalText=findViewById(R.id.net_total_value);
-        session=new SessionManager(this);
-        dbHelper=new DBHelper(this);
-        companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
-        locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
-        customerView=findViewById(R.id.customerList);
-        totalCustomers=findViewById(R.id.total_customers);
-        cancelSheet=findViewById(R.id.cancel_sheet);
+        invoiceView = findViewById(R.id.invoice_view);
+        paidView = findViewById(R.id.paid_view);
+        invoiceListView = findViewById(R.id.invoiceList);
+        session = new SessionManager(this);
+        user = session.getUserDetails();
+        companyId = user.get(SessionManager.KEY_COMPANY_CODE);
+        username = user.get(SessionManager.KEY_USER_NAME);
+        operationLayout = findViewById(R.id.operation_layout);
+        emptyLayout = findViewById(R.id.empty_layout);
+        emptyTextView = findViewById(R.id.empty_text);
+        customerNameEdittext = findViewById(R.id.customer_search);
+        netTotalText = findViewById(R.id.net_total_value);
+        session = new SessionManager(this);
+        dbHelper = new DBHelper(this);
+        companyCode = user.get(SessionManager.KEY_COMPANY_CODE);
+        locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
+        customerView = findViewById(R.id.customerList);
+        totalCustomers = findViewById(R.id.total_customers);
+        cancelSheet = findViewById(R.id.cancel_sheet);
         viewPager = findViewById(R.id.pager);
-        searchFilterView=findViewById(R.id.search_filter);
-        invoiceStatus=findViewById(R.id.invoice_status);
-        customerNameText=findViewById(R.id.customer_name_value);
-        fromDate=findViewById(R.id.from_date);
-        toDate =findViewById(R.id.to_date);
-        searchButton=findViewById(R.id.btn_search);
-        transLayout=findViewById(R.id.trans_layout);
-        customerLayout=findViewById(R.id.customer_layout);
-        invoiceOptionLayout=findViewById(R.id.invoice_option);
-        optionCancel=findViewById(R.id.option_cancel);
-        cancelSheet=findViewById(R.id.cancel_sheet);
-        cancelSearch=findViewById(R.id.btn_cancel);
-        invoiceCustomerName=findViewById(R.id.invoice_name);
-        invoiceNumber=findViewById(R.id.sr_no);
-        editInvoice=findViewById(R.id.edit_invoice);
-        deleteInvoice=findViewById(R.id.delete_invoice);
-        cashCollection=findViewById(R.id.cash_collection);
-        printPreview=findViewById(R.id.print_preview);
-        editInvoiceLayout=findViewById(R.id.edit_invoice_layout);
-        deleteInvoiceLayout=findViewById(R.id.delete_invoice_layout);
-        cashCollectionLayout=findViewById(R.id.cash_collection_layout);
-        printPreviewLayout=findViewById(R.id.preview_invoice_layout);
-        cancelInvoiceLayout=findViewById(R.id.cancel_invoice_layout);
-        cancelInvoice=findViewById(R.id.cancel_invoice);
-        rootLayout=findViewById(R.id.rootLayout);
-        mainLayout=findViewById(R.id.main_layout);
-        progressLayout=findViewById(R.id.progress_layout);
-        pdfView= findViewById(R.id.pdfView);
-        pdfViewLayout=findViewById(R.id.pdf_layout);
-        invoicePrint=findViewById(R.id.invoice_print);
-        invoicePrintLayout=findViewById(R.id.invoice_print_layout);
-        doPrintLayout=findViewById(R.id.do_print_layout);
-        deliveryOrderPrint=findViewById(R.id.do_print);
-        doPrintPreview=findViewById(R.id.do_print_preview);
-        salesManSpinner=findViewById(R.id.salesman_spinner);
+        searchFilterView = findViewById(R.id.search_filter);
+        invoiceStatus = findViewById(R.id.invoice_status);
+        customerNameText = findViewById(R.id.customer_name_value);
+        fromDate = findViewById(R.id.from_date);
+        toDate = findViewById(R.id.to_date);
+        searchButton = findViewById(R.id.btn_search);
+        transLayout = findViewById(R.id.trans_layout);
+        customerLayout = findViewById(R.id.customer_layout);
+        invoiceOptionLayout = findViewById(R.id.invoice_option);
+        optionCancel = findViewById(R.id.option_cancel);
+        cancelSheet = findViewById(R.id.cancel_sheet);
+        cancelSearch = findViewById(R.id.btn_cancel);
+        invoiceCustomerName = findViewById(R.id.invoice_name);
+        invoiceNumber = findViewById(R.id.sr_no);
+        editInvoice = findViewById(R.id.edit_invoice);
+        deleteInvoice = findViewById(R.id.delete_invoice);
+        cashCollection = findViewById(R.id.cash_collection);
+        printPreview = findViewById(R.id.print_preview);
+        editInvoiceLayout = findViewById(R.id.edit_invoice_layout);
+        deleteInvoiceLayout = findViewById(R.id.delete_invoice_layout);
+        cashCollectionLayout = findViewById(R.id.cash_collection_layout);
+        printPreviewLayout = findViewById(R.id.preview_invoice_layout);
+        cancelInvoiceLayout = findViewById(R.id.cancel_invoice_layout);
+        cancelInvoice = findViewById(R.id.cancel_invoice);
+        rootLayout = findViewById(R.id.rootLayout);
+        mainLayout = findViewById(R.id.main_layout);
+        progressLayout = findViewById(R.id.progress_layout);
+        pdfView = findViewById(R.id.pdfView);
+        pdfViewLayout = findViewById(R.id.pdf_layout);
+        invoicePrint = findViewById(R.id.invoice_print);
+        invoicePrintLayout = findViewById(R.id.invoice_print_layout);
+        doPrintLayout = findViewById(R.id.do_print_layout);
+        deliveryOrderPrint = findViewById(R.id.do_print);
+        doPrintPreview = findViewById(R.id.do_print_preview);
+        salesManSpinner = findViewById(R.id.salesman_spinner);
         salesManSpinner.setOnItemSelectedListener(this);
 
-        shareLayout=findViewById(R.id.share_layout);
-        printLayout=findViewById(R.id.print_layout);
-        cancelButton=findViewById(R.id.cancel);
+        shareLayout = findViewById(R.id.share_layout);
+        printLayout = findViewById(R.id.print_layout);
+        cancelButton = findViewById(R.id.cancel);
 
         company_name = user.get(SessionManager.KEY_COMPANY_NAME);
         company_address1 = user.get(SessionManager.KEY_ADDRESS1);
@@ -395,20 +395,20 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         company_address3 = user.get(SessionManager.KEY_ADDRESS3);
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
-        printerType=sharedPreferences.getString("printer_type","");
-        printerMacId=sharedPreferences.getString("mac_address","");
+        printerType = sharedPreferences.getString("printer_type", "");
+        printerMacId = sharedPreferences.getString("mac_address", "");
 
-       // PrinterUtils printerUtils=new PrinterUtils(this,printerMacId);
-     //   printerUtils.connectPrinter();
+        // PrinterUtils printerUtils=new PrinterUtils(this,printerMacId);
+        //   printerUtils.connectPrinter();
 
         emptyTextView.setVisibility(View.VISIBLE);
 
         dbHelper.removeAllItems();
         dbHelper.removeAllInvoiceItems();
-        AddInvoiceActivity.order_no="";
+        AddInvoiceActivity.order_no = "";
 
-        Log.w("Printer_Mac_Id:",printerMacId);
-        Log.w("Printer_Type:",printerType);
+        Log.w("Printer_Mac_Id:", printerMacId);
+        Log.w("Printer_Type:", printerType);
 
         try {
             getAllUsers();
@@ -420,17 +420,17 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         verifyStoragePermissions(this);
         checkPermission();
 
-        ArrayList<SettingsModel> settings=dbHelper.getSettings();
-        if (settings!=null) {
+        ArrayList<SettingsModel> settings = dbHelper.getSettings();
+        if (settings != null) {
             if (settings.size() > 0) {
                 for (SettingsModel model : settings) {
                     if (model.getSettingName().equals("create_invoice_switch")) {
                         Log.w("SettingName:", model.getSettingName());
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
-                            createInvoiceSetting="true";
-                        }else {
-                            createInvoiceSetting="false";
+                            createInvoiceSetting = "true";
+                        } else {
+                            createInvoiceSetting = "false";
                         }
                     }
                 }
@@ -454,8 +454,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         //Adding onTabSelectedListener to swipe views
         tabLayout.setOnTabSelectedListener(this);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-      //  dbHelper.removeAllProducts();
+        viewPager.setOffscreenPageLimit(3);
+        //  dbHelper.removeAllProducts();
 
         View bottomSheet = findViewById(R.id.design_bottom_sheet);
         behavior = BottomSheetBehavior.from(bottomSheet);
@@ -489,21 +489,21 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             //new GetCustomersTask().execute();
         }*/
 
-      //  getCustomers();
+        //  getCustomers();
 
-        ArrayList<UserRoll> userRolls=dbHelper.getUserPermissions();
-        if (userRolls.size()>0) {
+        ArrayList<UserRoll> userRolls = dbHelper.getUserPermissions();
+        if (userRolls.size() > 0) {
             for (UserRoll roll : userRolls) {
-                if (roll.getFormName().equals("Edit Invoice")){
-                    if (roll.getHavePermission().equals("true")){
+                if (roll.getFormName().equals("Edit Invoice")) {
+                    if (roll.getHavePermission().equals("true")) {
                         editInvoiceLayout.setVisibility(View.GONE);
-                    }else {
+                    } else {
                         editInvoiceLayout.setVisibility(View.GONE);
                     }
-                }else if (roll.getFormName().equals("Delete Invoice")){
-                    if (roll.getHavePermission().equals("true")){
+                } else if (roll.getFormName().equals("Delete Invoice")) {
+                    if (roll.getHavePermission().equals("true")) {
                         deleteInvoiceLayout.setVisibility(View.GONE);
-                    }else {
+                    } else {
                         deleteInvoiceLayout.setVisibility(View.GONE);
                     }
                 }
@@ -522,9 +522,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
                         Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_EXPANDED");
-                        if (invoiceOptionLayout.getVisibility()==View.VISIBLE){
+                        if (invoiceOptionLayout.getVisibility() == View.VISIBLE) {
                             getSupportActionBar().setTitle("Select Option");
-                        }else {
+                        } else {
                             getSupportActionBar().setTitle("Invoices");
                         }
                         transLayout.setVisibility(View.VISIBLE);
@@ -533,11 +533,11 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                         Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_COLLAPSED");
                         getSupportActionBar().setTitle("Invoices");
                         transLayout.setVisibility(View.GONE);
-                        if (redirectInvoice){
-                            CustomerFragment.isLoad=true;
-                            Intent intent=new Intent(NewInvoiceListActivity.this,AddInvoiceActivity.class);
-                            intent.putExtra("customerId",selectCustomerId);
-                            intent.putExtra("activityFrom","Invoice");
+                        if (redirectInvoice) {
+                            CustomerFragment.isLoad = true;
+                            Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivity.class);
+                            intent.putExtra("customerId", selectCustomerId);
+                            intent.putExtra("activityFrom", "Invoice");
                             startActivity(intent);
                             finish();
                         }
@@ -560,14 +560,16 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
+
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
+
             @Override
             public void afterTextChanged(Editable editable) {
-                String cusname=editable.toString();
-                if (!cusname.isEmpty()){
+                String cusname = editable.toString();
+                if (!cusname.isEmpty()) {
                     filter(cusname);
                 }
             }
@@ -592,8 +594,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 try {
                     ((TextView) parent.getChildAt(0)).setTextColor(Color.BLUE);
                     ((TextView) parent.getChildAt(0)).setTextSize(12);
-                }catch (Exception ed){}
+                } catch (Exception ed) {
+                }
             }
+
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
@@ -602,10 +606,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         customerNameText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              //  isSearchCustomerNameClicked=true;
-              //  viewCloseBottomSheet();
-                Intent intent=new Intent(getApplicationContext(),FilterCustomerListActivity.class);
-                startActivityForResult(intent,FILTER_CUSTOMER_CODE);
+                //  isSearchCustomerNameClicked=true;
+                //  viewCloseBottomSheet();
+                Intent intent = new Intent(getApplicationContext(), FilterCustomerListActivity.class);
+                startActivityForResult(intent, FILTER_CUSTOMER_CODE);
             }
         });
 
@@ -626,45 +630,45 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String customer_name=customerNameText.getText().toString();
+                String customer_name = customerNameText.getText().toString();
                 SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
                 Date d1 = null;
-                Date d2=null;
+                Date d2 = null;
                 try {
                     d1 = sdformat.parse(fromDate.getText().toString());
                     d2 = sdformat.parse(toDate.getText().toString());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                if(d1.compareTo(d2) > 0) {
-                    Toast.makeText(getApplicationContext(),"From date should not be greater than to date",Toast.LENGTH_SHORT).show();
-                } else{
+                if (d1.compareTo(d2) > 0) {
+                    Toast.makeText(getApplicationContext(), "From date should not be greater than to date", Toast.LENGTH_SHORT).show();
+                } else {
                     searchFilterView.setVisibility(View.GONE);
-                    isSearchCustomerNameClicked=true;
-                   // ((AllInvoices)getSupportFragmentManager().findFragmentById(R.id.fragment_container)).filterValidation();
-                    AllInvoices invoices=new AllInvoices();
+                    isSearchCustomerNameClicked = true;
+                    // ((AllInvoices)getSupportFragmentManager().findFragmentById(R.id.fragment_container)).filterValidation();
+                    AllInvoices invoices = new AllInvoices();
                     try {
                         String oldFromDate = fromDate.getText().toString();
-                        String oldToDate=toDate.getText().toString();
+                        String oldToDate = toDate.getText().toString();
                         Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(oldFromDate);
                         Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(oldToDate);
-                       // Use SimpleDateFormat#format() to format a Date into a String in a certain pattern.
+                        // Use SimpleDateFormat#format() to format a Date into a String in a certain pattern.
 
                         String fromDateString = new SimpleDateFormat("yyyyMMdd").format(fromDate);
                         String toDateString = new SimpleDateFormat("yyyyMMdd").format(toDate);
-                        System.out.println(fromDateString+"-"+toDateString); // 2011-01-18
-                        String invoice_status="";
-                        if (invoiceStatus.getSelectedItem().equals("ALL")){
-                            invoice_status="";
-                        }else if (invoiceStatus.getSelectedItem().equals("PAID")){
-                            invoice_status="C";
-                        }else if (invoiceStatus.getSelectedItem().equals("UNPAID")){
-                            invoice_status="O";
+                        System.out.println(fromDateString + "-" + toDateString); // 2011-01-18
+                        String invoice_status = "";
+                        if (invoiceStatus.getSelectedItem().equals("ALL")) {
+                            invoice_status = "";
+                        } else if (invoiceStatus.getSelectedItem().equals("PAID")) {
+                            invoice_status = "C";
+                        } else if (invoiceStatus.getSelectedItem().equals("UNPAID")) {
+                            invoice_status = "O";
                         }
-                        if (selectedUser!=null && !selectedUser.isEmpty()){
-                            username=selectedUser;
+                        if (selectedUser != null && !selectedUser.isEmpty()) {
+                            username = selectedUser;
                         }
-                        invoices.filterSearch(NewInvoiceListActivity.this,username,selectCustomerCode,invoice_status,fromDateString,toDateString,locationCode);
+                        invoices.filterSearch(NewInvoiceListActivity.this, username, selectCustomerCode, invoice_status, fromDateString, toDateString, locationCode);
                     } catch (JSONException | ParseException e) {
                         e.printStackTrace();
                     }
@@ -678,15 +682,15 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         cancelSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isSearchCustomerNameClicked=false;
-                selectCustomerId="";
+                isSearchCustomerNameClicked = false;
+                selectCustomerId = "";
                 customerNameText.setText("");
                 invoiceStatus.setSelection(0);
                 fromDate.setText(formattedDate);
                 toDate.setText(formattedDate);
                 searchFilterView.setVisibility(View.GONE);
                 invoiceStatus.setSelection(0);
-                AllInvoices invoices=new AllInvoices();
+                AllInvoices invoices = new AllInvoices();
                 invoices.filterCancel();
             }
         });
@@ -753,9 +757,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             @Override
             public void onClick(View view) {
                 viewCloseBottomSheet();
-                Intent intent=new Intent(NewInvoiceListActivity.this, CashCollectionActivity.class);
-                intent.putExtra("customerCode",invoiceCustomerCodeValue);
-                intent.putExtra("customerName",invoiceCustomerValue);
+                Intent intent = new Intent(NewInvoiceListActivity.this, CashCollectionActivity.class);
+                intent.putExtra("customerCode", invoiceCustomerCodeValue);
+                intent.putExtra("customerName", invoiceCustomerValue);
                 startActivity(intent);
                 finish();
             }
@@ -765,9 +769,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             @Override
             public void onClick(View view) {
                 viewCloseBottomSheet();
-                Intent intent=new Intent(NewInvoiceListActivity.this, CashCollectionActivity.class);
-                intent.putExtra("customerCode",invoiceCustomerCodeValue);
-                intent.putExtra("customerName",invoiceCustomerValue);
+                Intent intent = new Intent(NewInvoiceListActivity.this, CashCollectionActivity.class);
+                intent.putExtra("customerCode", invoiceCustomerCodeValue);
+                intent.putExtra("customerName", invoiceCustomerValue);
                 startActivity(intent);
                 finish();
             }
@@ -778,15 +782,15 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             @Override
             public void onClick(View view) {
                 viewCloseBottomSheet();
-                if (createInvoiceSetting.equals("true")){
-                    Intent intent=new Intent(NewInvoiceListActivity.this, NewInvoicePrintPreviewActivity.class);
-                    intent.putExtra("invoiceNumber",invoiceNumberValue);
-                    intent.putExtra("outstandingAmount",oustandingAmount);
+                if (createInvoiceSetting.equals("true")) {
+                    Intent intent = new Intent(NewInvoiceListActivity.this, NewInvoicePrintPreviewActivity.class);
+                    intent.putExtra("invoiceNumber", invoiceNumberValue);
+                    intent.putExtra("outstandingAmount", oustandingAmount);
                     startActivity(intent);
-                }else {
-                    Intent intent=new Intent(NewInvoiceListActivity.this, InvoicePrintPreviewActivity.class);
-                    intent.putExtra("invoiceNumber",invoiceNumberValue);
-                    intent.putExtra("outstandingAmount",oustandingAmount);
+                } else {
+                    Intent intent = new Intent(NewInvoiceListActivity.this, InvoicePrintPreviewActivity.class);
+                    intent.putExtra("invoiceNumber", invoiceNumberValue);
+                    intent.putExtra("outstandingAmount", oustandingAmount);
                     startActivity(intent);
                 }
             }
@@ -796,9 +800,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             @Override
             public void onClick(View view) {
                 viewCloseBottomSheet();
-                Intent intent=new Intent(NewInvoiceListActivity.this, DOPrintPreview.class);
-                intent.putExtra("invoiceNumber",invoiceNumberValue);
-                intent.putExtra("outstandingAmount",oustandingAmount);
+                Intent intent = new Intent(NewInvoiceListActivity.this, DOPrintPreview.class);
+                intent.putExtra("invoiceNumber", invoiceNumberValue);
+                intent.putExtra("outstandingAmount", oustandingAmount);
                 startActivity(intent);
             }
         });
@@ -807,15 +811,15 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             @Override
             public void onClick(View view) {
                 viewCloseBottomSheet();
-                if (createInvoiceSetting.equals("true")){
-                    Intent intent=new Intent(NewInvoiceListActivity.this, NewInvoicePrintPreviewActivity.class);
-                    intent.putExtra("invoiceNumber",invoiceNumberValue);
-                    intent.putExtra("outstandingAmount",oustandingAmount);
+                if (createInvoiceSetting.equals("true")) {
+                    Intent intent = new Intent(NewInvoiceListActivity.this, NewInvoicePrintPreviewActivity.class);
+                    intent.putExtra("invoiceNumber", invoiceNumberValue);
+                    intent.putExtra("outstandingAmount", oustandingAmount);
                     startActivity(intent);
-                }else {
-                    Intent intent=new Intent(NewInvoiceListActivity.this, InvoicePrintPreviewActivity.class);
-                    intent.putExtra("invoiceNumber",invoiceNumberValue);
-                    intent.putExtra("outstandingAmount",oustandingAmount);
+                } else {
+                    Intent intent = new Intent(NewInvoiceListActivity.this, InvoicePrintPreviewActivity.class);
+                    intent.putExtra("invoiceNumber", invoiceNumberValue);
+                    intent.putExtra("outstandingAmount", oustandingAmount);
                     startActivity(intent);
                 }
             }
@@ -824,9 +828,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         printLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (printInvoiceNumber!=null && !printInvoiceNumber.isEmpty()){
+                if (printInvoiceNumber != null && !printInvoiceNumber.isEmpty()) {
                     try {
-                        getInvoicePrintDetails(printInvoiceNumber,1);
+                        getInvoicePrintDetails(printInvoiceNumber, 1);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -839,8 +843,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             public void onClick(View view) {
                 try {
                     viewCloseBottomSheet();
-                    isInvoicePrint=true;
-                    getInvoicePrintDetails(invoiceNumberValue,1);
+                    isInvoicePrint = true;
+                    getInvoicePrintDetails(invoiceNumberValue, 1);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -853,8 +857,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             public void onClick(View view) {
                 try {
                     viewCloseBottomSheet();
-                    isInvoicePrint=true;
-                    getInvoicePrintDetails(invoiceNumberValue,1);
+                    isInvoicePrint = true;
+                    getInvoicePrintDetails(invoiceNumberValue, 1);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -879,8 +883,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             public void onClick(View view) {
                 try {
                     viewCloseBottomSheet();
-                    isInvoicePrint=false;
-                    getInvoicePrintDetails(invoiceNumberValue,1);
+                    isInvoicePrint = false;
+                    getInvoicePrintDetails(invoiceNumberValue, 1);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -907,12 +911,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
     private void getAllUsers() throws JSONException {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"UserList";
+        String url = Utils.getBaseUrl(this) + "UserList";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url_UserList:",url);
-        usersList =new ArrayList<>();
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("User",username);
+        Log.w("Given_url_UserList:", url);
+        usersList = new ArrayList<>();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("User", username);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Getting Users...");
@@ -920,37 +924,37 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         pDialog.show();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
-                    try{
-                        Log.w("UserListResponse:",response.toString());
-                        String statusCode=response.optString("statusCode");
-                        String message=response.optString("statusMessage");
-                        if (statusCode.equals("1")){
-                            JSONArray responseData=response.getJSONArray("responseData");
-                            for (int i=0;i<responseData.length();i++){
-                                JSONObject object=responseData.optJSONObject(i);
-                                UserListModel model=new UserListModel();
+                    try {
+                        Log.w("UserListResponse:", response.toString());
+                        String statusCode = response.optString("statusCode");
+                        String message = response.optString("statusMessage");
+                        if (statusCode.equals("1")) {
+                            JSONArray responseData = response.getJSONArray("responseData");
+                            for (int i = 0; i < responseData.length(); i++) {
+                                JSONObject object = responseData.optJSONObject(i);
+                                UserListModel model = new UserListModel();
                                 model.setUserName(object.optString("userName"));
                                 model.setGender(object.optString("sex"));
                                 model.setJobTitle(object.optString("jobTitle"));
                                 usersList.add(model);
                             }
-                            if (usersList.size()>0){
+                            if (usersList.size() > 0) {
                                 setUserListAdapter(usersList);
-                            }else {
-                                Toast.makeText(getApplicationContext(),"No Users Found...",Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "No Users Found...", Toast.LENGTH_SHORT).show();
                             }
-                        }else {
-                            Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         }
                         pDialog.dismiss();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             // Do something when error occurred
             pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
-        }){
+            Log.w("Error_throwing:", error.toString());
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -965,10 +969,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -978,8 +984,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void setUserListAdapter(ArrayList<UserListModel> usersList){
-        UserAdapter customAdapter=new UserAdapter(getApplicationContext(),usersList);
+    public void setUserListAdapter(ArrayList<UserListModel> usersList) {
+        UserAdapter customAdapter = new UserAdapter(getApplicationContext(), usersList);
         salesManSpinner.setAdapter(customAdapter);
     }
 
@@ -1016,14 +1022,14 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     @Override
     protected void onResume() {
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
-        printerType=sharedPreferences.getString("printer_type","");
-        printerMacId=sharedPreferences.getString("mac_address","");
+        printerType = sharedPreferences.getString("printer_type", "");
+        printerMacId = sharedPreferences.getString("mac_address", "");
         super.onResume();
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId()==R.id.btn_all_invoice){
+        if (view.getId() == R.id.btn_all_invoice) {
             allInvoiceButton.setBackgroundResource(R.drawable.button_order);
             paidInvoiceButton.setBackgroundResource(R.drawable.button_unselect);
             outstandingInvoiceButton.setBackgroundResource(R.drawable.button_unselect);
@@ -1035,12 +1041,13 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             invoiceView.setVisibility(View.GONE);
             paidView.setVisibility(View.VISIBLE);
 
-            visibleFragment="invoices";
             invalidateOptionsMenu();
 
-            loadFragment(new AllInvoices());
+            if (!visibleFragment.equals("invoices"))
+                loadFragment(new AllInvoices());
+            visibleFragment = "invoices";
 
-        }else if (view.getId()==R.id.btn_paid_invoice){
+        } else if (view.getId() == R.id.btn_paid_invoice) {
             allInvoiceButton.setBackgroundResource(R.drawable.button_unselect);
             paidInvoiceButton.setBackgroundResource(R.drawable.button_order);
             outstandingInvoiceButton.setBackgroundResource(R.drawable.button_unselect);
@@ -1052,11 +1059,11 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             invoiceView.setVisibility(View.GONE);
             paidView.setVisibility(View.GONE);
 
-            visibleFragment="paid";
             invalidateOptionsMenu();
-            loadFragment(new PaidInvoices());
-
-        }else if (view.getId()==R.id.btn_outstanding_invoice){
+            if (!visibleFragment.equals("paid"))
+                loadFragment(new PaidInvoices());
+            visibleFragment = "paid";
+        } else if (view.getId() == R.id.btn_outstanding_invoice) {
             allInvoiceButton.setBackgroundResource(R.drawable.button_unselect);
             paidInvoiceButton.setBackgroundResource(R.drawable.button_unselect);
             outstandingInvoiceButton.setBackgroundResource(R.drawable.button_order);
@@ -1068,17 +1075,16 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             invoiceView.setVisibility(View.VISIBLE);
             paidView.setVisibility(View.GONE);
 
-            visibleFragment="unpaid";
-            invalidateOptionsMenu();
 
-            loadFragment(new UnpaidInvoices());
+            invalidateOptionsMenu();
+            if (!visibleFragment.equals("unpaid"))
+                loadFragment(new UnpaidInvoices());
+            visibleFragment = "unpaid";
         }
     }
 
 
-
-
-    public void showRemoveAlert(String InvoiceId){
+    public void showRemoveAlert(String InvoiceId) {
         new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
                 // .setTitleText("Are you sure?")
                 .setContentText("Are you sure want Cancel this Invoice ?")
@@ -1089,8 +1095,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                         try {
                             sDialog.dismiss();
                             viewCloseBottomSheet();
-                            String date=Utils.changeDateFormat(invoiceDate);
-                            setDeleteInvoice(InvoiceId,invoiceStatusValue,date);
+                            String date = Utils.changeDateFormat(invoiceDate);
+                            setDeleteInvoice(InvoiceId, invoiceStatusValue, date);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -1102,34 +1108,35 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {
                         sDialog.cancel();
-                    }}).show();
+                    }
+                }).show();
     }
 
-    public static void showInvoiceOption(String invoiceCustomerCode,String customerName,String invoiceNum,String invoiceStatus,String date){
-        Log.w("InvoiceStatusView:",invoiceStatus);
-        isSearchCustomerNameClicked=false;
-       // searchFilterView.setVisibility(View.GONE);
-        if (invoiceStatus.equals("Paid") || visibleFragment.equals("paid")){
-         //   editInvoiceLayout.setVisibility(View.GONE);
+    public static void showInvoiceOption(String invoiceCustomerCode, String customerName, String invoiceNum, String invoiceStatus, String date) {
+        Log.w("InvoiceStatusView:", invoiceStatus);
+        isSearchCustomerNameClicked = false;
+        // searchFilterView.setVisibility(View.GONE);
+        if (invoiceStatus.equals("Paid") || visibleFragment.equals("paid")) {
+            //   editInvoiceLayout.setVisibility(View.GONE);
             cashCollectionLayout.setVisibility(View.GONE);
             deleteInvoiceLayout.setVisibility(View.GONE);
-            invoiceStatusValue="P";
+            invoiceStatusValue = "P";
 
-        }else if (invoiceStatus.equals("Partial") ){
-         //   editInvoiceLayout.setVisibility(View.GONE);
+        } else if (invoiceStatus.equals("Partial")) {
+            //   editInvoiceLayout.setVisibility(View.GONE);
             cashCollectionLayout.setVisibility(View.VISIBLE);
             deleteInvoiceLayout.setVisibility(View.GONE);
-            invoiceStatusValue="PR";
-        }else {
-           // editInvoiceLayout.setVisibility(View.VISIBLE);
+            invoiceStatusValue = "PR";
+        } else if (invoiceStatus.equals("Open")) {
+            // editInvoiceLayout.setVisibility(View.VISIBLE);
             cashCollectionLayout.setVisibility(View.VISIBLE);
-            invoiceStatusValue="O";
-           // deleteInvoiceLayout.setVisibility(View.VISIBLE);
+            invoiceStatusValue = "O";
+            // deleteInvoiceLayout.setVisibility(View.VISIBLE);
         }
-        invoiceCustomerCodeValue=invoiceCustomerCode;
-        invoiceCustomerValue=customerName;
-        invoiceNumberValue=invoiceNum;
-        invoiceDate=date;
+        invoiceCustomerCodeValue = invoiceCustomerCode;
+        invoiceCustomerValue = customerName;
+        invoiceNumberValue = invoiceNum;
+        invoiceDate = date;
         customerLayout.setVisibility(View.GONE);
         invoiceOptionLayout.setVisibility(View.VISIBLE);
         invoiceNumber.setText(invoiceNum);
@@ -1141,10 +1148,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
     private void getInvoiceDetails(String invoiceNumber) throws JSONException {
         // Initialize a new RequestQueue instance
-        JSONObject jsonObject=new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         ///jsonObject.put("CompanyCode",companyId);
-        jsonObject.put("InvoiceNo",invoiceNumber);
-        jsonObject.put("LocationCode",locationCode);
+        jsonObject.put("InvoiceNo", invoiceNumber);
+        jsonObject.put("LocationCode", locationCode);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url = Utils.getBaseUrl(this) + "InvoiceDetails";
         // Initialize a new JsonArrayRequest instance
@@ -1156,11 +1163,11 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         pDialog.show();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
-                    try{
-                        Log.w("Invoice_DetailsSAP:",response.toString());
-                        if (response.length()>0) {
+                    try {
+                        Log.w("Invoice_DetailsSAP:", response.toString());
+                        if (response.length() > 0) {
 
-                           // {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"WinApp","customerName":"WinApp",
+                            // {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"WinApp","customerName":"WinApp",
                             // "invoiceNumber":"41","invoiceStatus":"O","invoiceDate":"6\/8\/2021 12:00:00 am","netTotal":"26.750000",
                             // "balanceAmount":"26.750000","totalDiscount":"0.000000","paidAmount":"0.000000","contactPersonCode":"",
                             // "createDate":"13\/8\/2021 12:00:00 am","updateDate":"13\/8\/2021 12:00:00 am","remark":"",
@@ -1226,14 +1233,14 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                 dbHelper.removeAllItems();
 
                                 dbHelper.removeCustomerTaxes();
-                                CustomerDetails model=new CustomerDetails();
+                                CustomerDetails model = new CustomerDetails();
                                 model.setCustomerCode(customer_code);
                                 model.setCustomerName(customer_name);
                                 model.setCustomerAddress1(salesObject.optString("address1"));
-                                model.setTaxPerc( salesObject.optString("taxPercentage"));
+                                model.setTaxPerc(salesObject.optString("taxPercentage"));
                                 model.setTaxType(salesObject.optString("taxType"));
-                                model.setTaxCode( salesObject.optString("taxCode"));
-                                ArrayList<CustomerDetails> taxList =new ArrayList<>();
+                                model.setTaxCode(salesObject.optString("taxCode"));
+                                ArrayList<CustomerDetails> taxList = new ArrayList<>();
                                 taxList.add(model);
                                 dbHelper.insertCustomerTaxValues(taxList);
 
@@ -1263,9 +1270,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                         cqty = object.optString("quantity");
                                     }
 
-                                    double actualPrice=Double.parseDouble(object.optString("unitPrice"));
+                                    double actualPrice = Double.parseDouble(object.optString("unitPrice"));
 
-                                    if (createInvoiceSetting.equals("true")){
+                                    if (createInvoiceSetting.equals("true")) {
 
                                       /*  double priceValue=0.0;
                                         double net_qty=Double.parseDouble(qty_value) - Double.parseDouble(return_qty);
@@ -1289,7 +1296,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                                 netTotalValue.getText().toString()
                                         );*/
 
-                                    }else {
+                                    } else {
                                         dbHelper.insertCart(
                                                 object.optString("productCode"),
                                                 object.optString("productName"),
@@ -1311,38 +1318,38 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                                 "",
                                                 "0.00",
                                                 object.optString("ReturnQty"),
-                                                "","",object.optString("total"),"",object.optString("uomCode"),
+                                                "", "", object.optString("total"), "", object.optString("uomCode"),
                                                 object.optString("minimumSellingPrice")
                                         );
                                     }
 
 
-                                    int count=dbHelper.numberOfRows();
-                                    if (products.length()==count){
-                                        Utils.setCustomerSession(NewInvoiceListActivity.this,customer_code);
-                                        if (createInvoiceSetting.equals("true")){
-                                            Intent intent=new Intent(getApplicationContext(),CreateNewInvoiceActivity.class);
-                                            intent.putExtra("from","invoice");
-                                            intent.putExtra("customerName",customer_name);
-                                            intent.putExtra("customerCode",customer_code);
+                                    int count = dbHelper.numberOfRows();
+                                    if (products.length() == count) {
+                                        Utils.setCustomerSession(NewInvoiceListActivity.this, customer_code);
+                                        if (createInvoiceSetting.equals("true")) {
+                                            Intent intent = new Intent(getApplicationContext(), CreateNewInvoiceActivity.class);
+                                            intent.putExtra("from", "invoice");
+                                            intent.putExtra("customerName", customer_name);
+                                            intent.putExtra("customerCode", customer_code);
                                             startActivity(intent);
                                             finish();
-                                        }else {
-                                            Intent intent=new Intent(NewInvoiceListActivity.this,AddInvoiceActivity.class);
-                                            intent.putExtra("billDiscount",bill_discount);
-                                            intent.putExtra("itemDiscount",item_discount);
-                                            intent.putExtra("subTotal",sub_total);
-                                            intent.putExtra("customerId",customer_code);
-                                            intent.putExtra("invoiceNumber",invoice_code);
-                                            intent.putExtra("activityFrom","InvoiceEdit");
+                                        } else {
+                                            Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivity.class);
+                                            intent.putExtra("billDiscount", bill_discount);
+                                            intent.putExtra("itemDiscount", item_discount);
+                                            intent.putExtra("subTotal", sub_total);
+                                            intent.putExtra("customerId", customer_code);
+                                            intent.putExtra("invoiceNumber", invoice_code);
+                                            intent.putExtra("activityFrom", "InvoiceEdit");
                                             startActivity(intent);
                                             finish();
                                         }
                                     }
                                 }
-                                int count=dbHelper.numberOfRows();
-                                if (count==0){
-                                    Toast.makeText(getApplicationContext(),"No Products Details Found,Try again!",Toast.LENGTH_SHORT).show();
+                                int count = dbHelper.numberOfRows();
+                                if (count == 0) {
+                                    Toast.makeText(getApplicationContext(), "No Products Details Found,Try again!", Toast.LENGTH_SHORT).show();
                                 }
 
                             } else {
@@ -1447,14 +1454,14 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
 
                         pDialog.dismiss();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             // Do something when error occurred
             pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
-        }){
+            Log.w("Error_throwing:", error.toString());
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -1469,10 +1476,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -1483,18 +1492,18 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     }
 
 
-    private void setDeleteInvoice(String invoiceNumber,String status,String invoiceDate) throws JSONException {
+    private void setDeleteInvoice(String invoiceNumber, String status, String invoiceDate) throws JSONException {
         // Initialize a new RequestQueue instance
 
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("InvoiceStatus",status);
-        jsonObject.put("InvoiceNo",invoiceNumber);
-        jsonObject.put("InvoiceDate",invoiceDate);
-        Log.w("GivenInputRequest::",jsonObject.toString());
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("InvoiceStatus", status);
+        jsonObject.put("InvoiceNo", invoiceNumber);
+        jsonObject.put("InvoiceDate", invoiceDate);
+        Log.w("GivenInputRequest::", jsonObject.toString());
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"CancellationDocument";
+        String url = Utils.getBaseUrl(this) + "CancellationDocument";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_url:", url);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Cancelling Invoice...");
@@ -1502,33 +1511,33 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         pDialog.show();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
-                    try{
-                        Log.w("DelInvoice_Response_is:",response.toString());
-                      //  {"statusCode":1,"statusMessage":"Invoice Cancelled Successfully","responseData":{"docNum":"8010025","error":null}}
+                    try {
+                        Log.w("DelInvoice_Response_is:", response.toString());
+                        //  {"statusCode":1,"statusMessage":"Invoice Cancelled Successfully","responseData":{"docNum":"8010025","error":null}}
                         // {"IsSaved":false,"Result":"pass","IsDeleted":true}
-                        if (response.length()>0){
-                            String statusCode=response.optString("statusCode");
-                            String statusMessage=response.optString("statusMessage");
-                            if (statusCode.equals("1") && statusMessage.equals("Invoice Cancelled Successfully")){
-                                Toast.makeText(getApplicationContext(),"Invoice Cancelled Successfully...!",Toast.LENGTH_SHORT).show();
+                        if (response.length() > 0) {
+                            String statusCode = response.optString("statusCode");
+                            String statusMessage = response.optString("statusMessage");
+                            if (statusCode.equals("1") && statusMessage.equals("Invoice Cancelled Successfully")) {
+                                Toast.makeText(getApplicationContext(), "Invoice Cancelled Successfully...!", Toast.LENGTH_SHORT).show();
                                 finish();
                                 startActivity(getIntent());
                                 dbHelper.removeAllProducts();
-                            }else {
-                                JSONObject object=response.getJSONObject("responseData");
-                                String error=object.optString("error");
-                                Toast.makeText(getApplicationContext(),error,Toast.LENGTH_LONG).show();
+                            } else {
+                                JSONObject object = response.getJSONObject("responseData");
+                                String error = object.optString("error");
+                                Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
                             }
                         }
                         pDialog.dismiss();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             // Do something when error occurred
             pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
-        }){
+            Log.w("Error_throwing:", error.toString());
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -1543,10 +1552,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -1557,33 +1568,33 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     }
 
 
-    public void setNettotal(ArrayList<InvoiceModel> invoiceList){
-        double net_amount=0.0;
-        for (InvoiceModel model:invoiceList){
-            if (model.getBalance()!=null && !model.getBalance().equals("null")){
-                net_amount=net_amount+Double.parseDouble(model.getBalance());
+    public void setNettotal(ArrayList<InvoiceModel> invoiceList) {
+        double net_amount = 0.0;
+        for (InvoiceModel model : invoiceList) {
+            if (model.getBalance() != null && !model.getBalance().equals("null")) {
+                net_amount = net_amount + Double.parseDouble(model.getBalance());
             }
         }
-        netTotalText.setText("$ "+Utils.twoDecimalPoint(net_amount));
+        netTotalText.setText("$ " + Utils.twoDecimalPoint(net_amount));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.sorting_menu, menu);
-        this.menu=menu;
+        this.menu = menu;
         MenuItem item = menu.findItem(R.id.action_barcode);
         item.setVisible(false);
 
-        MenuItem addInvoice=menu.findItem(R.id.action_add);
+        MenuItem addInvoice = menu.findItem(R.id.action_add);
         addInvoice.setVisible(false);
-        if (createInvoiceSetting.equals("true")){
-            if (company_name.equals("AADHI INTERNATIONAL PTE LTD")){
+        if (createInvoiceSetting.equals("true")) {
+            if (company_name.equals("AADHI INTERNATIONAL PTE LTD")) {
                 addInvoice.setVisible(false);
-            }else {
+            } else {
                 addInvoice.setVisible(true);
             }
-        }else {
+        } else {
             addInvoice.setVisible(false);
         }
       /*  ArrayList<UserRoll> userRolls=helper.getUserPermissions();
@@ -1603,12 +1614,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 }
             }
         }*/
-        this.menu=menu;
-        MenuItem filter=menu.findItem(R.id.action_filter);
-        if (visibleFragment.equals("invoices")){
+        this.menu = menu;
+        MenuItem filter = menu.findItem(R.id.action_filter);
+        if (visibleFragment.equals("invoices")) {
             filter.setVisible(true);
             //filter.setVisible(false);
-        }else {
+        } else {
             filter.setVisible(false);
         }
         return true;
@@ -1622,8 +1633,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
          /*   case R.id.action_remove:
                 showRemoveAlert();
                 break;*/
-        }else if (item.getItemId()==R.id.action_customer_name){
-            Collections.sort(invoiceList, new Comparator<InvoiceModel>(){
+        } else if (item.getItemId() == R.id.action_customer_name) {
+            Collections.sort(invoiceList, new Comparator<InvoiceModel>() {
                 public int compare(InvoiceModel obj1, InvoiceModel obj2) {
                     // ## Ascending order
                     return obj1.getName().compareToIgnoreCase(obj2.getName()); // To compare string values
@@ -1635,8 +1646,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 }
             });
             invoiceAdapter.notifyDataSetChanged();
-        }else if (item.getItemId()==R.id.action_amount){
-            Collections.sort(invoiceList, new Comparator<InvoiceModel>(){
+        } else if (item.getItemId() == R.id.action_amount) {
+            Collections.sort(invoiceList, new Comparator<InvoiceModel>() {
                 public int compare(InvoiceModel obj1, InvoiceModel obj2) {
                     // ## Ascending order
                     //  return obj1.getNetTotal().compareToIgnoreCase(obj2.getNetTotal()); // To compare string values
@@ -1648,15 +1659,15 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 }
             });
             invoiceAdapter.notifyDataSetChanged();
-        }else if (item.getItemId()==R.id.action_date){
+        } else if (item.getItemId() == R.id.action_date) {
 
             try {
-                Collections.sort(invoiceList, new Comparator<InvoiceModel>(){
+                Collections.sort(invoiceList, new Comparator<InvoiceModel>() {
                     public int compare(InvoiceModel obj1, InvoiceModel obj2) {
                         SimpleDateFormat sdfo = new SimpleDateFormat("yyyy-MM-dd");
                         // Get the two dates to be compared
                         Date d1 = null;
-                        Date d2=null;
+                        Date d2 = null;
                         try {
                             d1 = sdfo.parse(obj1.getDate());
                             d2 = sdfo.parse(obj2.getDate());
@@ -1673,14 +1684,14 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                     }
                 });
                 invoiceAdapter.notifyDataSetChanged();
-            }catch (Exception ex){
-                Log.w("Error:",ex.getMessage());
+            } catch (Exception ex) {
+                Log.w("Error:", ex.getMessage());
             }
-        }else if (item.getItemId()==R.id.action_add){
+        } else if (item.getItemId() == R.id.action_add) {
 
-            Intent intent=new Intent(getApplicationContext(),CustomerListActivity.class);
-            intent.putExtra("from","iv");
-            startActivityForResult(intent,customerSelectCode);
+            Intent intent = new Intent(getApplicationContext(), CustomerListActivity.class);
+            intent.putExtra("from", "iv");
+            startActivityForResult(intent, customerSelectCode);
            /* SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
             String selectCustomerId = sharedPreferences.getString("customerId", "");
             if (selectCustomerId!=null && !selectCustomerId.isEmpty()){
@@ -1709,18 +1720,18 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     }
             }*/
-        }else if (item.getItemId()==R.id.action_filter){
-            if (searchFilterView.getVisibility()==View.VISIBLE){
+        } else if (item.getItemId() == R.id.action_filter) {
+            if (searchFilterView.getVisibility() == View.VISIBLE) {
                 searchFilterView.setVisibility(View.GONE);
                 customerNameText.setText("");
-                isSearchCustomerNameClicked=false;
+                isSearchCustomerNameClicked = false;
                 if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                     behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
                 //slideUp(searchFilterView);
-            }else {
+            } else {
                 customerNameText.setText("");
-                isSearchCustomerNameClicked=false;
+                isSearchCustomerNameClicked = false;
                 searchFilterView.setVisibility(View.VISIBLE);
                 if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                     behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -1735,25 +1746,26 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == customerSelectCode) {
-            if(resultCode == Activity.RESULT_OK){
-                String result=data.getStringExtra("customerCode");
-                Utils.setCustomerSession(this,result);
-                Intent intent=new Intent(NewInvoiceListActivity.this,AddInvoiceActivity.class);
-                intent.putExtra("customerId",result);
-                intent.putExtra("activityFrom","Invoice");
+            if (resultCode == Activity.RESULT_OK) {
+                String result = data.getStringExtra("customerCode");
+                Utils.setCustomerSession(this, result);
+                Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivity.class);
+                intent.putExtra("customerId", result);
+                intent.putExtra("activityFrom", "Invoice");
                 startActivity(intent);
                 //finish();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 // Write your code if there's no result
             }
-        }else if (requestCode == FILTER_CUSTOMER_CODE && resultCode==Activity.RESULT_OK){
-            selectCustomerCode=data.getStringExtra("customerCode");
-            selectCustomerName=data.getStringExtra("customerName");
+        } else if (requestCode == FILTER_CUSTOMER_CODE && resultCode == Activity.RESULT_OK) {
+            selectCustomerCode = data.getStringExtra("customerCode");
+            selectCustomerName = data.getStringExtra("customerName");
             customerNameText.setText(selectCustomerName);
-            Log.w("CustomerCode:",selectCustomerCode);
+            Log.w("CustomerCode:", selectCustomerCode);
         }
     } //onActivityResult
+
     private void showCustomerDialog(Activity activity, String customer_name, String customer_code, String desc) {
         //before inflating the custom alert dialog layout, we will get the current activity viewgroup
         ViewGroup viewGroup = findViewById(android.R.id.content);
@@ -1767,14 +1779,14 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         //setting the view of the builder to our custom view that we already inflated
         builder.setView(dialogView);
 
-        TextView customerName=dialogView.findViewById(R.id.customer_name_value);
-        TextView description=dialogView.findViewById(R.id.description);
+        TextView customerName = dialogView.findViewById(R.id.customer_name_value);
+        TextView description = dialogView.findViewById(R.id.description);
 
-        customerName.setText(customer_name+" - "+customer_code);
+        customerName.setText(customer_name + " - " + customer_code);
         description.setText("Do you want to continue this customer ?");
 
-        Button yesButton=dialogView.findViewById(R.id.buttonYes);
-        Button noButton=dialogView.findViewById(R.id.buttonNo);
+        Button yesButton = dialogView.findViewById(R.id.buttonYes);
+        Button noButton = dialogView.findViewById(R.id.buttonNo);
 
         //finally creating the alert dialog and displaying it
         AlertDialog alertDialog = builder.create();
@@ -1787,10 +1799,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 dbHelper.removeCustomer();
                 dbHelper.removeAllItems();
                 setCustomerDetails(customer_code);
-                AddInvoiceActivity.customerId=customer_code;
-                Intent intent=new Intent(NewInvoiceListActivity.this,AddInvoiceActivity.class);
-                intent.putExtra("customerId",customer_code);
-                intent.putExtra("activityFrom","Invoice");
+                AddInvoiceActivity.customerId = customer_code;
+                Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivity.class);
+                intent.putExtra("customerId", customer_code);
+                intent.putExtra("activityFrom", "Invoice");
                 startActivity(intent);
                 finish();
             }
@@ -1800,10 +1812,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
-                isSearchCustomerNameClicked=false;
+                isSearchCustomerNameClicked = false;
                 customerLayout.setVisibility(View.VISIBLE);
                 invoiceOptionLayout.setVisibility(View.GONE);
-             //   viewCloseBottomSheet();
+                //   viewCloseBottomSheet();
                 if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                     behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 } else {
@@ -1813,14 +1825,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         });
     }
 
-    public void setCustomerDetails(String customerId){
-        SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
-        SharedPreferences.Editor customerPredEdit= sharedPreferences.edit();
+    public void setCustomerDetails(String customerId) {
+        SharedPreferences sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE);
+        SharedPreferences.Editor customerPredEdit = sharedPreferences.edit();
         customerPredEdit.putString("customerId", customerId);
         customerPredEdit.apply();
     }
-
-
 
 
     @Override
@@ -1840,27 +1850,27 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
         protected void onPreExecute() {
             super.onPreExecute();
-            customerList=new ArrayList<>();
+            customerList = new ArrayList<>();
             emptyTextView.setText("Customers List loading please wait...");
         }
 
-        protected String doInBackground(Void...arg0) {
+        protected String doInBackground(Void... arg0) {
             Log.d(TAG + " DoINBackGround", "On doInBackground...");
             // Initialize a new RequestQueue instance
             RequestQueue requestQueue = Volley.newRequestQueue(NewInvoiceListActivity.this);
-            String url= Utils.getBaseUrl(NewInvoiceListActivity.this) +"MasterApi/GetCustomer_All?Requestdata={CompanyCode:"+companyCode+"}";
-            Log.w("Given_url:",url);
+            String url = Utils.getBaseUrl(NewInvoiceListActivity.this) + "MasterApi/GetCustomer_All?Requestdata={CompanyCode:" + companyCode + "}";
+            Log.w("Given_url:", url);
             JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET,
                     url, null,
                     response -> {
                         try {
                             // pDialog.dismiss();
                             // Loop through the array elements
-                            Log.w("Customer_Response:",response.toString());
+                            Log.w("Customer_Response:", response.toString());
                             for (int i = 0; i < response.length(); i++) {
                                 // Get current json object
                                 JSONObject customerObject = response.getJSONObject(i);
-                                CustomerModel model=new CustomerModel();
+                                CustomerModel model = new CustomerModel();
                                 model.setCustomerCode(customerObject.optString("CustomerCode"));
                                 model.setCustomerName(customerObject.optString("CustomerName"));
                                 model.setCustomerAddress(customerObject.optString("Address1"));
@@ -1868,22 +1878,22 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                 model.setTaxType(customerObject.optString("TaxType"));
                                 model.setTaxPerc(customerObject.optString("TaxPerc"));
                                 model.setTaxCode(customerObject.optString("TaxCode"));
-                                if (customerObject.optString("BalanceAmount").equals("null") || customerObject.optString("BalanceAmount").isEmpty()){
+                                if (customerObject.optString("BalanceAmount").equals("null") || customerObject.optString("BalanceAmount").isEmpty()) {
                                     model.setOutstandingAmount("0.00");
-                                }else {
+                                } else {
                                     model.setOutstandingAmount(customerObject.optString("BalanceAmount"));
                                 }
                                 customerList.add(model);
                             }
 
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }, error -> {
 
                 // Do something when error occurred
-                Log.w("Error_throwing:",error.toString());
-            }){
+                Log.w("Error_throwing:", error.toString());
+            }) {
                 @Override
                 public Map<String, String> getHeaders() {
                     HashMap<String, String> params = new HashMap<>();
@@ -1898,10 +1908,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 public int getCurrentTimeout() {
                     return 50000;
                 }
+
                 @Override
                 public int getCurrentRetryCount() {
                     return 50000;
                 }
+
                 @Override
                 public void retry(VolleyError error) throws VolleyError {
 
@@ -1914,13 +1926,13 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if (customerList.size()>0){
+            if (customerList.size() > 0) {
                 emptyTextView.setVisibility(View.GONE);
                 customerView.setVisibility(View.VISIBLE);
                 dbHelper.removeAllCustomers();
                 dbHelper.insertCustomerList(customerList);
                 setAdapter(customerList);
-            }else {
+            } else {
                 customerView.setVisibility(View.GONE);
                 emptyTextView.setText("No Customer found..");
                 emptyTextView.setVisibility(View.VISIBLE);
@@ -1930,25 +1942,25 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         }
     }
 
-    public void getCustomers(){
+    public void getCustomers() {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url=Utils.getBaseUrl(this) +"CustomerList";
-        customerList=new ArrayList<>();
+        String url = Utils.getBaseUrl(this) + "CustomerList";
+        customerList = new ArrayList<>();
         emptyTextView.setText("Customers List loading please wait...");
-        Log.w("Given_url:",url);
+        Log.w("Given_url:", url);
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET,
                 url, null,
                 response -> {
                     try {
                         // pDialog.dismiss();
                         // Loop through the array elements
-                        Log.w("Customer_Response:",response.toString());
-                        String statusCode=response.optString("statusCode");
-                        if (statusCode.equals("1")){
-                            JSONArray customerDetailArray=response.optJSONArray("responseData");
-                            for (int i=0;i<customerDetailArray.length();i++){
-                                JSONObject object=customerDetailArray.optJSONObject(i);
+                        Log.w("Customer_Response:", response.toString());
+                        String statusCode = response.optString("statusCode");
+                        if (statusCode.equals("1")) {
+                            JSONArray customerDetailArray = response.optJSONArray("responseData");
+                            for (int i = 0; i < customerDetailArray.length(); i++) {
+                                JSONObject object = customerDetailArray.optJSONObject(i);
                                 //  if (customerObject.optBoolean("IsActive")) {
                                 CustomerModel model = new CustomerModel();
                                 model.setCustomerCode(object.optString("customerCode"));
@@ -1971,29 +1983,29 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                 customerList.add(model);
                                 // }
                             }
-                        }else {
-                            Toast.makeText(getApplicationContext(),"Error,in getting Customer list",Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Error,in getting Customer list", Toast.LENGTH_LONG).show();
                         }
 
-                        if (customerList.size()>0){
+                        if (customerList.size() > 0) {
                             emptyTextView.setVisibility(View.GONE);
                             customerView.setVisibility(View.VISIBLE);
                             //new InsertCustomerTask().execute();
                             setAdapter(customerList);
-                        }else {
+                        } else {
                             customerView.setVisibility(View.GONE);
                             emptyTextView.setText("No Customer found..");
                             emptyTextView.setVisibility(View.VISIBLE);
                             progressLayout.setVisibility(View.GONE);
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
 
             // Do something when error occurred
-            Log.w("Error_throwing:",error.toString());
-        }){
+            Log.w("Error_throwing:", error.toString());
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -2008,10 +2020,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -2023,16 +2037,19 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
     class InsertCustomerTask extends AsyncTask<Void, Integer, String> {
         String TAG = getClass().getSimpleName();
+
         protected void onPreExecute() {
             super.onPreExecute();
 
         }
-        protected String doInBackground(Void...arg0) {
+
+        protected String doInBackground(Void... arg0) {
             Log.d(TAG + " DoINBackGround", "On doInBackground...");
             dbHelper.removeAllCustomers();
             dbHelper.insertCustomerList(customerList);
             return "You are at PostExecute";
         }
+
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
         }
@@ -2043,12 +2060,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         customerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         customerNameAdapter = new SelectCustomerAdapter(this, customerNames, new SelectCustomerAdapter.CallBack() {
             @Override
-            public void searchCustomer(String customer,String customername, int pos) {
+            public void searchCustomer(String customer, String customername, int pos) {
                 customerNameEdittext.setText("");
                 setAdapter(customerList);
-               // customerNameAdapter.notifyDataSetChanged();
-                if (isSearchCustomerNameClicked){
-                   // viewCloseBottomSheet();
+                // customerNameAdapter.notifyDataSetChanged();
+                if (isSearchCustomerNameClicked) {
+                    // viewCloseBottomSheet();
                     //  searchFilterView.setVisibility(View.GONE);
                     if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -2057,13 +2074,13 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                     }
                     setCustomerDetails(customer);
                     customerNameText.setText(customername);
-                    selectCustomerId=customer;
-                  //  redirectInvoice=true;
-                }else {
-                    int count =dbHelper.numberOfRows();
-                    if (count>0){
+                    selectCustomerId = customer;
+                    //  redirectInvoice=true;
+                } else {
+                    int count = dbHelper.numberOfRows();
+                    if (count > 0) {
                         showProductDeleteAlert(customer);
-                    }else {
+                    } else {
                         if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                         } else {
@@ -2071,8 +2088,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                         }
                         dbHelper.removeAllItems();
                         setCustomerDetails(customer);
-                        selectCustomerId=customer;
-                        redirectInvoice=true;
+                        selectCustomerId = customer;
+                        redirectInvoice = true;
                        /* Intent intent=new Intent(NewInvoiceListActivity.this,AddInvoiceActivity.class);
                         intent.putExtra("customerId",customer);
                         intent.putExtra("activityFrom","Invoice");
@@ -2083,10 +2100,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             }
         });
         customerView.setAdapter(customerNameAdapter);
-        totalCustomers.setText(customerNames.size()+" Customers");
+        totalCustomers.setText(customerNames.size() + " Customers");
     }
 
-    public void showProductDeleteAlert(String customerId){
+    public void showProductDeleteAlert(String customerId) {
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setTitle("Warning !");
         builder1.setMessage("Products in Cart will be removed..");
@@ -2102,13 +2119,13 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                         dialog.cancel();
                         setCustomerDetails(customerId);
                         dbHelper.removeAllItems();
-                        selectCustomerId=customerId;
-                        redirectInvoice=true;
+                        selectCustomerId = customerId;
+                        redirectInvoice = true;
                         //Intent intent=new Intent(NewInvoiceListActivity.this,AddInvoiceActivity.class);
-                       // intent.putExtra("customerId",customerId);
-                       // intent.putExtra("activityFrom","Invoice");
+                        // intent.putExtra("customerId",customerId);
+                        // intent.putExtra("activityFrom","Invoice");
                         //startActivity(intent);
-                       // finish();
+                        // finish();
                     }
                 });
         builder1.setNegativeButton(
@@ -2122,13 +2139,13 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         alert11.show();
     }
 
-    public static void viewCloseBottomSheet(){
+    public static void viewCloseBottomSheet() {
         //  hideKeyboard();
         pdfViewLayout.setVisibility(View.GONE);
-        if (isSearchCustomerNameClicked){
+        if (isSearchCustomerNameClicked) {
             customerLayout.setVisibility(View.VISIBLE);
             invoiceOptionLayout.setVisibility(View.GONE);
-        }else {
+        } else {
             customerLayout.setVisibility(View.GONE);
             invoiceOptionLayout.setVisibility(View.VISIBLE);
         }
@@ -2141,16 +2158,16 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     }
 
 
-    public void getInvoicePdf(String invoiceno,String mode) {
+    public void getInvoicePdf(String invoiceno, String mode) {
 
         try {
             // Initialize a new RequestQueue instance
             RequestQueue requestQueue = Volley.newRequestQueue(this);
             // Initialize a new JsonArrayRequest instance
-            JSONObject jsonObject=new JSONObject();
-            jsonObject.put("InvoiceNo",invoiceno);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("InvoiceNo", invoiceno);
             String url = Utils.getBaseUrl(this) + "DownloadPDFInvoice";
-            Log.w("Given_url_PdfDownload:", url+"/"+jsonObject.toString());
+            Log.w("Given_url_PdfDownload:", url + "/" + jsonObject.toString());
             pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
             pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
             pDialog.setTitleText("Generating Pdf...");
@@ -2164,17 +2181,17 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                         try {
                             pDialog.dismiss();
                             Log.w("InvoicePdfResponse:", response.toString());
-                        //    {"statusCode":1,"statusMessage":"Success",
+                            //    {"statusCode":1,"statusMessage":"Success",
                             //    "responseData":{"pdfURL":"http:\/\/172.16.5.60:8349\/PDF\/InvoiceNo_15031.pdf"}}
                             if (response.length() > 0) {
-                                String statusCode=response.optString("statusCode");
-                                if (statusCode.equals("1")){
-                                    JSONObject object=response.optJSONObject("responseData");
-                                    String pdfUrl=object.optString("pdfURL");
-                                    shareMode=mode;
-                                    new InvoicePdfDownload(this).execute(pdfUrl,"invoice",invoiceno);
-                                }else {
-                                    Toast.makeText(getApplicationContext(),"Error in Getting report..",Toast.LENGTH_SHORT).show();
+                                String statusCode = response.optString("statusCode");
+                                if (statusCode.equals("1")) {
+                                    JSONObject object = response.optJSONObject("responseData");
+                                    String pdfUrl = object.optString("pdfURL");
+                                    shareMode = mode;
+                                    new InvoicePdfDownload(this).execute(pdfUrl, "invoice", invoiceno);
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Error in Getting report..", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         } catch (Exception e) {
@@ -2197,10 +2214,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 public int getCurrentTimeout() {
                     return 50000;
                 }
+
                 @Override
                 public int getCurrentRetryCount() {
                     return 50000;
                 }
+
                 @Override
                 public void retry(VolleyError error) throws VolleyError {
                 }
@@ -2211,13 +2230,13 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         }
     }
 
-    public  void viewPdfLayout(String invoiceNumber,ArrayList<InvoicePrintPreviewModel> invoiceDetails){
+    public void viewPdfLayout(String invoiceNumber, ArrayList<InvoicePrintPreviewModel> invoiceDetails) {
         //pdfGenerateDialog.show();
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkPermission()) {
                 storagePath = Environment.getExternalStorageDirectory();
                 invoiceNO = invoiceNumber;
-                FILE = Environment.getExternalStorageDirectory() + "/" + invoiceNO+".pdf";
+                FILE = Environment.getExternalStorageDirectory() + "/" + invoiceNO + ".pdf";
                 fatchinvoiceList(invoiceDetails);
                 //createInvoicePdfTable(invoiceDetails);
             } else {
@@ -2226,7 +2245,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         } else {
             storagePath = Environment.getExternalStorageDirectory();
             invoiceNO = invoiceNumber;
-            FILE = Environment.getExternalStorageDirectory() + "/" + invoiceNO+".pdf";
+            FILE = Environment.getExternalStorageDirectory() + "/" + invoiceNO + ".pdf";
             fatchinvoiceList(invoiceDetails);
             //createInvoicePdfTable(invoiceDetails);
         }
@@ -2234,7 +2253,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
     /**
      * Checks if the app has permission to write to device storage
-     *
+     * <p>
      * If the app does not has permission then the user will be prompted to grant permissions
      *
      * @param activity
@@ -2263,7 +2282,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         }
     }
 
-    private class DownloadFile extends AsyncTask<String, Void, Void>{
+    private class DownloadFile extends AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... strings) {
@@ -2275,15 +2294,15 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 File productsDirectory = new File(Constants.getPdfFolderPath(NewInvoiceListActivity.this));
                 productsDirectory.mkdirs();
             }
-            try{
-             File  newFile = new File(folder, fileName);
-                if (newFile.exists()){
+            try {
+                File newFile = new File(folder, fileName);
+                if (newFile.exists()) {
                     newFile.delete();
                 }
-                Log.w("NewFileName:",newFile.toString());
+                Log.w("NewFileName:", newFile.toString());
 //                newFile.createNewFile();
                 FileDownloader.downloadFile(fileUrl, newFile);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -2297,9 +2316,11 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         private Context c;
         private int file_progress_count = 0;
         File newFile;
+
         public InvoicePdfDownload(Context c) {
             this.c = c;
         }
+
         @Override
         protected String doInBackground(String... sUrl) {
             InputStream is = null;
@@ -2319,7 +2340,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 pd.setMax(length / (1000));
                 is = con.getInputStream();
 
-                Log.w("DownloadImageURL:",url.toString());
+                Log.w("DownloadImageURL:", url.toString());
 
                 //String folderPath = Environment.getExternalStorageDirectory() + "/CatalogErp/Products";
                 File folder = new File(Constants.getFolderPath(NewInvoiceListActivity.this));
@@ -2329,13 +2350,13 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 }
 
                 //create a new file
-                String filepath= sUrl[1]+"_"+sUrl[2];
-                String newfilePath=filepath.replace("/","_");
-                newFile = new File(Constants.getFolderPath(NewInvoiceListActivity.this), newfilePath+".pdf");
-                if (newFile.exists()){
+                String filepath = sUrl[1] + "_" + sUrl[2];
+                String newfilePath = filepath.replace("/", "_");
+                newFile = new File(Constants.getFolderPath(NewInvoiceListActivity.this), newfilePath + ".pdf");
+                if (newFile.exists()) {
                     newFile.delete();
                 }
-                Log.w("GivenFilePath:",newFile.toString());
+                Log.w("GivenFilePath:", newFile.toString());
                 newFile.createNewFile();
                 //os = new FileOutputStream(Environment.getExternalStorageDirectory()+File.separator+"CatalogImages" + File.separator + "a-computer-engineer.jpg");
                 os = new FileOutputStream(newFile);
@@ -2355,7 +2376,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                     os.write(data, 0, count);
                 }
             } catch (Exception e) {
-                Log.w("File_Write_Error:",e.getMessage());
+                Log.w("File_Write_Error:", e.getMessage());
                 return e.toString();
             } finally {
                 try {
@@ -2389,29 +2410,30 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         @Override
         protected void onPostExecute(String result) {
             try {
-                Log.w("ProgressCount:",file_progress_count+"");
-                if (file_progress_count==100){
+                Log.w("ProgressCount:", file_progress_count + "");
+                if (file_progress_count == 100) {
                     pd.dismiss();
-                    if (newFile.exists()){
-                        if (shareMode.equals("Share")){
-                            pdfFile=newFile;
+                    if (newFile.exists()) {
+                        if (shareMode.equals("Share")) {
+                            pdfFile = newFile;
                             displayFromAsset(newFile);
-                        }else {
+                        } else {
                             shareWhatsapp(newFile);
                         }
-                    }else {
-                        Toast.makeText(getApplicationContext(),"NO file Download",Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "NO file Download", Toast.LENGTH_SHORT).show();
                     }
                 }
                 if (result != null) {
 
                 }
-            }catch (Exception exception){ }
+            } catch (Exception exception) {
+            }
         }
     }
 
 
-    public void shareWhatsapp(File file){
+    public void shareWhatsapp(File file) {
         Intent shareIntent = new Intent();
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         shareIntent.setAction(Intent.ACTION_SEND);
@@ -2419,7 +2441,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         shareIntent.setType("application/pdf");
         shareIntent.putExtra(android.content.Intent.EXTRA_STREAM,
                 FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()),
-                BuildConfig.APPLICATION_ID + ".provider", file));
+                        BuildConfig.APPLICATION_ID + ".provider", file));
         // Target whatsapp:
         shareIntent.setPackage("com.whatsapp");
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -2431,7 +2453,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         }
     }
 
-    public void shareWhatsappBusiness(File file){
+    public void shareWhatsappBusiness(File file) {
         Intent shareIntent = new Intent();
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         shareIntent.setAction(Intent.ACTION_SEND);
@@ -2469,9 +2491,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         }
     }
 */
-    public void hideKeyboard(){
+    public void hideKeyboard() {
         try {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
         } catch (Exception e) {
             // TODO: handle exception
@@ -2493,7 +2515,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             //calling a method of the adapter class and passing the filtered list
             customerNameAdapter.filterList(filterdNames);
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             Log.e("Error_in_filter", Objects.requireNonNull(ex.getMessage()));
         }
     }
@@ -2511,7 +2533,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             Toast.makeText(this, "Write External Storage permission allows us to save files. Please allow this permission in App Settings.", Toast.LENGTH_LONG).show();
         } else {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE,android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
         }
     }
 
@@ -2540,41 +2562,41 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         String strText = "INVOICE";
         Label invoiceTitle = new Label(strText, 0, 0, 504, 100, Font.getHelvetica(), 20, TextAlign.CENTER);
         // Create a Label to add to the page
-        Label objLabel = new Label(company_name+"\n"+company_address1+"\n "+company_address2+"\n"+company_address3+"", 0, 100, 504, 100, Font.getHelvetica(), 12, TextAlign.LEFT);
-        Label objLabel2 = new Label("Invoice Number: "+invoiceDetails.get(0).getInvoiceNumber()+"\nInvoice Date: "+invoiceDetails.get(0).getInvoiceDate()+"\nCustomer Name: "+invoiceDetails.get(0).getCustomerName(), 0, 100, 504, 100, Font.getHelvetica(), 12, TextAlign.RIGHT);
+        Label objLabel = new Label(company_name + "\n" + company_address1 + "\n " + company_address2 + "\n" + company_address3 + "", 0, 100, 504, 100, Font.getHelvetica(), 12, TextAlign.LEFT);
+        Label objLabel2 = new Label("Invoice Number: " + invoiceDetails.get(0).getInvoiceNumber() + "\nInvoice Date: " + invoiceDetails.get(0).getInvoiceDate() + "\nCustomer Name: " + invoiceDetails.get(0).getCustomerName(), 0, 100, 504, 100, Font.getHelvetica(), 12, TextAlign.RIGHT);
         // Add label to page
         //objLabel.setTextOutlineColor(com.cete.dynamicpdf.Color);
         objPage.getElements().add(invoiceTitle);
         objPage.getElements().add(objLabel);
         objPage.getElements().add(objLabel2);
 
-        Label line=new Label(PdfUtils.drawLine(),0,220,700,400);
+        Label line = new Label(PdfUtils.drawLine(), 0, 220, 700, 400);
         objPage.getElements().add(line);
 
 
-        int index=1;
-        int space=240;
-        for (InvoicePrintPreviewModel model:invoiceDetails){
-            Log.w("BiggestLength:",PdfUtils.getLength(model.getInvoiceList())+"");
-            Label titleLabel=new Label("SNo"+ PdfUtils.snoSpace()+"Description    "+PdfUtils.getDescriptionSpace(15,'\t')+"Qty"+PdfUtils.qtySpace()+"Price"+PdfUtils.priceSpace()+"Total",0,200,700,100,Font.getHelvetica(), 15, TextAlign.LEFT);
+        int index = 1;
+        int space = 240;
+        for (InvoicePrintPreviewModel model : invoiceDetails) {
+            Log.w("BiggestLength:", PdfUtils.getLength(model.getInvoiceList()) + "");
+            Label titleLabel = new Label("SNo" + PdfUtils.snoSpace() + "Description    " + PdfUtils.getDescriptionSpace(15, '\t') + "Qty" + PdfUtils.qtySpace() + "Price" + PdfUtils.priceSpace() + "Total", 0, 200, 700, 100, Font.getHelvetica(), 15, TextAlign.LEFT);
             objPage.getElements().add(titleLabel);
-            for (InvoicePrintPreviewModel.InvoiceList invoiceList:model.getInvoiceList()){
-                if (invoiceList.getDescription().length()<15){
-                    Label titleLabel1=new Label(index+""+ PdfUtils.snoSpace()+invoiceList.getDescription()+PdfUtils.getDescriptionSpace(PdfUtils.getLength(model.getInvoiceList())+11,'\t')+(int)Double.parseDouble(invoiceList.getNetQty())+PdfUtils.qtySpace()+Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getPricevalue()))+PdfUtils.priceSpace()+Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getTotal())),0,space,700,100,Font.getHelvetica(), 15, TextAlign.LEFT);
+            for (InvoicePrintPreviewModel.InvoiceList invoiceList : model.getInvoiceList()) {
+                if (invoiceList.getDescription().length() < 15) {
+                    Label titleLabel1 = new Label(index + "" + PdfUtils.snoSpace() + invoiceList.getDescription() + PdfUtils.getDescriptionSpace(PdfUtils.getLength(model.getInvoiceList()) + 11, '\t') + (int) Double.parseDouble(invoiceList.getNetQty()) + PdfUtils.qtySpace() + Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getPricevalue())) + PdfUtils.priceSpace() + Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getTotal())), 0, space, 700, 100, Font.getHelvetica(), 15, TextAlign.LEFT);
                     objPage.getElements().add(titleLabel1);
-                }else {
-                    Label titleLabel1=new Label(index+""+ PdfUtils.snoSpace()+invoiceList.getDescription().substring(0,15)+PdfUtils.getDescriptionSpace(15,'\t')+(int)Double.parseDouble(invoiceList.getNetQty())+PdfUtils.qtySpace()+Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getPricevalue()))+PdfUtils.priceSpace()+Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getTotal())),0,space,700,100,Font.getHelvetica(), 15, TextAlign.LEFT);
+                } else {
+                    Label titleLabel1 = new Label(index + "" + PdfUtils.snoSpace() + invoiceList.getDescription().substring(0, 15) + PdfUtils.getDescriptionSpace(15, '\t') + (int) Double.parseDouble(invoiceList.getNetQty()) + PdfUtils.qtySpace() + Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getPricevalue())) + PdfUtils.priceSpace() + Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getTotal())), 0, space, 700, 100, Font.getHelvetica(), 15, TextAlign.LEFT);
                     objPage.getElements().add(titleLabel1);
                 }
 
                 index++;
-                space=space+30;
+                space = space + 30;
             }
-            Label totalLabel = new Label("Sub Total:"+Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal()))+" \nGST: "+Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax()))+" \nNet Total: "+Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())), 0, space+50, 504, 100, Font.getHelvetica(), 15, TextAlign.RIGHT);
+            Label totalLabel = new Label("Sub Total:" + Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())) + " \nGST: " + Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())) + " \nNet Total: " + Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())), 0, space + 50, 504, 100, Font.getHelvetica(), 15, TextAlign.RIGHT);
             objPage.getElements().add(totalLabel);
         }
 
-        Label line1=new Label(PdfUtils.drawLine(),0,space+30,700,400);
+        Label line1 = new Label(PdfUtils.drawLine(), 0, space + 30, 700, 400);
         objPage.getElements().add(line1);
 
         // Add page to document
@@ -2584,34 +2606,35 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             objDocument.draw(FILE);
             try {
                 File filepath = new File(FILE);
-                pdfFile=filepath;
+                pdfFile = filepath;
                 sharePdfView(pdfFile);
-               // displayFromAsset(pdfFile);
+                // displayFromAsset(pdfFile);
             } catch (ActivityNotFoundException e) {
             }
-        }catch (Exception edx){
-            Log.e("PdfOpenError:",edx.getMessage());
+        } catch (Exception edx) {
+            Log.e("PdfOpenError:", edx.getMessage());
         }
     }
 
-    public void sharePdfView(File pdfFile){
+    public void sharePdfView(File pdfFile) {
         try {
-            if (pdfGenerateDialog!=null && pdfGenerateDialog.isShowing()){
+            if (pdfGenerateDialog != null && pdfGenerateDialog.isShowing()) {
                 pdfGenerateDialog.dismiss();
             }
-            Log.w("URL-FromthisPdf:",Uri.fromFile(pdfFile).toString());
+            Log.w("URL-FromthisPdf:", Uri.fromFile(pdfFile).toString());
             //FileProvider.getUriForFile(this,"Share",pdfFile);
             Intent share = new Intent();
             share.setAction(Intent.ACTION_SEND);
             share.setType("application/pdf");
             share.putExtra(Intent.EXTRA_STREAM,
                     FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()),
-                    BuildConfig.APPLICATION_ID + ".provider", pdfFile));
+                            BuildConfig.APPLICATION_ID + ".provider", pdfFile));
             startActivity(Intent.createChooser(share, "Share"));
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
-    public void createInvoicePdfTable(ArrayList<InvoicePrintPreviewModel> invoiceDetails){
+    public void createInvoicePdfTable(ArrayList<InvoicePrintPreviewModel> invoiceDetails) {
         //Create a document object.
         Document document = new Document();
         document.setCreator("Powered By : Google.com");
@@ -2678,20 +2701,20 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             document.draw(FILE);
             try {
                 File filepath = new File(FILE);
-                pdfFile=filepath;
+                pdfFile = filepath;
                 // sharePdfView(pdfFile);
                 displayFromAsset(pdfFile);
             } catch (ActivityNotFoundException e) {
             }
-        }catch (Exception edx){
-            Log.e("PdfOpenError:",edx.getMessage());
+        } catch (Exception edx) {
+            Log.e("PdfOpenError:", edx.getMessage());
         }
     }
 
 
-    private void displayFromAsset(File  assetFileName) {
+    private void displayFromAsset(File assetFileName) {
 
-        Log.w("DisplayFileName::",assetFileName.toString());
+        Log.w("DisplayFileName::", assetFileName.toString());
 
         customerLayout.setVisibility(View.GONE);
         invoiceOptionLayout.setVisibility(View.GONE);
@@ -2714,9 +2737,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     }
 
 
-
     // slide the view from its current position to below itself
-    public void slideDown(View view){
+    public void slideDown(View view) {
         TranslateAnimation animate = new TranslateAnimation(
                 0,                 // fromXDelta
                 0,                 // toXDelta
@@ -2727,7 +2749,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         view.startAnimation(animate);
     }
 
-    public void slideUp(View view){
+    public void slideUp(View view) {
         // view.setVisibility(View.VISIBLE);
         TranslateAnimation animate = new TranslateAnimation(
                 0,                 // fromXDelta
@@ -2740,7 +2762,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     }
 
 
-    public void getDate(EditText dateEditext){
+    public void getDate(EditText dateEditext) {
         // Get Current Date
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);
@@ -2964,30 +2986,30 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         requestQueue.add(jsonObjectRequest);
     }*/
 
-    public void loadFragment(Fragment fragment){
+    public void loadFragment(Fragment fragment) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.replace(R.id.container, fragment);
         fragmentTransaction.commit();
     }
 
-    public void getCustomerDetails(String customerCode,boolean isloader) {
+    public void getCustomerDetails(String customerCode, boolean isloader) {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(NewInvoiceListActivity.this);
         // Initialize a new JsonArrayRequest instance
-        JSONObject jsonObject=new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("CustomerCode",customerCode);
-            jsonObject.put("CompanyCode",companyCode);
+            jsonObject.put("CustomerCode", customerCode);
+            jsonObject.put("CompanyCode", companyCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String url= Utils.getBaseUrl(NewInvoiceListActivity.this) +"MasterApi/GetCustomer?Requestdata="+jsonObject.toString();
-        Log.w("Given_url:",url);
-        ProgressDialog progressDialog=new ProgressDialog(NewInvoiceListActivity.this);
+        String url = Utils.getBaseUrl(NewInvoiceListActivity.this) + "MasterApi/GetCustomer?Requestdata=" + jsonObject.toString();
+        Log.w("Given_url:", url);
+        ProgressDialog progressDialog = new ProgressDialog(NewInvoiceListActivity.this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Customer Details Loading...");
-        if (isloader){
+        if (isloader) {
             progressDialog.show();
         }
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
@@ -2995,27 +3017,27 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 url,
                 null,
                 response -> {
-                    try{
-                        Log.w("details_response:",response.toString());
-                        if (response.length()>0) {
-                            if (response.optString("ErrorMessage").equals("null")){
-                                oustandingAmount=response.optString("BalanceAmount");
+                    try {
+                        Log.w("details_response:", response.toString());
+                        if (response.length() > 0) {
+                            if (response.optString("ErrorMessage").equals("null")) {
+                                oustandingAmount = response.optString("BalanceAmount");
                                 progressDialog.dismiss();
-                            }else {
-                                Toast.makeText(getApplicationContext(),"Error in getting response",Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Error in getting response", Toast.LENGTH_LONG).show();
                             }
                         }
                         // pDialog.dismiss();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
-                    // Do something when error occurred
+            // Do something when error occurred
             //  pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
+            Log.w("Error_throwing:", error.toString());
             progressDialog.dismiss();
             // Toast.makeText(getActivity(),error.toString(),Toast.LENGTH_LONG).show();
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -3030,10 +3052,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -3043,24 +3067,24 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         requestQueue.add(jsonObjectRequest);
     }
 
-    private void getInvoicePrintDetails(String invoiceNumber,int copy) throws JSONException {
+    private void getInvoicePrintDetails(String invoiceNumber, int copy) throws JSONException {
         // Initialize a new RequestQueue instance
         JSONObject jsonObject = new JSONObject();
         // jsonObject.put("CompanyCode", companyId);
         jsonObject.put("InvoiceNo", invoiceNumber);
-        jsonObject.put("LocationCode",locationCode);
+        jsonObject.put("LocationCode", locationCode);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url = Utils.getBaseUrl(this) + "InvoiceDetails";
         // Initialize a new JsonArrayRequest instance
         Log.w("Given_url:", url);
-       // pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-       // pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-       // pDialog.setTitleText("Generating Print Preview...");
-       // pDialog.setCancelable(false);
-      //  pDialog.show();
+        // pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        // pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        // pDialog.setTitleText("Generating Print Preview...");
+        // pDialog.setCancelable(false);
+        //  pDialog.show();
         invoiceHeaderDetails = new ArrayList<>();
         invoicePrintList = new ArrayList<>();
-        salesReturnList=new ArrayList<>();
+        salesReturnList = new ArrayList<>();
         // {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"WinApp","customerName":"WinApp","invoiceNumber":"33",
         // "invoiceStatus":"O","invoiceDate":"6\/8\/2021 12:00:00 am","netTotal":"26.750000","balanceAmount":"26.750000","totalDiscount":
         // "0.000000","paidAmount":"0.000000","contactPersonCode":"","createDate":"6\/8\/2021 12:00:00 am","updateDate":"6\/8\/2021 12:00:00 am",
@@ -3076,10 +3100,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 response -> {
                     try {
                         Log.w("DetailsResponse::", response.toString());
-                        String statusCode=response.optString("statusCode");
-                        if (statusCode.equals("1")){
-                            JSONArray responseData=response.getJSONArray("responseData");
-                            JSONObject object=responseData.optJSONObject(0);
+                        String statusCode = response.optString("statusCode");
+                        if (statusCode.equals("1")) {
+                            JSONArray responseData = response.getJSONArray("responseData");
+                            JSONObject object = responseData.optJSONObject(0);
 
                             InvoicePrintPreviewModel model = new InvoicePrintPreviewModel();
                             model.setInvoiceNumber(object.optString("invoiceNumber"));
@@ -3087,11 +3111,11 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                             model.setCustomerCode(object.optString("customerCode"));
                             model.setCustomerName(object.optString("customerName"));
                             model.setOverAllTotal(object.optString("overAllTotal"));
-                           // model.setAddress(object.optString("street"));
+                            // model.setAddress(object.optString("street"));
                             model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
                             model.setAddress2(object.optString("address2"));
                             model.setAddress3(object.optString("address3"));
-                           // model.setDeliveryAddress(model.getAddress());
+                            // model.setDeliveryAddress(model.getAddress());
                             model.setSubTotal(object.optString("subTotal"));
                             model.setNetTax(object.optString("taxTotal"));
                             model.setNetTotal(object.optString("netTotal"));
@@ -3108,19 +3132,20 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                             model.setSoDate(object.optString("soDate"));
                             model.setDoDate(object.optString("doDate"));
                             model.setDoNumber(object.optString("doNumber"));
-                            String signFlag=object.optString("signFlag");
-                            if (signFlag.equals("Y")){
-                                String signature=object.optString("signature");
+                            String signFlag = object.optString("signFlag");
+                            if (signFlag.equals("Y")) {
+                                String signature = object.optString("signature");
                                 Utils.setSignature(signature);
                                 createSignature();
-                            }else {
+                            } else {
                                 Utils.setSignature("");
                             }
 
-                            JSONArray detailsArray=object.optJSONArray("invoiceDetails");
-                            for (int i=0;i<detailsArray.length();i++){
-                                JSONObject detailObject=detailsArray.optJSONObject(i);
-                                InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();                                        invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                            JSONArray detailsArray = object.optJSONArray("invoiceDetails");
+                            for (int i = 0; i < detailsArray.length(); i++) {
+                                JSONObject detailObject = detailsArray.optJSONObject(i);
+                                InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                invoiceListModel.setProductCode(detailObject.optString("productCode"));
                                 invoiceListModel.setDescription(detailObject.optString("productName"));
                                 invoiceListModel.setLqty(detailObject.optString("unitQty"));
                                 invoiceListModel.setCqty(detailObject.optString("cartonQty"));
@@ -3147,9 +3172,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                 invoiceHeaderDetails.add(model);
                             }
 
-                            JSONArray SRArray=object.optJSONArray("sR_Details");
+                            JSONArray SRArray = object.optJSONArray("sR_Details");
                             assert SRArray != null;
-                            if (SRArray.length() > 0){
+                            if (SRArray.length() > 0) {
                                 JSONObject SRoblect = SRArray.optJSONObject(0);
                                 InvoicePrintPreviewModel.SalesReturnList salesReturnModel = new InvoicePrintPreviewModel.SalesReturnList();
                                 salesReturnModel.setSalesReturnNumber(SRoblect.optString("salesReturnNumber"));
@@ -3162,17 +3187,17 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                             model.setSalesReturnList(salesReturnList);
                             invoiceHeaderDetails.add(model);
                             printInvoice(copy);
-                        }else {
-                            Toast.makeText(getApplicationContext(),"Error in printing Data...",Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Error in printing Data...", Toast.LENGTH_SHORT).show();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             // Do something when error occurred
-          //  pDialog.dismiss();
+            //  pDialog.dismiss();
             Log.w("Error_throwing:", error.toString());
-            Toast.makeText(getApplicationContext(),error.toString(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
         }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -3205,27 +3230,28 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        selectedUser=usersList.get(position).getUserName();
-        Log.w("UserSelected:",selectedUser);
+        selectedUser = usersList.get(position).getUserName();
+        Log.w("UserSelected:", selectedUser);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        selectedUser="";
+        selectedUser = "";
     }
 
-    private void createSignature(){
-        if (Utils.getSignature()!=null && !Utils.getSignature().isEmpty()){
+    private void createSignature() {
+        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
             try {
-                ImageUtil.saveStamp(this,Utils.getSignature(),"Signature");
+                ImageUtil.saveStamp(this, Utils.getSignature(), "Signature");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-    public void printInvoice(int copy){
-        if (createInvoiceSetting.equals("true")){
-            PrinterUtils printerUtils=new PrinterUtils(this,printerMacId);
+
+    public void printInvoice(int copy) {
+        if (createInvoiceSetting.equals("true")) {
+            PrinterUtils printerUtils = new PrinterUtils(this, printerMacId);
             printerUtils.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
 
           /*  TSCPrinter printer = new TSCPrinter(NewInvoiceListActivity.this, printerMacId);
@@ -3237,7 +3263,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                     Toast.makeText(getApplicationContext(), "Invoice printed successfully!", Toast.LENGTH_SHORT).show();
                 }
             });*/
-        }else {
+        } else {
             if (isInvoicePrint) {
                 if (printerType.equalsIgnoreCase("Zebra Printer")) {
                     ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(NewInvoiceListActivity.this, printerMacId);

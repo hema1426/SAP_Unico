@@ -1,0 +1,34 @@
+TRANS_ORIENT_DEMO
+TO01
+12345
+
+SUPER_STAR_DEMO
+ST01
+Yn7876z@
+
+SHABAN_LIVE_URL
+shaban
+12345
+
+            case R.id.action_save:  -- CreateNewInvoiceActivity  common credt limit condtion
+            createInvoiceValidation() method hide
+
+
+            make payment activity -- CashCollectionActivity  --  activity_new_cash_collection  --save log--EscapeString
+
+
+            //    public void showAlertForCreditLimit() { -- CreateNewInvoiceActivity
+
+  NavigationActivity -- hide fun
+  //loginPrefsEditor.clear();
+// loginPrefsEditor.commit();
+
+
+
+
+// layout view
+ if (search_lay_listl.getVisibility() == View.GONE) {
+                    search_lay_listl.setVisibility(View.VISIBLE);
+                } else {
+                    search_lay_listl.setVisibility(View.GONE);
+                }

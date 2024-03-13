@@ -714,7 +714,7 @@
 
                     <ImageView
                         android:layout_width="50dp"
-                        android:id="@+id/sales_return"
+                        android:id="@+id/sales_return1"
                         android:background="?actionBarItemBackground"
                         android:src="@drawable/ic_return"
                         android:layout_height="50dp"/>

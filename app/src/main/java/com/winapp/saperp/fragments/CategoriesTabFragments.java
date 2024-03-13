@@ -242,7 +242,7 @@ public class CategoriesTabFragments extends Fragment implements PopupMenu.OnMenu
         JSONObject jsonObject=new JSONObject();
         try {
             jsonObject.put("CategoryCode",catagoriesId);
-            jsonObject.put("WarehouseCode",locationCode);
+            jsonObject.put("LocationCode",locationCode);
             getAllProducts(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1373,7 +1373,7 @@ public class CategoriesTabFragments extends Fragment implements PopupMenu.OnMenu
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         String url=Utils.getBaseUrl(getContext()) +"CategoryDetails";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_category_products_url:",url+"--"+jsonObject.toString());
+        Log.w("Given_categ_pdt_url:",url+"--"+jsonObject.toString());
         newProductList=new ArrayList<>();
         productListFilter=new ArrayList<>();
         ArrayList<ProductsModel> productList=new ArrayList<>();
@@ -1384,7 +1384,7 @@ public class CategoriesTabFragments extends Fragment implements PopupMenu.OnMenu
                 jsonObject,
                 response -> {
                     try{
-                        Log.w("Response_is:",response.toString());
+                        Log.w("ResCateg_pdt:",response.toString());
                         // Loop through the array elements
                         String statusCode=response.optString("statusCode");
                         if (statusCode.equals("1")){

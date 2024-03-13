@@ -159,7 +159,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         android:padding="10dp"
         android:layout_marginTop="10dp"
         android:layout_height="wrap_content">
@@ -177,6 +177,16 @@
             android:text="Settlement Report"
             android:textSize="14sp"
             android:id="@+id/settlement_report"
+            android:background="#f3f3f3"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"/>
+        <CheckBox
+            android:layout_width="match_parent"
+            android:text="Settlement With Receipt Report"
+            android:textSize="14sp"
+            android:id="@+id/settle_receipt_report"
             android:background="#f3f3f3"
             android:layout_marginTop="10dp"
             android:textStyle="bold"

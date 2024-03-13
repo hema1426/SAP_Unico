@@ -36,6 +36,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -107,7 +108,7 @@ public class SalesOrderPrintPreview extends AppCompatActivity implements OnPageC
     private String company_address1;
     private String company_address2;
     private String company_address3;
-    private FrameLayout rootLayout;
+    private RelativeLayout rootLayout;
     private LinearLayout addressLayout;
     private SharedPreferences sharedPreferences;
     private String printerMacId;

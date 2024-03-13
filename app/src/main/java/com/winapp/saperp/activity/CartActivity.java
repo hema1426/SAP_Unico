@@ -220,6 +220,8 @@ public class CartActivity extends AppCompatActivity {
     private LinearLayout attachmentLayout;
     private TextView taxTitle;
     public static String  currentDateStringSO;
+    private String currentSaveDateTime = "";
+
     public static String currentDateSO;
     public static String companyName;
     public static boolean isDeliveryPrint=false;
@@ -2024,10 +2026,17 @@ public class CartActivity extends AppCompatActivity {
             JSONArray detailsArray=customerResponse.optJSONArray("responseData");
             JSONObject object=detailsArray.optJSONObject(0);
 
+            if (currentSaveDateTime == null || currentSaveDateTime.isEmpty()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+                String currentDateandTime = sdf.format(new Date());
+                currentSaveDateTime = currentDateandTime;
+            }
+
             rootJsonObject.put("soNumber", "");
             rootJsonObject.put("mode", "I");
             rootJsonObject.put("status", "");
             rootJsonObject.put("soDate", currentDateStringSO);
+            rootJsonObject.put("currentDateTime", currentSaveDateTime);
             rootJsonObject.put("customerCode", object.optString("customerCode"));
             rootJsonObject.put("customerName", object.optString("customerName"));
             rootJsonObject.put("address", object.optString("address"));
@@ -2259,7 +2268,7 @@ public class CartActivity extends AppCompatActivity {
             pDialog.setCancelable(false);
             pDialog.show();
             RequestQueue requestQueue = Volley.newRequestQueue(CartActivity.this);
-            Log.w("GivenInvoiceRequest:",jsonBody.toString());
+            Log.w("GivenInvoiceReqCart:",jsonBody.toString());
             String URL="";
             if (action.equals("SalesOrder")){
                 URL=Utils.getBaseUrl(this)+"PostingSalesOrder";
@@ -2268,10 +2277,10 @@ public class CartActivity extends AppCompatActivity {
             } else {
                 URL=Utils.getBaseUrl(this)+"PostingInvoice";
             }
-            Log.w("Given_InvoiceApi:",URL);
+            Log.w("Given_URL_InvApiCart:",URL);
             //    {"statusCode":2,"statusMessage":"Failed","responseData":{"docNum":null,"error":"Invoice :One of the base documents has already been closed  [INV1.BaseEntry][line: 1]"}}
             JsonObjectRequest salesOrderRequest = new JsonObjectRequest(Request.Method.POST, URL,jsonBody, response -> {
-                Log.w("Invoice_ResponseSap:",response.toString());
+                Log.w("Invoice_Res_cartSap:",response.toString());
                 Utils.clearCustomerSession(this);
                 // dbHelper.removeCustomer();
                 // {"statusCode":1,"statusMessage":"Invoice Created Successfully","responseData":{"docNum":"35","error":null}}

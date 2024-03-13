@@ -37,6 +37,7 @@ import com.winapp.saperp.model.ReceiptSummaryModel;
 import com.winapp.saperp.model.ReportSalesSummaryModel;
 import com.winapp.saperp.model.ReportStockSummaryModel;
 import com.winapp.saperp.model.SettingsModel;
+import com.winapp.saperp.model.SettlementReceiptModel;
 import com.winapp.saperp.model.StockBadRequestReturnModel;
 import com.winapp.saperp.model.TransferDetailModel;
 import com.winapp.saperp.receipts.ReceiptPrintPreviewModel;
@@ -1457,6 +1458,224 @@ public class TSCPrinter {
         TscDll.printlabel(1, copy);
         TscDll.closeport(5000);
     }
+
+    public void setSettleReceiptPrint(int copy, String username, String settlementDate,
+                                      ArrayList<SettlementReceiptModel> receiptModelList,
+                                      ArrayList<SettlementReceiptModel.CurrencyDenomination> currencyList,
+            ArrayList<SettlementReceiptModel.Expense> expenseList) throws IOException {
+        TscDll.openport(this.macAddress);
+
+        //String status = TscDll.printerstatus(300);
+        int y=0;
+        height=60;
+        double currencytotal = 0.0;
+        double expensetotal = 0.0;
+        finalHeight=height+(currencyList.size() * list_height)+(expenseList.size() * list_height)+20;
+        TscDll.sendcommand("SIZE 80 mm, "+finalHeight+" mm\n");
+        TscDll.sendcommand("GAP 0 mm, 0 mm\r\n");//Gap );
+
+        y += LINE_SPACING;
+        TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + company_name + "\"\n\n");
+
+        if (company_address1 != null && !company_address1.isEmpty()) {
+            y += LINE_SPACING;
+            TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address1 + "\"\n");
+        }
+
+        if (company_address2 != null && !company_address2.isEmpty()) {
+            y += LINE_SPACING;
+            TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address2 + "\"\n\n");
+        }
+        TscDll.clearbuffer();
+        TscDll.sendcommand("SPEED 4\r\n");
+        TscDll.sendcommand("DENSITY 12\r\n");
+        TscDll.sendcommand("CODEPAGE UTF-8\r\n");
+        TscDll.sendcommand("SET TEAR ON\r\n");
+        TscDll.sendcommand("SET COUNTER @1 1\r\n");
+        TscDll.sendcommand("@1 = \"0001\"\r\n");
+        if (company_address3 != null && !company_address3.isEmpty()) {
+            y += LINE_SPACING;
+            TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address3 + "\"\n");
+        }
+
+        if (company_phone != null && !company_phone.isEmpty()) {
+            y += LINE_SPACING;
+            TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\" TEL : " + company_phone + "\"\n");
+        }
+
+        if (company_gst != null && !company_gst.isEmpty()) {
+            y += LINE_SPACING;
+            TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\" GST REG NO : " + company_gst + "\"\n");
+        }
+
+        y += LINE_SPACING + 10;
+        TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + "SETTLEMENT WITH RECEIPT" + "\"\n");
+
+        y += LINE_SPACING + 20;
+        // Define the Box
+        TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Date : " + settlementDate + "\"\n");
+        y +=30;
+        TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "User : " + username + "\"\n");
+        y += LINE_SPACING;
+        TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+        if(receiptModelList.size()>0) {
+
+            y += 30;
+            TscDll.sendcommand("TEXT 5," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Receipt No" + "\"\n");
+            TscDll.sendcommand("TEXT 60," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Receipt Amt" + "\"\n");
+            TscDll.sendcommand("TEXT 320," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Pay Mode" + "\"\n");
+            TscDll.sendcommand("TEXT 470," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Paid Amt" + "\"\n");
+
+            y += LINE_SPACING;
+            TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+            int index = 1;
+
+            for (SettlementReceiptModel receiptModel : receiptModelList) {
+                TscDll.sendcommand("TEXT 5,"+y+",\"Bold.TTF\",0,8,8,\""+receiptModel.getCustomerName()+"\"\n");
+                y += 30;
+                TscDll.sendcommand("TEXT 5," + y + ",\"Poppins.TTF\",0,8,8,\"" + receiptModel.getReceiptNo() + "\"\n");
+                TscDll.sendcommand("TEXT 60," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(receiptModel.getCreditAmount())) + "\"\n");
+                TscDll.sendcommand("TEXT 320," + y + ",\"Poppins.TTF\",0,8,8,\"" + (receiptModel.getPaymode()) + "\"\n");
+                TscDll.sendcommand("TEXT 470," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(receiptModel.getPaidAmount())) + "\"\n");
+
+            }
+            y += LINE_SPACING;
+            TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+            y += 30;
+            TscDll.sendcommand("TEXT 180," + y + ",\"Bold.TTF\",0,8,8,\"" + "Total Invoice Amount :$ " + "\"\n");
+            TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(receiptModelList.get(0).getTotalInvoiceAmount())) + "\"\n");
+            y += 30;
+            TscDll.sendcommand("TEXT 180," + y + ",\"Bold.TTF\",0,8,8,\"" + "Total Paid Amount :$ " + "\"\n");
+            TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(receiptModelList.get(0).getTotalPaidAmount())) + "\"\n");
+            y += 30;
+            TscDll.sendcommand("TEXT 180," + y + ",\"Bold.TTF\",0,8,8,\"" + "Total Less Amount :$ " + "\"\n");
+            TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(receiptModelList.get(0).getTotalLessAmount())) + "\"\n");
+            y += 30;
+            TscDll.sendcommand("TEXT 180," + y + ",\"Bold.TTF\",0,8,8,\"" + "Total Cash Amount :$ " + "\"\n");
+            TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(receiptModelList.get(0).getTotalCashAmount())) + "\"\n");
+            y += 30;
+            TscDll.sendcommand("TEXT 180," + y + ",\"Bold.TTF\",0,8,8,\"" + "Total Cheque Amount :$ " + "\"\n");
+            TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(receiptModelList.get(0).getTotalChequeAmount())) + "\"\n");
+
+            y += LINE_SPACING;
+            TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+        }
+        if(currencyList.size()>0) {
+
+            y += 30;
+            TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "SNo" + "\"\n");
+            TscDll.sendcommand("TEXT 60," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Denomination" + "\"\n");
+            TscDll.sendcommand("TEXT 320," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Count" + "\"\n");
+            TscDll.sendcommand("TEXT 470," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Total" + "\"\n");
+
+            y += LINE_SPACING;
+            TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+
+            int index = 1;
+            currencytotal = 0.0;
+
+            for (SettlementReceiptModel.CurrencyDenomination currency : currencyList) {
+
+                y += 30;
+                TscDll.sendcommand("TEXT 5," + y + ",\"Poppins.TTF\",0,8,8,\"" + index + "\"\n");
+                TscDll.sendcommand("TEXT 60," + y + ",\"Poppins.TTF\",0,8,8,\"" + currency.getDenomination() + "\"\n");
+
+                TscDll.sendcommand("TEXT 340," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int)Double.parseDouble(currency.getCount()) + "\"\n");
+                TscDll.sendcommand("TEXT 470," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(currency.getTotal())) + "\"\n");
+
+                currencytotal += Double.parseDouble(currency.getTotal());
+
+                index++;
+
+            }
+            y += LINE_SPACING;
+            TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+            y += 30;
+            TscDll.sendcommand("TEXT 180," + y + ",\"Bold.TTF\",0,8,8,\"" + "Currency Total:$" + "\"\n");
+            TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(currencytotal) + "\"\n");
+
+            y += LINE_SPACING;
+            TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+        }
+
+        if(expenseList.size()>0) {
+            y += 20;
+            TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "SNo" + "\"\n");
+            TscDll.sendcommand("TEXT 60," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Expense Name" + "\"\n");
+            TscDll.sendcommand("TEXT 470," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Total" + "\"\n");
+
+            y += LINE_SPACING;
+            TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+            int indexexpen = 1;
+            expensetotal = 0.0;
+
+            for (SettlementReceiptModel.Expense expense : expenseList) {
+
+                y += 30;
+                TscDll.sendcommand("TEXT 5," + y + ",\"Poppins.TTF\",0,8,8,\"" + indexexpen + "\"\n");
+                TscDll.sendcommand("TEXT 60," + y + ",\"Poppins.TTF\",0,8,8,\"" + expense.getExpeneName() + "\"\n");
+                TscDll.sendcommand("TEXT 470," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(expense.getExpenseTotal())) + "\"\n");
+
+                expensetotal += Double.parseDouble(expense.getExpenseTotal());
+                indexexpen++;
+            }
+
+            y += LINE_SPACING;
+            TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+            y += 30;
+            TscDll.sendcommand("TEXT 180," + y + ",\"Bold.TTF\",0,8,8,\"" + "Expense Total:$" + "\"\n");
+            TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(expensetotal) + "\"\n");
+
+            y += LINE_SPACING;
+            TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+        }
+
+//        double netTotal = currencytotal + expensetotal;
+//
+//        y += 30;
+//        TscDll.sendcommand("TEXT 100," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Total Amount:$" + "\"\n");
+//        TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(currencytotal) + "\"\n");
+//
+//        y += 30;
+//        TscDll.sendcommand("TEXT 100," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Total Expense:$" + "\"\n");
+//        TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(expensetotal) + "\"\n");
+//
+//        y += LINE_SPACING;
+//        TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,9,9,\"" + "Net Amount:$" + "\"\n");
+//        TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" +  twoDecimalPoint(netTotal)+ "\"\n");
+//
+//        y += LINE_SPACING;
+//        TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+
+
+       /* y += 20;
+        TscDll.sendcommand("TEXT 0,"+y+",\"Poppins.TTF\",0,8,8,\""+"Customer Signature & Company Stamp"+"\"\n");
+
+
+        y += 150;
+        TscDll.sendcommand("TEXT 0,"+y+",\"Poppins.TTF\",0,8,8,\""+"-------------------------------------------------"+"\"\n");
+
+        y += 30;
+        TscDll.sendcommand("TEXT 0,"+y+",\"Poppins.TTF\",0,7,7,\""+"RECEIVED ABOVE GOODS IN GOOD ORDER AND CONDITION"+"\"\n");
+
+        y += 30;
+        TscDll.sendcommand("TEXT 0,"+y+",\"Poppins.TTF\",0,8,8,\""+"-------------------------------------------------"+"\"\n");*/
+
+        TscDll.printlabel(1, copy);
+        TscDll.closeport(5000);
+
+    }
+
+
 
     public void setSettlementPrintSave(int copy, String settlementNo, String settlementDate, String locationCode, String settlementBy,
                                        ArrayList<CurrencyModel> currencyList, ArrayList<ExpenseModel> expenseList) throws IOException {

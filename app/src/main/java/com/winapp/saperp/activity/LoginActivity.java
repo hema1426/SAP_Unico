@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView address1Text;
     private TextView address2Text;
     private long lastBackPressTime = 0;
-
+    private String rememberStr;
     private String newSelectedCompany;
     private String newSelectedCompanyName;
     private String locationCode;
@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         Log.w("New Code updated:","Success");
         activityFrom=getIntent().getStringExtra("from");
-        session=new SessionManager(this);
+
         passwordToggle=findViewById(R.id.password_toggle);
         usernameLayout=findViewById(R.id.user_name_layout);
         passwordLayout=findViewById(R.id.password_layout);
@@ -110,6 +110,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         registerButton=findViewById(R.id.btn_register);
         loginButton.setOnClickListener(this);
         dbHelper=new DBHelper(this);
+        session=new SessionManager(this);
 
         // Set the Preference value in edittext for Remembering the values
         loginPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
@@ -242,7 +243,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         pDialog.show();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
                     try{
-                        Log.w("Response_SAP:",response.toString());
+                        Log.w("Response_SAP_login:",response.toString());
                         if (response.length()>0){
                           //  {"statusCode":1,"statusMessage":"Success",
                             //  "responseData":[{"userName":"User1","roleName":"DepartmentHead","userID":"1","companyCode":"WINAPP_DEMO",
@@ -286,6 +287,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         username,password,rollname,locationCode,"1",ispermission,
                                         companycode,companyname,address1,address2,address3,country,postalcode,phone,gstNo,logo,qrcode,paid,unpaid,paynow,bank,cheque
                                 );
+                                // Adding the Preference values to the Session to remember the values
+                                if (rememberMe.isChecked()) {
+                                    loginPrefsEditor.putBoolean("saveLogin", true);
+                                    loginPrefsEditor.putString("username", username);
+                                    loginPrefsEditor.putString("password", password);
+                                    loginPrefsEditor.commit();
+                                } else {
+                                    loginPrefsEditor.clear();
+                                    loginPrefsEditor.commit();
+                                }
                                 // adding details for Loading Content of the Details....
 
                                 if (!logo.isEmpty()){
@@ -358,16 +369,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 this.newSelectedCompany=companycode;
                                 this.newSelectedCompanyName=companyname;
                                 this.locationCode=locationCode;
-                                // Adding the Preference values to the Session to remember the values
-                                if (rememberMe.isChecked()) {
-                                    loginPrefsEditor.putBoolean("saveLogin", true);
-                                    loginPrefsEditor.putString("username", username);
-                                    loginPrefsEditor.putString("password", password);
-                                    loginPrefsEditor.commit();
-                                } else {
-                                    loginPrefsEditor.clear();
-                                    loginPrefsEditor.commit();
-                                }
+
+                                Log.w("savlog11",""+loginPreferences.getBoolean("saveLogin", false));
+
                                 pDialog.dismiss();
                                 getPrinterSetting(username);
                                 Intent intent=new Intent(getApplicationContext(),DashboardActivity.class);

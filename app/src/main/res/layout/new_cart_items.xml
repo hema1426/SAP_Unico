@@ -184,7 +184,7 @@
 
 
                     <ImageView
-                        android:layout_width="wrap_content"
+                        android:layout_width="30dp"
                         android:layout_gravity="center"
                         android:id="@+id/ctn_minus"
                         android:background="?actionBarItemBackground"
@@ -214,7 +214,7 @@
 
 
                     <ImageView
-                        android:layout_width="wrap_content"
+                        android:layout_width="30dp"
                         android:layout_gravity="center"
                         android:id="@+id/ctn_plus"
                         android:background="?actionBarItemBackground"
@@ -296,6 +296,7 @@
                     android:id="@+id/pcs_layout"
                     android:layout_marginRight="10dp"
                     android:padding="5dp"
+                    android:visibility="gone"
                     android:layout_height="wrap_content">
 
                     <TextView
@@ -304,7 +305,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:textSize="12sp"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="10dp"
                         android:textColor="#212121"
                         android:layout_height="wrap_content"/>
 

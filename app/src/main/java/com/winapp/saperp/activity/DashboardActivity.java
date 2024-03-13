@@ -1,16 +1,9 @@
 package com.winapp.saperp.activity;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -29,37 +22,34 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
 import com.winapp.saperp.R;
+import com.winapp.saperp.adapter.CreditLimitDialogAdapter;
 import com.winapp.saperp.adapter.DashboardAdapter;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.fragments.ProductsFragment;
-import com.winapp.saperp.model.AppUtils;
+import com.winapp.saperp.model.CreditLimitDialogResponse;
 import com.winapp.saperp.model.CustomerModel;
-import com.winapp.saperp.model.HomePageModel;
 import com.winapp.saperp.model.NewLocationModel;
 import com.winapp.saperp.model.ProductsModel;
 import com.winapp.saperp.model.SettingsModel;
+import com.winapp.saperp.model.UomModel;
 import com.winapp.saperp.model.UserRoll;
 import com.winapp.saperp.receipts.ReceiptsListActivity;
 import com.winapp.saperp.salesreturn.NewSalesReturnListActivity;
-import com.winapp.saperp.salesreturn.SalesReturnActivity;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.GridSpacingItemDecoration;
 import com.winapp.saperp.utils.SessionManager;
@@ -69,12 +59,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -94,6 +84,9 @@ public class DashboardActivity extends NavigationActivity {
     private HashMap<String,String > company;
     private String companyCode;
     private DBHelper dbHelper;
+
+    CreditLimitDialogAdapter creditLimitDialogAdapter;
+     public RecyclerView rv_crditLimit ;
     private LinearLayout catalogLayout;
     private LinearLayout salesOrderLayout;
     private LinearLayout invoiceLayout;
@@ -104,6 +97,10 @@ public class DashboardActivity extends NavigationActivity {
     private LinearLayout customerLayout;
     private LinearLayout settingsLayout;
     private CardView catalogCard;
+
+    private ImageView creditLimit_Img;
+    public static ArrayList<CreditLimitDialogResponse> creditLimitArrayList = new ArrayList<>();
+
     public static ArrayList<ProductsModel> productList;
     public String locationCode;
     private TextView timeText;
@@ -121,8 +118,11 @@ public class DashboardActivity extends NavigationActivity {
     private ArrayList<NewLocationModel.LocationDetails> locationDetailsl;
     public String fromWarehouseCode = "";
     public String fromWarehouseName = "";
-    public boolean isPermissionToChangeLocation=false;
-
+    public boolean isPermissionToChangeLocation = false;
+    public boolean isCheckedCreditLimit = false;
+    public Dialog creditDialog;
+    public TextView itemSize_creditl;
+    public String creditAmtApi = "10500";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +154,8 @@ public class DashboardActivity extends NavigationActivity {
         customerLayout =findViewById(R.id.customer_layout);
         settingsLayout=findViewById(R.id.settings_layout);
         catalogCard=findViewById(R.id.catalog_card);
+        creditLimit_Img = findViewById(R.id.creditLimit_dial);
+
         timeText=findViewById(R.id.time);
         companyLogo=findViewById(R.id.company_logo);
 
@@ -180,6 +182,34 @@ public class DashboardActivity extends NavigationActivity {
         dbHelper.removeAllItems();
         Utils.clearCustomerSession(this);
 
+     //   showCreditdialog(creditAmtApi);
+        ArrayList<SettingsModel> settings=dbHelper.getSettings();
+        if (settings!=null) {
+            if (settings.size() > 0) {
+                for (SettingsModel model : settings) {
+                    if (model.getSettingName().equals("showLocationPermission")) {
+                        Log.w("SettingName:", model.getSettingName());
+                        Log.w("SettingValue:", model.getSettingValue());
+                        if (model.getSettingValue().equals("True")) {
+                            isPermissionToChangeLocation = true;
+                        } else {
+                            isPermissionToChangeLocation=false;
+                        }
+                    }
+                    else if (model.getSettingName().equals("creditLimitSwitch")) {
+                        Log.w("SettingNameI:", model.getSettingName());
+                        Log.w("SettingValueI:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            isCheckedCreditLimit = true;
+                        } else {
+                            isCheckedCreditLimit = false;
+                        }
+                    }
+
+                }
+            }
+
+
    //     Log.w("CompanyLogoString:",companyLogoString);
       /*  if (companyLogoString!=null && !companyLogoString.isEmpty()){
             byte[] imageByteArray = Base64.decode(companyLogoString, Base64.DEFAULT);
@@ -194,6 +224,8 @@ public class DashboardActivity extends NavigationActivity {
                     .into(companyLogo);
         }*/
 
+    //    getCreditLimit();
+
         Glide.with(this)
                 .asBitmap()
                 .load(R.drawable.winapp_logo)
@@ -205,6 +237,34 @@ public class DashboardActivity extends NavigationActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Log.w("creditsetting",""+isCheckedCreditLimit);
+
+        if (isCheckedCreditLimit){
+            creditLimit_Img.setVisibility(View.VISIBLE);
+            creditLimit_Img.setEnabled(true);
+
+            if(creditLimitArrayList.size() > 0) {
+                showCreditdialog(creditLimitArrayList);
+            }
+            else{
+                getCreditLimit();
+            }
+        }
+        else{
+            creditLimit_Img.setVisibility(View.GONE);
+            creditLimit_Img.setEnabled(false);
+        }
+        creditLimit_Img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(creditLimitArrayList.size() > 0) {
+                    showCreditdialog(creditLimitArrayList);
+                }
+                else{
+                    getCreditLimit();
+                }
+            }
+        });
 
        /* titleList.add("Catalog");
         titleList.add("Sales");
@@ -273,21 +333,6 @@ public class DashboardActivity extends NavigationActivity {
         }
 
 
-        ArrayList<SettingsModel> settings=dbHelper.getSettings();
-        if (settings!=null) {
-            if (settings.size() > 0) {
-                for (SettingsModel model : settings) {
-                    if (model.getSettingName().equals("showLocationPermission")) {
-                        Log.w("SettingName:", model.getSettingName());
-                        Log.w("SettingValue:", model.getSettingValue());
-                        if (model.getSettingValue().equals("True")) {
-                            isPermissionToChangeLocation = true;
-                        } else {
-                            isPermissionToChangeLocation=false;
-                        }
-                    }
-                }
-            }
         }
 
         ArrayList<SettingsModel> settings1=dbHelper.getSettings();
@@ -396,10 +441,44 @@ public class DashboardActivity extends NavigationActivity {
 
                 Intent intent=new Intent(DashboardActivity.this, NewSalesReturnListActivity.class);
                 startActivity(intent);
+
+                //throw new ArithmeticException("Test fix"); // Force a crash
+
             }
         });
     }
 
+    private void showCreditdialog(ArrayList<CreditLimitDialogResponse> creditLimitArrayList) {
+        LayoutInflater li = LayoutInflater.from(this);
+        View promptsView = li.inflate(R.layout.credit_limit_dialog, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        ImageView closeImg = promptsView.findViewById(R.id.dial_close);
+        TextView okBtn = (TextView) promptsView.findViewById(R.id.ok_dial);
+        itemSize_creditl = (TextView) promptsView.findViewById(R.id.itemSize_credit);
+        rv_crditLimit = (RecyclerView) promptsView.findViewById(R.id.rv_creditlimit_list);
+
+        setCreditAdater(creditLimitArrayList);
+
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                creditDialog.dismiss();
+            }
+        });
+        closeImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                creditDialog.dismiss();
+            }
+        });
+
+        alertDialogBuilder.setView(promptsView);
+        creditDialog = alertDialogBuilder.create();
+        creditDialog.setCancelable(true);
+        creditDialog.show();
+
+    }
 
     class CountDownRunner implements Runnable{
         // @Override
@@ -722,6 +801,93 @@ public class DashboardActivity extends NavigationActivity {
             }
         }
     }
+
+    public void getCreditLimit() {
+        // Initialize a new RequestQueue instance
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url = Utils.getBaseUrl(this) + "ReportCustomerCreditTermsList";
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_Credit_URL:", url);
+
+        SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading Credit...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            try {
+                creditLimitArrayList = new ArrayList<>();
+
+                Log.w("Res_credit:", response.toString());
+                // Loop through the array elements
+                JSONArray uomArray = response.optJSONArray("responseData");
+                if (uomArray != null && uomArray.length() > 0) {
+                    for (int j = 0; j < uomArray.length(); j++) {
+                        JSONObject obj = uomArray.getJSONObject(j);
+                        CreditLimitDialogResponse model = new CreditLimitDialogResponse(
+                                obj.optString("balance"),
+                                obj.optString("creditLine"),
+                             obj.optString("customerCode"),
+                                obj.optString("customerName"));
+                        creditLimitArrayList.add(model);
+                    }
+                }
+
+                Log.w("UOM_TEXT:", uomArray.toString());
+                pDialog.dismiss();
+                if (creditLimitArrayList.size() > 0) {
+                    runOnUiThread(() -> {
+                        showCreditdialog(creditLimitArrayList);
+                    });
+                }
+                else{
+                    Toast.makeText(this, "No credit data", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, error -> {
+            // Do something when error occurred
+            pDialog.dismiss();
+            Log.w("Error_throwing:", error.toString());
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+    public void setCreditAdater(ArrayList<CreditLimitDialogResponse> arrayList ) {
+        // total.setText(splitModelList.get(0).getTotal());
+        itemSize_creditl.setText("Customer "+arrayList.size());
+        rv_crditLimit.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        creditLimitDialogAdapter = new CreditLimitDialogAdapter(this, arrayList);
+        rv_crditLimit.setAdapter(creditLimitDialogAdapter);
+    }
+
 
     @Override
     protected void onResume() {
