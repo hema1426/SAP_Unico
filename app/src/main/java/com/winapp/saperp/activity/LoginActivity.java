@@ -235,7 +235,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
        // http://172.16.5.60:8345/api/Login
         String url= Utils.getBaseUrl(this) +"Login";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_SAP_URL:",url);
+        Log.w("Given_login_URL:",url + jsonObject);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Authenticating...");
@@ -243,7 +243,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         pDialog.show();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
                     try{
-                        Log.w("Response_SAP_login:",response.toString());
+                        Log.w("Res_SAP_login:",response.toString());
                         if (response.length()>0){
                           //  {"statusCode":1,"statusMessage":"Success",
                             //  "responseData":[{"userName":"User1","roleName":"DepartmentHead","userID":"1","companyCode":"WINAPP_DEMO",

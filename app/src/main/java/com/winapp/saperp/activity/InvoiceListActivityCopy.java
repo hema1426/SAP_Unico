@@ -84,7 +84,7 @@ import java.util.Map;
 import java.util.Objects;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class InvoiceListActivity extends NavigationActivity implements TabLayout.OnTabSelectedListener{
+public class InvoiceListActivityCopy extends NavigationActivity implements TabLayout.OnTabSelectedListener{
 
     private RecyclerView invoiceListView;
     private InvoiceAdapter invoiceAdapter;
@@ -122,6 +122,8 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
     ArrayList<CustomerModel> customerList;
     TextView totalCustomers;
     Button cancelSheet;
+    public String invStatus;
+
     private ArrayList<CustomerDetails> customerDetails;
     TextView netTotalText;
     static View customerLayout;
@@ -152,9 +154,8 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
     LinearLayout deleteInvoiceLayout;
     LinearLayout cashCollectionLayout;
     LinearLayout printPreviewLayout;
-
-
-
+    LinearLayout duplicateInvLayout;
+    FloatingActionButton duplicatinvImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,6 +206,8 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
         deleteInvoiceLayout=findViewById(R.id.delete_invoice_layout);
         cashCollectionLayout=findViewById(R.id.cash_collection_layout);
         printPreviewLayout=findViewById(R.id.preview_invoice_layout);
+        duplicateInvLayout=findViewById(R.id.duplicate_inv_layout);
+        duplicatinvImg = findViewById(R.id.duplicat_invImg);
 
         //Initializing the tablayout
         tabLayout = findViewById(R.id.tabs);
@@ -221,8 +224,6 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
         String formattedDate = df.format(c);
         fromDate.setText(formattedDate);
         toDate.setText(formattedDate);
-
-
 
         getCustomers();
 
@@ -245,10 +246,6 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
             }
         }
 
-
-
-
-
         invoiceListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         invoiceAdapter=new InvoiceAdapter(this, invoiceListView, invoiceList, new InvoiceAdapter.CallBack() {
             @Override
@@ -256,7 +253,8 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
                 setNettotal(invoiceList);
             }
             @Override
-            public void showMoreOption(String salesorderId, String customerName) {
+            public void showMoreOption(String salesorderId, String customerName ,String status) {
+                invStatus =status;
 
                // Intent intent=new Intent(InvoiceListActivity.this,CashCollectionActivity.class);
                // startActivity(intent);
@@ -468,7 +466,7 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
              @Override
              public void onClick(View view) {
                  viewCloseBottomSheet();
-                 Intent intent=new Intent(InvoiceListActivity.this, CashCollectionActivity.class);
+                 Intent intent=new Intent(InvoiceListActivityCopy.this, CashCollectionActivity.class);
                  intent.putExtra("customerCode",invoiceCustomerCodeValue);
                  intent.putExtra("customerName",invoiceCustomerValue);
                  startActivity(intent);
@@ -480,7 +478,7 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
              @Override
              public void onClick(View view) {
                   viewCloseBottomSheet();
-                  Intent intent=new Intent(InvoiceListActivity.this, CashCollectionActivity.class);
+                  Intent intent=new Intent(InvoiceListActivityCopy.this, CashCollectionActivity.class);
                   intent.putExtra("customerCode",invoiceCustomerCodeValue);
                   intent.putExtra("customerName",invoiceCustomerValue);
                   startActivity(intent);
@@ -493,7 +491,7 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
              @Override
              public void onClick(View view) {
                  viewCloseBottomSheet();
-                 Intent intent=new Intent(InvoiceListActivity.this, InvoicePrintPreviewActivity.class);
+                 Intent intent=new Intent(InvoiceListActivityCopy.this, InvoicePrintPreviewActivity.class);
                  intent.putExtra("invoiceNumber",invoiceNumberValue);
                  startActivity(intent);
              }
@@ -503,7 +501,7 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
              @Override
              public void onClick(View view) {
                  viewCloseBottomSheet();
-                 Intent intent=new Intent(InvoiceListActivity.this, InvoicePrintPreviewActivity.class);
+                 Intent intent=new Intent(InvoiceListActivityCopy.this, InvoicePrintPreviewActivity.class);
                  intent.putExtra("invoiceNumber",invoiceNumberValue);
                  startActivity(intent);
              }
@@ -547,9 +545,6 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
         invoiceCustomerName.setText(invoiceCustomerValue);
         viewCloseBottomSheet();
     }
-
-
-
 
     private void getInvoiceDetails(String invoiceNumber) throws JSONException {
         // Initialize a new RequestQueue instance
@@ -644,7 +639,7 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
 
                                 int count=dbHelper.numberOfRows();
                                 if (products.length()==count){
-                                    Intent intent=new Intent(InvoiceListActivity.this,AddInvoiceActivity.class);
+                                    Intent intent=new Intent(InvoiceListActivityCopy.this,AddInvoiceActivity.class);
                                     intent.putExtra("customerId",customer_code);
                                     intent.putExtra("invoiceNumber",invoice_no);
                                     intent.putExtra("activityFrom","InvoiceEdit");
@@ -963,7 +958,7 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
                 dbHelper.removeCustomer();
                 dbHelper.removeAllItems();
                 AddInvoiceActivity.customerId=customer_code;
-                Intent intent=new Intent(InvoiceListActivity.this,AddInvoiceActivity.class);
+                Intent intent=new Intent(InvoiceListActivityCopy.this,AddInvoiceActivity.class);
                 intent.putExtra("customerId",customer_code);
                 intent.putExtra("activityFrom","Invoice");
                 startActivity(intent);
@@ -1116,7 +1111,7 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
                             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         }
                         dbHelper.removeAllItems();
-                        Intent intent=new Intent(InvoiceListActivity.this,AddInvoiceActivity.class);
+                        Intent intent=new Intent(InvoiceListActivityCopy.this,AddInvoiceActivity.class);
                         intent.putExtra("customerId",customer);
                         intent.putExtra("activityFrom","Invoice");
                         startActivity(intent);
@@ -1144,7 +1139,7 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
                         }
                         dialog.cancel();
                         dbHelper.removeAllItems();
-                        Intent intent=new Intent(InvoiceListActivity.this,AddInvoiceActivity.class);
+                        Intent intent=new Intent(InvoiceListActivityCopy.this,AddInvoiceActivity.class);
                         intent.putExtra("customerId",customerId);
                         intent.putExtra("activityFrom","Invoice");
                         startActivity(intent);
@@ -1239,7 +1234,7 @@ public class InvoiceListActivity extends NavigationActivity implements TabLayout
         mYear = c.get(Calendar.YEAR);
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(InvoiceListActivity.this,
+        DatePickerDialog datePickerDialog = new DatePickerDialog(InvoiceListActivityCopy.this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {

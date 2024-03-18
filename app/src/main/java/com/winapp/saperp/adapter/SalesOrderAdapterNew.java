@@ -163,14 +163,16 @@ public class SalesOrderAdapterNew extends RecyclerView.Adapter<RecyclerView.View
             ((SalesOrderViewHolder) viewHolder).moreOption.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    callBack.showMoreOption(salesOrderModel.getSalesOrderCode(), salesOrderModel.getName(),((SalesOrderViewHolder) viewHolder).status.getText().toString());
+                    callBack.showMoreOption(salesOrderModel.getSalesOrderCode(),
+                            salesOrderModel.getName(),((SalesOrderViewHolder) viewHolder).status.getText().toString());
                 }
             });
 
             ((SalesOrderViewHolder)viewHolder).itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    callBack.showMoreOption(salesOrderModel.getSalesOrderCode(), salesOrderModel.getName(),((SalesOrderViewHolder) viewHolder).status.getText().toString());
+                    callBack.showMoreOption(salesOrderModel.getSalesOrderCode(),
+                            salesOrderModel.getName(),((SalesOrderViewHolder) viewHolder).status.getText().toString());
                     return false;
                 }
             });

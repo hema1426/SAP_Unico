@@ -228,6 +228,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     public static LinearLayout deleteInvoiceLayout;
     public static LinearLayout cashCollectionLayout;
     public static LinearLayout printPreviewLayout;
+    public static LinearLayout duplicateInvoiceLayout;
     public static LinearLayout invoicePrintLayout;
     public static LinearLayout doPrintLayout;
     private static LinearLayout cancelInvoiceLayout;
@@ -280,6 +281,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
     private String selectCustomerCode = "";
     private String selectCustomerName = "";
+
+    public static String invStatus;
+    public static String customerCodeStr = "" ;
 
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -370,6 +374,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         deleteInvoiceLayout = findViewById(R.id.delete_invoice_layout);
         cashCollectionLayout = findViewById(R.id.cash_collection_layout);
         printPreviewLayout = findViewById(R.id.preview_invoice_layout);
+        duplicateInvoiceLayout = findViewById(R.id.duplicate_inv_layout);
         cancelInvoiceLayout = findViewById(R.id.cancel_invoice_layout);
         cancelInvoice = findViewById(R.id.cancel_invoice);
         rootLayout = findViewById(R.id.rootLayout);
@@ -554,7 +559,18 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             }
         });
 
-
+        duplicateInvoiceLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.w("entrylist","");
+                viewCloseBottomSheet();
+                if (!invStatus.equals("Closed") && !invStatus.equals("InProgress Invoice")){
+                    redirectActivity(customerCodeStr,invoiceNumberValue);
+                }else {
+                    Toast.makeText(getApplicationContext(),"This Invoice already Closed",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         customerNameEdittext.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -695,6 +711,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             }
         });
 
+
         shareLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -776,7 +793,6 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 finish();
             }
         });
-
 
         printPreview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1114,6 +1130,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
     public static void showInvoiceOption(String invoiceCustomerCode, String customerName, String invoiceNum, String invoiceStatus, String date) {
         Log.w("InvoiceStatusView:", invoiceStatus);
+        invStatus =invoiceStatus;
+        customerCodeStr = invoiceCustomerCode ;
+
         isSearchCustomerNameClicked = false;
         // searchFilterView.setVisibility(View.GONE);
         if (invoiceStatus.equals("Paid") || visibleFragment.equals("paid")) {
@@ -1130,6 +1149,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         } else if (invoiceStatus.equals("Open")) {
             // editInvoiceLayout.setVisibility(View.VISIBLE);
             cashCollectionLayout.setVisibility(View.VISIBLE);
+         //   duplicateInvoiceLayout.setVisibility(View.VISIBLE);
             invoiceStatusValue = "O";
             // deleteInvoiceLayout.setVisibility(View.VISIBLE);
         }
@@ -1144,7 +1164,6 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
         viewCloseBottomSheet();
     }
-
 
     private void getInvoiceDetails(String invoiceNumber) throws JSONException {
         // Initialize a new RequestQueue instance
@@ -1490,7 +1509,18 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
+    public void redirectActivity(String customer_code,String inv_code){
+        //  if (products.length()==dbHelper.numberOfRowsInInvoice()){
+        Utils.setCustomerSession(NewInvoiceListActivity.this,customer_code);
+        setCustomerDetails(customer_code);
+            Intent intent=new Intent(getApplicationContext(),CreateNewInvoiceActivity.class);
+            intent.putExtra("customerDupCode",customer_code);
+            intent.putExtra("duplicateInvNo",inv_code);
+            intent.putExtra("from","Duplicate");
+            startActivity(intent);
+            finish();
 
+    }
 
     private void setDeleteInvoice(String invoiceNumber, String status, String invoiceDate) throws JSONException {
         // Initialize a new RequestQueue instance

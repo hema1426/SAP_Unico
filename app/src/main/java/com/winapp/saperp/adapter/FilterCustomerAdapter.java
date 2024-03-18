@@ -15,13 +15,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
 import com.winapp.saperp.activity.CustomerListActivity;
-import com.winapp.saperp.activity.InvoiceListActivity;
-import com.winapp.saperp.activity.NewInvoiceListActivity;
-import com.winapp.saperp.activity.SalesOrderListActivity;
 import com.winapp.saperp.model.CustomerModel;
-import com.winapp.saperp.salesreturn.SalesReturnActivity;
 import com.winapp.saperp.utils.Utils;
 
 import java.util.ArrayList;

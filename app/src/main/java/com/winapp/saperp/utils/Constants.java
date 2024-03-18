@@ -95,9 +95,6 @@ public class Constants {
 
     // Dawood Live
     public static String DAWOOD_LIVE ="http://129.150.58.169:97/api/";
-
-
-
     // ALS Live
     public static String ALS_LIVE ="http://43.228.126.114:85/api/";
 
@@ -110,7 +107,8 @@ public class Constants {
 
     // Deli X-Press-3-Live
     public static String DELI_XPRESS_3_Live ="http://43.228.126.65:5554/api/";
-
+    // Deli X-Press-live-13.3
+    public static String DELI_XPRESS_live_new ="http://18.141.253.66:83/api/";
     // AADHI DEMO URL
     public static String AADHI_DEMO ="http://18.143.95.61:99/api/";
 

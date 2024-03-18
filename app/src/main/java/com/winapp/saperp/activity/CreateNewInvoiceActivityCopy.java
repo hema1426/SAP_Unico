@@ -2,14 +2,6 @@ package com.winapp.saperp.activity;
 
 import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
@@ -45,6 +37,14 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -102,7 +102,7 @@ import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class CreateNewInvoiceActivity extends AppCompatActivity {
+public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
 
     private LinearLayout returnLayout;
     private ImageView showHideButton;
@@ -159,12 +159,19 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     private Switch returnSwitch;
     private EditText focEditText;
 
-    private ImageView downArrow_inv_layl;
+    private ImageView downArrow_inv_img;
 
     private LinearLayout hide_disc_layl;
 
     private EditText exchangeEditext;
     private EditText discountEditext;
+    public static TextWatcher discTextWatcher;
+
+    private EditText discount_inv;
+    private LinearLayout discount_layInv;
+    private EditText exchange_inv;
+    private String discountStr = "0";
+    private String exchangeStr = "0";
     private EditText returnEditext;
     private ImageView scanProduct;
     int RESULT_CODE = 12;
@@ -252,6 +259,8 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     public boolean isCheckedSalesPrint = false;
     public boolean isUomSetting = false;
     public boolean isDeliveryAddrSetting = false;
+    public boolean isSignatureSetting = false;
+    public boolean isDiscountSetting = false;
 
     public ArrayList<SettingsModel> settings;
     public MenuItem save_btn;
@@ -345,8 +354,10 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         orderNoText = findViewById(R.id.order_no);
         //signatureLayout=findViewById(R.id.signature_layout);
         uomSpinnerLayl  = findViewById(R.id.uomSpinnerLay);
-//        downArrow_inv_layl = findViewById(R.id.downArrow_inv_lay);
-//        hide_disc_layl = findViewById(R.id.hide_disc_lay);
+        downArrow_inv_img = findViewById(R.id.downArrow_inv_lay);
+        hide_disc_layl = findViewById(R.id.hide_disc_lay);
+        discount_inv = findViewById(R.id.discount_invoice);
+        discount_layInv = findViewById(R.id.discount_layInv);
         settings = new ArrayList<>();
         settings = dbHelper.getSettings();
 
@@ -363,24 +374,23 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
         productAutoComplete.setEnabled(false);
 
-//        downArrow_inv_layl.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (downArrow_inv_layl.getTag().equals("hide")){
-//                    downArrow_inv_layl.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
-//                    downArrow_inv_layl.setTag("show");
-//
-//                    hide_disc_layl.setVisibility(View.VISIBLE);
-//                    Utils.slideUp(hide_disc_layl);
-//                }else {
-//                    Utils.slideDown(hide_disc_layl);
-//                    hide_disc_layl.setVisibility(View.GONE);
-//                    downArrow_inv_layl.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
-//                    downArrow_inv_layl.setTag("hide");
-//
-//                }
-//            }
-//        });
+        downArrow_inv_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (downArrow_inv_img.getTag().equals("hide")){
+                    hide_disc_layl.setVisibility(View.VISIBLE);
+                    downArrow_inv_img.setTag("show");
+                    Utils.slideUp(hide_disc_layl);
+                    downArrow_inv_img.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24);
+
+                }else {
+                    Utils.slideDown(hide_disc_layl);
+                    hide_disc_layl.setVisibility(View.GONE);
+                    downArrow_inv_img.setImageResource(R.drawable.ic_baseline_keyboard_arrow_up_24);
+                    downArrow_inv_img.setTag("hide");
+                }
+            }
+        });
 
 
           PrinterUtils printerUtils=new PrinterUtils(this,printerMacId);
@@ -416,7 +426,6 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             if (activityFrom.equals("iv")) {
                 getSupportActionBar().setTitle("Invoice");
                 priceText.setEnabled(true);
-                remarkText.setVisibility(View.VISIBLE);
             } else if (activityFrom.equals("ConvertInvoice")) {
                 priceText.setEnabled(true);
                 orderNoText.setText(orderNo);
@@ -484,12 +493,41 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                             isDeliveryAddrSetting = false;
                         }
                     }
+                    else if (model.getSettingName().equals("discountSwitch")) {
+                        Log.w("SettingNameDis:", model.getSettingName());
+                        Log.w("SettingValueDis:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            isDiscountSetting = true;
+                        } else {
+                            isDiscountSetting = false;
+                        }
+                    }
+                    else if (model.getSettingName().equals("signatureSwitch")) {
+                        Log.w("SettingNameSign:", model.getSettingName());
+                        Log.w("SettingValueSign:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            isSignatureSetting = true;
+                        } else {
+                            isSignatureSetting = false;
+                        }
+                    }
 
                 }
             }
         }
 
-        Log.w("settingVal",""+isUomSetting+"  .. "+isDeliveryAddrSetting);
+        Log.w("settingVal",""+isDiscountSetting+"  .. "+isSignatureSetting);
+
+        if (activityFrom.equals("iv") || activityFrom.equals("ConvertInvoice")) {
+
+            Log.w("dissett", "" + isDiscountSetting);
+            downArrow_inv_img.setVisibility(View.VISIBLE);
+            if (isDiscountSetting) {
+                discount_layInv.setVisibility(View.VISIBLE);
+            } else {
+                discount_layInv.setVisibility(View.GONE);
+            }
+        }
         if(isUomSetting){
             uomSpinnerLayl.setVisibility(View.VISIBLE);
         }
@@ -590,7 +628,40 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                 viewCloseBottomSheet();
             }
         });
+        discTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String disc = editable.toString();
+                setCalculationView();
+
+//                if(companyCode.equals("Trans Orient Singapore Pte Ltd")){
+                    if (!disc.isEmpty() && Double.parseDouble(disc) <= 1) {
+                        discountStr = "1";
+                    } else {
+                        discount_inv.removeTextChangedListener(discTextWatcher);
+                        discount_inv.setText("");
+                        discountStr = "0";
+                        discount_inv.addTextChangedListener(discTextWatcher);
+                     //   Toast.makeText(getApplicationContext(), "Minimum discount amonut $1 !", Toast.LENGTH_SHORT).show();
+                    }
+             //   }
+//               else {
+//                   discountStr = discount_inv.getText().toString();
+//                }
+            }
+        };
+        if (discount_inv.isFocusable()){
+            discount_inv.addTextChangedListener(discTextWatcher);
+        }
         productNameEditext.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -1027,7 +1098,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 View menuItemView = findViewById(R.id.fab);
-                PopupMenu popupMenu = new PopupMenu(CreateNewInvoiceActivity.this, menuItemView);
+                PopupMenu popupMenu = new PopupMenu(CreateNewInvoiceActivityCopy.this, menuItemView);
                 popupMenu.getMenuInflater().inflate(R.menu.sort_menu, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
@@ -1180,7 +1251,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         mYear = c.get(Calendar.YEAR);
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(CreateNewInvoiceActivity.this,
+        DatePickerDialog datePickerDialog = new DatePickerDialog(CreateNewInvoiceActivityCopy.this,
                 new DatePickerDialog.OnDateSetListener() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
@@ -1313,7 +1384,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     }
 
     public void showMinimumSellingpriceAlert(String sellingPrice) {
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(CreateNewInvoiceActivity.this);
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(CreateNewInvoiceActivityCopy.this);
         builder1.setTitle("Warning !");
         builder1.setMessage(productName + "-" + "Minimum Selling Price is : $ " + Utils.twoDecimalPoint(Double.parseDouble(sellingPrice)));
         builder1.setCancelable(false);
@@ -1608,7 +1679,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                             sDialog.dismissWithAnimation();
                             getProducts();
                             setSummaryTotal();
-                            Utils.refreshActionBarMenu(CreateNewInvoiceActivity.this);
+                            Utils.refreshActionBarMenu(CreateNewInvoiceActivityCopy.this);
                         }
                     })
                     .showCancelButton(true)
@@ -1688,6 +1759,8 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         uomText.setText("");
         uomTextView.setText("");
         stockCount.setText("");
+        exchange_inv.setText("");
+        discount_inv.setText("");
         qtyValue.clearFocus();
         productAutoComplete.clearFocus();
         focEditText.setText("");
@@ -1783,7 +1856,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                     String prodTax = twoDecimalPoint(taxAmount1);
                     taxValueText.setText("" + prodTax);
 
-                    netTotal1 = subTotal + taxAmount1;
+                    netTotal1 = (subTotal + taxAmount1);
                     String ProdNetTotal = twoDecimalPoint(netTotal1);
                     netTotalValue.setText("" + ProdNetTotal);
                     taxTitle.setText("GST ( Exc ) : " + (int) Double.parseDouble(taxValue) + " % ");
@@ -1797,6 +1870,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                     taxValueText.setText("" + prodTax);
                     // netTotal1 = subTotal + taxAmount1;
                     netTotal1 = subTotal;
+
                     String ProdNetTotal = twoDecimalPoint(netTotal1);
                     netTotalValue.setText("" + ProdNetTotal);
 
@@ -1813,7 +1887,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
                     taxValueText.setText("0.0");
                     // netTotal1 = subTotal + taxAmount;
-                    netTotal1 = subTotal;
+                    netTotal1 = subTotal ;
                     String ProdNetTotal = twoDecimalPoint(netTotal1);
                     netTotalValue.setText("" + ProdNetTotal);
                     subTotalValue.setText(Utils.twoDecimalPoint(subTotal));
@@ -1865,7 +1939,15 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
             String price = priceText.getText().toString();
             String qty = qtyValue.getText().toString();
+            String disc = discount_inv.getText().toString();
+            String exchang = exchange_inv.getText().toString();
 
+            if (disc.matches("")) {
+                disc = "0";
+            }
+            if (exchang.matches("")) {
+                exchang = "0";
+            }
 
             if (price.matches("")) {
                 price = "0";
@@ -1888,7 +1970,9 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
             net_qty = (Double.parseDouble(qty) - return_qty);
 
-            double tt = net_qty * cPriceCalc;
+            double tt = (net_qty * cPriceCalc) -Double.parseDouble(disc);
+            Log.w("dis_invStr",""+tt+".."+disc);;
+
             Log.w("TOTALVALUES:", String.valueOf(tt));
 
             String Prodtotal = twoDecimalPoint(tt);
@@ -3043,7 +3127,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     public void showSaveAlert() {
         try {
             // create an alert builder
-            AlertDialog.Builder builder = new AlertDialog.Builder(CreateNewInvoiceActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(CreateNewInvoiceActivityCopy.this);
             // set the custom layout
             builder.setCancelable(false);
             final View customLayout = getLayoutInflater().inflate(R.layout.invoice_save_option, null);
@@ -3163,7 +3247,17 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
                         } else {
                             alert.dismiss();
                             if (activityFrom.equals("iv") || activityFrom.equals("ConvertInvoice")) {
-                                createInvoiceJson(Integer.parseInt(noOfCopy.getText().toString()));
+                                if (isSignatureSetting) {
+                                    if (signatureString != null && !signatureString.isEmpty()) {
+
+                                        createInvoiceJson(Integer.parseInt(noOfCopy.getText().toString()));
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Add Signature to Save Invoice", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                    else {
+                                        createInvoiceJson(Integer.parseInt(noOfCopy.getText().toString()));
+                                    }
                             } else if (activityFrom.equals("so") || activityFrom.equals("SalesEdit")) {
                                 createSalesOrderJson(Integer.parseInt(noOfCopy.getText().toString()));
                             } else if (activityFrom.equals("do") || activityFrom.equals("doEdit")) {
@@ -3198,7 +3292,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
     public void saveSalesOrder(JSONObject jsonBody, String action, int copy) {
         try {
-            pDialog = new SweetAlertDialog(CreateNewInvoiceActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+            pDialog = new SweetAlertDialog(CreateNewInvoiceActivityCopy.this, SweetAlertDialog.PROGRESS_TYPE);
             pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
             if (action.equals("SalesOrder")) {
                 pDialog.setTitleText("Saving Sales Order...");
@@ -3573,9 +3667,9 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
         orderNoText.setText("");
         Intent intent;
         if (activityFrom.equals("iv")) {
-            intent = new Intent(CreateNewInvoiceActivity.this, NewInvoiceListActivity.class);
+            intent = new Intent(CreateNewInvoiceActivityCopy.this, NewInvoiceListActivity.class);
         } else {
-            intent = new Intent(CreateNewInvoiceActivity.this, SalesOrderListActivity.class);
+            intent = new Intent(CreateNewInvoiceActivityCopy.this, SalesOrderListActivity.class);
         }
         startActivity(intent);
         finish();
@@ -3607,7 +3701,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
     }
 
     public void showDeleteAlert() {
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(CreateNewInvoiceActivity.this);
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(CreateNewInvoiceActivityCopy.this);
         builder1.setMessage("Data Will be Cleared are you sure want to back?");
         builder1.setCancelable(false);
         builder1.setPositiveButton("Yes",
@@ -4022,7 +4116,7 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
             rootJsonObject.put("subTotal", subTotalValue.getText().toString());
             rootJsonObject.put("total", subTotalValue.getText().toString());
             rootJsonObject.put("netTotal", netTotalValue.getText().toString());
-            rootJsonObject.put("itemDiscount", "0.00");
+            rootJsonObject.put("itemDiscount", discountStr);
             rootJsonObject.put("billDiscount", "0.00");
             rootJsonObject.put("Paymode", "");
             rootJsonObject.put("ChequeDateString", "");
@@ -4306,11 +4400,11 @@ public class CreateNewInvoiceActivity extends AppCompatActivity {
 
     private void sentSalesOrderDataPrint(int copy) throws IOException {
         if (printerType.equals("TSC Printer")) {
-            TSCPrinter printer = new TSCPrinter(CreateNewInvoiceActivity.this, printerMacId, "SalesOrder");
+            TSCPrinter printer = new TSCPrinter(CreateNewInvoiceActivityCopy.this, printerMacId, "SalesOrder");
             printer.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList);
             Utils.setSignature("");
         } else if (printerType.equals("Zebra Printer")) {
-            ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(CreateNewInvoiceActivity.this, printerMacId);
+            ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(CreateNewInvoiceActivityCopy.this, printerMacId);
             zebraPrinterActivity.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList);
         }
     }

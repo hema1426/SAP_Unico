@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,6 +56,8 @@ public class NavigationActivity extends AppCompatActivity {
         mNavigationView = findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Log.d("cgentry_",getClass().getSimpleName().toString());
 
         networkChangeReceiver=new NetworkChangeReceiver();
         drawerLayout = findViewById(R.id.drawer_layout);

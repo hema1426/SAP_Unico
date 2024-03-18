@@ -153,7 +153,7 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
     };
 
     public SwitchCompat inv_switch;
-    public SwitchCompat sales_switch;
+    public SwitchCompat sales_switch,discount_Switch , signature_Switch;
     public SwitchCompat receipt_switch;
     public SwitchCompat uom_Switch;
     public SwitchCompat creditLimit_Switch;
@@ -211,7 +211,8 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         btnLogin=findViewById(R.id.login);
         alllowNegativeStockSwitch=findViewById(R.id.allow_negative_stock);
         downloadImage=findViewById(R.id.download);
-
+        signature_Switch  = findViewById(R.id.signatureSwitch);
+        discount_Switch = findViewById(R.id.discountSwitch);
         inv_switch = findViewById(R.id.invSwitch);
         sales_switch = findViewById(R.id.salesSwitch);
         receipt_switch = findViewById(R.id.receiptSwitch);
@@ -225,6 +226,8 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         uom_Switch.setOnCheckedChangeListener(this);
         creditLimit_Switch.setOnCheckedChangeListener(this);
         deliveryAddress_Switch.setOnCheckedChangeListener(this);
+        signature_Switch.setOnCheckedChangeListener(this);
+        discount_Switch.setOnCheckedChangeListener(this);
 
         session=new SessionManager(this);
         user=session.getUserDetails();
@@ -300,6 +303,25 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
                             deliveryAddress_Switch.setChecked(false);
                         }
                     }
+                    else if (model.getSettingName().equals("signatureSwitch")) {
+                        Log.w("SettingName:", model.getSettingName());
+                        Log.w("SettingValue:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            signature_Switch.setChecked(true);
+                        }else {
+                            signature_Switch.setChecked(false);
+                        }
+                    }
+                    else if (model.getSettingName().equals("discountSwitch")) {
+                        Log.w("SettingName:", model.getSettingName());
+                        Log.w("SettingValue:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            discount_Switch.setChecked(true);
+                        }else {
+                            discount_Switch.setChecked(false);
+                        }
+                    }
+
                 }
             }
         }
@@ -1094,6 +1116,20 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
                     dbHelper.insertSettings(deliveryAddress_Switch.getTag().toString(),"1");
                 }else {
                     dbHelper.insertSettings(deliveryAddress_Switch.getTag().toString(),"0");
+                }
+                break;
+            case R.id.signatureSwitch:
+                if (isChecked){
+                    dbHelper.insertSettings(signature_Switch.getTag().toString(),"1");
+                }else {
+                    dbHelper.insertSettings(signature_Switch.getTag().toString(),"0");
+                }
+                break;
+            case R.id.discountSwitch:
+                if (isChecked){
+                    dbHelper.insertSettings(discount_Switch.getTag().toString(),"1");
+                }else {
+                    dbHelper.insertSettings(discount_Switch.getTag().toString(),"0");
                 }
                 break;
          }

@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.winapp.saperp.R;
 import com.winapp.saperp.activity.AddInvoiceActivity;
 import com.winapp.saperp.activity.CustomerListActivity;
-import com.winapp.saperp.activity.InvoiceListActivity;
+import com.winapp.saperp.activity.InvoiceListActivityCopy;
 import com.winapp.saperp.activity.NewInvoiceListActivity;
 import com.winapp.saperp.activity.SalesOrderListActivity;
 import com.winapp.saperp.model.CustomerModel;
@@ -74,7 +74,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
             viewHolder.moreIcon.setVisibility(View.GONE);
         }
         if (context instanceof SalesOrderListActivity
-                || context instanceof InvoiceListActivity
+                || context instanceof InvoiceListActivityCopy
                 || context instanceof NewInvoiceListActivity
                 || context instanceof SalesReturnActivity
                 || context instanceof AddInvoiceActivity) {
@@ -86,7 +86,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
             });
         }
         if (context instanceof SalesOrderListActivity
-                || context instanceof InvoiceListActivity
+                || context instanceof InvoiceListActivityCopy
                 || context instanceof NewInvoiceListActivity
                 || context instanceof AddInvoiceActivity
                 || context instanceof SalesReturnActivity){

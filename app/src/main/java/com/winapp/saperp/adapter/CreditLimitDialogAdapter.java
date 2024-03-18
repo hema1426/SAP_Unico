@@ -39,6 +39,7 @@ public class CreditLimitDialogAdapter extends RecyclerView.Adapter<CreditLimitDi
         viewHolder.slNo.setText(String.valueOf(position+1));
         viewHolder.custNameStr.setText(list.getCustomerName());
         viewHolder.amountStr.setText(Utils.twoDecimalPoint(Double.parseDouble(list.getCreditLine())));
+        viewHolder.balStr.setText(Utils.twoDecimalPoint(Double.parseDouble(list.getBalance())));
     }
 
     @Override
@@ -50,6 +51,7 @@ public class CreditLimitDialogAdapter extends RecyclerView.Adapter<CreditLimitDi
         private TextView slNo;
         private TextView custNameStr;
         private TextView amountStr;
+        private TextView balStr;
         private TextView price;
         private TextView total;
         public ViewHolder(View view) {
@@ -57,6 +59,7 @@ public class CreditLimitDialogAdapter extends RecyclerView.Adapter<CreditLimitDi
             slNo=view.findViewById(R.id.credit_itemSno);
             custNameStr =view.findViewById(R.id.credit_cust_name_item);
             amountStr=view.findViewById(R.id.credit_amt_item);
+            balStr=view.findViewById(R.id.bal_amt_item);
 
         }
     }

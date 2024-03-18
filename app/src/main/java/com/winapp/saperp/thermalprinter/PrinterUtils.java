@@ -594,19 +594,29 @@ public class PrinterUtils extends AppCompatActivity {
         TscDll.sendcommand("TEXT 0,"+y+",\"Poppins.TTF\",0,8,8,\""+"SN"+"\"\n");
         TscDll.sendcommand("TEXT 50,"+y+",\"Poppins.TTF\",0,8,8,\""+"PRODUCT"+"\"\n");
         if (showReturn.equals("false")) {
-            TscDll.sendcommand("TEXT 300,"+y+",\"Poppins.TTF\",0,8,8,\""+"NET"+"\"\n");
+            if(!company_code.equals("Trans Orient Singapore Pte Ltd")){
+                TscDll.sendcommand("TEXT 300," + y + ",\"Poppins.TTF\",0,8,8,\"" + "NET" + "\"\n");
+            }
         }
         TscDll.sendcommand("TEXT 400,"+y+",\"Poppins.TTF\",0,8,8,\""+"PRICE"+"\"\n");
         TscDll.sendcommand("TEXT 500,"+y+",\"Poppins.TTF\",0,8,8,\""+"TOTAL"+"\"\n");
 
       //  TscDll.sendcommand("TEXT 70,"+y+",\"Poppins.TTF\",0,8,8,\""+"ISS"+"\"\n");
         if (showReturn.equals("true")) {
-            y += TITLE_LINE_SPACING;
-            TscDll.sendcommand("TEXT 50,"+y+",\"Poppins.TTF\",0,8,8,\""+"ISS"+"\"\n");
-            TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,8,8,\"" + "RTN" + "\"\n");
-            TscDll.sendcommand("TEXT 300,"+y+",\"Poppins.TTF\",0,8,8,\""+"NET"+"\"\n");
-            TscDll.sendcommand("TEXT 400,"+y+",\"Poppins.TTF\",0,8,8,\""+"($)"+"\"\n");
-            TscDll.sendcommand("TEXT 500,"+y+",\"Poppins.TTF\",0,8,8,\""+"($)"+"\"\n");
+            if(!company_code.equals("Trans Orient Singapore Pte Ltd")) {
+                y += TITLE_LINE_SPACING;
+                TscDll.sendcommand("TEXT 50," + y + ",\"Poppins.TTF\",0,8,8,\"" + "ISS" + "\"\n");
+                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,8,8,\"" + "RTN" + "\"\n");
+                TscDll.sendcommand("TEXT 300," + y + ",\"Poppins.TTF\",0,8,8,\"" + "NET" + "\"\n");
+                TscDll.sendcommand("TEXT 400," + y + ",\"Poppins.TTF\",0,8,8,\"" + "($)" + "\"\n");
+                TscDll.sendcommand("TEXT 500," + y + ",\"Poppins.TTF\",0,8,8,\"" + "($)" + "\"\n");
+            }
+            else {
+                y += TITLE_LINE_SPACING;
+                TscDll.sendcommand("TEXT 50," + y + ",\"Poppins.TTF\",0,8,8,\"" + "ISS" + "\"\n");
+                TscDll.sendcommand("TEXT 400," + y + ",\"Poppins.TTF\",0,8,8,\"" + "($)" + "\"\n");
+                TscDll.sendcommand("TEXT 500," + y + ",\"Poppins.TTF\",0,8,8,\"" + "($)" + "\"\n");
+            }
         }
       //  TscDll.sendcommand("TEXT 200,"+y+",\"Poppins.TTF\",0,8,8,\""+"RTN"+"\"\n");
 
@@ -642,16 +652,29 @@ public class PrinterUtils extends AppCompatActivity {
             }
 
             if (showReturn.equals("true")) {
-                y += 30;
-                TscDll.sendcommand("TEXT 80,"+y+",\"Poppins.TTF\",0,8,8,\""+(int)Double.parseDouble(invoice.getNetQty())+"\"\n");
-                TscDll.sendcommand("TEXT 210,"+y+",\"Poppins.TTF\",0,8,8,\""+(int)Double.parseDouble(invoice.getReturnQty())+"\"\n");
-                TscDll.sendcommand("TEXT 310,"+y+",\"Poppins.TTF\",0,8,8,\""+(int)Double.parseDouble(invoice.getNetQuantity())+"\"\n");
+                if(!company_code.equals("Trans Orient Singapore Pte Ltd")) {
+                    y += 30;
+                    TscDll.sendcommand("TEXT 80," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int) Double.parseDouble(invoice.getNetQty()) + "\"\n");
+                    TscDll.sendcommand("TEXT 210," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int) Double.parseDouble(invoice.getReturnQty()) + "\"\n");
+                    TscDll.sendcommand("TEXT 310," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int) Double.parseDouble(invoice.getNetQuantity()) + "\"\n");
 /*
                 TscDll.sendcommand("TEXT 410,"+y+",\"Poppins.TTF\",0,8,8,\""+twoDecimalPoint(Double.parseDouble(invoice.getPricevalue()))+"\"\n");
 */
-                TscDll.sendcommand("TEXT 410,"+y+",\"Poppins.TTF\",0,8,8,\""+invoice.getPricevalue()+"\"\n");
-                TscDll.sendcommand("TEXT 510,"+y+",\"Poppins.TTF\",0,8,8,\""+twoDecimalPoint(Double.parseDouble(invoice.getTotal()))+"\"\n");
-            }else {
+                    TscDll.sendcommand("TEXT 410," + y + ",\"Poppins.TTF\",0,8,8,\"" + invoice.getPricevalue() + "\"\n");
+                    TscDll.sendcommand("TEXT 510," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(invoice.getTotal())) + "\"\n");
+                }
+                else{
+                    y += 30;
+                    TscDll.sendcommand("TEXT 80," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int) Double.parseDouble(invoice.getNetQty()) + "\"\n");
+//                    TscDll.sendcommand("TEXT 210," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int) Double.parseDouble(invoice.getReturnQty()) + "\"\n");
+//                    TscDll.sendcommand("TEXT 310," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int) Double.parseDouble(invoice.getNetQuantity()) + "\"\n");
+/*
+                TscDll.sendcommand("TEXT 410,"+y+",\"Poppins.TTF\",0,8,8,\""+twoDecimalPoint(Double.parseDouble(invoice.getPricevalue()))+"\"\n");
+*/
+                    TscDll.sendcommand("TEXT 410," + y + ",\"Poppins.TTF\",0,8,8,\"" + invoice.getPricevalue() + "\"\n");
+                    TscDll.sendcommand("TEXT 510," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(invoice.getTotal())) + "\"\n");
+                }
+                }else {
                 y += 30;
                 TscDll.sendcommand("TEXT 310,"+y+",\"Poppins.TTF\",0,8,8,\""+(int)Double.parseDouble(invoice.getNetQuantity())+"\"\n");
 /*
@@ -834,6 +857,17 @@ public class PrinterUtils extends AppCompatActivity {
         if (cheque!=null && !cheque.isEmpty()){
             y += 30;
             TscDll.sendcommand("TEXT 260,"+y+",\"Poppins.TTF\",0,8,8,2,\" CHEQUE : "+cheque+"\"\n");
+        }
+        y += 150;
+        TscDll.sendcommand("TEXT 0,"+y+",\"Poppins.TTF\",0,8,8,\""+"-------------------------------------------------"+"\"\n");
+
+        if(!invoiceHeaderDetails.get(0).getSubTotal().isEmpty()){
+            y += LINE_SPACING;
+            TscDll.sendcommand("TEXT 260,"+y+",\"Poppins.TTF\",0,8,8,2,\" Sales Person : "+payNow+"\"\n");
+        }
+        if(!invoiceHeaderDetails.get(0).getSubTotal().isEmpty()){
+            y += 30;
+            TscDll.sendcommand("TEXT 260,"+y+",\"Poppins.TTF\",0,8,8,2,\" Contact : "+bankCode+"\"\n");
         }
 
       //  y += 30;

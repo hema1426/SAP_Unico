@@ -352,7 +352,7 @@ public class AllInvoices extends Fragment {
                 setNettotal(invoiceList);
             }
             @Override
-            public void showMoreOption(String invoiceId, String customerName) {
+            public void showMoreOption(String invoiceId, String customerName,String status) {
                 // InvoiceListActivity.showInvoiceOption();
             }
         });
@@ -381,7 +381,7 @@ public class AllInvoices extends Fragment {
                 setNettotal(invoiceList);
             }
             @Override
-            public void showMoreOption(String invoiceId, String customerName) {
+            public void showMoreOption(String invoiceId, String customerName ,String status) {
                 // InvoiceListActivity.showInvoiceOption();
             }
         });
@@ -659,7 +659,7 @@ public class AllInvoices extends Fragment {
                 setNettotal(invoiceList);
             }
             @Override
-            public void showMoreOption(String invoiceId, String customerName) {
+            public void showMoreOption(String invoiceId, String customerName ,String status) {
                // InvoiceListActivity.showInvoiceOption();
             }
         });

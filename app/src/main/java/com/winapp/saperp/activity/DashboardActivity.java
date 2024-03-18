@@ -116,6 +116,8 @@ public class DashboardActivity extends NavigationActivity {
     public ImageView companyLogo;
     public String companyLogoString;
     private ArrayList<NewLocationModel.LocationDetails> locationDetailsl;
+    ArrayList<CreditLimitDialogResponse> creditLimitListFilter = new ArrayList<>();
+
     public String fromWarehouseCode = "";
     public String fromWarehouseName = "";
     public boolean isPermissionToChangeLocation = false;
@@ -240,11 +242,10 @@ public class DashboardActivity extends NavigationActivity {
         Log.w("creditsetting",""+isCheckedCreditLimit);
 
         if (isCheckedCreditLimit){
-            creditLimit_Img.setVisibility(View.VISIBLE);
-            creditLimit_Img.setEnabled(true);
 
-            if(creditLimitArrayList.size() > 0) {
-                showCreditdialog(creditLimitArrayList);
+            if(creditLimitListFilter.size() > 0) {
+
+                showCreditdialog(creditLimitListFilter);
             }
             else{
                 getCreditLimit();
@@ -257,8 +258,8 @@ public class DashboardActivity extends NavigationActivity {
         creditLimit_Img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(creditLimitArrayList.size() > 0) {
-                    showCreditdialog(creditLimitArrayList);
+                if(creditLimitListFilter.size() > 0) {
+                    showCreditdialog(creditLimitListFilter);
                 }
                 else{
                     getCreditLimit();
@@ -458,8 +459,11 @@ public class DashboardActivity extends NavigationActivity {
         itemSize_creditl = (TextView) promptsView.findViewById(R.id.itemSize_credit);
         rv_crditLimit = (RecyclerView) promptsView.findViewById(R.id.rv_creditlimit_list);
 
-        setCreditAdater(creditLimitArrayList);
-
+        if(creditLimitArrayList.size() >0){
+            creditLimit_Img.setVisibility(View.VISIBLE);
+            creditLimit_Img.setEnabled(true);
+            setCreditAdater(creditLimitArrayList);
+        }
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -830,16 +834,31 @@ public class DashboardActivity extends NavigationActivity {
                                 obj.optString("creditLine"),
                              obj.optString("customerCode"),
                                 obj.optString("customerName"));
-                        creditLimitArrayList.add(model);
+//                        creditLimitArrayList.add(0,new CreditLimitDialogResponse("550.80","550.80",
+//                                "",""));
+                         creditLimitArrayList.add(model);
                     }
                 }
-
-                Log.w("UOM_TEXT:", uomArray.toString());
                 pDialog.dismiss();
                 if (creditLimitArrayList.size() > 0) {
-                    runOnUiThread(() -> {
-                        showCreditdialog(creditLimitArrayList);
-                    });
+
+                        for(int i=0;i<creditLimitArrayList.size();i++){
+                           // if(Double.parseDouble(creditLimitArrayList.get(i).getCreditLine()) > 0) {
+                                Log.w("bal_dash",".."+Double.parseDouble(creditLimitArrayList.get(i).getBalance()));
+
+                                if (Double.parseDouble(creditLimitArrayList.get(i).getBalance()) >=
+                                        Double.parseDouble(creditLimitArrayList.get(i).getCreditLine())) {
+
+                                    creditLimitListFilter.add(creditLimitArrayList.get(i));
+                                }
+                            //}
+                        }
+                    if (creditLimitListFilter.size() > 0) {
+
+                        runOnUiThread(() -> {
+                            showCreditdialog(creditLimitListFilter);
+                        });
+                    }
                 }
                 else{
                     Toast.makeText(this, "No credit data", Toast.LENGTH_SHORT).show();

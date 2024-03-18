@@ -23,7 +23,8 @@ shaban
   //loginPrefsEditor.clear();
 // loginPrefsEditor.commit();
 
-
+//invoice print -- PrinterUtils
+ public void printInvoice(int copy
 
 
 // layout view
@@ -32,3 +33,14 @@ shaban
                 } else {
                     search_lay_listl.setVisibility(View.GONE);
                 }
+
+              constructor in model
+              --------------------
+                {
+                    constructor() :this("","",0.0,"","","","",
+                        "","","","",0.0,"","","","",
+                        "","","","","","",0,0.0,"",
+                        "","",0.00,"",0.0,"","")
+                }
+
+                NewSalesReturnProductAddActivity  --  createSalesReturnJson();

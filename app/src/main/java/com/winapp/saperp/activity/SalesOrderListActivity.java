@@ -1328,7 +1328,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         String url= Utils.getBaseUrl(this) +"EditSODetailsWithFOC";
         Log.w("JsonValue:",jsonObject.toString());
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url_conv_inv:",url);
+        Log.w("Given_url_salesEdit:",url);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Getting SalesOrder Details...");
@@ -1337,7 +1337,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
                     try{
-                        Log.w("So_Details_conv_inv:",response.toString());
+                        Log.w("So_Details_edit:",response.toString());
                         if (response.length()>0){
                             String statusCode=response.optString("statusCode");
                             if (statusCode.equals("1")){

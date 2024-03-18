@@ -908,7 +908,15 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
                 try{
                     Log.w("SettlementResponse:",response.toString());
-                    JSONArray receiptDetailsArray=response.optJSONArray("reportSettlementWithReceiptDetails");
+
+                    String statusCode=response.optString("statusCode");
+                    String statusMessage=response.optString("statusMessage");
+                    if (statusCode.equals("1")){
+                        JSONArray jsonArray=response.optJSONArray("responseData");
+                        JSONObject detailObject=jsonArray.optJSONObject(0);
+
+                        JSONArray receiptDetailsArray=detailObject.optJSONArray("reportSettlementWithReceiptDetails");
+
                     for (int i=0;i<receiptDetailsArray.length();i++){
                         JSONObject receiptObject=receiptDetailsArray.optJSONObject(i);
                         SettlementReceiptModel model =new SettlementReceiptModel();
@@ -934,7 +942,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                         settlementReceiptDetails.add(model);
                     }
 
-                    JSONArray denominationArray=response.optJSONArray("reportSettlementWithReceiptDenomination");
+                    JSONArray denominationArray=detailObject.optJSONArray("reportSettlementWithReceiptDenomination");
                     assert denominationArray != null;
                     if (denominationArray.length()>0){
                         for (int i=0;i<denominationArray.length();i++){
@@ -948,7 +956,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                         }
                     }
 
-                    JSONArray expenseArray=response.optJSONArray("reportSettlementWithReceiptExpenses");
+                    JSONArray expenseArray=detailObject.optJSONArray("reportSettlementWithReceiptExpenses");
                     assert expenseArray!=null;
                     if (denominationArray.length()>0){
                         for (int i=0;i<expenseArray.length();i++){
@@ -962,6 +970,9 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                     }
                     pDialog.dismiss();
                     clearAllSelection();
+                    }else {
+                        Toast.makeText(getApplicationContext(),statusMessage,Toast.LENGTH_SHORT).show();
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }

@@ -338,7 +338,7 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public interface CallBack {
         void calculateNetTotal(ArrayList<InvoiceModel> invoiceList);
-        void showMoreOption(String invoiceId,String customerName);
+        void showMoreOption(String invoiceId,String customerName,String status);
     }
 
     public void filterList(ArrayList<InvoiceModel> filterdNames) {

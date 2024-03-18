@@ -47,6 +47,17 @@
                 android:text="0.0"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp" />
+            <TextView
+                android:id="@+id/bal_amt_item"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="0.0"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_9sdp" />
+
         </LinearLayout>
         <View
             android:layout_width="wrap_content"

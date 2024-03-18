@@ -214,10 +214,11 @@
                                     android:layout_height="wrap_content">
 
                                     <ImageView
-                                        android:id="@id/downArrow_inv_lay"
+                                        android:id="@+id/downArrow_inv_lay"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:tag="hide"
+                                        android:visibility="gone"
                                         android:src="@drawable/ic_baseline_keyboard_arrow_up_24"
                                         android:textColor="#006DDB"
                                         android:textSize="16sp"
@@ -225,38 +226,6 @@
 
                                 </LinearLayout>
                             </LinearLayout>
-
-                        </LinearLayout>
-                        <LinearLayout
-                            android:id="@id/hide_disc_lay"
-                            android:layout_width="match_parent"
-                            android:padding="5dp"
-                            android:visibility="gone"
-                            android:background="#f3f3f3"
-                            android:orientation="horizontal"
-                            android:layout_height="match_parent">
-
-                            <EditText
-                                android:layout_width="0dp"
-                                android:hint="Remarks"
-                                android:layout_weight="1"
-                                android:textSize="12sp"
-                                android:id="@+id/remarks"
-                                android:textStyle="bold"
-                                android:padding="5dp"
-                                android:background="@drawable/create_invoice_background"
-                                android:layout_height="wrap_content"/>
-                            <EditText
-                                android:layout_width="0dp"
-                                android:hint="Discount"
-                                android:textSize="12sp"
-                                android:layout_weight="1"
-                                android:layout_marginLeft="@dimen/_8sdp"
-                                android:id="@+id/discount_inv"
-                                android:textStyle="bold"
-                                android:padding="5dp"
-                                android:background="@drawable/create_invoice_background"
-                                android:layout_height="wrap_content"/>
 
                         </LinearLayout>
                         <LinearLayout
@@ -283,6 +252,76 @@
                             android:layout_height="40dp"
                             android:layout_gravity="center" />
 
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/hide_disc_lay"
+                        android:layout_width="match_parent"
+                        android:padding="5dp"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:visibility="gone"
+                        android:background="#f3f3f3"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:hint="Remarks"
+                            android:layout_weight="1"
+                            android:textSize="12sp"
+                            android:id="@+id/remarks"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="@dimen/_5sdp"
+                            android:padding="5dp"
+                            android:background="@drawable/create_invoice_background"
+                            android:layout_height="wrap_content"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:id="@+id/discount_layInv"
+                                android:layout_width="0dp"
+                                android:orientation="vertical"
+                                android:layout_weight="1"
+                                android:visibility="gone"
+                                android:layout_height="wrap_content">
+
+                            <EditText
+                            android:layout_width="match_parent"
+                            android:hint="Discount"
+                            android:textSize="12sp"
+                            android:inputType="numberDecimal"
+                            android:maxLength="4"
+                            android:id="@+id/discount_invoice"
+                            android:textStyle="bold"
+                            android:padding="5dp"
+                            android:visibility="visible"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:background="@drawable/create_invoice_background"
+                            android:layout_height="wrap_content"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="maximum discount 0 to 1"
+                                    android:textColor="@color/red_btn_bg_color"
+                                    android:textSize="@dimen/_8sdp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+                            <EditText
+                                android:layout_width="0dp"
+                                android:hint="Exchange"
+                                android:layout_weight="1"
+                                android:textSize="12sp"
+                                android:inputType="number"
+                                android:maxLength="6"
+                                android:id="@+id/exchange_invoice"
+                                android:textStyle="bold"
+                                android:padding="5dp"
+                                android:background="@drawable/create_invoice_background"
+                                android:layout_height="wrap_content"/>
+
+                        </LinearLayout>
                     </LinearLayout>
 
                     <LinearLayout

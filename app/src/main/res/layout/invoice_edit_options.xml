@@ -177,10 +177,10 @@
             android:layout_width="match_parent"
             android:orientation="horizontal"
             android:gravity="center"
-            android:clickable="true"
             android:id="@+id/duplicate_inv_layout"
             android:layout_gravity="center"
             android:padding="5dp"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:focusable="true">
 
@@ -203,7 +203,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 app:elevation="1dp"
-                android:id="@+id/duplicat_invoice"
+                android:id="@+id/duplicat_invImg"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_baseline_convert_invoice"
                 app:backgroundTint="@color/white"
