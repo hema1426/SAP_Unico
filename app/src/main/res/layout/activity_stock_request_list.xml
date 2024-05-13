@@ -151,6 +151,7 @@
             android:id="@+id/search"
             android:drawableStart="@drawable/ic_baseline_search_new"
             android:textColor="@color/white"
+            android:padding="@dimen/_3sdp"
             android:background="@drawable/button_order"
             android:layout_height="30dp"/>
 
@@ -257,7 +258,8 @@
         android:layout_height="2dip"/>
 
     <include
-        layout="@layout/request_title"/>
+        layout="@layout/request_title"
+       />
     <View
         android:layout_width="match_parent"
         android:layout_height="2dip"/>

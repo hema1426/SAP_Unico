@@ -39,6 +39,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.winapp.saperp.R;
+import com.winapp.saperp.activity.CartActivity;
 import com.winapp.saperp.activity.StockRequestListActivity;
 import com.winapp.saperp.activity.TransferListProductActivity;
 import com.winapp.saperp.activity.TransferProductAddActivity;
@@ -380,7 +381,8 @@ public class TransferInActivity extends AppCompatActivity {
             okButton.setOnClickListener(view1 -> {
                 try {
                     alert.dismiss();
-                    if (mode.equals("Transfer In") || mode.equals("Transfer Out") || mode.equals("Covert Transfer") || mode.equals("Stock Request")) {
+                    if (mode.equals("Transfer In") || mode.equals("Transfer Out") ||
+                            mode.equals("Covert Transfer") || mode.equals("Stock Request")) {
                         createJsonObject();
                     }
                 }catch (Exception exception){}
@@ -433,8 +435,21 @@ public class TransferInActivity extends AppCompatActivity {
         final Button cancelButton = customLayout.findViewById(R.id.buttonNo);
         final Button clearButton = customLayout.findViewById(R.id.buttonClear);
         LinearLayout mContent = customLayout.findViewById(R.id.signature_layout);
-        CaptureSignatureView mSig = new CaptureSignatureView(this, null);
-        mContent.addView(mSig, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        acceptButton.setEnabled(false);
+        acceptButton.setAlpha(0.4f);
+        CaptureSignatureView mSig = new CaptureSignatureView(TransferInActivity.this, null, new CaptureSignatureView.OnSignatureDraw() {
+            @Override
+            public void onSignatureCreated() {
+                acceptButton.setEnabled(true);
+                acceptButton.setAlpha(1f);
+            }
+        });
+        mContent.addView(
+                mSig,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -931,6 +946,12 @@ public class TransferInActivity extends AppCompatActivity {
                                 Log.e("locatcode", "" + locationDetailsArrayList.get(i).getLocationCode());
                                 toWarehouseCode = locationDetailsArrayList.get(i).getLocationCode();
                             }
+                        }
+                        if (!Objects.equals(fromWarehouseCode, toWarehouseCode)){
+                            getTransferIn(toWarehouseCode,"All");
+                            dialog.dismiss();
+                        }else {
+                            Toast.makeText(getApplicationContext(),"From warehouse and To warehouse should not be same...!",Toast.LENGTH_SHORT).show();
                         }
                       /*  try {
                             getGrouplist(fromWarehouseCode);

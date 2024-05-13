@@ -6,10 +6,17 @@ SUPER_STAR_DEMO
 ST01
 Yn7876z@
 
-SHABAN_LIVE_URL
+SHABAN_URL_demo
 shaban
 12345
 
+AAdhi demo
+Username : AADHIVAN 1
+Pasword : b123456
+
+AAdhi live
+AADHIVAN 3
+c12345
             case R.id.action_save:  -- CreateNewInvoiceActivity  common credt limit condtion
             createInvoiceValidation() method hide
 

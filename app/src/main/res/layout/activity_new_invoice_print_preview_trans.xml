@@ -306,240 +306,98 @@
             android:layout_marginTop="10sp"
             android:orientation="vertical">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5sp"
+                android:padding="8sp"
+                android:background="@color/lit_blue"
+                android:orientation="horizontal">
 
-
-                <LinearLayout
-                    android:id="@+id/transLay"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/sno"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5sp"
-                    android:padding="8sp"
-                    android:visibility="gone"
-                    android:background="@color/lit_blue"
-                    android:orientation="horizontal">
+                    android:layout_gravity="center"
+                    android:layout_weight="0.3"
+                    android:gravity="center"
+                    android:text="SNO"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="0.3"
-                        android:gravity="center"
-                        android:text="SNO"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1.9">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_gravity="center"
-                            android:text="PRODUCT"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-
-
-                    </RelativeLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="0.9"
-                        android:gravity="center"
-                        android:text="NET"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="0.9">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_gravity="center"
-                            android:text="PRICE"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="0.9">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_gravity="center"
-                            android:text="TOTAL"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/normalLay"
-                    android:layout_width="match_parent"
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5sp"
-                    android:padding="5sp"
-                    android:visibility="visible"
-                    android:background="@color/lit_blue"
-                    android:orientation="horizontal">
+                    android:layout_gravity="center"
+                    android:layout_weight="1.5">
 
                     <TextView
-                        android:id="@+id/sno"
+                        android:id="@+id/pdt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
-                        android:layout_weight="0.3"
-                        android:gravity="center"
-                        android:text="SNO"
+                        android:text="PRODUCT"
+
                         android:textColor="@color/colorPrimary"
                         android:textSize="10sp"
                         android:textStyle="bold" />
 
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.5">
 
-                        <TextView
-                            android:id="@+id/pdt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_gravity="center"
-                            android:text="PRODUCT"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
+                </RelativeLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/pdt"
-                            android:layout_centerHorizontal="true"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:singleLine="true"
-                            android:text="ISS"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/net"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.9"
+                    android:gravity="center"
+                    android:text="NET"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
 
-                    </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.9">
 
                     <TextView
-                        android:id="@+id/rtn"
-                        android:layout_width="0dp"
+                        android:id="@+id/pricet"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
-                        android:layout_weight="0.9"
-                        android:gravity="center"
-                        android:text="RTN"
+                        android:text="PRICE"
                         android:textColor="@color/colorPrimary"
                         android:textSize="10sp"
                         android:textStyle="bold" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.9">
 
                     <TextView
-                        android:id="@+id/net"
-                        android:layout_width="0dp"
+                        android:id="@+id/totalt"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
-                        android:layout_weight="0.9"
-                        android:gravity="center"
-                        android:text="NET"
+                        android:text="TOTAL"
                         android:textColor="@color/colorPrimary"
                         android:textSize="10sp"
                         android:textStyle="bold" />
 
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.9">
+                </RelativeLayout>
 
-                        <TextView
-                            android:id="@+id/pricet"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_gravity="center"
-                            android:text="PRICE"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/pricet"
-                            android:layout_centerHorizontal="true"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:text="(SGD)"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.9">
-
-                        <TextView
-                            android:id="@+id/totalt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_gravity="center"
-                            android:text="TOTAL"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/totalt"
-                            android:layout_centerHorizontal="true"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:text="(SGD)"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-
-            </RelativeLayout>
-
+            </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_invoicelist"
                 android:layout_width="match_parent"
@@ -815,49 +673,6 @@
                 android:layout_marginTop="10sp"
                 android:background="@color/lit_grey" />
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:padding="5dp"
-                android:textSize="12sp"
-                android:layout_gravity="center"
-                android:textColor="#042B97"
-                android:textStyle="bold"
-                android:text="Total Outstanding"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:padding="5dp"
-                android:textStyle="bold"
-                android:layout_marginLeft="20dp"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text=":"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:padding="5dp"
-                android:textSize="12sp"
-                android:textColor="#042B97"
-                android:textStyle="bold"
-                android:id="@+id/outstanding_amount"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="10sp"
-            android:background="@color/lit_grey" />
-
 
         <TextView
             android:layout_width="wrap_content"

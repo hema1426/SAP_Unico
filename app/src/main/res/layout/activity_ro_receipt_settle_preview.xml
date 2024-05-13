@@ -263,6 +263,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/lit_grey"
+                android:visibility="visible"
                 tools:listitem="@layout/ro_receipt_settle_preview_item"
             >
             </androidx.recyclerview.widget.RecyclerView>
@@ -491,6 +492,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/lit_grey"
+                    android:visibility="visible"
                     tools:listitem="@layout/ro_setle_denominat_preview_item"
 
                 >
@@ -591,6 +593,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/lit_grey"
+                    android:visibility="visible"
                     tools:listitem="@layout/ro_setle_expense_preview_item"
                     >
 
@@ -599,10 +602,12 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/expens_total_lay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:gravity="end"
+                android:visibility="gone"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="15sp"
                 android:orientation="horizontal">
@@ -630,6 +635,84 @@
             </LinearLayout>
         </LinearLayout>
 
+<!--        <View-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="1dp"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:background="@color/lit_grey" />-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/excess_total_lay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="end"
+                android:visibility="gone"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="15sp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textStyle="bold"
+                    android:text=" Excess Amt:SGD   : "
+                    android:textColor="@color/black"
+                    android:textSize="13dp" />
+
+                <TextView
+                    android:id="@+id/total_excess"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:singleLine="true"
+                    android:textStyle="bold"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="13dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/shortage_total_lay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="end"
+                android:visibility="gone"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="15sp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textStyle="bold"
+                    android:text=" Shortage Amt:SGD   : "
+                    android:textColor="@color/black"
+                    android:textSize="13dp" />
+
+                <TextView
+                    android:id="@+id/total_shortage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:singleLine="true"
+                    android:textStyle="bold"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="13dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

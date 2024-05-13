@@ -861,6 +861,7 @@ public class ReceiptsListActivity extends NavigationActivity {
                             model.setChequeDate(responseObject.optString("checkDueDate"));
                             model.setChequeNo(responseObject.optString("checkNumber"));
                             model.setBankTransferDate(responseObject.optString("bankTransferDate"));
+                            model.setBalanceAmount(responseObject.optString("balanceAmount"));
                             model.setCreditAmount(responseObject.optString("totalDiscount"));
                             JSONArray detailsArray=responseObject.optJSONArray("receiptDetails");
                             for (int i=0;i<detailsArray.length();i++){
@@ -1595,6 +1596,7 @@ public class ReceiptsListActivity extends NavigationActivity {
                                 model.setTaxType(object.optString("taxType"));
                                 model.setTaxPerc(object.optString("taxPercentage"));
                                 model.setTaxCode(object.optString("taxCode"));
+                                model.setBillDiscPercentage(object.optString("discountPercentage"));
                                 //  model.setCustomerBarcode(object.optString("BarCode"));
                                 // model.setCustomerBarcode(String.valueOf(i));
                                 if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {
@@ -1780,6 +1782,7 @@ public class ReceiptsListActivity extends NavigationActivity {
                 public void onCompleted() {
                     Utils.setSignature("");
                     Toast.makeText(getApplicationContext(),"Receipt printed successfully!",Toast.LENGTH_SHORT).show();
+                   finish();
                 }
             });
         } else if (printerType.equals("Zebra Printer")) {

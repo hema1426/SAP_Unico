@@ -27,7 +27,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sign Blow"
+            android:text="Sign Below"
             android:textSize="14sp"
             android:id="@+id/customer_name_value"
             android:textAlignment="center"

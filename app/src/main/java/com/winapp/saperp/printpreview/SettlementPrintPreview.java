@@ -112,6 +112,8 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
     private TextView netTotalText;
     private TextView expenseTotalText;
 
+    private LinearLayout expenseTotalLay;
+
     private TextView outstandingText;
     private TextView taxTitle;
     private TextView itemDiscount;
@@ -182,7 +184,8 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
         subtotalText = findViewById(R.id.sub_total);
         taxValueText = findViewById(R.id.tax);
         netTotalText = findViewById(R.id.net_total);
-        expenseTotalText = findViewById(R.id.net_total);
+        expenseTotalText = findViewById(R.id.expense_total);
+        expenseTotalLay = findViewById(R.id.expenseTotalLayl);
         outstandingText = findViewById(R.id.outstanding_amount);
         taxTitle = findViewById(R.id.tax_title);
         itemDiscount = findViewById(R.id.item_disc);
@@ -285,22 +288,22 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
                         dialog.dismiss();
                         if (response.length()>0){
                             String statusCode=response.optString("statusCode");
-                            if (statusCode.equals("1")){
-                                JSONArray responseDataArray=response.getJSONArray("responseData");
-                                JSONObject responseObject=responseDataArray.getJSONObject(0);
-                                String settlementAmount=responseObject.optString("totalAmount");
+                            if (statusCode.equals("1")) {
+                                JSONArray responseDataArray = response.getJSONArray("responseData");
+                                JSONObject responseObject = responseDataArray.getJSONObject(0);
+                                String settlementAmount = responseObject.optString("totalAmount");
 
-                                JSONArray denominationArray=responseObject.optJSONArray("settlementDetails");
-                                for (int i = 0; i< Objects.requireNonNull(denominationArray).length(); i++){
+                                JSONArray denominationArray = responseObject.optJSONArray("settlementDetails");
+                                for (int i = 0; i < Objects.requireNonNull(denominationArray).length(); i++) {
                                     JSONObject currencyObject = denominationArray.optJSONObject(i);
-                                    CurrencyModel product =new CurrencyModel();
+                                    CurrencyModel product = new CurrencyModel();
                                     product.setCurrencyName(currencyObject.optString("currency"));
                                     product.setCount(currencyObject.optString("count"));
                                     product.setId(String.valueOf(i));
                                     product.setTotal(currencyObject.optString("total"));
                                     currencyList.add(product);
                                 }
-                                if (currencyList.size()>0){
+                                if (currencyList.size() > 0) {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -308,28 +311,33 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
                                         }
                                     });
                                 }
-                                JSONArray expenseArray=responseObject.optJSONArray("settlementExpensesDetails");
-                                for (int i = 0; i< Objects.requireNonNull(expenseArray).length(); i++){
-                                    JSONObject expenseObject=expenseArray.optJSONObject(i);
-                                    ExpenseModel model=new ExpenseModel();
-                                    model.setExpenseName(expenseObject.optString("groupName"));
-                                    model.setExpenseId(String.valueOf(i+1));
-                                    model.setGroupNo(expenseObject.optString("groupNo"));
-                                    model.setExpenseTotal(expenseObject.optString("amount"));
-                                    expenseList.add(model);
+                                    JSONArray expenseArray = responseObject.optJSONArray("settlementExpensesDetails");
+                                if (expenseArray != null) {
+                                    for (int i = 0; i < Objects.requireNonNull(expenseArray).length(); i++) {
+                                        JSONObject expenseObject = expenseArray.optJSONObject(i);
+                                        ExpenseModel model = new ExpenseModel();
+                                        model.setExpenseName(expenseObject.optString("groupName"));
+                                        model.setExpenseId(String.valueOf(i + 1));
+                                        model.setGroupNo(expenseObject.optString("groupNo"));
+                                        model.setExpenseTotal(expenseObject.optString("amount"));
+                                        expenseList.add(model);
+                                    }
+                                    if (expenseList.size() > 0) {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                expenslayoutl.setVisibility(View.VISIBLE);
+                                                setExpensePreviewAdapter(expenseList);
+                                                expenseTotalLay.setVisibility(View.VISIBLE);
+                                                expenseTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(responseObject.optString("totalExpense"))));
+                                            }
+                                        });
+                                    } else {
+                                        expenslayoutl.setVisibility(View.GONE);
+                                        expenseTotalLay.setVisibility(View.GONE);
+                                    }
                                 }
-                                if (expenseList.size()>0){
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            expenslayoutl.setVisibility(View.VISIBLE);
-                                            setExpensePreviewAdapter(expenseList);
-                                            expenseTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(responseObject.optString("totalExpense"))));
-                                        }
-                                    });
-                                }
-                            }else {
-                                expenslayoutl.setVisibility(View.GONE);
+
                             }
                         }
                     }catch (Exception e){

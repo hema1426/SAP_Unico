@@ -102,6 +102,7 @@ public class CustomerListActivity extends NavigationActivity {
     private ArrayList<CustomerDetails> allCustomersList;
     private String outstandingAmount;
     private String username;
+    private String billDiscApi;
 
     public String createInvoiceSetting = "false";
     private Spinner customerGroupSpinner;
@@ -272,6 +273,7 @@ public class CustomerListActivity extends NavigationActivity {
                     Intent intent = new Intent(getApplicationContext(), CreateNewInvoiceActivity.class);
                     intent.putExtra("customerName", customerName.getText().toString());
                     intent.putExtra("customerCode", customerId.getText().toString());
+                    intent.putExtra("customerBillDisc", billDiscApi);
                     intent.putExtra("activityFrom", "SalesOrder");
                     startActivity(intent);
                 } else {
@@ -296,6 +298,7 @@ public class CustomerListActivity extends NavigationActivity {
                     Intent intent = new Intent(getApplicationContext(), CreateNewInvoiceActivity.class);
                     intent.putExtra("customerName", customerName.getText().toString());
                     intent.putExtra("customerCode", customerId.getText().toString());
+                    intent.putExtra("customerBillDisc", billDiscApi);
                     intent.putExtra("activityFrom", "SalesOrder");
                     startActivity(intent);
                 } else {
@@ -319,6 +322,7 @@ public class CustomerListActivity extends NavigationActivity {
                     Intent intent = new Intent(getApplicationContext(), CreateNewInvoiceActivity.class);
                     intent.putExtra("customerName", customerName.getText().toString());
                     intent.putExtra("customerCode", customerId.getText().toString());
+                    intent.putExtra("customerBillDisc", billDiscApi);
                     intent.putExtra("activityFrom", "Invoice");
                     startActivity(intent);
                 } else {
@@ -342,6 +346,7 @@ public class CustomerListActivity extends NavigationActivity {
                     Intent intent = new Intent(getApplicationContext(), CreateNewInvoiceActivity.class);
                     intent.putExtra("customerName", customerName.getText().toString());
                     intent.putExtra("customerCode", customerId.getText().toString());
+                    intent.putExtra("customerBillDisc", billDiscApi);
                     intent.putExtra("activityFrom", "Invoice");
                     startActivity(intent);
                 } else {
@@ -677,7 +682,7 @@ public class CustomerListActivity extends NavigationActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_url:", url + "" + jsonObject.toString());
+        Log.w("Given_urlCustli:", url + "" + jsonObject.toString());
         dialog = new ProgressDialog(CustomerListActivity.this);
         dialog.setMessage("Loading Customers List...");
         dialog.setCancelable(false);
@@ -703,6 +708,8 @@ public class CustomerListActivity extends NavigationActivity {
                                 model.setTaxType(object.optString("taxType"));
                                 model.setTaxPerc(object.optString("taxPercentage"));
                                 model.setTaxCode(object.optString("taxCode"));
+                                model.setBillDiscPercentage(object.optString("discountPercentage"));
+
                                 if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {
                                     model.setOutstandingAmount("0.00");
                                 } else {
@@ -777,7 +784,8 @@ public class CustomerListActivity extends NavigationActivity {
             }
 
             @Override
-            public void createInvoice(String customerCode, String cusname, String taxcode, String taxperc, String taxtype) {
+            public void createInvoice(String customerCode, String cusname, String taxcode, String taxperc, String taxtype
+                    ,String billDisc) {
                 if (createInvoiceSetting.equals("true")) {
 
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
@@ -791,9 +799,12 @@ public class CustomerListActivity extends NavigationActivity {
                     model.setTaxPerc(taxperc);
                     model.setTaxType(taxtype);
                     model.setTaxCode(taxcode);
+                    model.setBillDiscPercentage(billDisc);
                     ArrayList<CustomerDetails> taxList = new ArrayList<>();
                     taxList.add(model);
 
+                    billDiscApi = billDisc;
+                    Log.w("billdiscpii::", billDiscApi);
                     dbHelper.insertCustomerTaxValues(taxList);
                     Utils.setCustomerSession(CustomerListActivity.this, customerCode);
                     Log.w("TaxValueUpdated::", "Success");
@@ -817,6 +828,7 @@ public class CustomerListActivity extends NavigationActivity {
                         intent.putExtra("customerName", cusname);
                         intent.putExtra("currentDateTime", currentDateandTime);
                         intent.putExtra("customerCode", customerCode);
+                        intent.putExtra("customerBillDisc", billDisc);
                         intent.putExtra("from", from);
                         startActivity(intent);
                     }

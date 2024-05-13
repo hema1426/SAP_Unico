@@ -44,17 +44,18 @@ public class Constants {
     // Url Using for the SAP implementation
     public static String SAP_BASE_URL_DEMO ="http://223.25.81.205:8345/api/";
 
-    public static String SAP_NEW_BASE_URL="http://223.25.81.205:8353/api/";
+    public static String SAP_FOODGLE_HUB_NEW="https://c21202app01p02.cloudiax.com:10092/api/";
 
     public static String SAP_BASE_URL_LIVE_DEMO="http://223.25.81.205:8349/api/";
 
     // Client Live URL
     public static String SAP_LIVE_URL="http://223.25.81.205:8352/api/";
 
+
     public static String WINAPP_DEMO_URL="http://43.228.126.51:83/api/";
 
     //shaban LIVE URL    http://129.150.58.169:95
-    public static String SHABAN_LIVE_URL="http://129.150.58.169:95/api/";
+    public static String SHABAN_DEMO_URL="http://129.150.58.169:95/api/";
 
 
     // Live URL
@@ -122,8 +123,9 @@ public class Constants {
     public static String SLG_DEMO ="http://13.251.236.153:90/api/";
 
     public static String TRANS_ORIENT_DEMO ="https://c21326-EasySales-Test.cloudiax.com/api/";
+    // transOrient live
 
-
+    public static String foodgle_LIVE ="https://c21202app01p01.cloudiax.com:10093/api/";
 
     public static String SHABAN ="http://129.150.58.169:95/api/";
 

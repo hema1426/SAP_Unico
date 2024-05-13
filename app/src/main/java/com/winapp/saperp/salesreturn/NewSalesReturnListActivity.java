@@ -759,7 +759,8 @@ public class NewSalesReturnListActivity extends NavigationActivity {
                                     salesReturnModel.setPrice(detailsObject.optString("price"));
                                     salesReturnModel.setPcspercarton(detailsObject.optString("pcsPerCarton"));
                                     salesReturnModel.setTax(detailsObject.optString("totalTax"));
-                                    salesReturnModel.setTotal(detailsObject.optString("netTotal"));
+//                                    salesReturnModel.setTotal(detailsObject.optString("netTotal"));
+                                    salesReturnModel.setTotal(detailsObject.optString("total"));
                                     salesReturnModel.setSubTotal(detailsObject.optString("subTotal"));
                                     salesReturnModel.setUomCode(object.optString("UOMCode"));
                                     salesPrintReturnList.add(salesReturnModel);

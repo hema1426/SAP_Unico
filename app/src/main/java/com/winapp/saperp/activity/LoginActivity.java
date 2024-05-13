@@ -161,6 +161,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void init() {
         passwordText.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_UP) {
@@ -283,10 +284,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 String paynow=object.optString("payNow");
                                 String bank=object.optString("bank");
                                 String cheque=object.optString("cheque");
+                                String salesManName=object.optString("salesPersonName");
+                                String salesManPhone=object.optString("salesPersonMobile");
+                                String salesManMail=object.optString("salesPersonEmail");
+                                String salesManOffice=object.optString("salesPersonOfficeNo");
+
                                 session.createLoginSession(
                                         username,password,rollname,locationCode,"1",ispermission,
-                                        companycode,companyname,address1,address2,address3,country,postalcode,phone,gstNo,logo,qrcode,paid,unpaid,paynow,bank,cheque
-                                );
+                                        companycode,companyname,address1,address2,address3,country,postalcode,
+                                        phone,gstNo,logo,qrcode,paid,unpaid,paynow,bank,cheque,
+                                        salesManName,salesManPhone,salesManMail,salesManOffice);
                                 // Adding the Preference values to the Session to remember the values
                                 if (rememberMe.isChecked()) {
                                     loginPrefsEditor.putBoolean("saveLogin", true);
@@ -424,9 +431,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url=Utils.getBaseUrl(this) +"UserSettingFlag";
-        Log.w("PrinterSettingURL:",url);
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("User",userId);
+        Log.w("PrinterSettingURL:",url +jsonObject);
+
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
                     try {
                         Log.w("PrinterResponse:", response.toString());
@@ -446,6 +454,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 dbHelper.insertSettings("editSO",object.optString("editSO"));
                                 dbHelper.insertSettings("showOutstandingAmount",object.optString("showOutstandingAmount"));
                                 dbHelper.insertSettings("showLocationPermission",object.optString("showLocationPermission"));
+//                                dbHelper.insertSettings("showDiscountAmount","true");
+//                                dbHelper.insertSettings("discountAmountValidationFrom","4.0");
+//                                dbHelper.insertSettings("discountAmountValidationTo","23.0");
+                                dbHelper.insertSettings("showDiscountAmount",object.optString("showDiscountAmount"));
+                                dbHelper.insertSettings("discountAmountValidationFrom",object.optString("discountAmountValidationFrom"));
+                                dbHelper.insertSettings("discountAmountValidationTo",object.optString("discountAmountValidationTo"));
+
                             }
                         }else {
                             Toast.makeText(getApplicationContext(),"Error,in getting Printer Settings",Toast.LENGTH_LONG).show();

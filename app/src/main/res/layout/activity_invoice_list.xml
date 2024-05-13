@@ -282,7 +282,7 @@
 
     <include
         android:id="@+id/search_filter"
-        android:visibility="gone"
+        android:visibility="visible"
         layout="@layout/invoice_filter_layout"/>
 
     <LinearLayout

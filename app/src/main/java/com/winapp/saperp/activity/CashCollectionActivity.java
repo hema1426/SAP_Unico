@@ -487,7 +487,7 @@ public class CashCollectionActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (!charSequence.toString().isEmpty()){
+                if (!charSequence.toString().isEmpty() &&   charSequence.toString().charAt(0) != ('.')){
                     calculateDifferenceAmount(charSequence.toString());
                 }else {
                     calculateDifferenceAmount("0.00");
@@ -737,8 +737,8 @@ public class CashCollectionActivity extends AppCompatActivity {
                     if (netAmount.getText().toString()!=null && !netAmount.getText().toString().isEmpty() && Double.parseDouble(netAmount.getText().toString()) > 0 && Double.parseDouble(selectedAmount.getText().toString()) >= 0){
                         showCashCollectionClearAlert();
                     }else {
-                        Intent intent=new Intent(CashCollectionActivity.this,NewInvoiceListActivity.class);
-                        startActivity(intent);
+//                        Intent intent=new Intent(CashCollectionActivity.this,NewInvoiceListActivity.class);
+//                        startActivity(intent);
                         finish();
                     }
                 }
@@ -922,8 +922,19 @@ public class CashCollectionActivity extends AppCompatActivity {
         final Button cancelButton=customLayout.findViewById(R.id.buttonNo);
         final Button clearButton=customLayout.findViewById(R.id.buttonClear);
         LinearLayout mContent = customLayout.findViewById(R.id.signature_layout);
-        CaptureSignatureView mSig = new CaptureSignatureView(this, null);
+
+
+        acceptButton.setEnabled(false);
+        acceptButton.setAlpha(0.4f);
+        CaptureSignatureView mSig = new CaptureSignatureView(CashCollectionActivity.this, null, new CaptureSignatureView.OnSignatureDraw() {
+            @Override
+            public void onSignatureCreated() {
+                acceptButton.setEnabled(true);
+                acceptButton.setAlpha(1f);
+            }
+        });
         mContent.addView(mSig, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

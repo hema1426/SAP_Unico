@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/item_name"
+                    android:id="@+id/item_nameDesc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxWidth="250dp"
@@ -170,7 +170,7 @@
 
 
                                 <LinearLayout
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_weight="1"
                                     android:layout_height="wrap_content"
                                     android:layout_marginRight="0dp"
@@ -228,16 +228,46 @@
                                         android:src="@drawable/ic_baseline_add_circle_24" />
 
                                 </LinearLayout>
-
-                                <Space
-                                    android:layout_width="0dip"
+                                <LinearLayout
+                                    android:id="@+id/uomSpinnerLay_cart"
+                                    android:layout_width="0dp"
+                                    android:orientation="horizontal"
                                     android:layout_weight="1"
-                                    android:layout_height="0dip"/>
+                                    android:layout_gravity="center"
+                                    android:layout_marginRight="0dp"
+                                    android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="10dp"
+                                    android:gravity="center"
+                                    android:text="UOM : "
+                                    android:textColor="#212121"
+                                    android:textSize="12sp" />
 
                                 <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:orientation="horizontal"
                                     android:layout_weight="1"
+                                    android:background="@drawable/invoice_edit_text"
+                                    android:padding="2dp"
+                                    android:layout_height="wrap_content">
+
+                                <Spinner
+                                    android:id="@+id/uomSpinner_cart"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="30dp"
+                                    android:layout_gravity="center"
+                                    android:background="@drawable/spinner_bg" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:layout_weight="1"
+                                    android:visibility="gone"
                                     android:id="@+id/pcs_qty_layout"
                                     android:layout_marginRight="0dp"
                                     android:padding="5dp"
@@ -296,7 +326,7 @@
 
                                 </LinearLayout>
 
-
+                                </LinearLayout>
 
                                 <Space
                                     android:layout_width="0dip"
@@ -827,12 +857,14 @@
                                         android:layout_width="wrap_content"
                                         android:text="UOM : "
                                         android:textSize="12sp"
+                                        android:visibility="gone"
                                         android:textStyle="bold"
                                         android:layout_height="wrap_content"/>
 
                                     <TextView
                                         android:id="@+id/uom_code"
                                         android:textStyle="bold"
+                                        android:visibility="gone"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textSize="12sp" />

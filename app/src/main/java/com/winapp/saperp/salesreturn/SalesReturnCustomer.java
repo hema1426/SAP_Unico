@@ -409,6 +409,8 @@ public class SalesReturnCustomer extends Fragment {
                                 model.setTaxType(object.optString("taxType"));
                                 model.setTaxPerc(object.optString("taxPercentage"));
                                 model.setTaxCode(object.optString("taxCode"));
+                                model.setBillDiscPercentage(object.optString("discountPercentage"));
+
                                 //  model.setCustomerBarcode(object.optString("BarCode"));
                                 // model.setCustomerBarcode(String.valueOf(i));
                                 if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {

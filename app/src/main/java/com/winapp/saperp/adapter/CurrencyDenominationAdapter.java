@@ -44,7 +44,7 @@ public class CurrencyDenominationAdapter extends RecyclerView.Adapter<CurrencyDe
             viewHolder.currency.setText(model.getCurrencyName());
             viewHolder.count.setText(model.getCount());
             viewHolder.currencyCount.setText(model.getCount());
-            viewHolder.total.setText(model.getTotal());
+            viewHolder.total.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getTotal())));
             viewHolder.serialNumber.setText(String.valueOf(position+1));
             if (context instanceof SettlementPrintPreview){
                 viewHolder.count.setVisibility(View.GONE);

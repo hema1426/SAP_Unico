@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
@@ -44,9 +45,11 @@ import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -82,15 +85,15 @@ public class TransferListProductActivity extends NavigationActivity implements V
     public SharedPreferences sharedPreferences;
     ArrayList<TransferDetailModel> transferDetailModels;
     ArrayList<TransferDetailModel.TransferDetails> transferDetailsList;
-    public String transferType="Transfer In";
+    public String transferType = "Transfer In";
     public Button addTransfer;
     public TextView emptyText;
-    private String currentDate="";
+    private String currentDate = "";
     private TextView fromDate;
     private TextView toDate;
     private TextView searchButton;
     private int mYear, mMonth, mDay, mHour, mMinute;
-    private String transferMode="Transfer In";
+    private String transferMode = "Transfer In";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,33 +102,33 @@ public class TransferListProductActivity extends NavigationActivity implements V
         //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_transfer_list_product, contentFrameLayout);
         getSupportActionBar().setTitle("Transfer");
-        dbHelper=new DBHelper(this);
-        transferListView=findViewById(R.id.transferProductList);
-        transferInButton=findViewById(R.id.transfer_in);
-        transferOutButton=findViewById(R.id.transfer_out);
-        transferInText=findViewById(R.id.tranfer_in_text);
-        transferOutText=findViewById(R.id.transfer_out_text);
-        transferSearchText=findViewById(R.id.transfer_search);
-        addTransfer=findViewById(R.id.add_transfer);
-        searchButton=findViewById(R.id.search);
-        fromDate=findViewById(R.id.from_date);
-        toDate=findViewById(R.id.to_date);
-        emptyText=findViewById(R.id.empty_text);
+        dbHelper = new DBHelper(this);
+        transferListView = findViewById(R.id.transferProductList);
+        transferInButton = findViewById(R.id.transfer_in);
+        transferOutButton = findViewById(R.id.transfer_out);
+        transferInText = findViewById(R.id.tranfer_in_text);
+        transferOutText = findViewById(R.id.transfer_out_text);
+        transferSearchText = findViewById(R.id.transfer_search);
+        addTransfer = findViewById(R.id.add_transfer);
+        searchButton = findViewById(R.id.search);
+        fromDate = findViewById(R.id.from_date);
+        toDate = findViewById(R.id.to_date);
+        emptyText = findViewById(R.id.empty_text);
         transferOutText.setOnClickListener(this);
         transferInText.setOnClickListener(this);
         transferOutButton.setOnClickListener(this);
         transferInButton.setOnClickListener(this);
-        session=new SessionManager(this);
-        user=session.getUserDetails();
-        username=user.get(SessionManager.KEY_USER_NAME);
-        locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
+        session = new SessionManager(this);
+        user = session.getUserDetails();
+        username = user.get(SessionManager.KEY_USER_NAME);
+        locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
 
         dbHelper.removeAllInvoiceItems();
         dbHelper.removeAllReturn();
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
-        printerType=sharedPreferences.getString("printer_type","");
-        printerMacId=sharedPreferences.getString("mac_address","");
+        printerType = sharedPreferences.getString("printer_type", "");
+        printerMacId = sharedPreferences.getString("mac_address", "");
 
         Date c = Calendar.getInstance().getTime();
         System.out.println("Current time => " + c);
@@ -137,18 +140,18 @@ public class TransferListProductActivity extends NavigationActivity implements V
         fromDate.setText(formattedDate);
         toDate.setText(formattedDate);
 
-     //   addTransfer.setVisibility(View.GONE);
-    //    transferInButton.setEnabled(false);
-    //    transferInText.setEnabled(false);
-        getTransferInRequest(transferMode,currentDate,currentDate);
+        //   addTransfer.setVisibility(View.GONE);
+        //    transferInButton.setEnabled(false);
+        //    transferInText.setEnabled(false);
+        getTransferInRequest(transferMode, currentDate, currentDate);
 
-        if (getIntent()!=null){
-            String docNumber=getIntent().getStringExtra("docNum");
-          //  assert docNumber != null;
-            if (docNumber!=null && !docNumber.isEmpty()){
-                transferType=getIntent().getStringExtra("transferType");
+        if (getIntent() != null) {
+            String docNumber = getIntent().getStringExtra("docNum");
+            //  assert docNumber != null;
+            if (docNumber != null && !docNumber.isEmpty()) {
+                transferType = getIntent().getStringExtra("transferType");
                 try {
-                    getTransferDetails(1,docNumber,transferType);
+                    getTransferDetails(1, docNumber, transferType);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -169,19 +172,18 @@ public class TransferListProductActivity extends NavigationActivity implements V
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (transferAdapter!=null){
+                if (transferAdapter != null) {
                     transferAdapter.getFilter().filter(s.toString());
                 }
             }
         });
 
 
-
         addTransfer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(getApplicationContext(),TransferActivity.class);
-                intent.putExtra("transferType",transferType);
+                Intent intent = new Intent(getApplicationContext(), TransferActivity.class);
+                intent.putExtra("transferType", transferType);
                 startActivity(intent);
             }
         });
@@ -205,18 +207,18 @@ public class TransferListProductActivity extends NavigationActivity implements V
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                if (!fromDate.getText().toString().isEmpty() && !toDate.getText().toString().isEmpty()){
-                    String fromdate=Utils.convertDate(fromDate.getText().toString(),"dd-MM-yyyy","yyyyMMdd");
-                    String todate=Utils.convertDate(toDate.getText().toString(),"dd-MM-yyyy","yyyyMMdd");
-                    getTransferInRequest(transferMode,fromdate,todate);
-                }else {
-                    Toast.makeText(getApplicationContext(),"Select the Date to Search..!",Toast.LENGTH_SHORT).show();
+                if (!fromDate.getText().toString().isEmpty() && !toDate.getText().toString().isEmpty()) {
+                    String fromdate = Utils.convertDate(fromDate.getText().toString(), "dd-MM-yyyy", "yyyyMMdd");
+                    String todate = Utils.convertDate(toDate.getText().toString(), "dd-MM-yyyy", "yyyyMMdd");
+                    getTransferInRequest(transferMode, fromdate, todate);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Select the Date to Search..!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    public void getDate(TextView dateTextView){
+    public void getDate(TextView dateTextView) {
         // Get Current Date
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);
@@ -232,22 +234,22 @@ public class TransferListProductActivity extends NavigationActivity implements V
         datePickerDialog.show();
     }
 
-    public void setTransferListAdapter(ArrayList<TransferModel> transferList){
+    public void setTransferListAdapter(ArrayList<TransferModel> transferList) {
         try {
             transferAdapter = new TransferAdapter(this, transferList, new TransferAdapter.CallBack() {
                 @Override
-                public void callDescription(String transferNo,String mode) {
-                    Log.w("GivenTransferNo::",transferNo.toString());
-                    if (mode.equals("Print")){
+                public void callDescription(String transferNo, String mode) {
+                    Log.w("GivenTransferNo::", transferNo.toString());
+                    if (mode.equals("Print")) {
                         try {
-                            getTransferDetails(1,transferNo.toString(),transferType);
+                            getTransferDetails(1, transferNo.toString(), transferType);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                    }else {
-                        Intent intent=new Intent(getApplicationContext(),TransferPreviewPrintActivity.class);
-                        intent.putExtra("title",transferType);
-                        intent.putExtra("transferNumber",transferNo);
+                    } else {
+                        Intent intent = new Intent(getApplicationContext(), TransferPreviewPrintActivity.class);
+                        intent.putExtra("title", transferType);
+                        intent.putExtra("transferNumber", transferNo);
                         startActivity(intent);
                     }
                 }
@@ -257,47 +259,50 @@ public class TransferListProductActivity extends NavigationActivity implements V
 
                 }
             });
-            int mNoOfColumns = Utils.calculateNoOfColumns(getApplicationContext(),200);
+            int mNoOfColumns = Utils.calculateNoOfColumns(getApplicationContext(), 200);
             transferListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             transferListView.setItemAnimator(new DefaultItemAnimator());
             transferListView.setAdapter(transferAdapter);
             //categoriesView.setVisibility(View.VISIBLE);
             //emptyLayout.setVisibility(View.GONE);
-        }catch (Exception ex){
-            Log.e("TAG","Error in Populating the data:"+ex.getMessage());
+        } catch (Exception ex) {
+            Log.e("TAG", "Error in Populating the data:" + ex.getMessage());
         }
     }
 
-    public void getTransferInRequest(String mode,String fromdate,String todate){
+    public void getTransferInRequest(String mode, String fromdate, String todate) {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url=Utils.getBaseUrl(this) +"InventoryTransferList";
-        transferList=new ArrayList<>();
-        transferList.removeAll(transferList);
-        JSONObject jsonObject=new JSONObject();
-        try {
-            jsonObject.put("User",username);
-            jsonObject.put("CustomerCode","");
-            jsonObject.put("VendorCode","");
-            jsonObject.put("FromDate",fromdate);
-            jsonObject.put("WarehouseCode" , locationCode);
-            jsonObject.put("ToDate",todate);
-            jsonObject.put("DocStatus","");
-            jsonObject.put("InorOut",mode);
+        String url = Utils.getBaseUrl(this) + "InventoryTransferList";
 
-            if (mode.equals("Out")){
-                transferType="Transfer Out";
-            }else {
-                transferType="Transfer In";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("User", username);
+            jsonObject.put("CustomerCode", "");
+            jsonObject.put("VendorCode", "");
+            jsonObject.put("FromDate", fromdate);
+            jsonObject.put("WarehouseCode", locationCode);
+            jsonObject.put("ToDate", todate);
+            jsonObject.put("DocStatus", "");
+            jsonObject.put("InorOut", mode);
+
+            if (mode.equals("Out")) {
+                transferType = "Transfer Out";
+            } else {
+                transferType = "Transfer In";
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_url:",url+"---"+jsonObject.toString());
-        dialog=new ProgressDialog(TransferListProductActivity.this);
+        Log.w("Given_url:", url + "---" + jsonObject.toString());
+        if (dialog != null && dialog.isShowing())
+            dialog.cancel();
+        dialog = new ProgressDialog(TransferListProductActivity.this);
         dialog.setMessage("Loading Transfers List...");
         dialog.setCancelable(false);
-        dialog.show();
+//        if (!dialog.isShowing()) {
+            dialog.show();
+//        }
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
@@ -306,14 +311,14 @@ public class TransferListProductActivity extends NavigationActivity implements V
                     try {
                         dialog.dismiss();
                         Log.w("Response_TRANSFER:", response.toString());
-
-                        String statusCode=response.optString("statusCode");
-                        String statusMessage=response.optString("statusMessage");
-                        if (statusCode.equals("1")){
-                            JSONArray transferDetailsArray =response.optJSONArray("responseData");
-                            for (int i = 0; i< transferDetailsArray.length(); i++){
-                                JSONObject object= transferDetailsArray.optJSONObject(i);
-                                TransferModel model=new TransferModel();
+                        transferList = new ArrayList<>();
+                        String statusCode = response.optString("statusCode");
+                        String statusMessage = response.optString("statusMessage");
+                        if (statusCode.equals("1")) {
+                            JSONArray transferDetailsArray = response.optJSONArray("responseData");
+                            for (int i = 0; i < transferDetailsArray.length(); i++) {
+                                JSONObject object = transferDetailsArray.optJSONObject(i);
+                                TransferModel model = new TransferModel();
                                 model.setTransferNo(object.optString("invTransNo"));
                                 model.setDate(object.optString("docDate"));
                                 model.setFromLocation(object.optString("fromWhsCode"));
@@ -322,29 +327,29 @@ public class TransferListProductActivity extends NavigationActivity implements V
                                 model.setStatus(object.optString("invTransStatus"));
                                 transferList.add(model);
                             }
-                            if (transferList.size()>0){
+                            if (transferList.size() > 0) {
                                 transferListView.setVisibility(View.VISIBLE);
                                 emptyText.setVisibility(View.GONE);
                                 setTransferListAdapter(transferList);
-                            }else {
+                            } else {
                                 transferListView.setVisibility(View.GONE);
                                 emptyText.setVisibility(View.VISIBLE);
                             }
-                        }else {
+                        } else {
                             transferListView.setVisibility(View.GONE);
                             emptyText.setVisibility(View.VISIBLE);
-                            Toast.makeText(getApplicationContext(),statusMessage,Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), statusMessage, Toast.LENGTH_LONG).show();
                         }
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 },
                 error -> {
                     dialog.dismiss();
                     // Do something when error occurred
-                    Log.w("Error_throwing:",error.toString());
-                }){
+                    Log.w("Error_throwing:", error.toString());
+                }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -359,10 +364,12 @@ public class TransferListProductActivity extends NavigationActivity implements V
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -372,38 +379,38 @@ public class TransferListProductActivity extends NavigationActivity implements V
         requestQueue.add(jsonObjectRequest);
     }
 
-    private void getTransferDetails(int copy,String transferNo,String type) throws JSONException {
+    private void getTransferDetails(int copy, String transferNo, String type) throws JSONException {
         // Initialize a new RequestQueue instance
         JSONObject jsonBody = new JSONObject();
-        jsonBody.put("InvTransNo",transferNo);
+        jsonBody.put("InvTransNo", transferNo);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url=Utils.getBaseUrl(this) +"InventoryTransferDetails";
+        String url = Utils.getBaseUrl(this) + "InventoryTransferDetails";
         // Initialize a new JsonArrayRequest instance
-          Log.w("Given_url:",url);
-          pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-          pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-          pDialog.setTitleText("Generating Print Preview...");
-          pDialog.setCancelable(false);
-          pDialog.show();
-          transferDetailModels =new ArrayList<>();
-          transferDetailsList =new ArrayList<>();
+        Log.w("Given_url:", url);
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Generating Print Preview...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+        transferDetailModels = new ArrayList<>();
+        transferDetailsList = new ArrayList<>();
 
-         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
                 jsonBody,
                 response -> {
-                    try{
-                        Log.w("TransferDetail:",response.toString());
+                    try {
+                        Log.w("TransferDetail:", response.toString());
 
                         pDialog.dismiss();
-                        String statusCode=response.optString("statusCode");
-                        String statusMessage=response.optString("statusMessage");
-                        if (statusCode.equals("1")){
-                            JSONArray  transferDetailsArray=response.optJSONArray("responseData");
+                        String statusCode = response.optString("statusCode");
+                        String statusMessage = response.optString("statusMessage");
+                        if (statusCode.equals("1")) {
+                            JSONArray transferDetailsArray = response.optJSONArray("responseData");
                             assert transferDetailsArray != null;
-                            JSONObject detailObject=transferDetailsArray.optJSONObject(0);
-                            TransferDetailModel model=new TransferDetailModel();
+                            JSONObject detailObject = transferDetailsArray.optJSONObject(0);
+                            TransferDetailModel model = new TransferDetailModel();
                             model.setNumber(detailObject.optString("invTransNo"));
                             model.setStatus(detailObject.optString("invTransStatus"));
                             model.setDate(detailObject.optString("docDate"));
@@ -412,10 +419,10 @@ public class TransferListProductActivity extends NavigationActivity implements V
                             model.setFromLocationName(detailObject.optString("fromWarehouseName"));
                             model.setToLocationName(detailObject.optString("toWarehouseName"));
 
-                            JSONArray itemsArray=detailObject.optJSONArray("itItem");
-                            for (int i = 0; i< Objects.requireNonNull(itemsArray).length(); i++){
-                                JSONObject objectItem= itemsArray.optJSONObject(i);
-                                TransferDetailModel.TransferDetails transferModel =new TransferDetailModel.TransferDetails();
+                            JSONArray itemsArray = detailObject.optJSONArray("itItem");
+                            for (int i = 0; i < Objects.requireNonNull(itemsArray).length(); i++) {
+                                JSONObject objectItem = itemsArray.optJSONObject(i);
+                                TransferDetailModel.TransferDetails transferModel = new TransferDetailModel.TransferDetails();
                                 transferModel.setDescription(objectItem.optString("itemName"));
                                 transferModel.setQty(objectItem.optString("qty"));
                                 transferModel.setUomCode(objectItem.optString("uomCode"));
@@ -424,20 +431,20 @@ public class TransferListProductActivity extends NavigationActivity implements V
                             model.setTransferDetailsList(transferDetailsList);
                             transferDetailModels.add(model);
 
-                            printTransfer(transferNo,transferDetailModels,type);
+                            printTransfer(transferNo, transferDetailModels, type);
 
-                        }else {
-                            Toast.makeText(getApplicationContext(),statusMessage,Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), statusMessage, Toast.LENGTH_SHORT).show();
                         }
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             // Do something when error occurred
             // pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
-        }){
+            Log.w("Error_throwing:", error.toString());
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -452,10 +459,12 @@ public class TransferListProductActivity extends NavigationActivity implements V
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -465,80 +474,80 @@ public class TransferListProductActivity extends NavigationActivity implements V
         requestQueue.add(jsonObjectRequest);
     }
 
-     public void printTransfer(String transferNo,ArrayList<TransferDetailModel> transferDetailModels,String type ){
-         if (transferDetailModels.size()>0){
-             TSCPrinter printer=new TSCPrinter(this,printerMacId,"Transfer");
-             try {
-                 printer.printTransferDetail(1,transferNo,type,transferDetailModels);
-             } catch (IOException e) {
-                 e.printStackTrace();
-             }
-         }
-     }
+    public void printTransfer(String transferNo, ArrayList<TransferDetailModel> transferDetailModels, String type) {
+        if (transferDetailModels.size() > 0) {
+            TSCPrinter printer = new TSCPrinter(this, printerMacId, "Transfer");
+            try {
+                printer.printTransferDetail(1, transferNo, type, transferDetailModels);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     protected void onResume() {
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
-        printerType=sharedPreferences.getString("printer_type","");
-        printerMacId=sharedPreferences.getString("mac_address","");
+        printerType = sharedPreferences.getString("printer_type", "");
+        printerMacId = sharedPreferences.getString("mac_address", "");
         super.onResume();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onClick(View v) {
-        if (v.getId()==R.id.transfer_in){
+        if (v.getId() == R.id.transfer_in) {
             transferInButton.setBackgroundColor(Color.parseColor("#2ECC71"));
             transferInText.setTextColor(Color.parseColor("#FFFFFF"));
             transferOutButton.setBackgroundColor(Color.parseColor("#d3d3d3"));
             transferOutText.setTextColor(Color.parseColor("#212121"));
-            String fromdate=Utils.convertDate(fromDate.getText().toString(),"dd-MM-yyyy","yyyyMMdd");
-            String todate=Utils.convertDate(toDate.getText().toString(),"dd-MM-yyyy","yyyyMMdd");
-            getTransferInRequest("In",fromdate,todate);
-            transferMode="Transfer In";
-           // addTransfer.setVisibility(View.GONE);
+            String fromdate = Utils.convertDate(fromDate.getText().toString(), "dd-MM-yyyy", "yyyyMMdd");
+            String todate = Utils.convertDate(toDate.getText().toString(), "dd-MM-yyyy", "yyyyMMdd");
+            getTransferInRequest("In", fromdate, todate);
+            transferMode = "Transfer In";
+            // addTransfer.setVisibility(View.GONE);
             transferInButton.setEnabled(false);
             transferOutButton.setEnabled(true);
             transferInText.setEnabled(false);
             transferOutText.setEnabled(true);
-        }else if (v.getId()==R.id.transfer_out){
+        } else if (v.getId() == R.id.transfer_out) {
             transferOutButton.setBackgroundColor(Color.parseColor("#2ECC71"));
             transferOutText.setTextColor(Color.parseColor("#FFFFFF"));
             transferInText.setTextColor(Color.parseColor("#212121"));
             transferInButton.setBackgroundColor(Color.parseColor("#d3d3d3"));
-            String fromdate=Utils.convertDate(fromDate.getText().toString(),"dd-MM-yyyy","yyyyMMdd");
-            String todate=Utils.convertDate(toDate.getText().toString(),"dd-MM-yyyy","yyyyMMdd");
-            getTransferInRequest("Out",fromdate,todate);
-            transferMode="Transfer Out";
+            String fromdate = Utils.convertDate(fromDate.getText().toString(), "dd-MM-yyyy", "yyyyMMdd");
+            String todate = Utils.convertDate(toDate.getText().toString(), "dd-MM-yyyy", "yyyyMMdd");
+            getTransferInRequest("Out", fromdate, todate);
+            transferMode = "Transfer Out";
             //addTransfer.setVisibility(View.VISIBLE);
             transferInButton.setEnabled(true);
             transferOutButton.setEnabled(false);
             transferInText.setEnabled(true);
             transferOutText.setEnabled(false);
-        }else if (v.getId()==R.id.tranfer_in_text){
+        } else if (v.getId() == R.id.tranfer_in_text) {
             transferInButton.setBackgroundColor(Color.parseColor("#2ECC71"));
             transferInText.setTextColor(Color.parseColor("#FFFFFF"));
             transferOutButton.setBackgroundColor(Color.parseColor("#d3d3d3"));
             transferOutText.setTextColor(Color.parseColor("#212121"));
-            String fromdate=Utils.convertDate(fromDate.getText().toString(),"dd-MM-yyyy","yyyyMMdd");
-            String todate=Utils.convertDate(toDate.getText().toString(),"dd-MM-yyyy","yyyyMMdd");
-            getTransferInRequest("In",fromdate,todate);
-            transferMode="Transfer In";
-           // addTransfer.setVisibility(View.GONE);
+            String fromdate = Utils.convertDate(fromDate.getText().toString(), "dd-MM-yyyy", "yyyyMMdd");
+            String todate = Utils.convertDate(toDate.getText().toString(), "dd-MM-yyyy", "yyyyMMdd");
+            getTransferInRequest("In", fromdate, todate);
+            transferMode = "Transfer In";
+            // addTransfer.setVisibility(View.GONE);
             transferInButton.setEnabled(false);
             transferOutButton.setEnabled(true);
             transferInText.setEnabled(false);
             transferOutText.setEnabled(true);
-        }else if (v.getId()==R.id.transfer_out_text){
+        } else if (v.getId() == R.id.transfer_out_text) {
             transferOutButton.setBackgroundColor(Color.parseColor("#2ECC71"));
             transferOutText.setTextColor(Color.parseColor("#FFFFFF"));
             transferInText.setTextColor(Color.parseColor("#212121"));
             transferInButton.setBackgroundColor(Color.parseColor("#d3d3d3"));
-            String fromdate=Utils.convertDate(fromDate.getText().toString(),"dd-MM-yyyy","yyyyMMdd");
-            String todate=Utils.convertDate(toDate.getText().toString(),"dd-MM-yyyy","yyyyMMdd");
-            getTransferInRequest("Out",fromdate,todate);
-            transferMode="Transfer Out";
-           // addTransfer.setVisibility(View.VISIBLE);
+            String fromdate = Utils.convertDate(fromDate.getText().toString(), "dd-MM-yyyy", "yyyyMMdd");
+            String todate = Utils.convertDate(toDate.getText().toString(), "dd-MM-yyyy", "yyyyMMdd");
+            getTransferInRequest("Out", fromdate, todate);
+            transferMode = "Transfer Out";
+            // addTransfer.setVisibility(View.VISIBLE);
             transferInButton.setEnabled(true);
             transferOutButton.setEnabled(false);
             transferInText.setEnabled(true);
@@ -556,16 +565,22 @@ public class TransferListProductActivity extends NavigationActivity implements V
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {//finish();
             onBackPressed();
-        }else if (item.getItemId()==R.id.action_add){
-            transferType=transferMode;
-           // Intent intent=new Intent(getApplicationContext(),TransferActivity.class);
+        } else if (item.getItemId() == R.id.action_add) {
+            transferType = transferMode;
+            // Intent intent=new Intent(getApplicationContext(),TransferActivity.class);
             //intent.putExtra("transferType",transferType);
-          //  startActivity(intent);
+            //  startActivity(intent);
 
-            Intent intent=new Intent(getApplicationContext(), TransferInActivity.class);
-            intent.putExtra("transferType",transferType);
+            Intent intent = new Intent(getApplicationContext(), TransferInActivity.class);
+            intent.putExtra("transferType", transferType);
             startActivity(intent);
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

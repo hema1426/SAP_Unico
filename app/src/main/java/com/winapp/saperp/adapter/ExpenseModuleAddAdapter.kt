@@ -25,7 +25,6 @@ class ExpenseModuleAddAdapter(
 
 ) : RecyclerView.Adapter<ExpenseModuleAddAdapter.MyViewHolder>() {
     lateinit var selectedModel: ExpenseModuleAddModel
-    lateinit var selectedPo: String
     var istrue: Boolean = false
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder(

@@ -57,7 +57,7 @@ public class NavigationActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Log.d("cgentry_",getClass().getSimpleName().toString());
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         networkChangeReceiver=new NetworkChangeReceiver();
         drawerLayout = findViewById(R.id.drawer_layout);

@@ -95,8 +95,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.Objects
 
-
-class CreateNewInvoiceActivity : AppCompatActivity() {
+class CreateNewInvoiceActivityBillDisc : AppCompatActivity() {
 
     private var returnLayout: LinearLayout? = null
     private var showHideButton: ImageView? = null
@@ -142,10 +141,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     var isCartonQtyEdit = false
     var isQtyEdit = false
     var net_total_value = 0.0
-    private var sharedPreferences: SharedPreferences? = null
-    private var sharedPref_billdisc: SharedPreferences? = null
-    private var myEdit: SharedPreferences.Editor? = null
-
     private val qtyTextWatcher: TextWatcher? = null
     private val cartonTextWatcher: TextWatcher? = null
     private val lqtyTextWatcher: TextWatcher? = null
@@ -154,7 +149,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     private var focSwitch: Switch? = null
     private var exchangeSwitch: Switch? = null
     private var returnSwitch: Switch? = null
-    var summaryModel = CreateInvoiceModel()
     private var focEditText: EditText? = null
     private var downArrow_inv_img: ImageView? = null
     private var hide_disc_layl: LinearLayout? = null
@@ -167,8 +161,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     private var bill_disc_layl: View? = null
     var isBillDiscountTouch = false
     var isBillPercentageTouch = false
-    var isreturnTouch = false
-    var isUomTouch = false
     protected var billDiscAmountTextWatcher: TextWatcher? = null
     protected var billDiscPercentageTextWatcher: TextWatcher? = null
     var billDiscountPercentage = "0"
@@ -215,13 +207,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     var invoicePrintCheck: CheckBox? = null
     var companyName: String? = null
     var remarkStr: String? = null
-    var billDiscSetAmt_api: String? = "0.00"
-    var billDiscSetPercent_api: String? = "0.00"
-    var billDisPercent_share_api: String? = "0"
     private var printerMacId: String? = null
     private var printerType: String? = null
-    private var pref_bill_disc_amt: String? = "0.00"
-    private var pref_bill_disc_percent: String? = "0.00"
+    private var sharedPreferences: SharedPreferences? = null
     private var remarkText: EditText? = null
     private var activityFrom: String? = ""
     var saveTitle: TextView? = null
@@ -230,8 +218,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     private var duplicateInvNo: String? = ""
     private var editDoNumber: String? = ""
     private var orderNo: String? = ""
-    private var saleable_editVal: String? = ""
-    private var damage_editVal: String? = ""
     var returnAdj: TextView? = null
     var returnLayoutView: LinearLayout? = null
     var cancelReturn: Button? = null
@@ -240,7 +226,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     var expiryReturnQty: EditText? = null
     var damageReturnQty: EditText? = null
     var expiryQtyTextWatcher: TextWatcher? = null
-    var returnQtyTextWatcher: TextWatcher? = null
     var damageQtyTextWatcher: TextWatcher? = null
     var invoiceDate: TextView? = null
     private var mYear = 0
@@ -267,7 +252,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     private var outstandingAmount = "0.00"
     var isCheckedInvoicePrint = false
     var isCheckedSalesPrint = false
-    var isUomSetting = true
+    var isUomSetting = false
     var isDeliveryAddrSetting = false
     var isSignatureSetting = false
     var isDiscountSetting = false
@@ -284,7 +269,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     private var deliveryAddrList: ArrayList<DeliveryAddressModel>? = null
     private val uomCode = ""
     private var uomName = ""
-    private var uomPriceEd = ""
     private var deliverAddrNameStr = ""
     var uomTextView: TextView? = null
     private var isEditItem = false
@@ -294,9 +278,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     private var customerCodeStr: String? = ""
     private var insertStatusDup: Boolean? = false
     var uomTxtTitl: TextView? = null
-    var ed_uomTxtl: TextView? = null
-    var uomChangel: TextView? = null
-    private var billDiscApiStr: String = "0.00"
+    private var billDiscApiStr: String? = "0.00"
 
     @SuppressLint("LogNotTimber", "ClickableViewAccessibility")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -310,7 +292,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         user = session!!.userDetails
         dbHelper = DBHelper(this)
         progressDialog = ProgressDialog(this)
-
         companyCode = user!!.get(SessionManager.KEY_COMPANY_CODE)
         companyName = user!!.get(SessionManager.KEY_COMPANY_NAME)
         username = user!!.get(SessionManager.KEY_USER_NAME)
@@ -375,8 +356,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         delivery_addrSpinner = findViewById(R.id.delivery_addr_spinner)
         uomTextView = findViewById(R.id.uom_txt)
         orderNoText = findViewById(R.id.order_no)
-        uomChangel = findViewById(R.id.uomChange)
-        ed_uomTxtl = findViewById(R.id.ed_uomTxt)
         //signatureLayout=findViewById(R.id.signature_layout);
         uomSpinnerLayl = findViewById(R.id.uomSpinnerLay)
         downArrow_inv_img = findViewById(R.id.downArrow_inv_lay)
@@ -392,6 +371,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         bill_disc_amt_ed = findViewById(R.id.bill_disc_amt_inv)
         bill_disc_subtotal_txtl = findViewById(R.id.bill_disc_subtotal_txt)
 
+
         settings = ArrayList()
         settings = dbHelper!!.settings
         Log.w("compcode..", "" + companyCode)
@@ -403,21 +383,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         products = ArrayList()
         productAutoComplete!!.clearFocus()
         barcodeText!!.requestFocus()
-
-        sharedPref_billdisc = getSharedPreferences("BillDiscPref", MODE_PRIVATE)
-        myEdit = sharedPref_billdisc!!.edit()
-
-        pref_bill_disc_amt = sharedPref_billdisc!!.getString("billDisc_amt", "")
-        pref_bill_disc_percent = sharedPref_billdisc!!.getString("billDisc_percent", "")
-
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE)
         printerType = sharedPreferences!!.getString("printer_type", "")
         printerMacId = sharedPreferences!!.getString("mac_address", "")
         productAutoComplete!!.setEnabled(false)
-        item_discount_ed!!.isEnabled = false
-        exchange_inv!!.isEnabled = false
 
-            downArrow_inv_img!!.setOnClickListener(View.OnClickListener {
+        downArrow_inv_img!!.setOnClickListener(View.OnClickListener {
             if (downArrow_inv_img!!.getTag() == "hide") {
                 hide_disc_layl!!.setVisibility(View.VISIBLE)
                 downArrow_inv_img!!.setTag("show")
@@ -452,11 +423,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             editSoNumber = intent.getStringExtra("editSoNumber")
             duplicateInvNo = intent.getStringExtra("duplicateInvNo")
             customerCodeStr = intent.getStringExtra("customerDupCode")
-            if (intent.getStringExtra("customerBillDisc") != null) {
-                billDiscApiStr = intent.getStringExtra("customerBillDisc")!!
-                 Log.w("billdiscpi_inv::", billDiscApiStr!!)
-            }
+            billDiscApiStr = intent.getStringExtra("customerBillDisc")
 
+            Log.w("billdiscpi_inv::", billDiscApiStr!!)
 
             currentSaveDateTime = intent.getStringExtra("currentDateTime")
             editDoNumber = intent.getStringExtra("editDoNumber")
@@ -469,16 +438,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             } else if (activityFrom == "ConvertInvoice") {
                 priceText!!.setEnabled(true)
                 orderNoText!!.setText(orderNo)
-                downArrow_inv_img!!.setVisibility(View.VISIBLE)
                 supportActionBar!!.setTitle("Covert Invoice -$editSoNumber")
-            }
-            else if (activityFrom == "ConvertInvoiceFromDO") {
-                priceText!!.setEnabled(true)
-                orderNoText!!.setText(orderNo)
-                downArrow_inv_img!!.setVisibility(View.VISIBLE)
-                supportActionBar!!.setTitle("Covert Invoice -$editSoNumber")
-            }
-            else if (activityFrom == "SalesEdit") {
+            } else if (activityFrom == "SalesEdit") {
                 priceText!!.setEnabled(true)
                 orderNoText!!.setText(orderNo)
                 returnQtyText!!.setVisibility(View.GONE)
@@ -501,9 +462,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             } else if (activityFrom == "Duplicate") {
                 priceText!!.setEnabled(true)
                 downArrow_inv_img!!.setVisibility(View.VISIBLE)
-
-                bill_disc_amt_ed!!.setText(pref_bill_disc_amt)
-                bill_disc_percent_ed!!.setText(pref_bill_disc_percent)
                 //  getDuplicateInvoiceDetails(duplicateInvNo!!)
                 // orderNoText.setText(orderNo);
 //                returnQtyText.setVisibility(View.GONE);
@@ -539,7 +497,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                         isUomSetting = if (model.settingValue == "1") {
                             true
                         } else {
-                            true
+                            false
                         }
                     } else if (model.settingName == "deliveryAddressSwitch") {
                         Log.w("SettingNameI:", model.settingName)
@@ -577,20 +535,19 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                         Log.w("SettingNamediscmini:", model.settingName)
                         Log.w("SettingValuediscmini:", model.settingValue)
                         minimum_disc_amt = model.settingValue.toDouble()
-                    }
-                    else if (model.settingName == "discountAmountValidationTo") {
+                    } else if (model.settingName == "discountAmountValidationTo") {
                         Log.w("SettingNamediscmax:", model.settingName)
                         Log.w("SettingValuediscmax:", model.settingValue)
                         maximum_disc_amt = model.settingValue.toDouble()
                     }
+
                 }
             }
         }
         Log.w("settingValdiss", "$maximum_disc_amt  .. $minimum_disc_amt" + isDiscountApiSetting)
 
         Log.w("settingVal", "$isDiscountSetting  .. $isSignatureSetting")
-        if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-            || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO") {
+        if (activityFrom == "iv" || activityFrom == "ConvertInvoice" || activityFrom == "Duplicate") {
             downArrow_inv_img!!.setVisibility(View.VISIBLE)
             if (isDiscountSetting) {
                 discount_layInv!!.setVisibility(View.VISIBLE)
@@ -625,7 +582,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             getAllProducts(jsonObject)
         } catch (e: JSONException) {
             e.printStackTrace()
-            Log.w("Erroraa:", Objects.requireNonNull(e.message!!))
         }
         val jsonObj = JSONObject()
         try {
@@ -633,13 +589,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             getDeliveryAddress(jsonObj)
         } catch (e: JSONException) {
             throw RuntimeException(e)
-            Log.w("Errorw:", Objects.requireNonNull(e.message!!))
         }
         try {
             grouplist
         } catch (e: JSONException) {
             e.printStackTrace()
-            Log.w("Errorp:", Objects.requireNonNull(e.message!!))
         }
         val sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE)
         selectCustomerId = sharedPreferences.getString("customerId", "")
@@ -695,9 +649,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         searchProduct!!.setOnClickListener(View.OnClickListener { viewCloseBottomSheet() })
 
         downarrow_billLayl!!.setOnClickListener {
-//            bill_disc_amt_ed!!.setText(pref_bill_disc_amt)
-//            bill_disc_percent_ed!!.setText(pref_bill_disc_percent)
-
             billDischide()
         }
 
@@ -722,6 +673,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
 
         billDiscAmountTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                Log.w("BeforeTextChanged:", "ErrorShowing")
             }
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
@@ -737,17 +689,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                             setPercentageAmount("0".toDouble())
                             val net_subtotal = subtotal - 0
                             setCalculationSummaryView(net_subtotal)
-                            billDiscPref()
                         } else {
                             setPercentageAmount(editable.toString().toDouble())
                             val net_subtotal = subtotal - editable.toString().toDouble()
                             setCalculationSummaryView(net_subtotal)
-                            billDiscPref()
                         }
                     } else {
                         setPercentageAmount(0.0)
                         setCalculationSummaryView(subtotal)
-                        billDiscPref()
                     }
                 }
             }
@@ -757,13 +706,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
 
         billDiscPercentageTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-            }
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
 
                 val subtotal: Double = getSubtotal()
                 if (isBillPercentageTouch) {
-                    Log.w("PercentageAff:", "")
                     if (!editable.toString().isEmpty()) {
                         if (editable.toString() == ".") {
                             bill_disc_percent_ed!!.setText("0.")
@@ -775,7 +722,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                             val net_subtotal: Double =
                                 subtotal - bill_disc_amt_ed!!.getText().toString().toDouble()
                             setCalculationSummaryView(net_subtotal)
-                            billDiscPref()
                         } else {
                             val amount: Double = percentageToAmount(editable.toString().toDouble())
                             Log.w("PercentageAmtdisc:", amount.toString() + "")
@@ -785,14 +731,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                             val net_subtotal: Double =
                                 subtotal - bill_disc_amt_ed!!.getText().toString().toDouble()
                             setCalculationSummaryView(net_subtotal)
-                            billDiscPref()
                         }
                     } else {
                         bill_disc_amt_ed!!.removeTextChangedListener(billDiscAmountTextWatcher)
                         bill_disc_amt_ed!!.setText("")
                         bill_disc_amt_ed!!.addTextChangedListener(billDiscAmountTextWatcher)
                         setCalculationSummaryView(subtotal)
-                        billDiscPref()
                     }
                 }
             }
@@ -800,33 +744,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         bill_disc_percent_ed!!.addTextChangedListener(billDiscPercentageTextWatcher)
 
 
-        exchangeTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {
-                val disc = editable.toString()
-
-                if (!disc.isEmpty()) {
-                    damageReturnQty!!.removeTextChangedListener(damageQtyTextWatcher)
-                    damageReturnQty!!.setText(disc)
-                    damageReturnQty!!.addTextChangedListener(damageQtyTextWatcher)
-                } else {
-                    damageReturnQty!!.removeTextChangedListener(damageQtyTextWatcher)
-                    damageReturnQty!!.setText("0")
-                    damageReturnQty!!.addTextChangedListener(damageQtyTextWatcher)
-                }
-            }
-        }
-        exchange_inv!!.addTextChangedListener(exchangeTextWatcher)
-
-
         discTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
                 val disc = editable.toString()
+
                 if (!disc.isEmpty()) {
-                    Log.w("diszz", "")
                     if (isInRange(minimum_disc_amt, maximum_disc_amt, disc.toDouble())) {
                         discountStr = item_discount_ed!!.getText().toString()
                     } else {
@@ -834,7 +758,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                         item_discount_ed!!.setText("")
                         discountStr = "0"
                         item_discount_ed!!.addTextChangedListener(discTextWatcher)
-
                         //   Toast.makeText(getApplicationContext(), "Minimum discount amonut $1 !", Toast.LENGTH_SHORT).show();
                     }
                 } else {
@@ -842,7 +765,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     item_discount_ed!!.setText("")
                     discountStr = "0"
                     item_discount_ed!!.addTextChangedListener(discTextWatcher)
-
                     //   Toast.makeText(getApplicationContext(), "Minimum discount amonut $1 !", Toast.LENGTH_SHORT).show();
                 }
                 setCalculationView()
@@ -851,6 +773,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         if (item_discount_ed!!.isFocusable()) {
             item_discount_ed!!.addTextChangedListener(discTextWatcher)
         }
+
+
         productNameEditext!!.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
@@ -863,75 +787,37 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 }
             }
         })
-
-        returnQtyText!!.setOnTouchListener(View.OnTouchListener
-        { view, motionEvent ->
-            isreturnTouch = true
-            returnQtyText!!.addTextChangedListener(billDiscAmountTextWatcher)
-            false
-        })
-
-
         returnQtyText!!.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                if (isreturnTouch) {
-                    Log.w("entyrett","")
-                    setCalculationView()
-                    if (!editable.toString().isEmpty()) {
-                        expiryReturnQty!!.setText(editable.toString())
-                    } else {
-                        expiryReturnQty!!.setText("")
-                    }
-                }
-                else{
-                    expiryReturnQty!!.setText(saleable_editVal)
-                    damageReturnQty!!.setText(damage_editVal)
+                setCalculationView()
+                if (!editable.toString().isEmpty()) {
+                    expiryReturnQty!!.setText(editable.toString())
+                } else {
+                    expiryReturnQty!!.setText("")
                 }
             }
         })
-
-
-//        returnQtyTextWatcher = object : TextWatcher {
-//            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-//            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-//            override fun afterTextChanged(editable: Editable) {
-//                setCalculationView()
-//                if (!editable.toString().isEmpty()) {
-//                    expiryReturnQty!!.removeTextChangedListener(expiryQtyTextWatcher)
-//                    expiryReturnQty!!.setText(editable.toString())
-//                    expiryReturnQty!!.addTextChangedListener(expiryQtyTextWatcher)
-//                } else {
-//                    expiryReturnQty!!.removeTextChangedListener(expiryQtyTextWatcher)
-//                    expiryReturnQty!!.setText("")
-//                    expiryReturnQty!!.addTextChangedListener(expiryQtyTextWatcher)                }
-//            }
-//        }
-//        returnEditext!!.addTextChangedListener(returnQtyTextWatcher)
-
-
         expiryQtyTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable) {
                 if (!returnQtyText!!.getText().toString().isEmpty()) {
                     val netreturnqty = returnQtyText!!.getText().toString()
-                    val net_qty = netreturnqty.toDouble()
-                    // net 10 damag 5
+                    val net_qty = netreturnqty.toString().toDouble()
                     if (!s.toString().isEmpty()) {
                         val damageqty = s.toString().toDouble()
                         if (net_qty > damageqty) {
-                            //10 >5
-                            val value = net_qty - damageqty   // 5
+                            val value = net_qty - damageqty
                             damageReturnQty!!.removeTextChangedListener(damageQtyTextWatcher)
                             damageReturnQty!!.setText(value.toString())
                             damageReturnQty!!.addTextChangedListener(damageQtyTextWatcher)
-                        } else if (net_qty == damageqty) { //10 == 10
+                        } else if (net_qty == damageqty) {
                             damageReturnQty!!.removeTextChangedListener(damageQtyTextWatcher)
                             damageReturnQty!!.setText("0")
                             damageReturnQty!!.addTextChangedListener(damageQtyTextWatcher)
-                        } else if (net_qty < damageqty) { //10<5
+                        } else if (net_qty < damageqty) {
                             expiryReturnQty!!.setText("0")
                             damageReturnQty!!.removeTextChangedListener(damageQtyTextWatcher)
                             damageReturnQty!!.setText(netreturnqty)
@@ -993,13 +879,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     val netreturnqty = returnQtyText!!.getText().toString()
                     val net_qty = netreturnqty.toInt()
                     if (!s.toString().isEmpty()) {
-                        val damageqty = s.toString().toDouble()
+                        val damageqty = s.toString().toInt()
                         if (net_qty > damageqty) {
                             val value = net_qty - damageqty
                             expiryReturnQty!!.removeTextChangedListener(expiryQtyTextWatcher)
                             expiryReturnQty!!.setText(value.toString())
                             expiryReturnQty!!.addTextChangedListener(expiryQtyTextWatcher)
-                        } else if (net_qty.toDouble() == damageqty) {
+                        } else if (net_qty == damageqty) {
                             expiryReturnQty!!.removeTextChangedListener(expiryQtyTextWatcher)
                             expiryReturnQty!!.setText("0")
                             expiryReturnQty!!.addTextChangedListener(expiryQtyTextWatcher)
@@ -1091,7 +977,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 setCalculationView()
                 if (companyCode == "SUPERSTAR TRADERS PTE LTD") {
                     if (activityFrom == "iv" || activityFrom == "so" || activityFrom == "SalesEdit" ||
-                        activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                        activityFrom == "Duplicate"
                     ) {
                         //  if (!isAllowLowStock){
                         checkLowStock()
@@ -1105,7 +991,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                             }
                         }
                     } else {
-                        if (activityFrom == "iv" || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO") {
+                        if (activityFrom == "iv" || activityFrom == "Duplicate") {
                             if (!isAllowLowStock) {
                                 checkLowStock()
                             }
@@ -1116,7 +1002,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         }
         qtyValue!!.addTextChangedListener(qtyTW)
         productAutoComplete!!.setOnItemClickListener(OnItemClickListener { parent, view, position, rowId ->
-
             val selectProduct = parent.getItemAtPosition(position) as String
             val product =
                 selectProduct.split("~".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -1243,32 +1128,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 View.GONE
             )
         })
-        uomChangel!!.setOnClickListener(){
-            if (isUomSetting) {
-                uomChangel!!.visibility = View.VISIBLE
-                ed_uomTxtl!!.visibility = View.GONE
-                uomSpinnerLayl!!.visibility = View.VISIBLE
+        bill_disc_layl!!.setOnClickListener {
+            val products = dbHelper!!.allInvoiceProducts
 
-                            val jsonObject = JSONObject()
-                            try {
-                                jsonObject.put("CustomerCode", selectCustomerId)
-                                jsonObject.put("ItemCode",productId)
-                                getUOM(jsonObject)
-
-                            } catch (e: JSONException) {
-                                e.printStackTrace()
-                                Log.w("Errort:", Objects.requireNonNull(e.message!!))
-                            }
-                        }
-            else{
-                Toast.makeText(this, "UOM settings not enabled", Toast.LENGTH_LONG).show()
-
+            if (netTotalValue!!.text.toString().toDouble() > 0.00 && products!!.size>0) {
+                bill_disc_percent_ed!!.setText(billDiscApiStr)
             }
         }
-
-
-        saveReturn!!.setOnClickListener(View.OnClickListener {
-            /* if (!expiryReturnQty.getText().toString().isEmpty() && !damageReturnQty.getText().toString().isEmpty()){
+        saveReturn!!.setOnClickListener(View.OnClickListener { /* if (!expiryReturnQty.getText().toString().isEmpty() && !damageReturnQty.getText().toString().isEmpty()){
                     if (!damageReturnQty.getText().toString().isEmpty()){
              //           if (Integer.parseInt(damageReturnQty.getText().toString())> 0){
                             if (Integer.parseInt(expiryReturnQty.getText().toString()) == 0){
@@ -1293,7 +1160,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         // Setting the sorting
         sortButton!!.setOnClickListener(View.OnClickListener {
             val menuItemView = findViewById<View>(R.id.fab)
-            val popupMenu = PopupMenu(this@CreateNewInvoiceActivity, menuItemView)
+            val popupMenu = PopupMenu(this@CreateNewInvoiceActivityBillDisc, menuItemView)
             popupMenu.menuInflater.inflate(R.menu.sort_menu, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -1338,30 +1205,19 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         val cancelButton = customLayout.findViewById<Button>(R.id.buttonNo)
         val clearButton = customLayout.findViewById<Button>(R.id.buttonClear)
         val mContent = customLayout.findViewById<LinearLayout>(R.id.signature_layout)
-        acceptButton.isEnabled = false
-        acceptButton.alpha = 0.4f
-
-        val mSig = CaptureSignatureView(this, null, CaptureSignatureView.OnSignatureDraw {
-            Log.w("SignatureString:", acceptButton.isEnabled.toString())
-            acceptButton.isEnabled = true
-            acceptButton.alpha = 1f
-        })
+        val mSig = CaptureSignatureView(this, null)
         mContent.addView(
             mSig,
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.MATCH_PARENT
         )
-        acceptButton.setOnClickListener {
-            // byte[] signature = captureSignatureView.getBytes();
-            if(it.isEnabled) {
-                signatureString = ""
-                val signature = mSig.bitmap
-                signatureCapture!!.setImageBitmap(signature)
-                signatureString = ImageUtil.convertBimaptoBase64(signature)
-                Utils.setSignature(signatureString)
-                signatureAlert!!.dismiss()
-                Log.w("SignatureString_data:", signatureString!!)
-            }
+        acceptButton.setOnClickListener { // byte[] signature = captureSignatureView.getBytes();
+            val signature = mSig.bitmap
+            signatureCapture!!.setImageBitmap(signature)
+            signatureString = ImageUtil.convertBimaptoBase64(signature)
+            Utils.setSignature(signatureString)
+            signatureAlert!!.dismiss()
+            Log.w("SignatureString:", signatureString!!)
         }
         cancelButton.setOnClickListener { signatureAlert!!.dismiss() }
         clearButton.setOnClickListener {
@@ -1460,7 +1316,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         mMonth = c[Calendar.MONTH]
         mDay = c[Calendar.DAY_OF_MONTH]
         val datePickerDialog = DatePickerDialog(
-            this@CreateNewInvoiceActivity,
+            this@CreateNewInvoiceActivityBillDisc,
             { view, year, monthOfYear, dayOfMonth ->
                 dateEditext!!.text = dayOfMonth.toString() + "-" + (monthOfYear + 1) + "-" + year
                 currentDate = convertDate(
@@ -1478,7 +1334,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             lowStockSetting
             for (model in AppUtils.getProductsList()) {
                 Log.w("product_Code:", model.productCode)
-
                 if (model.productCode == productId.trim { it <= ' ' }) {
                     if (model.stockQty != null && model.stockQty != "null") {
                         if (model.stockQty.toDouble() == 0.0 || model.stockQty.toDouble() < 0) {
@@ -1578,7 +1433,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     }
 
     fun showMinimumSellingpriceAlert(sellingPrice: String) {
-        val builder1 = AlertDialog.Builder(this@CreateNewInvoiceActivity)
+        val builder1 = AlertDialog.Builder(this@CreateNewInvoiceActivityBillDisc)
         builder1.setTitle("Warning !")
         builder1.setMessage(
             productName + "-" + "Minimum Selling Price is : $ " + Utils.twoDecimalPoint(
@@ -1592,6 +1447,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     }
 
     fun addProduct(action: String?) {
+        bill_disc_percent_ed!!.setText("0.00")
+        bill_disc_amt_ed!!.setText("0.00")
 
         if (isProductExist(productId)) {
             Log.w("ProductIdView:", productId!!)
@@ -1633,19 +1490,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             var return_qty = "0"
             val lPriceCalc = "0"
             var itemdiscc = "0"
-            var billdiscc = "0"
             var foc = "0"
             var uom = "PCS"
-            var saleable = "0"
-            var damaged = "0"
             var price_value = "0"
 
-//            var summaryList: ArrayList<CreateInvoiceModel>? = ArrayList()
-//
-//            summaryModel.saleableQty  = expiryReturnQty!!.text.toString()
-//            summaryModel.damagedQty = damageReturnQty!!.text.toString()
-//
-//           // summaryList!!.add(summaryModel)
+            bill_disc_percent_ed!!.setText("0.00")
+            bill_disc_amt_ed!!.setText("0.00")
 
             if (focSwitch!!.isChecked) {
                 focType = "ctn"
@@ -1679,15 +1529,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             if (!uomText!!.text.toString().isEmpty()) {
                 uom = uomText!!.text.toString()
             }
-            if (!expiryReturnQty!!.text.toString().isEmpty()) {
-                saleable = expiryReturnQty!!.text.toString()
-            }
-            if (!damageReturnQty!!.text.toString().isEmpty()) {
-                damaged = damageReturnQty!!.text.toString()
-            }
-            if (!bill_disc_amt_ed!!.text.toString().isEmpty()) {
-                billdiscc = bill_disc_amt_ed!!.text.toString()
-            }
+
             val priceValue = 0.0
             val net_qty = qty_value.toDouble() - return_qty.toDouble()
             val return_amt = return_qty.toDouble() * price_value.toDouble()
@@ -1708,13 +1550,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 netTotalValue!!.text.toString(),
                 itemdiscc,
                 "",
-                saleable,
-                damaged,
+                "",
+                ""
             )
-            Log.w("itemds_inv",""+itemdiscc+".. "+
-                    sharedPref_billdisc!!.getString("billDisc_amt", ""))
-
-            Log.w("total_inv",""+netTotalValue!!.text.toString()+".. "+subTotalValue!!.text.toString())
 
             // Adding Return Qty Table values
             if (return_qty.toInt() > 0) {
@@ -1745,11 +1583,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 stockCount!!.setText("")
                 stockQtyValue!!.text = ""
                 qtyValue!!.clearFocus()
-                uomChangel!!.visibility = View.GONE
-                ed_uomTxtl!!.visibility = View.GONE
-                uomSpinnerLayl!!.visibility = View.VISIBLE
-                bill_disc_percent_ed!!.setText("0.00")
-                bill_disc_amt_ed!!.setText("0.00")
                 isEditItem = false
                 productAutoComplete!!.clearFocus()
                 focEditText!!.setText("")
@@ -1757,7 +1590,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 discountEditext!!.setText("")
                 returnQtyText!!.setText("")
                 item_discount_ed!!.setText("")
-                isreturnTouch = false
                 focSwitch!!.isChecked = false
                 exchangeSwitch!!.isChecked = false
                 returnSwitch!!.isChecked = false
@@ -1767,12 +1599,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 focEditText!!.isEnabled = false
                 exchangeEditext!!.isEnabled = false
                 discountEditext!!.isEnabled = false
-                item_discount_ed!!.isEnabled = false
-                exchange_inv!!.isEnabled = false
-
                 addProduct!!.text = "Add"
-                searchProduct!!.isEnabled = true
-                down_menu!!.isVisible = true
                 hideKeyboard()
                 getProducts()
             } else {
@@ -1782,6 +1609,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             Log.e("Error_InsertProduct:", ec.message!!)
         }
     }
+
     @SuppressLint("SetTextI18n")
     private fun getProducts() {
         val products = dbHelper!!.allInvoiceProducts
@@ -1802,46 +1630,32 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                         isEditItem = true
                         salesReturn!!.isChecked = false
                         salesReturn!!.isEnabled = false
-                        searchProduct!!.isEnabled = false
-                        down_menu!!.isVisible = false
-                        item_discount_ed!!.isEnabled = true
-
                         productId = model.productCode
                         productName = model.productName
                         uomText!!.setText(model.uomCode)
                         uomName = model.uomCode
-                        uomPriceEd = model.price
-                        damage_editVal = model.damagedQty
-                        saleable_editVal = model.saleableQty
-
-                        uomChangel!!.visibility = View.VISIBLE
-                        ed_uomTxtl!!.visibility = View.VISIBLE
-                        uomSpinnerLayl!!.visibility = View.GONE
-
-                        ed_uomTxtl!!.setText(model.uomCode)
 
                         val jsonObject = JSONObject()
                         Log.w("pdtuomentryy", "" + model.productCode);
-                        Log.w("sal_damag_txt:", model.saleableQty+model.damagedQty)
 
-//                        if (isUomSetting) {
-//                            val jsonObject = JSONObject()
-//                            try {
-//                                jsonObject.put("CustomerCode", selectCustomerId)
-//                                jsonObject.put("ItemCode",productId)
-//                                getUOM(jsonObject)
-//
-//                            } catch (e: JSONException) {
-//                                e.printStackTrace()
-//                                Log.w("Errort:", Objects.requireNonNull(e.message!!))
-//                            }
-//                        }
+                        if (isUomSetting) {
+                            val jsonObject = JSONObject()
+                            try {
+                                jsonObject.put("CustomerCode", selectCustomerId)
+                                jsonObject.put("ItemCode",productId)
+                                getUOM(jsonObject)
+
+                            } catch (e: JSONException) {
+                                e.printStackTrace()
+                            }
+                        }
                         Log.w("EditUomText:", model.uomCode)
-//                        setUOMCode(uomList!!)
+                   //     setUOMCode(uomList!!)
                         uomTextView!!.text = model.uomText
                         qtyValue!!.setText("")
                         val netqty = model.netQty.toDouble()
 
+                        Log.w("itemdiscc:", model.itemDisc)
 
                         /*  if (model.getMinimumSellingPrice()!=null && !model.getMinimumSellingPrice().isEmpty()){
                         minimumSellingPriceText.setText(model.getMinimumSellingPrice());
@@ -1853,8 +1667,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                         productAutoComplete!!.setText(model.productName + "-" + model.productCode)
                         priceText!!.setText(model.price)
                         item_discount_ed!!.setText(model.itemDisc)
-                        expiryReturnQty!!.setText(model.saleableQty)
-                        damageReturnQty!!.setText(model.damagedQty)
 
                         addProduct!!.text = "Update"
                         qtyValue!!.requestFocus()
@@ -1867,7 +1679,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                             focEditText!!.setText("0")
                         }
                         if (model.returnQty != null && !model.returnQty.isEmpty() && model.returnQty != "null") {
-                            returnQtyText!!.setText(model.returnQty.toString())
+                            returnQtyText!!.setText(model.returnQty)
                         } else {
                             returnQtyText!!.setText("0")
                         }
@@ -1922,11 +1734,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     sDialog.dismissWithAnimation()
                     getProducts()
                     setSummaryTotal()
-                    addProduct!!.text = "Add"
-                    searchProduct!!.isEnabled = true
-                    down_menu!!.isVisible = true
-
-                    Utils.refreshActionBarMenu(this@CreateNewInvoiceActivity)
+                    Utils.refreshActionBarMenu(this@CreateNewInvoiceActivityBillDisc)
                 }
                 .showCancelButton(true)
                 .setCancelText("No")
@@ -1944,8 +1752,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 imm.hideSoftInputFromWindow(view.windowToken, 0)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.w("Errorj1:", Objects.requireNonNull(e.message!!))
         }
     }
 
@@ -2029,10 +1835,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         subTotalValue!!.text = "0.0"
         taxValueText!!.text = "0.00"
         netTotalValue!!.text = "0.0"
-        uomChangel!!.visibility = View.GONE
-        ed_uomTxtl!!.visibility = View.GONE
-        uomSpinnerLayl!!.visibility = View.VISIBLE
-
         productAutoComplete!!.setText("")
         priceText!!.setText("0.00")
         qtyValue!!.setText("")
@@ -2125,13 +1927,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 val taxValue = customerDetails!!.get(0).taxPerc
                 val taxType = customerDetails!!.get(0).taxType
 
-                net_total_value = net_sub_total
-
-//                if (taxType == "I") {
-//                    net_total_value = net_total + discount
-//                } else {
-//                    net_total_value = net_sub_total + discount
-//                }
+                if (taxType == "I") {
+                    net_total_value = net_total + discount
+                } else {
+                    net_total_value = net_sub_total + discount
+                }
             }
 
         } catch (ex: Exception) {
@@ -2240,8 +2040,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 taxTitle!!.text = "GST ( Zero )"
             }
         } catch (e: Exception) {
-            Log.w("Error_Throwing1::", e.message!!)
-
         }
     }
 
@@ -2392,13 +2190,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             addProduct!!.alpha = 0.9f
             addProduct!!.isEnabled = true
         }
-//        if ((netTotalValue!!.text.toString().toDouble() > 0.00 )&& (products!!.size>0)) {
-//            down_menu!!.isVisible = true
-//        }
-//        else{
-//            down_menu!!.isVisible = false
-//        }
-        if (netTotalValue!!.text.toString().toDouble() > 0.00) {
+        if ((netTotalValue!!.text.toString().toDouble() > 0.00 )&& (products!!.size>0)) {
+            down_menu!!.isVisible = true
+        }
+        else{
+            down_menu!!.isVisible = false
+        }
+            if (netTotalValue!!.text.toString().toDouble() > 0.00) {
             addProduct!!.alpha = 0.9f
             addProduct!!.isEnabled = true
         } else {
@@ -2509,7 +2307,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Log.w("Error:", Objects.requireNonNull(e.message!!))
                 }
             },
             Response.ErrorListener { error: VolleyError ->
@@ -2586,7 +2383,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Log.w("Errory:", Objects.requireNonNull(e.message!!))
                 }
             },
             Response.ErrorListener { error: VolleyError ->
@@ -2619,24 +2415,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest)
     }
-    fun billDiscPref(){
-        var pref_bill_disc_amt1: String = ""
-        var pref_bill_disc_percent1: String = ""
-
-        if(bill_disc_amt_ed!!.text.toString().isNotEmpty()){
-             pref_bill_disc_amt1 = bill_disc_amt_ed!!.text.toString()
-        }
-        if(bill_disc_percent_ed!!.text.toString().isNotEmpty()){
-             pref_bill_disc_percent1 = bill_disc_percent_ed!!.text.toString()
-        }
-
-        myEdit!!.putString("billDisc_amt", pref_bill_disc_amt1)
-        myEdit!!.putString("billDisc_percent", pref_bill_disc_percent1)
-        myEdit!!.apply()
-
-        pref_bill_disc_amt = sharedPref_billdisc!!.getString("billDisc_amt", "")
-        pref_bill_disc_percent = sharedPref_billdisc!!.getString("billDisc_percent", "")
-    }
 
     fun getAllProducts(jsonObject: JSONObject) {
         // Initialize a new RequestQueue instance
@@ -2664,7 +2442,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     //  "isActive":"N","createUser":"1","createDate":"13\/07\/2021","modifyDate":"29\/07\/2021","remarks":"",
                     //  "warehouse":"01","stockInHand":"0.000000","averagePrice":0,"manageBatchOrSerial":"None","manageBatchNumber":"N",
                     //  "manageSerialNumber":"N","batchNumber":"","expiryDate":null,"manufactureDate":"31\/07\/2021","imageURL":""}
-
                     Log.w("Response_SAP_PRODUCTS:", response.toString())
                     // Loop through the array elements
                     val productArray = response.optJSONArray("responseData")
@@ -2735,7 +2512,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Log.w("Errorn:", Objects.requireNonNull(e.message!!))                }
+                }
             },
             Response.ErrorListener { error: VolleyError ->
                 // Do something when error occurred
@@ -2839,7 +2616,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     getUOM(jsonObject)
                 } catch (e: JSONException) {
                     e.printStackTrace()
-                    Log.w("Errors:", Objects.requireNonNull(e.message!!))                }
+                }
             }
             // setUomList(model.getProductUOMList());
             uomTextView!!.text = model.uomText
@@ -2856,9 +2633,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             exchangeEditext!!.isEnabled = true
             discountEditext!!.isEnabled = true
             returnQtyText!!.isEnabled = true
-            item_discount_ed!!.isEnabled = true
-            exchange_inv!!.isEnabled = true
-
             if (model.minimumSellingPrice != null && !model.minimumSellingPrice.isEmpty()) {
                 minimumSellingPriceText!!.text = model.minimumSellingPrice
             } else {
@@ -3038,8 +2812,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 } else {
                     invoiceObject.put("focQty", "0")
                 }
-                Log.w("cartPricssOO", "" + twoDecimalPoint((model.price.toDouble())))
-
                 invoiceObject.put("returnSubTotal", return_subtotal.toString() + "")
                 invoiceObject.put("returnNetTotal", return_subtotal.toString() + "")
                 invoiceObject.put("taxCode", `object`.optString("taxCode"))
@@ -3056,7 +2828,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             saveSalesOrder(rootJsonObject, "SalesOrder", copy)
         } catch (e: JSONException) {
             e.printStackTrace()
-            Log.w("Errore:", Objects.requireNonNull(e.message!!))
+            Log.w("Given_Error:", Objects.requireNonNull(e.message!!))
         }
     }
 
@@ -3095,12 +2867,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
 
         prod_bottom_layout!!.visibility = View.VISIBLE
         bill_disc_layl!!.visibility = View.GONE
-        item_discount_ed!!.isEnabled = true
-        exchange_inv!!.isEnabled = true
-        bill_disc_percent_ed!!.setText("0.00")
-        bill_disc_amt_ed!!.setText("0.00")
-
-        setSummaryTotal()
 
         productNameEditext!!.setText("")
         selectProductAdapter!!.notifyDataSetChanged()
@@ -3172,7 +2938,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     getUOM(jsonObject)
                 } catch (e: JSONException) {
                     e.printStackTrace()
-                    Log.w("Errord:", Objects.requireNonNull(e.message!!))
                 }
             }
 
@@ -3304,7 +3069,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     uomText!!.setText(uomList[i].uomCode)
                     priceText!!.setText(uomList[i].price)
 
-
                     break
                 }
             }
@@ -3313,7 +3077,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
 
 
     private fun setUOMCode(uomList: ArrayList<UomModel>) {
-
         uomSpinner!!.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -3321,25 +3084,21 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-//                if (isEditItem) {
-//                    selectValue(uomList, uomName, uomPriceEd!!)
-//                    Log.w("uomentyy:", uomName + "kk"+uomPriceEd)
-//
-//                } else {
+                if (isEditItem) {
+                    selectValueEdit(uomList, uomName)
+                } else {
                     uomName = uomSpinner!!.selectedItem.toString()
                     uomText!!.setText(uomList[position].uomCode)
                     priceText!!.setText(uomList[position].price)
-                    Log.w("uomentyy1:", uomName)
-
                     Log.w("UOMQtyValue:", uomList[position].uomEntry)
                     Log.w("SelectedUOM:", uomName + "")
-               // }
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
-    private fun selectValue(uomList: ArrayList<UomModel>, value: String ,price: String) {
+    private fun selectValue(uomList: ArrayList<UomModel>, value: String) {
         try {
             var index = 0
             for (model in uomList) {
@@ -3347,14 +3106,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     uomSpinner!!.setSelection(index)
                     uomName = model.uomCode
                     uomText!!.setText(model.uomCode)
-                    priceText!!.setText(price)
-                    Log.w("SelectedUOMEd:", uomName + ""+price)
+                    priceText!!.setText(model.price)
+                    Log.w("SelectedUOMEd:", uomName + "")
                     break
                 }
                 index++
             }
-             //isEditItem = false
-
         } catch (exception: Exception) {
         }
     }
@@ -3448,65 +3205,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             }
 
             R.id.action_down -> {
-                val products = dbHelper!!.allInvoiceProducts
-
-                if (netTotalValue!!.text.toString().toDouble() > 0.00 && products!!.size>0) {
-                   // bill_disc_percent_ed!!.setText(billDiscApiStr)
-                    bill_disc_amt_ed!!.setText(pref_bill_disc_amt)
-                    bill_disc_percent_ed!!.setText(pref_bill_disc_percent)
-
-                    isBillPercentageTouch = true
-
-                    val subtotal: Double = getSubtotal()
-                    if (isBillPercentageTouch) {
-                        Log.w("PercentageAff:", "")
-                        if (!billDiscApiStr.isEmpty()) {
-                            if (billDiscApiStr == ".") {
-                                bill_disc_percent_ed!!.setText("0.")
-                                bill_disc_percent_ed!!.setSelection(bill_disc_percent_ed!!.getText().length)
-                                val amount: Double = percentageToAmount("0".toDouble())
-                                bill_disc_amt_ed!!.removeTextChangedListener(
-                                    billDiscAmountTextWatcher
-                                )
-                                bill_disc_amt_ed!!.setText(twoDecimalPoint(amount) + "")
-                                bill_disc_amt_ed!!.addTextChangedListener(billDiscAmountTextWatcher)
-                                val net_subtotal: Double =
-                                    subtotal - bill_disc_amt_ed!!.getText().toString().toDouble()
-                                setCalculationSummaryView(net_subtotal)
-                            } else {
-                                if(billDiscApiStr != null || !billDiscApiStr.equals("null") ) {
-                                    val amount: Double = percentageToAmount(billDiscApiStr.toDouble())
-                                    Log.w("PercentageAmtdishc:", amount.toString() + "")
-                                    bill_disc_amt_ed!!.removeTextChangedListener(
-                                        billDiscAmountTextWatcher
-                                    )
-                                    bill_disc_amt_ed!!.setText(twoDecimalPoint(amount) + "")
-                                    bill_disc_amt_ed!!.addTextChangedListener(
-                                        billDiscAmountTextWatcher
-                                    )
-                                    var bill_discc = "0.00"
-                                    if(bill_disc_amt_ed!!.getText().toString().isNotEmpty()){
-                                       bill_discc =  bill_disc_amt_ed!!.getText().toString()
-                                    }
-                                    val net_subtotal: Double =
-                                        subtotal - bill_discc.toDouble()
-                                    setCalculationSummaryView(net_subtotal)
-                                }
-                            }
-                        } else {
-                            bill_disc_amt_ed!!.removeTextChangedListener(billDiscAmountTextWatcher)
-                            bill_disc_amt_ed!!.setText("0.0")
-                            bill_disc_amt_ed!!.addTextChangedListener(billDiscAmountTextWatcher)
-                            setCalculationSummaryView(subtotal)
-                        }
-                    }
-
-
-                    bill_disc_percent_ed!!.requestFocus()
-                    Log.w("billdiscpi_aa::", billDiscApiStr!!)
-                }
                 billDischide()
-                // billDiscountBottomSheet()
+               // billDiscountBottomSheet()
                 true
             }
 
@@ -3515,40 +3215,23 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 val localCart = dbHelper!!.allInvoiceProducts
                 if (localCart.size > 0) {
                     save_btn!!.setEnabled(true)
-
-                    if (netTotalValue!!.text.toString().toDouble() > 0) {
-                        save_btn!!.setEnabled(true)
-                        if (activityFrom == "iv" || activityFrom == "ConvertInvoice" ||
-                            activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
-                        ) {
+                    if (activityFrom == "iv" || activityFrom == "ConvertInvoice" ||
+                        activityFrom == "Duplicate"
+                    ) {
 //                        showSaveAlert()
-                            if (isCheckedCreditLimit) {
-                                if (createInvoiceValidation()) {
-                                    Log.w("enrty1a", "")
-                                    showSaveAlert();
-                                } else {
-                                    Log.w("enrty1b", "")
-                                    showAlertForCreditLimit();
-                                }
-                            } else {
-                                Log.w("enrty1c", "")
+                        if (isCheckedCreditLimit) {
+                            if (createInvoiceValidation()) {
                                 showSaveAlert();
+                            } else {
+                                showAlertForCreditLimit();
                             }
                         } else {
-                            Log.w("enrty1v", "")
-                            showSaveAlert()
+                            showSaveAlert();
                         }
+                    } else {
+                        showSaveAlert()
                     }
-                    else {
-                        Toast.makeText(
-                            applicationContext,
-                            " Nettotal should be great than zero",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-
-                else {
+                } else {
                     Toast.makeText(
                         applicationContext,
                         "Add the Product First...!",
@@ -3567,18 +3250,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     fun billDischide(){
         if (bill_disc_layl!!.getVisibility() == View.VISIBLE) {
             bill_disc_layl!!.setVisibility(View.GONE)
-            bill_disc_amt_ed!!.setText(pref_bill_disc_amt)
-            bill_disc_percent_ed!!.setText(pref_bill_disc_percent)
-
             if (behavior!!.state == BottomSheetBehavior.STATE_EXPANDED) {
                 behavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
             }
             //slideUp(searchFilterView);
         } else {
             bill_disc_layl!!.setVisibility(View.VISIBLE)
-            bill_disc_amt_ed!!.setText(pref_bill_disc_amt)
-            bill_disc_percent_ed!!.setText(pref_bill_disc_percent)
-
             if (behavior!!.state == BottomSheetBehavior.STATE_EXPANDED) {
                 behavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
             }
@@ -3606,7 +3283,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     }
 
     fun showAlertForCreditLimit() {
-        val builder1 = AlertDialog.Builder(this@CreateNewInvoiceActivity)
+        val builder1 = AlertDialog.Builder(this@CreateNewInvoiceActivityBillDisc)
         builder1.setTitle("Information")
         builder1.setMessage(
             customerNameText!!.getText()
@@ -3625,7 +3302,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     fun showSaveAlert() {
         try {
             // create an alert builder
-            val builder = AlertDialog.Builder(this@CreateNewInvoiceActivity)
+            val builder = AlertDialog.Builder(this@CreateNewInvoiceActivityBillDisc)
             // set the custom layout
             builder.setCancelable(false)
             val customLayout = layoutInflater.inflate(R.layout.invoice_save_option, null)
@@ -3710,16 +3387,16 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             alert = builder.create()
             alert!!.show()
             okButton!!.setOnClickListener(View.OnClickListener { view1: View? ->
-               try {
-                    Log.w("entyyinv",""+activityFrom)
+                try {
+                    Log.w("entyyinv","")
                     if (companyCode == "AADHI INTERNATIONAL PTE LTD") {
                         if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-                            || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                            || activityFrom == "Duplicate"
                         ) {
                             if (signatureString != null && !signatureString!!.isEmpty()) {
                                 alert!!.dismiss()
                                 if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-                                    || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                                    || activityFrom == "Duplicate"
                                 ) {
                                     createInvoiceJson(noOfCopy.text.toString().toInt())
                                 } else if (activityFrom == "so" || activityFrom == "SalesEdit") {
@@ -3737,9 +3414,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                         } else {
                             alert!!.dismiss()
                             if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-                                || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                                || activityFrom == "Duplicate"
                             ) {
-                                Log.w("convet","")
                                 createInvoiceJson(noOfCopy.text.toString().toInt())
                             } else if (activityFrom == "so" || activityFrom == "SalesEdit") {
                                 createSalesOrderJson(noOfCopy.text.toString().toInt())
@@ -3750,7 +3426,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     } else {
                         alert!!.dismiss()
                         if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-                            || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                            || activityFrom == "Duplicate"
                         ) {
                             Log.w("signavail", "" + isSignatureSetting + ".." + signatureString)
 
@@ -3787,7 +3463,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     fun saveSalesOrder(jsonBody: JSONObject, action: String, copy: Int) {
         try {
             pDialog =
-                SweetAlertDialog(this@CreateNewInvoiceActivity, SweetAlertDialog.PROGRESS_TYPE)
+                SweetAlertDialog(this@CreateNewInvoiceActivityBillDisc, SweetAlertDialog.PROGRESS_TYPE)
             pDialog!!.progressHelper.barColor = Color.parseColor("#A5DC86")
             if (action == "SalesOrder") {
                 pDialog!!.setTitleText("Saving Sales Order...")
@@ -3830,7 +3506,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                         responseData = response.getJSONObject("responseData")
                     } catch (e: JSONException) {
                         e.printStackTrace()
-                        Log.w("Errorc:", Objects.requireNonNull(e.message!!))                    }
+                    }
                     if (statusCode == "1") {
                         signatureString = ""
                         if (action == "SalesOrder" || action == "SalesEdit") {
@@ -3858,7 +3534,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                                     }
                                 } catch (e: Exception) {
                                     e.printStackTrace()
-                                    Log.w("Error1k:", Objects.requireNonNull(e.message!!))
                                 }
                             } else {
                                 dbHelper!!.removeAllInvoiceItems()
@@ -3905,10 +3580,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                                             NewInvoiceListActivity::class.java
                                         )
                                         startActivity(intent)
-                                        myEdit!!.putString("billDisc_amt","0.0")
-                                        myEdit!!.putString("billDisc_percent","0.0")
-                                        myEdit!!.apply()
-
                                         finish()
                                     } else {
                                         Toast.makeText(
@@ -3920,7 +3591,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                                     }
                                 } catch (e: Exception) {
                                     e.printStackTrace()
-                                    Log.w("Errora:", Objects.requireNonNull(e.message!!))
                                 }
                             } else {
                                 dbHelper!!.removeAllInvoiceItems()
@@ -3938,7 +3608,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                             getAllProducts(jsonObject)
                         } catch (e: JSONException) {
                             e.printStackTrace()
-                            Log.w("Error9:", Objects.requireNonNull(e.message!!))
                         }
                         if (responseData != null) {
                             Toast.makeText(
@@ -3997,7 +3666,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             requestQueue.add(salesOrderRequest)
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.w("Error8:", Objects.requireNonNull(e.message!!))        }
+        }
     }
 
     fun getCustomerDetails(customerCode: String?, isloader: Boolean, from: String?) {
@@ -4010,12 +3679,10 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             // jsonObject.put("CompanyCode",companyCode);
         } catch (e: JSONException) {
             e.printStackTrace()
-            Log.w("Error7:", Objects.requireNonNull(e.message!!))
         }
         Log.w("JsonValueForCustomer:", jsonObject.toString())
         val url = Utils.getBaseUrl(applicationContext) + "Customer"
-        Log.w("Given_urlCusto:", url+ jsonObject.toString())
-
+        Log.w("Given_url:", url)
         val progressDialog = ProgressDialog(applicationContext)
         progressDialog.setCancelable(false)
         progressDialog.setMessage("Customer Details Loading...")
@@ -4075,7 +3742,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                         // pDialog.dismiss();
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        Log.w("Error6:", Objects.requireNonNull(e.message!!))
                     }
                 }, Response.ErrorListener { error: VolleyError ->
                     // Do something when error occurred
@@ -4123,7 +3789,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     //  }
                 } catch (e: JSONException) {
                     e.printStackTrace()
-                    Log.w("Error5:", Objects.requireNonNull(e.message!!))
                 }
             }
 
@@ -4171,7 +3836,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            Log.w("Error4:", Objects.requireNonNull(e.message!!))
                         }
                     }, Response.ErrorListener { error: VolleyError ->
                         // Do something when error occurred
@@ -4212,11 +3876,10 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
     fun redirectActivity() {
         orderNoText!!.setText("")
         val intent: Intent
-        intent = if (activityFrom == "iv" || activityFrom == "Duplicate"
-            || activityFrom == "ConvertInvoiceFromDO") {
-            Intent(this@CreateNewInvoiceActivity, NewInvoiceListActivity::class.java)
+        intent = if (activityFrom == "iv" || activityFrom == "Duplicate") {
+            Intent(this@CreateNewInvoiceActivityBillDisc, NewInvoiceListActivity::class.java)
         } else {
-            Intent(this@CreateNewInvoiceActivity, SalesOrderListActivity::class.java)
+            Intent(this@CreateNewInvoiceActivityBillDisc, SalesOrderListActivity::class.java)
         }
         startActivity(intent)
         finish()
@@ -4243,15 +3906,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.save_menu, menu)
         save_btn = menu.findItem(R.id.action_save)
         down_menu = menu.findItem(R.id.action_down)
-        if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-            || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO") {
+        if (activityFrom == "iv" || activityFrom == "ConvertInvoice" || activityFrom == "Duplicate") {
             down_menu!!.isVisible = true
         }
         return true
     }
 
     fun showDeleteAlert() {
-        val builder1 = AlertDialog.Builder(this@CreateNewInvoiceActivity)
+        val builder1 = AlertDialog.Builder(this@CreateNewInvoiceActivityBillDisc)
         builder1.setMessage("Data Will be Cleared are you sure want to back?")
         builder1.setCancelable(false)
         builder1.setPositiveButton(
@@ -4345,9 +4007,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                             invoiceListModel.returnQty = detailObject.optString("returnQty")
                             invoiceListModel.cartonPrice = detailObject.optString("cartonPrice")
                             invoiceListModel.unitPrice = detailObject.optString("price")
-                            if (detailObject.optString("itemID") != null) {
-                                invoiceListModel.customerItemCode = detailObject.optString("itemID")
-                            }
                             val qty1 = detailObject.optString("quantity").toDouble()
                             val price1 = detailObject.optString("price").toDouble()
                             val nettotal1 = qty1 * price1
@@ -4384,7 +4043,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Log.w("Error3:", Objects.requireNonNull(e.message!!))
                 }
             },
             Response.ErrorListener { error: VolleyError ->
@@ -4429,10 +4087,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 invoicePrintList,
                 "false"
             )
-//            Utils.setSignature("")
+            Utils.setSignature("")
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.w("Error1:", Objects.requireNonNull(e.message!!))
         }
     }
 
@@ -4442,7 +4098,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 ImageUtil.saveStamp(this, Utils.getSignature(), "Signature")
             } catch (e: IOException) {
                 e.printStackTrace()
-                Log.w("Error2:", Objects.requireNonNull(e.message!!))            }
+            }
         }
     }
 
@@ -4560,7 +4216,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        Log.w("Error1r:", Objects.requireNonNull(e.message!!))
                     }
                 }, Response.ErrorListener { error: VolleyError ->
                     // Do something when error occurred
@@ -4603,30 +4258,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         var returnProductArray = JSONArray()
         var returnProductObject = JSONObject()
         var invoiceObject = JSONObject()
-
-        if(bill_disc_amt_ed!!.text.toString().isEmpty() ||
-            bill_disc_amt_ed!!.text.toString().toDouble() > 0.00){
-            billDiscSetAmt_api = "0.00"
-        }
-        else{
-            billDiscSetAmt_api = bill_disc_amt_ed!!.text.toString()
-        }
-        if(sharedPref_billdisc!!.getString("billDisc_percent", "")!!.isEmpty()){
-            billDisPercent_share_api = "0.00"
-        }
-        else{
-            billDisPercent_share_api = sharedPref_billdisc!!.getString("billDisc_percent", "")
-        }
-
-        Log.w("customerResponsekk",""+customerResponse.optJSONArray("responseData"))
         val detailsArray = customerResponse.optJSONArray("responseData")
         val `object` = detailsArray.optJSONObject(0)
-//        if(customerResponse.optJSONArray("responseData")!!.equals("null")){
-//            Toast.makeText(this, "Customer detail is empty!", Toast.LENGTH_SHORT).show()
-//        }
-      try {
-            Log.w("enrtyj1","")
-
+        try {
             // Sales Header Add values
             /*  if (activityFrom.equals("InvoiceEdit")){
                 rootJsonObject.put("invoiceNumber", AddInvoiceActivity.editInvoiceNumber);
@@ -4689,8 +4323,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             rootJsonObject.put("total", subTotalValue!!.text.toString())
             rootJsonObject.put("netTotal", netTotalValue!!.text.toString())
             rootJsonObject.put("itemDiscount", discountStr)
-            rootJsonObject.put("billDiscount", sharedPref_billdisc!!.getString("billDisc_amt", ""))
-            rootJsonObject.put("discountPercentage", billDisPercent_share_api)
+            rootJsonObject.put("billDiscount", "0.00")
             rootJsonObject.put("Paymode", "")
             rootJsonObject.put("ChequeDateString", "")
             rootJsonObject.put("BankCode", "")
@@ -4712,7 +4345,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 rootJsonObject.put("FTax", "0");
                 rootJsonObject.put("FNetTotal", "0");
             }*/rootJsonObject.put("totalDiscount", "0")
-            rootJsonObject.put("billDiscountPercentage", billDiscSetPercent_api)
+            rootJsonObject.put("billDiscountPercentage", "0.00")
             rootJsonObject.put("deliveryCode", SettingUtils.getDeliveryAddressCode())
             rootJsonObject.put("delCustomerName", "")
             rootJsonObject.put("delAddress1", deliverAddrNameStr)
@@ -4758,11 +4391,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 // convert into int
                 invoiceObject.put("price", Utils.fourDecimalPoint(model.price.toDouble()))
                 invoiceObject.put("total", Utils.twoDecimalPoint(model.total.toDouble()))
-                var itemval = "0"
-                if(model.itemDisc.isNotEmpty()){
-                    itemval = model.itemDisc
-                }
-                invoiceObject.put("itemDiscount",itemval)
+                invoiceObject.put("itemDiscount", model.itemDisc)
                 invoiceObject.put("totalTax", Utils.twoDecimalPoint(model.gstAmount.toDouble()))
                 invoiceObject.put("subTotal", Utils.twoDecimalPoint(model.subTotal.toDouble()))
                 invoiceObject.put("netTotal", Utils.twoDecimalPoint(model.netTotal.toDouble()))
@@ -4803,7 +4432,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                             "ReturnProductsValues:",
                             returnProductsModel.productCode + "-" + returnProductsModel.productName + "--" + returnProductsModel.returnQty
                         )
-                      //  if (returnProductsModel.returnQty.toInt() > 0) {
+                        if (returnProductsModel.returnQty.toInt() > 0) {
                             returnProductObject = JSONObject()
                             returnProductObject.put(
                                 "ReturnReason",
@@ -4811,27 +4440,21 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                             )
                             returnProductObject.put("ReturnQty", returnProductsModel.returnQty)
                             returnProductArray.put(returnProductObject)
-                      //  }
+                        }
                     }
                 }
                 invoiceObject.put("ReturnDetails", returnProductArray)
                 invoiceDetailsArray.put(invoiceObject)
-                Log.w("returnarra",""+returnProductArray)
                 index++
             }
-
             rootJsonObject.put("PostingInvoiceDetails", invoiceDetailsArray)
             Log.w("RootJsonSaveInv:", rootJsonObject.toString())
-          Log.w("billds_inv",""+".. "+ sharedPref_billdisc!!.getString("billDisc_amt", ""))
-
-          // Timber.d("APIRESPON: " + rootJsonObject.toString())
+            Timber.d("APIRESPON: " + rootJsonObject.toString())
 
             saveSalesOrder(rootJsonObject, "Invoice", copy)
-        }
-
-        catch (e: JSONException) {
+        } catch (e: JSONException) {
             e.printStackTrace()
-            Log.w("Error1s:", Objects.requireNonNull(e.message!!))
+            Log.w("Given_Error:", Objects.requireNonNull(e.message!!))
         }
     }
 
@@ -4950,19 +4573,19 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
             saveSalesOrder(rootJsonObject, "DeliveryOrder", copy)
         } catch (e: JSONException) {
             e.printStackTrace()
-            Log.w("Error1a:", Objects.requireNonNull(e.message!!))
+            Log.w("Given_Error:", Objects.requireNonNull(e.message!!))
         }
     }
 
     @Throws(IOException::class)
     private fun sentSalesOrderDataPrint(copy: Int) {
         if (printerType == "TSC Printer") {
-            val printer = TSCPrinter(this@CreateNewInvoiceActivity, printerMacId, "SalesOrder")
+            val printer = TSCPrinter(this@CreateNewInvoiceActivityBillDisc, printerMacId, "SalesOrder")
             printer.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList)
             Utils.setSignature("")
         } else if (printerType == "Zebra Printer") {
             val zebraPrinterActivity =
-                ZebraPrinterActivity(this@CreateNewInvoiceActivity, printerMacId)
+                ZebraPrinterActivity(this@CreateNewInvoiceActivityBillDisc, printerMacId)
             zebraPrinterActivity.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList)
         }
     }
@@ -4976,7 +4599,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         var productList: ArrayList<ProductsModel>? = null
         var behavior: BottomSheetBehavior<*>? = null
         var discTextWatcher: TextWatcher? = null
-        var exchangeTextWatcher: TextWatcher? = null
         var progressDialog: ProgressDialog? = null
         var stockProductView = "2"
         var barcodeText: EditText? = null
@@ -5004,10 +4626,10 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                 resultDate = outputFormat.format(inputFormat.parse(strDate))
             } catch (e: ParseException) {
                 e.printStackTrace()
-                Log.w("Errorff:", Objects.requireNonNull(e.message!!))
             }
             return resultDate
         }
     }
+
 
 }

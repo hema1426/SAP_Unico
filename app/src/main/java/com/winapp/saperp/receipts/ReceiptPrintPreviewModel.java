@@ -20,6 +20,15 @@ public class ReceiptPrintPreviewModel {
     private String bankTransferDate;
     public ArrayList<ReceiptsDetails> receiptsDetailsList;
     private String creditAmount;
+    private String balanceAmount;
+
+    public String getBalanceAmount() {
+        return balanceAmount;
+    }
+
+    public void setBalanceAmount(String balanceAmount) {
+        this.balanceAmount = balanceAmount;
+    }
 
     public String getBankName() {
         return bankName;
@@ -138,7 +147,24 @@ public class ReceiptPrintPreviewModel {
         private String invoiceDate;
         private String amount;
         private String discountAmount;
+        private String creditAmount;
+        private String balanceAmount;
 
+        public String getCreditAmount() {
+            return creditAmount;
+        }
+
+        public void setCreditAmount(String creditAmount) {
+            this.creditAmount = creditAmount;
+        }
+
+        public String getBalanceAmount() {
+            return balanceAmount;
+        }
+
+        public void setBalanceAmount(String balanceAmount) {
+            this.balanceAmount = balanceAmount;
+        }
 
         public String getDiscountAmount() {
             return discountAmount;

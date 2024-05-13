@@ -496,8 +496,10 @@ public class SettlementActivity extends AppCompatActivity {
     }
 
     private void setAdapter(ArrayList<CurrencyModel> currencList) {
-        denominationView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        currencyDenominationAdapter = new CurrencyDenominationAdapter(this,currencList, new CurrencyDenominationAdapter.CallBack() {
+        denominationView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,
+                false));
+        currencyDenominationAdapter = new CurrencyDenominationAdapter(this,currencList,
+                new CurrencyDenominationAdapter.CallBack() {
             @Override
             public void setKeyboard(EditText countEditext) {
                 MyKeyboard keyboard = (MyKeyboard) findViewById(R.id.keyboard);
@@ -515,6 +517,7 @@ public class SettlementActivity extends AppCompatActivity {
             }
         });
         denominationView.setAdapter(currencyDenominationAdapter);
+        setNetTotalValues();
         rootLayout.setVisibility(View.VISIBLE);
     }
 
@@ -746,6 +749,7 @@ public class SettlementActivity extends AppCompatActivity {
             double total_currency=0.0;
             double expense_amount=0.0;
             double net_total;
+            Log.w("currenctlist",""+currencyDenominationAdapter.getCurrencyList());
             for (CurrencyModel model:currencyDenominationAdapter.getCurrencyList()){
                 total_currency+=Double.parseDouble(model.getTotal());
             }

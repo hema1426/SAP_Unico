@@ -16,6 +16,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -274,7 +275,6 @@ public class StockRequestListActivity extends NavigationActivity implements View
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url= Utils.getBaseUrl(this) +"InventoryTransferRequestList";
-        requestList =new ArrayList<>();
         JSONObject jsonObject=new JSONObject();
         try {
             jsonObject.put("User",username);
@@ -289,10 +289,15 @@ public class StockRequestListActivity extends NavigationActivity implements View
             e.printStackTrace();
         }
         Log.w("Given_url:",url+"---"+jsonObject.toString());
+
+        if (dialog != null && dialog.isShowing())
+            dialog.cancel();
         dialog=new ProgressDialog(StockRequestListActivity.this);
         dialog.setMessage("Loading StockRequest List...");
         dialog.setCancelable(false);
+//        if (!dialog.isShowing()) {
         dialog.show();
+//
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 url,
                 jsonObject,
@@ -300,6 +305,7 @@ public class StockRequestListActivity extends NavigationActivity implements View
                     try {
                         dialog.dismiss();
                         Log.w("Response_StockRequest:", response.toString());
+                        requestList =new ArrayList<>();
 
                         String statusCode=response.optString("statusCode");
                         String statusMessage=response.optString("statusMessage");
@@ -524,7 +530,10 @@ public class StockRequestListActivity extends NavigationActivity implements View
                     "0.00",
                     "0.00",
                     "0.00",
-                    "0.00"
+                    "0.00","",
+                    "",
+                    "",
+                    ""
             );
         }
         int count=dbHelper.numberOfRowsInInvoice();
@@ -542,6 +551,7 @@ public class StockRequestListActivity extends NavigationActivity implements View
             startActivity(intent);
         }
     }
+
     public void printTransfer(String transferNo,ArrayList<TransferDetailModel> transferDetailModels,String type ){
         if (transferDetailModels.size()>0){
             TSCPrinter printer=new TSCPrinter(this,printerMacId,"Transfer");
@@ -556,5 +566,24 @@ public class StockRequestListActivity extends NavigationActivity implements View
     @Override
     public void onClick(View v) {
 
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+               // onBackPressed();
+                break;
+
+         /*   case R.id.action_remove:
+                showRemoveAlert();
+                break;*/
+        }
+        return true;
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

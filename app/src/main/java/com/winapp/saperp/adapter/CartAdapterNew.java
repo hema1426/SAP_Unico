@@ -464,6 +464,8 @@ public class CartAdapterNew extends
     private String setCalculation(CartModel model,int cqty,int qty) {
         // Define the Required variables to calulate the Amount
         String sub_total = null;
+        double discount = 0.0;
+
         try {
             double cprice=Double.parseDouble(model.getCART_COLUMN_CTN_PRICE());
             double lprice=Double.parseDouble(model.getCART_UNIT_PRICE());
@@ -493,9 +495,16 @@ public class CartAdapterNew extends
             }else {
                 Toast.makeText(mContext,"Error in update",Toast.LENGTH_LONG).show();
             }*/
-           taxCalculation(model.getCART_COLUMN_PID(),String.valueOf(lqty),String.valueOf(cnQty),Double.parseDouble(sub_total));
         }catch (Exception ex1){}
         assert sub_total != null;
+        if(model.getDiscount().isEmpty()){
+            discount = 0.00 ;
+        }
+        else {
+            discount = Double.parseDouble(model.getDiscount());
+        }
+        sub_total = String.valueOf(Double.parseDouble(sub_total) - discount);
+        taxCalculation(model.getCART_COLUMN_PID(),String.valueOf(lqty),String.valueOf(cnQty),Double.parseDouble(sub_total));
         return  Utils.twoDecimalPoint(Double.parseDouble(sub_total));
     }
 
@@ -618,7 +627,7 @@ public class CartAdapterNew extends
                 netTotal = subTotal + taxAmount;
                 netTotal = subTotal;
                 String ProdNetTotal = twoDecimalPoint(netTotal);
-                Log.w("Net_amount:",ProdNetTotal);
+                Log.w("Net_amountAdpt:",ProdNetTotal);
                 boolean update= dbHelper.updateCart(productId,lqty,cnqty, twoDecimalPoint(subTotal),"0.00",ProdNetTotal);
                 if (update){
                     callBack.updateNetAmount("net_amount_update");

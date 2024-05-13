@@ -846,11 +846,14 @@ public class DashboardActivity extends NavigationActivity {
                            // if(Double.parseDouble(creditLimitArrayList.get(i).getCreditLine()) > 0) {
                                 Log.w("bal_dash",".."+Double.parseDouble(creditLimitArrayList.get(i).getBalance()));
 
-                                if (Double.parseDouble(creditLimitArrayList.get(i).getBalance()) >=
-                                        Double.parseDouble(creditLimitArrayList.get(i).getCreditLine())) {
+                                if( Double.parseDouble(creditLimitArrayList.get(i).getCreditLine())>0.00) {
+                                    if (Double.parseDouble(creditLimitArrayList.get(i).getBalance()) >=
+                                            Double.parseDouble(creditLimitArrayList.get(i).getCreditLine())) {
 
-                                    creditLimitListFilter.add(creditLimitArrayList.get(i));
+                                        creditLimitListFilter.add(creditLimitArrayList.get(i));
+                                    }
                                 }
+
                             //}
                         }
                     if (creditLimitListFilter.size() > 0) {

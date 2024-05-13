@@ -6,25 +6,9 @@ import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.os.Build.VERSION.SDK_INT;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
-
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -58,6 +42,19 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -104,7 +101,6 @@ import com.winapp.saperp.model.InvoicePrintPreviewModel;
 import com.winapp.saperp.model.SettingsModel;
 import com.winapp.saperp.model.UserListModel;
 import com.winapp.saperp.model.UserRoll;
-import com.winapp.saperp.printer.BluetoothPrinter;
 import com.winapp.saperp.printpreview.DOPrintPreview;
 import com.winapp.saperp.printpreview.InvoicePrintPreviewActivity;
 import com.winapp.saperp.printpreview.NewInvoicePrintPreviewActivity;
@@ -241,10 +237,15 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     private String printerMacId;
     private String printerType;
     private SharedPreferences sharedPreferences;
+
+    private SharedPreferences sharedPref_billdisc;
+    private SharedPreferences.Editor myEdit;
+
     private View progressLayout;
     private static String visibleFragment = "invoices";
     public boolean redirectInvoice = false;
     public static String selectCustomerId = "";
+    public static String selectCustomerName = "";
     private int customerSelectCode = 23;
 
     public static int REQUEST_PERMISSIONS = 154;
@@ -280,10 +281,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     private ArrayList<InvoicePrintPreviewModel.SalesReturnList> salesReturnList;
 
     private String selectCustomerCode = "";
-    private String selectCustomerName = "";
 
     public static String invStatus;
-    public static String customerCodeStr = "" ;
+    public static String customerCodeStr = "";
+    public static String customerNameStr = "";
 
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -339,6 +340,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         user = session.getUserDetails();
         companyId = user.get(SessionManager.KEY_COMPANY_CODE);
         username = user.get(SessionManager.KEY_USER_NAME);
+
+        sharedPref_billdisc = getSharedPreferences("BillDiscPref", MODE_PRIVATE);
+        myEdit = sharedPref_billdisc.edit();
+
         operationLayout = findViewById(R.id.operation_layout);
         emptyLayout = findViewById(R.id.empty_layout);
         emptyTextView = findViewById(R.id.empty_text);
@@ -399,6 +404,11 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         company_address2 = user.get(SessionManager.KEY_ADDRESS2);
         company_address3 = user.get(SessionManager.KEY_ADDRESS3);
 
+        Log.w("salenamm", user.get(SessionManager.KEY_SALESMAN_NAME));
+        Log.w("salephon", user.get(SessionManager.KEY_SALESMAN_PHONE));
+        Log.w("salemail", user.get(SessionManager.KEY_SALESMAN_EMAIL));
+
+
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType = sharedPreferences.getString("printer_type", "");
         printerMacId = sharedPreferences.getString("mac_address", "");
@@ -430,13 +440,17 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             if (settings.size() > 0) {
                 for (SettingsModel model : settings) {
                     if (model.getSettingName().equals("create_invoice_switch")) {
-                        Log.w("SettingName:", model.getSettingName());
-                        Log.w("SettingValue:", model.getSettingValue());
+                        Log.w("SettingNameInv:", model.getSettingName());
+                        Log.w("SettingValueInv:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             createInvoiceSetting = "true";
                         } else {
                             createInvoiceSetting = "false";
                         }
+                    }
+                    else if (model.getSettingName().equals("showSignature")) {
+                        Log.w("SettingNamesign:", model.getSettingName());
+                        Log.w("SettingValuesign:", model.getSettingValue());
                     }
                 }
             }
@@ -562,12 +576,17 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         duplicateInvoiceLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.w("entrylist","");
+                Log.w("entrylist", "");
                 viewCloseBottomSheet();
-                if (!invStatus.equals("Closed") && !invStatus.equals("InProgress Invoice")){
-                    redirectActivity(customerCodeStr,invoiceNumberValue);
-                }else {
-                    Toast.makeText(getApplicationContext(),"This Invoice already Closed",Toast.LENGTH_SHORT).show();
+                if (!invStatus.equals("Closed") && !invStatus.equals("InProgress Invoice")) {
+                    try {
+                        getInvoiceEditDetails(invoiceNumberValue);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                    //   redirectActivity(customerNameStr, customerCodeStr, invoiceNumberValue);
+                } else {
+                    Toast.makeText(getApplicationContext(), "This Invoice already Closed", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -1130,8 +1149,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
     public static void showInvoiceOption(String invoiceCustomerCode, String customerName, String invoiceNum, String invoiceStatus, String date) {
         Log.w("InvoiceStatusView:", invoiceStatus);
-        invStatus =invoiceStatus;
-        customerCodeStr = invoiceCustomerCode ;
+        invStatus = invoiceStatus;
+        customerCodeStr = invoiceCustomerCode;
+        customerNameStr = customerName;
 
         isSearchCustomerNameClicked = false;
         // searchFilterView.setVisibility(View.GONE);
@@ -1149,7 +1169,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         } else if (invoiceStatus.equals("Open")) {
             // editInvoiceLayout.setVisibility(View.VISIBLE);
             cashCollectionLayout.setVisibility(View.VISIBLE);
-         //   duplicateInvoiceLayout.setVisibility(View.VISIBLE);
+            duplicateInvoiceLayout.setVisibility(View.VISIBLE);
             invoiceStatusValue = "O";
             // deleteInvoiceLayout.setVisibility(View.VISIBLE);
         }
@@ -1259,6 +1279,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                 model.setTaxPerc(salesObject.optString("taxPercentage"));
                                 model.setTaxType(salesObject.optString("taxType"));
                                 model.setTaxCode(salesObject.optString("taxCode"));
+
                                 ArrayList<CustomerDetails> taxList = new ArrayList<>();
                                 taxList.add(model);
                                 dbHelper.insertCustomerTaxValues(taxList);
@@ -1288,6 +1309,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                     if (!object.optString("quantity").equals("null")) {
                                         cqty = object.optString("quantity");
                                     }
+//                                    if (object.optString("itemID") != null) {
+//                                        invoiceListModel.setCustomerItemCode(object.optString("itemID"));
+//                                    }
 
                                     double actualPrice = Double.parseDouble(object.optString("unitPrice"));
 
@@ -1509,16 +1533,203 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
-    public void redirectActivity(String customer_code,String inv_code){
+
+    private void getInvoiceEditDetails(String invoiceNo) throws JSONException {
+        // Initialize a new RequestQueue instance
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("InvoiceNo",invoiceNo);
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        //    EditSODetails
+        //    EditSODetailsWithFOC
+        String url= Utils.getBaseUrl(this) +"DuplicateInvoiceDetails";
+        Log.w("JsonValue:",jsonObject.toString());
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_url_salesEdit:",url);
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Getting Invoice Details...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
+                response -> {
+                    try{
+                        Log.w("inv_duplicat_edit:",response.toString());
+                        if (response.length()>0) {
+                            String statusCode = response.optString("statusCode");
+                            if (statusCode.equals("1")) {
+                                JSONArray salesArray = response.optJSONArray("responseData");
+                                if (salesArray.length() > 0) {
+                                    JSONObject salesObject = salesArray.optJSONObject(0);
+                                    String invoice_no = salesObject.optString("invoiceNumber");
+                                    String company_code = salesObject.optString("CompanyCode");
+                                    String customer_code = salesObject.optString("customerCode");
+                                    String customer_name = salesObject.optString("customerName");
+                                    String total = salesObject.optString("total");
+                                    String sub_total = salesObject.optString("subTotal");
+                                    String bill_discount = salesObject.optString("billDiscount");
+                                    String item_discount = salesObject.optString("ItemDiscount");
+                                    String tax = salesObject.optString("taxTotal");
+                                    String customerBill_Disc=salesObject.optString("CustomerDiscount");
+                                    String net_total = salesObject.optString("netTotal");
+                                    String currency_rate = salesObject.optString("CurrencyRate");
+                                    String currency_name = salesObject.optString("currencyName");
+                                    String tax_type = salesObject.optString("taxType");
+                                    String tax_perc = salesObject.optString("taxPerc");
+                                    String tax_code = salesObject.optString("taxCode");
+                                    String phone_no = salesObject.optString("DelPhoneNo");
+                                    String so_date = salesObject.optString("soDate");
+                                    String signFlag = salesObject.optString("signFlag");
+                                    Utils.setInvoiceMode("Invoice");
+                                    if (signFlag.equals("Y")) {
+                                        String signature = salesObject.optString("signature");
+                                        Utils.setSignature(signature);
+                                    }
+
+                                    dbHelper.removeCustomer();
+                                    dbHelper.insertCustomer(
+                                            customer_code,
+                                            customer_name,
+                                            phone_no,
+                                            salesObject.optString("address1"),
+                                            salesObject.optString("Address2"),
+                                            salesObject.optString("Address3"),
+                                            salesObject.optString("IsActive"),
+                                            salesObject.optString("HaveTax"),
+                                            salesObject.optString("taxType"),
+                                            salesObject.optString("taxPerc"),
+                                            salesObject.optString("taxCode"),
+                                            "",
+                                            "Singapore",
+                                            salesObject.optString("currencyCode"));
+                                    customerDetails = dbHelper.getCustomer();
+                                    dbHelper.removeAllItems();
+                                    dbHelper.removeAllInvoiceItems();
+                                    dbHelper.removeCustomerTaxes();
+                                    CustomerDetails model = new CustomerDetails();
+                                    model.setCustomerCode(customer_code);
+                                    model.setCustomerName(customer_name);
+                                    model.setCustomerAddress1(salesObject.optString("address1"));
+                                    model.setTaxPerc(salesObject.optString("taxPerc"));
+                                    model.setTaxType(salesObject.optString("taxType"));
+                                    model.setTaxCode(salesObject.optString("taxCode"));
+                                    ArrayList<CustomerDetails> taxList = new ArrayList<>();
+                                    taxList.add(model);
+                                    Log.w("TaxModelPrint::", model.toString());
+                                    dbHelper.insertCustomerTaxValues(taxList);
+
+                                    JSONArray products = salesObject.getJSONArray("invoiceDetails");
+                                    for (int i = 0; i < products.length(); i++) {
+                                        JSONObject object = products.getJSONObject(i);
+                                        String lqty = "0.0";
+                                        String cqty = "0.0";
+                                        if (!object.optString("unitQty").equals("null")) {
+                                            lqty = object.optString("unitQty");
+                                        }
+
+                                        if (!object.optString("quantity").equals("null")) {
+                                            cqty = object.optString("quantity");
+                                        }
+                                        double priceValue = 0.0;
+                                        String return_qty = "0";
+                                        double net_qty = Double.parseDouble(cqty) - Double.parseDouble(return_qty);
+                                        String price_value = object.optString("price");
+                                        //String price_value=object.optString("grossPrice");
+
+                                        double return_amt = (Double.parseDouble(return_qty) * Double.parseDouble(price_value));
+                                        double total1 = (net_qty * Double.parseDouble(price_value));
+                                        double sub_total1 = total1 - return_amt;
+
+                                        dbHelper.insertCreateInvoiceCartEdit(
+                                                object.optString("productCode"),
+                                                object.optString("productName"),
+                                                object.optString("uomCode"),
+                                                cqty.toString(),
+                                                return_qty,
+                                                String.valueOf(net_qty),
+                                                object.optString("foc_Qty"),
+                                                price_value,
+                                                "",
+                                                object.optString("total"),
+                                                object.optString("subTotal"),
+                                                object.optString("priceWithGST"),
+                                                object.optString("netTotal"),
+                                                object.optString("itemDiscount"),
+                                                salesObject.optString("billDiscount"),
+                                                "",
+                                                ""
+                                        );
+
+                                        myEdit.putString("billDisc_amt", salesObject.optString("billDiscount"));
+                                        myEdit.putString("billDisc_percent", salesObject.optString("discountPercentage"));
+                                        myEdit.apply();
+
+                                        Log.w("ProductsLength:", products.length() + "");
+                                        Log.w("ActualPrintProducts:", dbHelper.numberOfRowsInInvoice() + "");
+                                        if (products.length() == dbHelper.numberOfRowsInInvoice()) {
+                                            redirectActivity(customer_code, customer_name, invoiceNo,customerBill_Disc);
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    Toast.makeText(this, "no data found", Toast.LENGTH_LONG).show();
+                                    pDialog.dismiss();
+                                }
+                            }
+                            else {
+                                pDialog.dismiss();
+                            }
+                            pDialog.dismiss();
+                        }
+                        pDialog.dismiss();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }, error -> {
+            // Do something when error occurred
+            pDialog.dismiss();
+            Log.w("Error_throwing:",error.toString());
+        }){
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+
+
+    public void redirectActivity(String customer_code, String customer_name, String inv_code , String customerBill_Disc) {
         //  if (products.length()==dbHelper.numberOfRowsInInvoice()){
-        Utils.setCustomerSession(NewInvoiceListActivity.this,customer_code);
-        setCustomerDetails(customer_code);
-            Intent intent=new Intent(getApplicationContext(),CreateNewInvoiceActivity.class);
-            intent.putExtra("customerDupCode",customer_code);
-            intent.putExtra("duplicateInvNo",inv_code);
-            intent.putExtra("from","Duplicate");
-            startActivity(intent);
-            finish();
+
+          Utils.setCustomerSession(NewInvoiceListActivity.this, customer_code);
+       // setCustomerDetails(customer_code);
+        Intent intent = new Intent(getApplicationContext(), CreateNewInvoiceActivity.class);
+        intent.putExtra("customerCode", customer_code);
+        intent.putExtra("duplicateInvNo", inv_code);
+        intent.putExtra("customerName", customer_name);
+        intent.putExtra("customerBillDisc", customerBill_Disc);
+        intent.putExtra("from", "Duplicate");
+        startActivity(intent);
+        finish();
 
     }
 
@@ -2003,6 +2214,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                 model.setTaxType(object.optString("taxType"));
                                 model.setTaxPerc(object.optString("taxPercentage"));
                                 model.setTaxCode(object.optString("taxCode"));
+                                model.setBillDiscPercentage(object.optString("discountPercentage"));
+
                                 //  model.setCustomerBarcode(object.optString("BarCode"));
                                 // model.setCustomerBarcode(String.valueOf(i));
                                 if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {
@@ -2105,6 +2318,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                     setCustomerDetails(customer);
                     customerNameText.setText(customername);
                     selectCustomerId = customer;
+                    selectCustomerName = customername;
                     //  redirectInvoice=true;
                 } else {
                     int count = dbHelper.numberOfRows();
@@ -3185,7 +3399,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                 invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                 invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
                                 invoiceListModel.setUnitPrice(detailObject.optString("price"));
-
+                                if (detailObject.optString("itemID") != null) {
+                                    invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                }
                                 double qty1 = Double.parseDouble(detailObject.optString("quantity"));
                                 double price1 = Double.parseDouble(detailObject.optString("price"));
                                 double nettotal1 = qty1 * price1;
@@ -3281,6 +3497,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
 
     public void printInvoice(int copy) {
         if (createInvoiceSetting.equals("true")) {
+            Log.w("invPrinter","cg");
             PrinterUtils printerUtils = new PrinterUtils(this, printerMacId);
             printerUtils.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
 
@@ -3295,10 +3512,12 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             });*/
         } else {
             if (isInvoicePrint) {
+                Log.w("invPrinter11","");
                 if (printerType.equalsIgnoreCase("Zebra Printer")) {
                     ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(NewInvoiceListActivity.this, printerMacId);
                     zebraPrinterActivity.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
                 } else if (printerType.equalsIgnoreCase("TSC Printer")) {
+                    Log.w("invPrinter22","");
                     TSCPrinter printer = new TSCPrinter(NewInvoiceListActivity.this, printerMacId);
                     printer.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
                     printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
@@ -3306,6 +3525,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                         public void onCompleted() {
                             Utils.setSignature("");
                             Toast.makeText(getApplicationContext(), "Invoice printed successfully!", Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     });
                     // ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(NewInvoiceListActivity.this,printerMacId);

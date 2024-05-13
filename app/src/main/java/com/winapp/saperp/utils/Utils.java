@@ -153,6 +153,7 @@ public class Utils {
     }
 
     public static void setSignature(String signature) {
+        Log.d("cg_setSign",""+signature);
         Utils.signature = signature;
         if (signature.isEmpty()) {
             Utils.setReceiptMode("");
@@ -495,6 +496,7 @@ public class Utils {
         return dateString[0];
     }
 
+    //no duplicate prod
     public static ArrayList<ProductsModel> getProductList(ArrayList<ProductsModel> products) {
         ArrayList<ProductsModel> noRepeat = new ArrayList<>();
         for (ProductsModel event : products) {
@@ -509,6 +511,50 @@ public class Utils {
             if (!isFound) noRepeat.add(event);
         }
         return noRepeat;
+    }
+
+
+    public static int getPrintSize(int paperSize, String isLogo, String isQrcode,
+                                   String outstandingAmount, String isSignature, String isPaid, String invoiceRemarks ) {
+        double height=0;
+        try {
+            int totalsize=0 ;
+
+            int logoSize = 0 ;
+            int qrcodeSize = 0 ;
+            int outstandingSize = 0 ;
+            int signatureSize = 0 ;
+            int paidSize = 0 ;
+            int remarks=0;
+
+            if (invoiceRemarks!=null && !invoiceRemarks.isEmpty() && !invoiceRemarks.equals("null")){
+                remarks=20;
+            }
+
+            if(isLogo.equals("true")){
+                logoSize = 30 ;
+            }
+            if(isQrcode.equals("true")){
+                qrcodeSize = 70 ;
+            }
+            if (outstandingAmount !=null && !outstandingAmount.isEmpty() && !outstandingAmount.equals("null")){
+                outstandingSize = 10 ;
+            }
+            if(isSignature.equals("true")){
+                signatureSize = 20 ;
+            }
+            if(isPaid.equals("true")){
+                paidSize = 40 ;
+            }
+
+            totalsize = paperSize+logoSize+qrcodeSize+outstandingSize+signatureSize+paidSize+remarks
+             - 40;
+
+            height = totalsize / 1.10 ;
+
+            Log.d("cg_print_size::",""+height);
+        }catch (Exception er){}
+        return (int) height;
     }
 
     public static int getPrintSize(int size) {

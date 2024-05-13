@@ -247,6 +247,9 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
 
     @Override
     public void onClick(View view) {
+        customer_id = "" ;
+        customer_name = "";
+
         if (view.getId()==R.id.invoice_by_product){
             if (invoiceByProduct.isChecked()){
                 invoiceSummary.setChecked(false);
@@ -1161,6 +1164,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                 model.setTaxType(object.optString("taxType"));
                                 model.setTaxPerc(object.optString("taxPercentage"));
                                 model.setTaxCode(object.optString("taxCode"));
+                                model.setBillDiscPercentage(object.optString("discountPercentage"));
                                 //  model.setCustomerBarcode(object.optString("BarCode"));
                                 // model.setCustomerBarcode(String.valueOf(i));
                                 if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {
@@ -1961,6 +1965,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                 StockBadRequestReturnModel model=new StockBadRequestReturnModel();
                                 model.setWarehouseCode(detailObject.optString("warehouseCode"));
                                 model.setReason(detailObject.optString("reason"));
+                                model.setDate(detailObject.optString("date"));
 
                                 JSONArray itemsArray=detailObject.optJSONArray("reportSalesReturnDetails");
                                 for (int i = 0; i< Objects.requireNonNull(itemsArray).length(); i++){

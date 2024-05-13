@@ -55,6 +55,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.winapp.saperp.R;
+import com.winapp.saperp.activity.CartActivity;
 import com.winapp.saperp.activity.CreateNewInvoiceActivity;
 import com.winapp.saperp.activity.NewInvoiceListActivity;
 import com.winapp.saperp.activity.SalesOrderListActivity;
@@ -1177,7 +1178,10 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                             String.valueOf(total),
                             subTotalValue.getText().toString(),
                             taxValueText.getText().toString(),
-                            netTotalValue.getText().toString()
+                            netTotalValue.getText().toString(),"",
+                            "",
+                            "",
+                            ""
                     );
 
             // Adding Return Qty Table values
@@ -1760,6 +1764,9 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                                     product.setProductName(productObject.optString("bP_Description"));
                                 }else {
                                     product.setProductName(productObject.optString("productName"));
+                                }
+                                if (productObject.optString("itemID") != null){
+                                    product.setCustomerItemCode(productObject.optString("itemID"));
                                 }
                                 product.setProductCode(productObject.optString("productCode"));
                                 product.setWeight("");
@@ -2584,8 +2591,24 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
         final Button cancelButton = customLayout.findViewById(R.id.buttonNo);
         final Button clearButton = customLayout.findViewById(R.id.buttonClear);
         LinearLayout mContent = customLayout.findViewById(R.id.signature_layout);
-        CaptureSignatureView mSig = new CaptureSignatureView(this, null);
-        mContent.addView(mSig, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        acceptButton.setEnabled(false);
+        acceptButton.setAlpha(0.4f);
+        CaptureSignatureView mSig = new CaptureSignatureView(NewSalesReturnProductAddActivity.this,
+                null, new CaptureSignatureView.OnSignatureDraw() {
+            @Override
+            public void onSignatureCreated() {
+                acceptButton.setEnabled(true);
+                acceptButton.setAlpha(1f);
+            }
+        });
+
+        mContent.addView(
+                mSig,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+
+
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

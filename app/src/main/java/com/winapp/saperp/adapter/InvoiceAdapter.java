@@ -422,7 +422,9 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                                 double nettotal = qty * price;
                                 // invoiceListModel.setTotal(String.valueOf(nettotal));
-                                invoiceListModel.setTotal(detailObject.optString("lineTotal"));
+//                                invoiceListModel.setTotal(detailObject.optString("lineTotal"));
+                               invoiceListModel.setTotal(detailObject.optString("total"));
+//                                invoiceListModel.setTransTotal(detailObject.optString("total"));
                                 invoiceListModel.setPricevalue(String.valueOf(price));
 
                                 invoiceListModel.setUomCode(detailObject.optString("uomCode"));

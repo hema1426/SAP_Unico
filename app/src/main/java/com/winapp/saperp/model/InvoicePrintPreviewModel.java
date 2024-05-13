@@ -252,6 +252,7 @@ public class InvoicePrintPreviewModel {
         private String returnQty;
         private String price;
         private String total;
+        private String transTotal;
         private String cartonPrice;
         private String focQty;
         private String unitPrice;
@@ -260,6 +261,32 @@ public class InvoicePrintPreviewModel {
         private String subTotal;
         private String uomCode;
         private String pricevalue;
+        private String customerItemCode;
+
+        private String accountName;
+
+        public String getAccountName() {
+            return accountName;
+        }
+
+        public void setAccountName(String accountName) {
+            this.accountName = accountName;
+        }
+
+        public String getCustomerItemCode() {
+            return customerItemCode;
+        }
+        public void setCustomerItemCode(String customerItemCode) {
+            this.customerItemCode = customerItemCode;
+        }
+
+        public String getTransTotal() {
+            return transTotal;
+        }
+
+        public void setTransTotal(String transTotal) {
+            this.transTotal = transTotal;
+        }
 
         public String getFocQty() {
             return focQty;

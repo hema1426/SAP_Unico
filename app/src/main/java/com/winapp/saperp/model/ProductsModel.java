@@ -9,6 +9,7 @@ public class ProductsModel {
     private String productName;
     private String productImage;
     private String pcsPerCarton;
+    private String customerItemCode;
     private String unitCost;
     private double averageCost;
     private String wholeSalePrice;
@@ -30,6 +31,14 @@ public class ProductsModel {
     private String defaultUom;
 
     private ArrayList<UomModel> productUOMList;
+
+    public String getCustomerItemCode() {
+        return customerItemCode;
+    }
+
+    public void setCustomerItemCode(String customerItemCode) {
+        this.customerItemCode = customerItemCode;
+    }
 
     public String getUomText() {
         return uomText;

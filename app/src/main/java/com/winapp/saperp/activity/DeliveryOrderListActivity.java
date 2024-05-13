@@ -1240,7 +1240,11 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                             object.optString("total"),
                                             object.optString("subTotal"),
                                             object.optString("taxAmount"),
-                                            object.optString("netTotal")
+                                            object.optString("netTotal"),
+                                            "",
+                                            "",
+                                            "",
+                                            ""
                                     );
 
                                     Log.w("ProductsLength:",products.length()+"");

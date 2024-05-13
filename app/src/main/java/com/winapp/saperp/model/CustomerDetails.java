@@ -21,6 +21,16 @@ public class CustomerDetails {
     private String country;
     private String taxCode;
 
+    public String getBillDiscPercentage() {
+        return billDiscPercentage;
+    }
+
+    public void setBillDiscPercentage(String billDiscPercentage) {
+        this.billDiscPercentage = billDiscPercentage;
+    }
+
+    private String billDiscPercentage;
+
     public String getCustomerAddress2() {
         return customerAddress2;
     }

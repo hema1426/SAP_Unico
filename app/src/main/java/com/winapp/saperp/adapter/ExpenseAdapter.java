@@ -68,13 +68,18 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ViewHold
             }
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!editable.toString().isEmpty()){
-                    double count=Double.parseDouble(editable.toString());
-                    model.setExpenseTotal(String.valueOf(count));
-                }else {
-                    model.setExpenseTotal("0.00");
+                if (editable.toString().equals(".")) {
+                    viewHolder.amount.setText("0.");
+                    viewHolder.amount.setSelection(viewHolder.amount.getText().length());
+                } else {
+                    if (!editable.toString().isEmpty()) {
+                        double count = Double.parseDouble(editable.toString());
+                        model.setExpenseTotal(String.valueOf(count));
+                    } else {
+                        model.setExpenseTotal("0.00");
+                    }
+                    callBack.setExpenseTotal();
                 }
-                callBack.setExpenseTotal();
             }
         });
     }

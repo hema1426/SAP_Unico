@@ -11,7 +11,7 @@
     android:background="@color/white"
     android:orientation="vertical"
     android:id="@+id/rootLayout"
-    android:visibility="gone"
+    android:visibility="visible"
     android:tag="enf"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

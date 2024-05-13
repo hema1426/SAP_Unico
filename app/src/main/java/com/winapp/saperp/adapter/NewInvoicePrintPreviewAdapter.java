@@ -1,6 +1,7 @@
 package com.winapp.saperp.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +20,16 @@ import java.util.ArrayList;
 public class NewInvoicePrintPreviewAdapter extends RecyclerView.Adapter<NewInvoicePrintPreviewAdapter.ViewHolder> {
 
     private ArrayList<InvoicePrintPreviewModel.InvoiceList> invoiceLists;
+    private String companyName;
     private Context context;
     View view;
     private String printView;
-    public NewInvoicePrintPreviewAdapter(Context context, ArrayList<InvoicePrintPreviewModel.InvoiceList> invoices, String printView) {
+    public NewInvoicePrintPreviewAdapter(Context context, ArrayList<InvoicePrintPreviewModel.InvoiceList> invoices,
+                                         String printView , String companyName) {
         this.context=context;
         this.invoiceLists = invoices;
         this.printView=printView;
+        this.companyName=companyName;
     }
     @NonNull
     @Override
@@ -43,8 +47,19 @@ public class NewInvoicePrintPreviewAdapter extends RecyclerView.Adapter<NewInvoi
         }else {
             viewHolder.product.setText(invoiceList.getDescription());
         }
-        viewHolder.iss.setText(invoiceList.getNetQty());
-        viewHolder.rtn.setText(invoiceList.getReturnQty());
+        Log.w("cpmadpta",""+companyName);
+
+        if(companyName.equalsIgnoreCase("Trans Orient Singapore Pte Ltd")){
+            viewHolder.rtn.setVisibility(View.INVISIBLE);
+            viewHolder.iss.setVisibility(View.INVISIBLE);
+        }
+        else {
+            viewHolder.rtn.setVisibility(View.VISIBLE);
+            viewHolder.iss.setVisibility(View.VISIBLE);
+            viewHolder.iss.setText(invoiceList.getNetQty());
+            viewHolder.rtn.setText(invoiceList.getReturnQty());
+
+        }
         viewHolder.net.setText(invoiceList.getNetQuantity());
 
        // viewHolder.price.setText(Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getPricevalue())));

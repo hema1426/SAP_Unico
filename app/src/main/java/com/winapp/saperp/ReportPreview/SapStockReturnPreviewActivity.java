@@ -161,7 +161,7 @@ public class SapStockReturnPreviewActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url= Utils.getBaseUrl(this) +"ReportStockReturn";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_stockRetururl:",url+jsonBody);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Generating Print Preview...");
@@ -189,7 +189,9 @@ public class SapStockReturnPreviewActivity extends AppCompatActivity {
                                 StockBadRequestReturnModel model=new StockBadRequestReturnModel();
 //                            model.setWarehouseCode(detailObject.optString("warehouseCode"));
 //                            model.setReason(detailObject.optString("reason"));
-
+                                reasonl.setText(detailObject.optString("reason"));
+                                transfertol.setText(detailObject.optString("transferTo"));
+                                returndate.setText(detailObject.optString("date"));
                                 JSONArray itemsArray=detailObject.optJSONArray("reportSalesReturnDetails");
                                 for (int i = 0; i< Objects.requireNonNull(itemsArray).length(); i++){
                                     JSONObject objectItem= itemsArray.optJSONObject(i);

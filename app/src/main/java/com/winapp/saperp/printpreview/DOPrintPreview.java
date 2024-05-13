@@ -347,7 +347,7 @@ public class DOPrintPreview extends AppCompatActivity implements OnPageChangeLis
                                         invoiceListModel.setDescription(detailObject.optString("productName"));
                                         invoiceListModel.setLqty(detailObject.optString("unitQty"));
                                         invoiceListModel.setCqty(detailObject.optString("unitQty"));
-                                        invoiceListModel.setNetQty(detailObject.optString("unitQty"));
+                                        invoiceListModel.setNetQty(detailObject.optString("quantity"));
                                         double qty = Double.parseDouble(detailObject.optString("quantity"));
                                         double price = Double.parseDouble(detailObject.optString("price"));
 

@@ -132,7 +132,7 @@ public class CategoriesActivity extends AppCompatActivity {
         locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
         companyCode = user.get(SessionManager.KEY_COMPANY_CODE);
         tabLayout = findViewById(R.id.tabs);
-        viewPager = findViewById(R.id.viewpager);
+        viewPager = findViewById(R.id.viewpager_Categor);
         userName = findViewById(R.id.user_name);
         emptyLayout = findViewById(R.id.empty_layout);
         helper = new DBHelper(this);
@@ -240,7 +240,6 @@ public class CategoriesActivity extends AppCompatActivity {
             }
         });
 
-
         getCategories();
         // new GetCategoriesTask().execute();
 
@@ -294,7 +293,7 @@ public class CategoriesActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_url:", url);
+        Log.w("Given_urlGroup:", url);
         dialog = new ProgressDialog(CategoriesActivity.this);
         dialog.setMessage("Loading Customers Groups...");
         dialog.setCancelable(false);
@@ -425,6 +424,8 @@ public class CategoriesActivity extends AppCompatActivity {
                                         model.setTaxType(object.optString("taxType"));
                                         model.setTaxPerc(object.optString("taxPercentage"));
                                         model.setTaxCode(object.optString("taxCode"));
+                                        model.setBillDiscPercentage(object.optString("discountPercentage"));
+
 
                                         if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {
                                             model.setOutstandingAmount("0.00");

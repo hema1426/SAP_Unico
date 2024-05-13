@@ -155,14 +155,13 @@ public class SplashActivity extends AppCompatActivity {
                 );
                 finish();
             }else {
-             //String apiUrl=Constants.TRANS_ORIENT_DEMO;
-             String apiUrl=Constants.AADHI_DEMO;
-               // String apiUrl=Constants.SUPER_STAR_DEMO;
+             String apiUrl=Constants.TRANS_ORIENT_DEMO;
+          // String apiUrl=Constants.SAP_FOODGLE_HUB_NEW;
+           // String apiUrl=Constants.SUPER_STAR_DEMO;
 
                 dbHelper.insertUrl(apiUrl);
                 startActivity(
-                        new Intent(SplashActivity.this,LoginActivity.class)
-                );
+                        new Intent(SplashActivity.this,LoginActivity.class));
                 finish();
             }
 

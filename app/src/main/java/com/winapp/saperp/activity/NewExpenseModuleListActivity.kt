@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
+import android.bluetooth.BluetoothAdapter
 import android.content.ActivityNotFoundException
 import android.content.DialogInterface
 import android.content.Intent
@@ -85,10 +86,6 @@ import com.winapp.saperp.model.InvoicePrintPreviewModel
 import com.winapp.saperp.model.InvoicePrintPreviewModel.InvoiceList
 import com.winapp.saperp.model.SupplierModel
 import com.winapp.saperp.model.UserListModel
-import com.winapp.saperp.printpreview.DOPrintPreview
-import com.winapp.saperp.printpreview.InvoicePrintPreviewActivity
-import com.winapp.saperp.printpreview.NewInvoicePrintPreviewActivity
-import com.winapp.saperp.thermalprinter.PrinterUtils
 import com.winapp.saperp.utils.Constants
 import com.winapp.saperp.utils.ImageUtil
 import com.winapp.saperp.utils.Pager
@@ -96,7 +93,6 @@ import com.winapp.saperp.utils.PdfUtils
 import com.winapp.saperp.utils.SessionManager
 import com.winapp.saperp.utils.Utils
 import com.winapp.saperp.zebraprinter.TSCPrinter
-import com.winapp.saperp.zebraprinter.ZebraPrinterActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -182,7 +178,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
     private var deleteInvoice: FloatingActionButton? = null
     private var cashCollection: FloatingActionButton? = null
     private var printPreview: FloatingActionButton? = null
-    private var invoicePrint: FloatingActionButton? = null
+    private var expensePrint: FloatingActionButton? = null
     private var deliveryOrderPrint: FloatingActionButton? = null
     private var doPrintPreview: FloatingActionButton? = null
     private var cancelInvoice: FloatingActionButton? = null
@@ -297,7 +293,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         editInvoice = findViewById(R.id.edit_invoice)
         deleteInvoice = findViewById(R.id.delete_invoice)
         cashCollection = findViewById(R.id.cash_collection)
-        printPreview = findViewById(R.id.print_preview)
+        printPreview = findViewById(R.id.print_preview_expens)
         editInvoiceLayout = findViewById(R.id.edit_invoice_layout)
         deleteInvoiceLayout = findViewById(R.id.delete_invoice_layout)
         cashCollectionLayout = findViewById(R.id.cash_collection_layout)
@@ -309,7 +305,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         progressLayout = findViewById(R.id.progress_layout)
         pdfView = findViewById(R.id.pdfView)
         pdfViewLayout = findViewById(R.id.pdf_layout)
-        invoicePrint = findViewById(R.id.invoice_print)
+        expensePrint = findViewById(R.id.expense_print)
         invoicePrintLayout = findViewById(R.id.invoice_print_layout)
         doPrintLayout = findViewById(R.id.do_print_layout)
         deliveryOrderPrint = findViewById(R.id.do_print)
@@ -601,30 +597,30 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 //                }
 //            }
 //        });
-        deleteInvoiceLayout!!.setOnClickListener(View.OnClickListener {
-            showRemoveAlert(
-                invoiceNumberValue
-            )
-        })
-        deleteInvoice!!.setOnClickListener(View.OnClickListener { showRemoveAlert(invoiceNumberValue) })
-        cashCollectionLayout!!.setOnClickListener(View.OnClickListener {
-            viewCloseBottomSheet()
-            val intent =
-                Intent(this@NewExpenseModuleListActivity, CashCollectionActivity::class.java)
-            intent.putExtra("customerCode", invoiceCustomerCodeValue)
-            intent.putExtra("customerName", invoiceCustomerValue)
-            startActivity(intent)
-            finish()
-        })
-        cashCollection!!.setOnClickListener(View.OnClickListener {
-            viewCloseBottomSheet()
-            val intent =
-                Intent(this@NewExpenseModuleListActivity, CashCollectionActivity::class.java)
-            intent.putExtra("customerCode", invoiceCustomerCodeValue)
-            intent.putExtra("customerName", invoiceCustomerValue)
-            startActivity(intent)
-            finish()
-        })
+//        deleteInvoiceLayout!!.setOnClickListener(View.OnClickListener {
+//            showRemoveAlert(
+//                invoiceNumberValue
+//            )
+//        })
+       // deleteInvoice!!.setOnClickListener(View.OnClickListener { showRemoveAlert(invoiceNumberValue) })
+//        cashCollectionLayout!!.setOnClickListener(View.OnClickListener {
+//            viewCloseBottomSheet()
+//            val intent =
+//                Intent(this@NewExpenseModuleListActivity, CashCollectionActivity::class.java)
+//            intent.putExtra("customerCode", invoiceCustomerCodeValue)
+//            intent.putExtra("customerName", invoiceCustomerValue)
+//            startActivity(intent)
+//            finish()
+//        })
+//        cashCollection!!.setOnClickListener(View.OnClickListener {
+//            viewCloseBottomSheet()
+//            val intent =
+//                Intent(this@NewExpenseModuleListActivity, CashCollectionActivity::class.java)
+//            intent.putExtra("customerCode", invoiceCustomerCodeValue)
+//            intent.putExtra("customerName", invoiceCustomerValue)
+//            startActivity(intent)
+//            finish()
+//        })
         printPreview!!.setOnClickListener(View.OnClickListener {
             viewCloseBottomSheet()
             if (createInvoiceSetting == "true") {
@@ -645,33 +641,33 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
                 startActivity(intent)
             }
         })
-        doPrintPreview!!.setOnClickListener(View.OnClickListener {
-            viewCloseBottomSheet()
-            val intent = Intent(this@NewExpenseModuleListActivity, DOPrintPreview::class.java)
-            intent.putExtra("invoiceNumber", invoiceNumberValue)
-            intent.putExtra("outstandingAmount", oustandingAmount)
-            startActivity(intent)
-        })
-        printPreviewLayout!!.setOnClickListener(View.OnClickListener {
-            viewCloseBottomSheet()
-            if (createInvoiceSetting == "true") {
-                val intent = Intent(
-                    this@NewExpenseModuleListActivity,
-                    NewInvoicePrintPreviewActivity::class.java
-                )
-                intent.putExtra("invoiceNumber", invoiceNumberValue)
-                intent.putExtra("outstandingAmount", oustandingAmount)
-                startActivity(intent)
-            } else {
-                val intent = Intent(
-                    this@NewExpenseModuleListActivity,
-                    InvoicePrintPreviewActivity::class.java
-                )
-                intent.putExtra("invoiceNumber", invoiceNumberValue)
-                intent.putExtra("outstandingAmount", oustandingAmount)
-                startActivity(intent)
-            }
-        })
+//        doPrintPreview!!.setOnClickListener(View.OnClickListener {
+//            viewCloseBottomSheet()
+//            val intent = Intent(this@NewExpenseModuleListActivity, DOPrintPreview::class.java)
+//            intent.putExtra("invoiceNumber", invoiceNumberValue)
+//            intent.putExtra("outstandingAmount", oustandingAmount)
+//            startActivity(intent)
+//        })
+//        printPreviewLayout!!.setOnClickListener(View.OnClickListener {
+//            viewCloseBottomSheet()
+//            if (createInvoiceSetting == "true") {
+//                val intent = Intent(
+//                    this@NewExpenseModuleListActivity,
+//                    NewInvoicePrintPreviewActivity::class.java
+//                )
+//                intent.putExtra("invoiceNumber", invoiceNumberValue)
+//                intent.putExtra("outstandingAmount", oustandingAmount)
+//                startActivity(intent)
+//            } else {
+//                val intent = Intent(
+//                    this@NewExpenseModuleListActivity,
+//                    InvoicePrintPreviewActivity::class.java
+//                )
+//                intent.putExtra("invoiceNumber", invoiceNumberValue)
+//                intent.putExtra("outstandingAmount", oustandingAmount)
+//                startActivity(intent)
+//            }
+//        })
         printLayout!!.setOnClickListener(View.OnClickListener {
             if (printInvoiceNumber != null && !printInvoiceNumber!!.isEmpty()) {
                 try {
@@ -690,7 +686,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
                 e.printStackTrace()
             }
         })
-        invoicePrint!!.setOnClickListener(View.OnClickListener {
+        expensePrint!!.setOnClickListener(View.OnClickListener {
             try {
                 viewCloseBottomSheet()
                 isInvoicePrint = true
@@ -2037,8 +2033,8 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
                             val model = InvoicePrintPreviewModel()
                             model.invoiceNumber = `object`.optString("invoiceNumber")
                             model.invoiceDate = `object`.optString("invoiceDate")
-                            model.customerCode = `object`.optString("customerCode")
-                            model.customerName = `object`.optString("customerName")
+                            model.customerCode = `object`.optString("vendorCode")
+                            model.customerName = `object`.optString("vendorName")
                             model.overAllTotal = `object`.optString("overAllTotal")
                             // model.setAddress(object.optString("street"));
                             model.address =
@@ -2085,6 +2081,8 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
                                 invoiceListModel.focQty = detailObject.optString("foc_Qty")
                                 invoiceListModel.returnQty = detailObject.optString("returnQty")
                                 invoiceListModel.cartonPrice = detailObject.optString("cartonPrice")
+                                invoiceListModel.accountName = detailObject.optString("accountName")
+
                                 invoiceListModel.unitPrice = detailObject.optString("price")
                                 val qty1 = detailObject.optString("quantity").toDouble()
                                 val price1 = detailObject.optString("price").toDouble()
@@ -2113,7 +2111,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 //                            }
 //                            model.salesReturnList = salesReturnList
           invoiceHeaderDetails!!.add(model)
-                            printInvoice(copy)
+                            printExpense(copy)
                         } else {
                             Toast.makeText(
                                 applicationContext,
@@ -2193,8 +2191,8 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
                                     val obj = responseData.optJSONObject(i)
 
                                     val model = SupplierModel(
-                                        obj.optString("customerCode"),
-                                        obj.optString("customerName"),
+                                        obj.optString("vendorCode"),
+                                        obj.optString("vendorName"),
                                         obj.optString("currencyCode"),
                                         obj.optString("currencyName"),
                                         obj.optString("taxType"),
@@ -2299,48 +2297,19 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         }
     }
 
-    fun printInvoice(copy: Int) {
-        if (createInvoiceSetting == "true") {
-            val printerUtils = PrinterUtils(this, printerMacId)
-            printerUtils.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false")
+    fun printExpense(copy: Int) {
+        Log.w("expensDetaill",""+invoiceHeaderDetails!!.get(0).customerCode)
 
-            /*  TSCPrinter printer = new TSCPrinter(NewInvoiceListActivity.this, printerMacId);
-            printer.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
-            printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
-                @Override
-                public void onCompleted() {
-                    Utils.setSignature("");
-                    Toast.makeText(getApplicationContext(), "Invoice printed successfully!", Toast.LENGTH_SHORT).show();
-                }
-            });*/
-        } else {
-            if (isInvoicePrint) {
-                if (printerType.equals("Zebra Printer", ignoreCase = true)) {
-                    val zebraPrinterActivity =
-                        ZebraPrinterActivity(this@NewExpenseModuleListActivity, printerMacId)
-                    zebraPrinterActivity.printInvoice(
-                        copy,
-                        invoiceHeaderDetails,
-                        invoicePrintList,
-                        "false"
-                    )
-                } else if (printerType.equals("TSC Printer", ignoreCase = true)) {
-                    val printer = TSCPrinter(this@NewExpenseModuleListActivity, printerMacId)
-                    printer.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false")
-                    printer.setOnCompletionListener {
-                        Utils.setSignature("")
-                        Toast.makeText(
-                            applicationContext,
-                            "Invoice printed successfully!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    // ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(NewInvoiceListActivity.this,printerMacId);
-                    // zebraPrinterActivity.printInvoice(copy,invoiceHeaderDetails,invoicePrintList,"false");
-                }
-            } else {
-                // zebraPrinterActivity.printDeliveryOrder(copy,invoiceHeaderDetails,invoicePrintList);
+        if (printerType.equals("TSC Printer", ignoreCase = true)) {
+            val printer = TSCPrinter(this@NewExpenseModuleListActivity, printerMacId,"Expense")
+            printer.printExpense(copy, invoiceHeaderDetails, invoicePrintList)
+            printer.setOnCompletionListener {
+                Utils.setSignature("")
+                Toast.makeText(applicationContext, "Expense printed successfully!", Toast.LENGTH_SHORT).show()
+                finish()
             }
+            // ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(NewInvoiceListActivity.this,printerMacId);
+            // zebraPrinterActivity.printInvoice(copy,invoiceHeaderDetails,invoicePrintList,"false");
         }
     }
 
@@ -2473,4 +2442,35 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 
         }
     }
+
+    @Throws(JSONException::class)
+    fun validatePrinterConfiguration(): Boolean {
+        var printetCheck = false
+        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+            Toast.makeText(
+                this@NewExpenseModuleListActivity,
+                "This device does not support bluetooth",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else if (!mBluetoothAdapter.isEnabled) {
+            // Bluetooth is not enabled :)
+            Toast.makeText(
+                this@NewExpenseModuleListActivity,
+                "Enable bluetooth and connect the printer",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            // Bluetooth is enabled
+            if (!printerType!!.isEmpty() && !printerMacId!!.isEmpty()) {
+                printetCheck = true
+            } else {
+                Toast.makeText(this@NewExpenseModuleListActivity, "Please configure Printer", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+        return printetCheck
+    }
+
 }

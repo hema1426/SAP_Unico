@@ -191,6 +191,7 @@ public class CartActivity extends AppCompatActivity {
     public ImageView signatureCapture;
     public CaptureSignatureView captureSignatureView;
     public AlertDialog alert;
+    public Double totalVal =0.00;
     public TextView signatureTitle;
     // These are the variables for the Getting locations
     private ArrayList permissionsToRequest;
@@ -371,38 +372,44 @@ public class CartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // proceedCheckout();
                 // showRemoveAlert("Checkout");
-                ArrayList<SettingsModel> settings=dbHelper.getSettings();
-                if (settings!=null){
-                    if (settings.size()>0){
-                        for (SettingsModel model:settings){
-                            if (model.getSettingName().equals("invoice_switch")){
-                                Log.w("SettingName:",model.getSettingName());
-                                Log.w("SettingValue:",model.getSettingValue());
-                                if (model.getSettingValue().equals("1")){
-                                    saveAction="Invoice";
-                                    //  createInvoiceJson(Integer.parseInt(noofCopy.getText().toString()));
-                                    Log.w("SavingAction1:",saveAction);
-                                    showSaveOption(saveAction);
-                                }else {
-                                    saveAction="SalesOrder";
-                                    //  createAndValidateJsonObject(Integer.parseInt(noofCopy.getText().toString()));
-                                    Log.w("SavingAction2:",saveAction);
-                                    showSaveOption(saveAction);
+                String text = netTotalText.getText().toString();
+
+                if (totalVal > 0.0) {
+                    ArrayList<SettingsModel> settings = dbHelper.getSettings();
+                    if (settings != null) {
+                        if (settings.size() > 0) {
+                            for (SettingsModel model : settings) {
+                                if (model.getSettingName().equals("invoice_switch")) {
+                                    Log.w("SettingName:", model.getSettingName());
+                                    Log.w("SettingValue:", model.getSettingValue());
+                                    if (model.getSettingValue().equals("1")) {
+                                        saveAction = "Invoice";
+                                        //  createInvoiceJson(Integer.parseInt(noofCopy.getText().toString()));
+                                        Log.w("SavingAction1:", saveAction);
+                                        showSaveOption(saveAction);
+                                    } else {
+                                        saveAction = "SalesOrder";
+                                        //  createAndValidateJsonObject(Integer.parseInt(noofCopy.getText().toString()));
+                                        Log.w("SavingAction2:", saveAction);
+                                        showSaveOption(saveAction);
+                                    }
+                                    break;
                                 }
-                                break;
                             }
+                        } else {
+                            saveAction = "SalesOrder";
+                            // createAndValidateJsonObject(Integer.parseInt(noofCopy.getText().toString()));
+                            Log.w("SavingAction4:", saveAction);
+                            showSaveOption(saveAction);
                         }
-                    }else {
-                        saveAction="SalesOrder";
+                    } else {
+                        saveAction = "SalesOrder";
                         // createAndValidateJsonObject(Integer.parseInt(noofCopy.getText().toString()));
-                        Log.w("SavingAction4:",saveAction);
+                        Log.w("SavingAction4:", saveAction);
                         showSaveOption(saveAction);
                     }
-                }else {
-                    saveAction="SalesOrder";
-                    // createAndValidateJsonObject(Integer.parseInt(noofCopy.getText().toString()));
-                    Log.w("SavingAction4:",saveAction);
-                    showSaveOption(saveAction);
+                } else {
+                    Toast.makeText(getApplicationContext()," Nettotal should not be negative",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -1017,7 +1024,15 @@ public class CartActivity extends AppCompatActivity {
         final Button cancelButton=customLayout.findViewById(R.id.buttonNo);
         final Button clearButton=customLayout.findViewById(R.id.buttonClear);
         LinearLayout mContent = customLayout.findViewById(R.id.signature_layout);
-        CaptureSignatureView mSig = new CaptureSignatureView(CartActivity.this, null);
+        acceptButton.setEnabled(false);
+        acceptButton.setAlpha(0.4f);
+        CaptureSignatureView mSig = new CaptureSignatureView(CartActivity.this, null, new CaptureSignatureView.OnSignatureDraw() {
+            @Override
+            public void onSignatureCreated() {
+                acceptButton.setEnabled(true);
+                acceptButton.setAlpha(1f);
+            }
+        });
         mContent.addView(mSig, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1177,6 +1192,7 @@ public class CartActivity extends AppCompatActivity {
                         netTotal1 = subtotalValue + taxAmount1;
                         String ProdNetTotal = twoDecimalPoint(netTotal1);
                         netTotalText.setText("" + ProdNetTotal);
+                        totalVal = Double.valueOf((ProdNetTotal));
 
                         netTax=prodTax;
                         netTotalvalue=ProdNetTotal;
@@ -1189,6 +1205,7 @@ public class CartActivity extends AppCompatActivity {
                         netTotal = tt + taxAmount;
                         String ProdNetTotal = twoDecimalPoint(netTotal);
                         netTotalText.setText("" + ProdNetTotal);
+                        totalVal = Double.valueOf((ProdNetTotal));
 
                         netTax=prodTax;
                         netTotalvalue=ProdNetTotal;
@@ -1205,7 +1222,7 @@ public class CartActivity extends AppCompatActivity {
                         netTotal1 = subtotalValue;
                         String ProdNetTotal = twoDecimalPoint(netTotal1);
                         netTotalText.setText("" + ProdNetTotal);
-
+                        totalVal = Double.valueOf((ProdNetTotal));
 
                         double dTotalIncl = netTotal1 - taxAmount1;
                         String totalIncl = twoDecimalPoint(dTotalIncl);
@@ -1223,7 +1240,7 @@ public class CartActivity extends AppCompatActivity {
                         netTotal = tt;
                         String ProdNetTotal = twoDecimalPoint(netTotal);
                         netTotalText.setText("" + ProdNetTotal);
-
+                        totalVal = Double.valueOf((ProdNetTotal));
 
                         double dTotalIncl = netTotal - taxAmount;
                         String totalIncl = twoDecimalPoint(dTotalIncl);
@@ -1242,6 +1259,7 @@ public class CartActivity extends AppCompatActivity {
                         netTotal1 = subtotalValue;
                         String ProdNetTotal = twoDecimalPoint(netTotal1);
                         netTotalText.setText("" + ProdNetTotal);
+                        totalVal = Double.valueOf((ProdNetTotal));
 
                         netTax="0.0";
                         netTotalvalue=ProdNetTotal;
@@ -1250,6 +1268,7 @@ public class CartActivity extends AppCompatActivity {
                         netTotal = tt;
                         String ProdNetTotal = twoDecimalPoint(netTotal);
                         netTotalText.setText("" + ProdNetTotal);
+                        totalVal = Double.valueOf((ProdNetTotal));
 
                         netTax="0.0";
                         netTotalvalue=ProdNetTotal;
@@ -1258,6 +1277,7 @@ public class CartActivity extends AppCompatActivity {
                 } else {
                     taxText.setText("0.0");
                     netTotalText.setText("" + Prodtotal);
+                    totalVal = Double.valueOf((Prodtotal));
                     netTax="0.0";
                     netTotalvalue=Prodtotal;
                 }
@@ -1265,11 +1285,13 @@ public class CartActivity extends AppCompatActivity {
             } else if (taxVal.matches("")) {
                 taxText.setText("0.0");
                 netTotalText.setText("" + Prodtotal);
+                totalVal = Double.valueOf((Prodtotal));
                 netTax="0.0";
                 netTotalvalue=Prodtotal;
             } else {
                 taxText.setText("0.0");
                 netTotalText.setText("" + Prodtotal);
+                totalVal = Double.valueOf((Prodtotal));
                 netTax="0.0";
                 netTotalvalue=Prodtotal;
             }
@@ -1474,6 +1496,8 @@ public class CartActivity extends AppCompatActivity {
 
                 taxText.setText(fourDecimalPoint(net_tax));
                 netTotalText.setText("$ "+ twoDecimalPoint(net_total));
+                totalVal = Double.valueOf(twoDecimalPoint(net_total));
+
                 subTotalTextValue.setText("$ "+twoDecimalPoint(sub_total));
                 itemDiscountText.setText(twoDecimalPoint(net_item_discount));
 
@@ -1493,6 +1517,8 @@ public class CartActivity extends AppCompatActivity {
                 subTotalText.setText("$ "+twoDecimalPoint(sub_total));
                 taxText.setText(fourDecimalPoint(net_tax));
                 netTotalText.setText("$ "+ twoDecimalPoint(net_total));
+                totalVal = Double.valueOf(twoDecimalPoint(net_total));
+                totalVal = net_total ;
                 subTotalTextValue.setText("$ "+twoDecimalPoint(sub_total));
                 itemDiscountText.setText(twoDecimalPoint(net_item_discount));
 
@@ -1533,6 +1559,7 @@ public class CartActivity extends AppCompatActivity {
 
                         taxText.setText("$ "+ prodTax);
                         netTotalText.setText("$ "+ ProdNetTotal);
+                        totalVal = Double.valueOf(ProdNetTotal);
                         netAmount.setText("$ "+ ProdNetTotal);
                         taxTypeText.setText("( Exclusive )");
 
@@ -1549,6 +1576,8 @@ public class CartActivity extends AppCompatActivity {
 
                         taxText.setText("$ "+ prodTax);
                         netTotalText.setText("$ "+ ProdNetTotal);
+                        totalVal = Double.valueOf(ProdNetTotal);
+
                         netAmount.setText("$ "+ ProdNetTotal);
                         taxTypeText.setText("( Exclusive )");
                         netTax=prodTax;
@@ -1570,6 +1599,7 @@ public class CartActivity extends AppCompatActivity {
                         taxText.setText(prodTax);
                         subTotalText.setText("$ "+totalIncl);
                         netTotalText.setText("$ "+ ProdNetTotal);
+                        totalVal = Double.valueOf(ProdNetTotal);
                         netAmount.setText("$ "+ ProdNetTotal);
                         taxTypeText.setText("( Inclusive )");
                         netTax=prodTax;
@@ -1588,6 +1618,8 @@ public class CartActivity extends AppCompatActivity {
                         subTotalText.setText("$ "+totalIncl);
                         taxText.setText("$ "+ prodTax);
                         netTotalText.setText("$ "+ ProdNetTotal);
+                        totalVal = Double.valueOf(ProdNetTotal);
+                        totalVal = Double.valueOf(ProdNetTotal);
                         netAmount.setText("$ "+ ProdNetTotal);
                         taxTypeText.setText("( Inclusive )");
                         netTax=prodTax;
@@ -1602,6 +1634,7 @@ public class CartActivity extends AppCompatActivity {
 
                         taxText.setText("0.0");
                         netTotalText.setText("$ "+ ProdNetTotal);
+                        totalVal = Double.valueOf(ProdNetTotal);
                         netAmount.setText("$ "+ ProdNetTotal);
                         netTax="0.0";
                         netTotalvalue=ProdNetTotal;
@@ -1612,6 +1645,7 @@ public class CartActivity extends AppCompatActivity {
 
                         taxText.setText("0.0");
                         netTotalText.setText("$ "+ ProdNetTotal);
+                        totalVal = Double.valueOf(ProdNetTotal);
                         netAmount.setText("$ "+ ProdNetTotal);
                         netTax="0.0";
                         netTotalvalue=ProdNetTotal;
@@ -1620,6 +1654,7 @@ public class CartActivity extends AppCompatActivity {
                 } else {
                     taxText.setText("0.0");
                     netTotalText.setText("$ "+ subTotal);
+                    totalVal = subTotal ;
                     netAmount.setText("$ "+ subTotal);
                     netTax="0.0";
                     netTotalvalue= String.valueOf(subTotal);
@@ -1628,12 +1663,14 @@ public class CartActivity extends AppCompatActivity {
             } else if (taxValue.matches("")) {
                 taxText.setText("0.0");
                 netTotalText.setText("$ "+ subTotal);
+                totalVal = subTotal ;
                 netAmount.setText("$ "+ subTotal);
                 netTax="0.0";
                 netTotalvalue= String.valueOf(subTotal);
             } else {
                 taxText.setText("0.0");
                 netTotalText.setText("$ "+ subTotal);
+                totalVal = subTotal ;
                 netAmount.setText("$ "+ subTotal);
                 netTax="0.0";
                 netTotalvalue= String.valueOf(subTotal);
@@ -1863,14 +1900,14 @@ public class CartActivity extends AppCompatActivity {
                 // convert into int
                 int value = (int)data;
                 invoiceObject.put("pcsPerCarton",String.valueOf(value));
-                invoiceObject.put("pcsPerCarton",String.valueOf(value));
-                double priceValue=Double.parseDouble(model.getCART_UNIT_PRICE()) / net_qty;
-                if (object.optString("taxType").equals("I")){
-                    invoiceObject.put("price",Utils.twoDecimalPoint(priceValue));
-                }else {
-                    invoiceObject.put("price",Utils.twoDecimalPoint(priceValue));
-                }
-                invoiceObject.put("cartonPrice",model.getCART_COLUMN_CTN_PRICE());
+            //    double priceValue=Double.parseDouble(model.getCART_UNIT_PRICE()) / net_qty;
+//                if (object.optString("taxType").equals("I")){
+//                    invoiceObject.put("price",Utils.twoDecimalPoint(priceValue));
+//                }else {
+//                    invoiceObject.put("price",Utils.twoDecimalPoint(priceValue));
+//                }
+                invoiceObject.put("price",model.getCART_COLUMN_CTN_PRICE());
+              //  invoiceObject.put("cartonPrice",model.getCART_COLUMN_CTN_PRICE());
                 invoiceObject.put("total",model.getCART_TOTAL_VALUE());
                 if (model.getDiscount()!=null && !model.getDiscount().isEmpty()){
                     invoiceObject.put("itemDiscount",model.getDiscount());
@@ -2104,19 +2141,22 @@ public class CartActivity extends AppCompatActivity {
                 // convert into int
                 int value = (int)data;
                 saleObject.put("pcsPerCarton",String.valueOf(value));
-                double priceValue=Double.parseDouble(model.getCART_UNIT_PRICE()) / net_qty;
-                if (object.optString("taxType").equals("I")){
-                    saleObject.put("price",Utils.twoDecimalPoint(priceValue));
-                }else {
-                    saleObject.put("price",Utils.twoDecimalPoint(priceValue));
-                }
-                saleObject.put("cartonPrice",model.getCART_COLUMN_CTN_PRICE());
+//                double priceValue=Double.parseDouble(model.getCART_UNIT_PRICE()) / net_qty;
+//                if (object.optString("taxType").equals("I")){
+//                    saleObject.put("price",Utils.twoDecimalPoint(priceValue));
+//                }else {
+//                    saleObject.put("price",Utils.twoDecimalPoint(priceValue));
+//                }
+                saleObject.put("price",model.getCART_COLUMN_CTN_PRICE());
                 saleObject.put("total",model.getCART_TOTAL_VALUE());
                 if (model.getDiscount()!=null && !model.getDiscount().isEmpty()){
                     saleObject.put("itemDiscount",model.getDiscount());
                 }else {
                     saleObject.put("itemDiscount","0.00");
                 }
+//                Log.w("cartPricss",""+Utils.twoDecimalPoint(priceValue)+
+//                        "cart_unit.."+model.getCART_UNIT_PRICE());
+
                 saleObject.put("itemDiscountPercentage","0");
                 saleObject.put("totalTax",model.getCART_TAX_VALUE());
                 saleObject.put("subTotal",model.getSubTotal());

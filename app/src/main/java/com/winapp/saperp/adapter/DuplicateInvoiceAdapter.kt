@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.winapp.saperp.R
 import com.winapp.saperp.model.DuplicateInvoiceDetail
+import com.winapp.saperp.model.ExpenseModuleAddModel
 import com.winapp.saperp.utils.Utils
 
 class DuplicateInvoiceAdapter(
@@ -21,6 +22,8 @@ class DuplicateInvoiceAdapter(
     var editDupClickListener : EditDuplicateClickListener,
 
     ) : RecyclerView.Adapter<DuplicateInvoiceAdapter.MyViewHolder>() {
+    lateinit var selectedModel: DuplicateInvoiceDetail
+    var istrue: Boolean = false
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder(
             LayoutInflater.from(
@@ -29,7 +32,7 @@ class DuplicateInvoiceAdapter(
         )
     }
 
-    fun getpolist(): ArrayList<DuplicateInvoiceDetail> {
+    fun getList(): ArrayList<DuplicateInvoiceDetail> {
         return dataList
     }
 
@@ -85,7 +88,7 @@ class DuplicateInvoiceAdapter(
 
                             val pos = adapterPosition
                             if (pos != -1) {
-                                deleteDupClickListener.deleteSelected(pos,model)
+                                editDupClickListener.editSelected(pos,model)
                             }
                             true
                         }
@@ -137,7 +140,12 @@ class DuplicateInvoiceAdapter(
             netTotalValue = itemView.findViewById<TextView>(R.id.net_total)
         }
     }
-
+    @SuppressLint("NotifyDataSetChanged")
+    fun updatePdt(duplicateInvoiceDetail: DuplicateInvoiceDetail, istrueVal: Boolean) {
+        selectedModel = duplicateInvoiceDetail
+        istrue = istrueVal
+        notifyDataSetChanged()
+    }
     fun updateList(list: ArrayList<DuplicateInvoiceDetail>) {
         dataList = list
         notifyDataSetChanged()

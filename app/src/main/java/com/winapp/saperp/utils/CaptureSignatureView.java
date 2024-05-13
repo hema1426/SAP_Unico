@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
 import java.io.ByteArrayOutputStream;
 
 /**
@@ -29,6 +30,8 @@ public class CaptureSignatureView extends View {
     private float TouchTolerance = 4;
     private float LineThickness = 4;
 
+    private OnSignatureDraw onSignatureDraw;
+
     public CaptureSignatureView(Context context, AttributeSet attr) {
         super(context, attr);
         _Path = new Path();
@@ -36,7 +39,23 @@ public class CaptureSignatureView extends View {
         _paint = new Paint();
         _paint.setAntiAlias(true);
         _paint.setDither(true);
-        _paint.setColor(Color.argb(255, 0, 0, 0));
+        _paint.setColor(Color.argb(255, 10, 0, 0));
+        _paint.setStyle(Paint.Style.STROKE);
+        _paint.setStrokeJoin(Paint.Join.ROUND);
+        _paint.setStrokeCap(Paint.Cap.ROUND);
+        _paint.setStrokeWidth(LineThickness);
+//        this.onSignatureDraw = onSignatureDraw;
+    }
+
+    public CaptureSignatureView(Context context, AttributeSet attr, OnSignatureDraw onSignatureDraw) {
+        super(context, attr);
+        this.onSignatureDraw = onSignatureDraw;
+        _Path = new Path();
+        _BitmapPaint = new Paint(Paint.DITHER_FLAG);
+        _paint = new Paint();
+        _paint.setAntiAlias(true);
+        _paint.setDither(true);
+        _paint.setColor(Color.argb(255, 10, 0, 0));
         _paint.setStyle(Paint.Style.STROKE);
         _paint.setStrokeJoin(Paint.Join.ROUND);
         _paint.setStrokeCap(Paint.Cap.ROUND);
@@ -107,7 +126,9 @@ public class CaptureSignatureView extends View {
                 invalidate();
                 break;
         }
-
+        if (onSignatureDraw != null) {
+            onSignatureDraw.onSignatureCreated();
+        }
         return true;
     }
 
@@ -130,5 +151,9 @@ public class CaptureSignatureView extends View {
         v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
         v.draw(c);
         return b;
+    }
+
+    public  interface OnSignatureDraw {
+        void onSignatureCreated();
     }
 }

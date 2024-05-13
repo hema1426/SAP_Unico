@@ -1873,6 +1873,9 @@ public class CashInvoiceFragment extends Fragment {
                                 invoiceListModel.setInvoiceDate(object.optString("invoiceDate"));
                                 invoiceListModel.setAmount(object.optString("paidAmount"));
                                 invoiceListModel.setDiscountAmount(object.optString("discountAmount"));
+                                invoiceListModel.setCreditAmount(object.optString("creditAmount"));
+                                invoiceListModel.setBalanceAmount(object.optString("balanceAmount"));
+
                                 receiptsPrintList.add(invoiceListModel);
                             }
                             model.setReceiptsDetailsList(receiptsPrintList);

@@ -27,6 +27,14 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/action_down"
+        android:icon="@drawable/ic_baseline_arrow_drop_down_24"
+        android:title="downArrow"
+        android:visible="false"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_save"
         android:icon="@drawable/ic_baseline_save_24"
         android:title="Save"

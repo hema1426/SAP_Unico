@@ -69,7 +69,7 @@ public class TransferPreviewPrintActivity extends AppCompatActivity {
     String printerType;
     private ArrayList<TransferDetailModel> transferDetailModels;
     private ArrayList<TransferDetailModel.TransferDetails> transferDetailsList;
-    private TextView transfertype, transferno, from_locat,to_locat,transferdate;
+    private TextView transfertype, transferno, from_locat,to_locat,transferdate ,toloc_namel,fromloc_namel;
     private RecyclerView transferListView;
     private TransferPreviewPrintAdapter adapter;
     SessionManager session;
@@ -111,6 +111,8 @@ public class TransferPreviewPrintActivity extends AppCompatActivity {
         transferno =findViewById (R.id.transfer_no);
         from_locat =findViewById (R.id.from_loc);
         to_locat =findViewById (R.id.to_loc);
+        toloc_namel =findViewById (R.id.toloc_name);
+        fromloc_namel =findViewById (R.id.fromloc_name);
         transferdate =findViewById (R.id.transfer_date);
         mainLayout=findViewById(R.id.main_layout);
         transferListView = findViewById (R.id.rv_transferlist);
@@ -315,6 +317,8 @@ public class TransferPreviewPrintActivity extends AppCompatActivity {
                             model.setDate(detailObject.optString("docDate"));
                             model.setFromLocation(detailObject.optString("fromWhsCode"));
                             model.setToLocation(detailObject.optString("toWhsCode"));
+                            model.setFromLocationName(detailObject.optString("fromWarehouseName"));
+                            model.setToLocationName(detailObject.optString("toWarehouseName"));
 
                             JSONArray itemsArray=detailObject.optJSONArray("itItem");
                             for (int i = 0; i< Objects.requireNonNull(itemsArray).length(); i++){
@@ -379,6 +383,9 @@ public class TransferPreviewPrintActivity extends AppCompatActivity {
                 transferdate.setText(model.getDate());
                 from_locat.setText(model.getFromLocation());
                 to_locat.setText(model.getToLocation());
+                Log.w("tran_toLoc",""+model.getToLocationName());
+                toloc_namel.setText(model.getToLocationName());
+                fromloc_namel.setText(model.getFromLocationName());
             }
             transferListView.setHasFixedSize(true);
             transferListView.setLayoutManager(new LinearLayoutManager(TransferPreviewPrintActivity.this, LinearLayoutManager.VERTICAL, false));

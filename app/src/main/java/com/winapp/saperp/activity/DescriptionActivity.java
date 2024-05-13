@@ -12,6 +12,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -23,6 +24,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -32,6 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +45,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -53,6 +58,7 @@ import com.winapp.saperp.model.CartModel;
 import com.winapp.saperp.model.CustomerDetails;
 import com.winapp.saperp.model.ProductsModel;
 import com.winapp.saperp.model.SettingsModel;
+import com.winapp.saperp.model.UomModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
@@ -97,6 +103,13 @@ public class DescriptionActivity extends AppCompatActivity {
     private TextView cartonText;
     private EditText ctnPrice;
     private EditText unitPrice;
+
+    private Spinner uomSpinnerCart;
+    private ProductsModel productsModel;
+
+    public boolean isUomSetting = false;
+    private String uomCode = "";
+    private String uomName = "";
     double net_amount=0.0;
     double carton_amount=0.0;
     double loose_amount=0.0;
@@ -122,12 +135,14 @@ public class DescriptionActivity extends AppCompatActivity {
     LinearLayout pcsQtyLayout;
     TextView qtyTextView;
     LinearLayout unitPriceLayout;
+    private ArrayList<UomModel> uomList;
 
     TextWatcher cartonQtyWatcher;
     TextWatcher qtyWatcher;
     LinearLayout focLayout;
     boolean isAllowLowStock=false;
     TextView uomCodeText;
+    LinearLayout uomSpinnerLay_cart;
     static ProgressDialog dialog;
     String selectCustomerId;
     HashMap<String ,String> user;
@@ -165,11 +180,12 @@ public class DescriptionActivity extends AppCompatActivity {
         session=new SessionManager(this);
         dbHelper=new DBHelper(this);
         mainImage=findViewById(R.id.item_image);
-        itemName=findViewById(R.id.item_name);
+        itemName=findViewById(R.id.item_nameDesc);
         availability=findViewById(R.id.availabilty);
         netPrice =findViewById(R.id.price);
         ctnPrice=findViewById(R.id.ctn_price);
         ctnQty=findViewById(R.id.ctn_qty);
+        uomSpinnerLay_cart =findViewById(R.id.uomSpinnerLay_cart);
         //pcsQty=findViewById(R.id.pcs_qty);
         ctnQtyValue=findViewById(R.id.ctn_qty_value);
         pcsQtyValue=findViewById(R.id.pcs_qty_value);
@@ -201,14 +217,13 @@ public class DescriptionActivity extends AppCompatActivity {
         unitPriceLayout=findViewById(R.id.unit_price_layout);
         focLayout=findViewById(R.id.foc_layout);
         uomCodeText=findViewById(R.id.uom_code);
-
+        uomSpinnerCart = findViewById(R.id.uomSpinner_cart);
         user=session.getUserDetails();
         companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
 
         pcsQtyValue.setSelectAllOnFocus(true);
         ctnQtyValue.setSelectAllOnFocus(true);
-
 
 
       /*  ArrayList<SettingsModel> settings1=dbHelper.getSettings();
@@ -232,7 +247,8 @@ public class DescriptionActivity extends AppCompatActivity {
             isReverseCalculationEnabled=false;
         }*/
 
-
+     //   getLowStockSetting();
+        isUomSetting = true ;
         returnEditext.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -584,6 +600,21 @@ public class DescriptionActivity extends AppCompatActivity {
             int value = (int)data;
             ctnQty.setText(String.valueOf(value));
             uomCodeText.setText(model.getUomCode());
+            productsModel = model;
+
+            Log.w("uomcoddss",""+isUomSetting);
+            if(isUomSetting) {
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("CustomerCode", selectCustomerId);
+                    jsonObject.put("ItemCode", model.getProductCode());
+                    getUOM(jsonObject ,model);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                uomSpinnerLay_cart.setVisibility(View.VISIBLE);
+            }
+
         }
 
         if (ctnQty.getText()!=null){
@@ -687,7 +718,8 @@ public class DescriptionActivity extends AppCompatActivity {
                                         returnEditext.getText().toString(),
                                         returnType,"",
                                         String.valueOf(total),
-                                        availability.getText().toString(),uomCodeText.getText().toString(),"0.00");
+                                        availability.getText().toString(),
+                                        uomCode,"0.00");
 
 
                     /*boolean status= dbHelper.insertCart(
@@ -1066,6 +1098,127 @@ public class DescriptionActivity extends AppCompatActivity {
         builder.show();
     }
 
+    public void getUOM(JSONObject jsonObject ,  ProductsModel model) {
+        // Initialize a new RequestQueue instance
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url = Utils.getBaseUrl(this) + "ItemUOMDetails";
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_UOM_URL:", url + jsonObject.toString());
+
+        SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading UOM...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
+            try {
+                uomList = new ArrayList<>();
+
+                Log.w("Res_UOM:", response.toString());
+                // Loop through the array elements
+                JSONArray uomArray = response.optJSONArray("responseData");
+                if (uomArray != null && uomArray.length() > 0) {
+                    for (int j = 0; j < uomArray.length(); j++) {
+                        JSONObject uomObject = uomArray.getJSONObject(j);
+                        UomModel uomModel = new UomModel();
+                        uomModel.setUomCode(uomObject.optString("uomCode"));
+                        uomModel.setUomName(uomObject.optString("uomName"));
+                        uomModel.setUomEntry(uomObject.optString("uomEntry"));
+                        uomModel.setAltQty(uomObject.optString("altQty"));
+                        uomModel.setBaseQty(uomObject.optString("baseQty"));
+                        uomModel.setPrice(uomObject.optString("price"));
+                        uomList.add(uomModel);
+                    }
+                }
+
+                Log.w("UOM_TEXT:", uomArray.toString());
+                pDialog.dismiss();
+                if (uomList.size() > 0) {
+                    runOnUiThread(() -> {
+                        setUomList(uomList , model);
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, error -> {
+            // Do something when error occurred
+            pDialog.dismiss();
+            Log.w("Error_throwing:", error.toString());
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private void setUomList(ArrayList<UomModel> uomList ,  ProductsModel model) {
+
+        Log.w("UOMList:", uomList.toString() +".."+model.getDefaultUom()+"...."+model.getUomCode());
+        ArrayAdapter<UomModel> adapter = new ArrayAdapter<>(this, R.layout.cust_spinner_item, uomList);
+        uomSpinnerCart.setAdapter(adapter);
+        setUOMCode(uomList);
+        if (model != null) {
+            //setuom
+            Log.d("cg_uomsiz1", uomList.size() + "");
+            for (int i = 0; i < uomList.size(); i++) {
+                Log.w("cg_uomsiz", uomList.size() + "");
+                if (uomList.get(i).getUomCode().equals(model.getDefaultUom())) {
+                    Log.w("cg_uoomcode_", model.getDefaultUom());
+                    uomSpinnerCart.setSelection(i);
+                   // uomCode = uomList.get(i).getUomCode() ;
+                    //uomText.setText(uomList.get(i).getUomCode());
+                    ctnPrice.setText(uomList.get(i).getPrice());
+                    break;
+                }
+            }
+        }
+    }
+
+    private void setUOMCode(ArrayList<UomModel> uomList) {
+        uomSpinnerCart.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                    uomName = uomSpinnerCart.getSelectedItem().toString();
+                    uomCode = uomList.get(position).getUomCode() ;
+                  //  uomText.setText(uomList.get(position).getUomCode());
+                   ctnPrice.setText(uomList.get(position).getPrice());
+                    Log.w("UOMQtyValueCart:", uomList.get(position).getUomEntry());
+                    Log.w("SelectedUOMCart:", uomName + "");
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+
     public void showImageUrl(String imageUrl) {
         Dialog builder = new Dialog(DescriptionActivity.this,android.R.style.Theme_Light);
         builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1110,6 +1263,15 @@ public class DescriptionActivity extends AppCompatActivity {
             for (SettingsModel model : settings) {
                 if (model.getSettingName().equals("allow_negative_switch")) {
                     isAllowLowStock= model.getSettingValue().equals("1");
+                }
+                else if (model.getSettingName().equals("UomSwitch")) {
+                    Log.w("SettingNameI:", model.getSettingName());
+                    Log.w("SettingValueI:", model.getSettingValue());
+                    if (model.getSettingValue().equals("1")) {
+                        isUomSetting = true;
+                    } else {
+                        isUomSetting = false;
+                    }
                 }
             }
         }
@@ -1297,6 +1459,7 @@ public class DescriptionActivity extends AppCompatActivity {
             netPrice.setText(twoDecimalPoint(net_amount));
             taxCalculation(net_amount);
 
+            Log.w("cartEnty","");
         } catch (Exception ex) {
         }
     }
@@ -1347,10 +1510,11 @@ public class DescriptionActivity extends AppCompatActivity {
         String itemDisc="";
         double taxAmount=0.0;
         double netTotal=0.0;
-        Log.w("TaxType:",taxType);
-        Log.w("TaxValue:",taxValue);
+        Log.w("TaxTypeCart:",taxType);
+        Log.w("TaxValueCart:",taxValue);
 
         if (!taxType.matches("") && !taxValue.matches("")) {
+            Log.w("cartEntytax","");
 
             double taxValueCalc = Double.parseDouble(taxValue);
 
@@ -1600,7 +1764,9 @@ public class DescriptionActivity extends AppCompatActivity {
                         returnEditext.getText().toString(),
                         returnType, "",
                         String.valueOf(total),
-                        availability.getText().toString(), uomCodeText.getText().toString(),"0.00");
+                        availability.getText().toString(),
+                        uomCode,
+                        "0.00");
 
 
                     /*boolean status= dbHelper.insertCart(

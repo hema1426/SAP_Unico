@@ -1499,8 +1499,10 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
                             String.valueOf(total),
                             subTotalValue.getText().toString(),
                             taxValueText.getText().toString(),
-                            netTotalValue.getText().toString()
-
+                            netTotalValue.getText().toString(),"",
+                            "",
+                            "",
+                            ""
                     );
 
             // Adding Return Qty Table values
@@ -2334,6 +2336,9 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
                             product.setProductName(productObject.optString("bP_Description"));
                         } else {
                             product.setProductName(productObject.optString("productName"));
+                        }
+                        if (productObject.optString("itemID") != null){
+                            product.setCustomerItemCode(productObject.optString("itemID"));
                         }
                         product.setProductCode(productObject.optString("productCode"));
                         product.setWeight("");

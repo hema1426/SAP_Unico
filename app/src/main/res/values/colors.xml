@@ -17,6 +17,7 @@
     <color name="pink_clr">#724357</color>
     <color name="pink_clr1">#72436F</color>
     <color name="lit_color">#662e9b</color>
+
     <!-- App Main Palette -->
     <color name="primary">@color/primaryDark</color>
     <color name="primaryDark">@color/blue_700</color>
@@ -48,5 +49,6 @@
     <color name="btn_clr2">#574A4E</color>
     <color name="lit_green_dark">#0092BE</color>
     <color name="accentLight">#F95B24</color>
+<!--    <color name="bottomsheet_bg">#8000</color>-->
 
 </resources>

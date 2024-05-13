@@ -95,7 +95,7 @@ public class CustomerSelectActivity extends AppCompatActivity {
             }
 
             @Override
-            public void createInvoice(String customerCode, String customerName, String taxcode, String taxperc, String taxtype) {
+            public void createInvoice(String customerCode, String customerName, String taxcode, String taxperc, String taxtype, String billdisc) {
 
             }
         });

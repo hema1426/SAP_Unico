@@ -1404,12 +1404,20 @@ public class CategoriesTabFragments extends Fragment implements PopupMenu.OnMenu
                                     product.setWholeSalePrice(productObject.optString("price"));
                                     product.setRetailPrice(productObject.optDouble("price"));
                                     product.setCartonPrice(productObject.optString("price"));
-                                    product.setPcsPerCarton(productObject.optString("pcsPerCarton"));
                                     product.setUnitCost(productObject.optString("price"));
+                                    product.setLastPrice( productObject.optString("lastSalesPrice"));
+                                    product.setPcsPerCarton(productObject.optString("pcsPerCarton"));
+                                product.setDefaultUom(productObject.optString("defaultPurchaseUOM"));
+                                if(!productObject.optString("uomCode").isEmpty() || productObject.optString("uomCode")!= null){
                                     product.setUomCode(productObject.optString("uomCode"));
+                                }
+                                else{
+                                    product.setUomCode("PCS");
+                                }
                                     product.setStockQty(productObject.optString("stockInHand"));
                                     // newProductList.add(product);
                                     productList.add(product);
+                                    Log.w("pdtsizeCatgry",""+productList.size());
                                // }
                             }
                             // productList.addAll(newProductList);

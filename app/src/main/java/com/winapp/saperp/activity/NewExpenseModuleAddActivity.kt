@@ -169,11 +169,16 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         accountSpinner!!.isEnabled = true
 
         add_pdt_btnl!!.setOnClickListener {
-            if(isEdit){
-                existPdtadd(selectedServices)
+            if (selectSuppliercode!!.isNotEmpty() && !selectAccountcode!!.equals("0")) {
+
+                if (isEdit) {
+                    existPdtadd(selectedServices)
+                } else {
+                    addDetail()
+                }
             }
-            else{
-                addDetail()
+            else {
+                Toast.makeText(applicationContext, "Select supplier and account!", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -220,20 +225,25 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
             var expenseSaveReqModel = ExpenseSaveRequestMaster()
 
             expenseCartAddList = expenseAddAdapter!!.getList()
+            Log.w("exp_Model:", ""+expenseCartAddList)
+
             if (expenseCartAddList.size > 0) {
-                var expenseSaveProductModel = ExpensePurchaseInvoiceDetail()
 
                 for (i in expenseCartAddList.indices) {
-                    expenseSaveProductModel.productName = expenseCartAddList.get(i).expenseName
-                    expenseSaveProductModel.price = expenseCartAddList.get(i).expenseAmt.toString()
+                    var expenseSaveProductModel = ExpensePurchaseInvoiceDetail()
+
+                    expenseSaveProductModel.productName = expenseCartAddList[i].expenseName
+                    expenseSaveProductModel.price = expenseCartAddList[i].expenseAmt.toString()
                     expenseSaveProductModel.createUser = username!!
                     expenseSaveProductModel.taxType = taxType
                     expenseSaveProductModel.taxPerc = taxPercentage
-                    expenseSaveReqModel.netTotal = allTotaltxt!!.text.toString()
-                    expenseSaveProductModel.AccountCode = selectAccountcode!!
+                    expenseSaveProductModel.netTotal = allTotaltxt!!.text.toString().toDouble()
+                    expenseSaveProductModel.AccountCode = expenseCartAddList[i].accountCode.toString()!!
 
+                    Log.w("exp_Modelval:", ""+expenseCartAddList[i].accountCode)
                     expenseSaveProductReq.add(expenseSaveProductModel)
                 }
+
             }
 
             expenseSaveReqModel.InvType = "Cash"
@@ -311,7 +321,6 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
                     CommonMethodKotl.cancelProgressDialog()
                 } catch (e: Exception) {
                     Log.e("Error_throwing11:", e.localizedMessage.toString())
-
                 }
 
             },
@@ -365,12 +374,8 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         builder1.setPositiveButton(
             "Yes"
         ) { dialog, id ->
-            try {
+                Log.w("expen_sav","")
                 createJson()
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-            dialog.cancel()
         }
         builder1.setNegativeButton(
             "No"
@@ -536,8 +541,8 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
                                     val obj = responseData.optJSONObject(i)
 
                                     val model = SupplierModel(
-                                        obj.optString("customerCode"),
-                                        obj.optString("customerName"),
+                                        obj.optString("vendorCode"),
+                                        obj.optString("vendorName"),
                                         obj.optString("currencyCode"),
                                         obj.optString("currencyName"),
                                         obj.optString("taxType"),
@@ -690,7 +695,7 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
                         expenseAddAdapter!!.updateList(expenseAddlist!!)
 
                         supplierSpinner!!.isEnabled = false
-                        accountSpinner!!.isEnabled = false
+                     //   accountSpinner!!.isEnabled = false
 
                         clearTxt()
 
@@ -779,28 +784,31 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
             val totalVal = expenseAddlist!!.sumOf {
                 it.expenseAmt!!
             }
-            allTotaltxt!!.setText(totalVal.toString())
+            allTotaltxt!!.setText(Utils.twoDecimalPoint(totalVal.toString().toDouble()))
+        }
+        else {
+            allTotaltxt!!.setText("")
         }
     }
 
     fun btnView() {
-        if (serviceNameTxtl!!.getText().toString()
-                .isNotEmpty() && service_amount_Txt!!.text.toString().length > 0.0
-        ) {
-            add_pdt_btnl!!.setAlpha(0.9f)
-            add_pdt_btnl!!.setEnabled(true)
-            Log.w("entryy11","");
-        } else {
-            add_pdt_btnl!!.setAlpha(0.4f)
-            add_pdt_btnl!!.setEnabled(false)
-            Log.w("entryy22","");
+            if (serviceNameTxtl!!.getText().toString()
+                    .isNotEmpty() && service_amount_Txt!!.text.toString().length > 0.0
+            ) {
+                add_pdt_btnl!!.setAlpha(0.9f)
+                add_pdt_btnl!!.setEnabled(true)
+                Log.w("entryy11", "");
+            } else {
+                add_pdt_btnl!!.setAlpha(0.4f)
+                add_pdt_btnl!!.setEnabled(false)
+                Log.w("entryy22", "");
 //        Toast.makeText(applicationContext, "Price is Empty..!", Toast.LENGTH_SHORT).show()
-        }
+            }
     }
 
     fun clearTxt() {
         supplierSpinner!!.isEnabled = false
-        accountSpinner!!.isEnabled = false
+      //  accountSpinner!!.isEnabled = false
         serviceNameTxtl!!.isEnabled = true
 //        selectAccountName= ""
 //        selectAccountcode = ""
@@ -869,8 +877,13 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
             }
 
             R.id.action_save -> {
+                if(expenseAddAdapter != null && expenseAddlist.size > 0){
                 save_btn!!.setEnabled(true)
                 showAlertDialogForSave()
+                }
+                else{
+                    Toast.makeText(this, "add product!", Toast.LENGTH_SHORT).show()
+                }
 //                val localCart: java.util.ArrayList<CreateInvoiceModel> =
 //                    dbHelper.getAllInvoiceProducts()
 //                if (localCart.size > 0) {
@@ -918,7 +931,11 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         isEdit = true
     }
     override fun deleteSelected(position: Int) {
-        showdialog_delete(position)
+        if (add_pdt_btnl!!.text.contains("Update")) {
+            Toast.makeText(this, "Update previous product", Toast.LENGTH_SHORT).show()
+        } else {
+            showdialog_delete(position)
+        }
     }
     private fun showdialog_delete(position: Int) {
         val alertDialogBuilder = AlertDialog.Builder(this)
@@ -928,15 +945,26 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
             "Yes"
         ) { dialog, which ->
 
-            expenseAddlist.removeAt(position)
-            expenseAddAdapter!!.notifyDataSetChanged()
-            itemSize!!.setText(expenseAddlist.size.toString() +" Services")
-            totalAll()
-            clearTxt()
-            btnView()
-            add_pdt_btnl!!.setText("Add")
-            add_pdt_btnl!!.setAlpha(0.4f)
-            add_pdt_btnl!!.setEnabled(false)
+                expenseAddlist.removeAt(position)
+                expenseAddAdapter!!.notifyDataSetChanged()
+                itemSize!!.setText(expenseAddlist.size.toString() +" Services")
+                totalAll()
+                clearTxt()
+                //  btnView()
+
+                add_pdt_btnl!!.setText("Add")
+                add_pdt_btnl!!.setAlpha(0.4f)
+                add_pdt_btnl!!.isEnabled = true
+
+            if(expenseAddlist.size > 0 ){
+                supplierSpinner!!.isEnabled = false
+                //accountSpinner!!.isEnabled = false
+            }
+            else{
+                supplierSpinner!!.isEnabled = true
+              //  accountSpinner!!.isEnabled = true
+            }
+
             dialog.dismiss()
         }
         alertDialogBuilder.setNegativeButton(
@@ -1103,6 +1131,12 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
 //                    } else {
 //                        savejsonbody()
 //                    }
+                if(expenseAddAdapter != null && expenseAddlist.size > 0){
+                    createJson()
+                }
+                else{
+                    Toast.makeText(this, "add product!", Toast.LENGTH_SHORT).show()
+                }
                 dialog.dismiss()
             }
             .setNegativeButton("No") { dialog, id ->

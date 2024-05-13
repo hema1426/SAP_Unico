@@ -38,7 +38,7 @@ public class SapStockReturnPreviewPrintAdapter extends RecyclerView.Adapter<SapS
         StockBadRequestReturnModel.StockBadRequestReturnDetails stockBadRequestReturnDetails =stockBadRequestReturnDetailsArrayList.get(position);
 
         viewHolder.sno.setText(String.valueOf(position+1));
-        viewHolder.qty.setText((int) Double.parseDouble(stockBadRequestReturnDetails.getQty()));
+        viewHolder.qty.setText(stockBadRequestReturnDetails.getQty().toString());
         viewHolder.desc.setText(stockBadRequestReturnDetails.getDescription());
         viewHolder.uom.setText(stockBadRequestReturnDetails.getUomCode());
 

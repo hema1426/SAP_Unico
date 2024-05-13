@@ -79,6 +79,8 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
     private String receiptNumber;
     private SessionManager session;
     private HashMap<String, String> user;
+    Double netTotal = 0.0;
+
     private ArrayList<ReceiptPrintPreviewModel> receiptsHeaderDetails;
     private ArrayList<ReceiptPrintPreviewModel.ReceiptsDetails> receiptsList;
     private RecyclerView receiptsListView;
@@ -330,11 +332,17 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
                                 invoiceListModel.setInvoiceDate(object.optString("invoiceDate"));
                                 invoiceListModel.setAmount(object.optString("paidAmount"));
                                 invoiceListModel.setDiscountAmount(object.optString("discountAmount"));
+                                invoiceListModel.setCreditAmount(object.optString("creditAmount"));
+                                invoiceListModel.setBalanceAmount(object.optString("balanceAmount"));
+
+                                netTotal += Double.parseDouble(object.optString("paidAmount"));
+
                                 receiptsList.add(invoiceListModel);
                             }
                             model.setReceiptsDetailsList(receiptsList);
                             receiptsHeaderDetails.add(model);
                             if (receiptsList.size() > 0) {
+                                netTotalText.setText(Utils.twoDecimalPoint(netTotal));
                                 setInvoiceAdapter();
                             }
                         }else {
@@ -385,7 +393,6 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
             customerCodetext.setText(model.getCustomerCode());
             paymodeText.setText(model.getPayMode());
             customerNameText.setText(model.getCustomerName());
-            netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getTotalAmount())));
         }
 
         companyNametext.setText(company_name);
@@ -618,11 +625,20 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
                   //  TSCPrinter tscPrinter = new TSCPrinter(ReceiptsPrintPreview.this, printerMacId);
                   //  tscPrinter.printInvoice(receiptsHeaderDetails, receiptsList);
                     TSCPrinter printer=new TSCPrinter(ReceiptsPrintPreview.this,printerMacId,"Receipt");
-                    try {
+                   // try {
                         printer.printReceipts(1,receiptsHeaderDetails,receiptsList);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
+                        @Override
+                        public void onCompleted() {
+                            Utils.setSignature("");
+                            Toast.makeText(getApplicationContext(),"Receipt printed successfully!",Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
                 } else if (printerType.equals("Zebra Printer")) {
                     ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(ReceiptsPrintPreview.this, printerMacId);
                     try {

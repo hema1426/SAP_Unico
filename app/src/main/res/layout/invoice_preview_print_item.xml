@@ -7,9 +7,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -48,7 +45,7 @@
                         />
                 </LinearLayout>
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5sp"
                     android:layout_marginLeft="5sp"
@@ -58,7 +55,6 @@
                         android:layout_width="30sp"
                         android:layout_height="wrap_content"
                         android:text="1"
-                        android:layout_weight="1"
                         android:gravity="center"
                         android:visibility="invisible"
                         android:layout_gravity="center"
@@ -67,10 +63,10 @@
                         />
 
                     <TextView
-                        android:layout_width="120sp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="1"
-                        android:layout_weight="1"
+                        android:layout_weight="1.9"
                         android:gravity="center"
                         android:visibility="invisible"
                         android:layout_gravity="center"
@@ -80,11 +76,12 @@
 
                     <TextView
                         android:id="@+id/itemrtn"
-                        android:layout_width="60sp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="0.0"
+                        android:layout_weight="0.9"
                         android:textStyle="bold"
-
+                        android:visibility="visible"
                         android:gravity="center"
                         android:layout_gravity="center"
                         android:textColor="@color/black"
@@ -93,10 +90,10 @@
 
                     <TextView
                         android:id="@+id/itemnet"
-                        android:layout_width="60sp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1"
+                        android:layout_weight="0.9"
                         android:textStyle="bold"
                         android:gravity="center"
                         android:text="0.0"
@@ -104,21 +101,22 @@
                         android:textSize="10sp" />
                     <TextView
                         android:id="@+id/itemprice"
-                        android:layout_width="80sp"
-                        android:textStyle="bold"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="0.9"
                         android:text="0.0"
                         android:gravity="center"
-                        android:layout_gravity="center"
                         android:textColor="@color/black"
                         android:textSize="10sp"
                         />
                     <TextView
                         android:id="@+id/itemtotal"
-                        android:layout_width="80sp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
+                        android:layout_weight="0.9"
+                        android:layout_centerHorizontal="true"
                         android:gravity="center"
                         android:text="0.0"
                         android:textColor="@color/black"
@@ -129,8 +127,6 @@
 
             </LinearLayout>
 
-
-        </HorizontalScrollView>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

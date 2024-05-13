@@ -88,13 +88,20 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
     private TextView cheque_amt;
     private TextView currenc_total;
     private TextView expense_total;
+    private LinearLayout expens_total_layl;
     private TextView grand_total;
 //    private TextView invoice_collect;
 //    private TextView discount_amt;
 //    private TextView net_amt;
     double currencytotal = 0.0;
     double expensetotal = 0.0;
+    double expensetotalapi = 0.0;
+    double denominattotalapi = 0.0;
 
+    private LinearLayout excess_total_layl;
+    private LinearLayout shortage_total_layl;
+    private TextView total_shortage_txt;
+    private TextView total_excess_txt;
     private String printerMacId;
     private String printerType;
     private SharedPreferences sharedPreferences;
@@ -127,6 +134,12 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
         cheque_amt = findViewById(R.id.total_cheque_setle);
         currenc_total = findViewById(R.id.total_denominat);
         expense_total = findViewById(R.id.total_expens);
+        expens_total_layl = findViewById(R.id.expens_total_lay);
+        excess_total_layl = findViewById(R.id.excess_total_lay);
+        shortage_total_layl = findViewById(R.id.shortage_total_lay);
+        total_excess_txt = findViewById(R.id.total_excess);
+        total_shortage_txt = findViewById(R.id.total_shortage);
+
 //        invoice_collect = findViewById(R.id.total_inv_setle);
 //        discount_amt = findViewById(R.id.total_discount_setle);
 //        net_amt = findViewById(R.id.netamt_setle);
@@ -139,7 +152,7 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
             fromdatetxt=getIntent().getStringExtra("fromDate");
             username=getIntent().getStringExtra("userName");
         }
-        setle_fromdatel.setText(fromdatetxt);
+      //  setle_fromdatel.setText(fromdatetxt);
         setle_usernamel.setText(username);
 
         from_date=fromdatetxt;
@@ -176,10 +189,15 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
                 Log.w("SettlReceiptRes:",response.toString());
                 String statusCode = response.optString("statusCode");
                 if (statusCode.equals("1")) {
+
+
                     JSONArray resArray = response.optJSONArray("responseData");
                     for (int j = 0; j < Objects.requireNonNull(resArray).length(); j++) {
 
                         JSONObject resObject = resArray.optJSONObject(j);
+
+                        setle_fromdatel.setText(resObject.getString("receiptDate"));
+
                         JSONArray receiptDetailsArray = resObject.optJSONArray("reportSettlementWithReceiptDetails");
                         SettlementReceiptModel model1 = new SettlementReceiptModel();
 
@@ -235,6 +253,8 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
                                 denomination.setCount(denominationObject.optString("count"));
                                 denomination.setTotal(denominationObject.optString("total"));
 
+                                denominattotalapi += Double.parseDouble(denominationObject.optString("total"));
+
                                 // Adding the Denomination Details to the Arraylist
                                 denominationArrayList.add(denomination);
                             }
@@ -251,9 +271,24 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
                                 expense.setExpeneName(expenseObject.optString("expenses"));
                                 expense.setExpenseTotal(expenseObject.optString("total"));
 
+                                expensetotalapi += Double.parseDouble(expenseObject.optString("total"));
+
                                 // Adding the expense Details to Arraylist
                                 expenseArrayList.add(expense);
                             }
+                        }
+
+               double excessOrShortage = denominattotalapi - (Double.parseDouble(resObject.getString("totalCashAmount"))
+                       - expensetotalapi);
+                        Log.w("expnsettle",""+denominattotalapi+".."+
+                                (Double.parseDouble(resObject.getString("totalCashAmount")))+".."+expensetotalapi);
+                        if (excessOrShortage > 0.00){
+                            total_excess_txt.setText(twoDecimalPoint(excessOrShortage));
+                            excess_total_layl.setVisibility(View.VISIBLE);
+                        }
+                        else{
+                            total_shortage_txt.setText(twoDecimalPoint(excessOrShortage));
+                            shortage_total_layl.setVisibility(View.VISIBLE);
                         }
                     }
                 }
@@ -359,8 +394,13 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
             expensetotal += Double.parseDouble(expenseArrayList.get(i).getExpenseTotal());
         }
         Log.w("currtotlExp",""+currencytotal +expenseArrayList.get(0).getExpenseTotal());
-
-        expense_total.setText(twoDecimalPoint(expensetotal));
+        if(expensetotal > 0) {
+            expens_total_layl.setVisibility(View.VISIBLE);
+            expense_total.setText(twoDecimalPoint(expensetotal));
+        }
+        else{
+            expens_total_layl.setVisibility(View.GONE);
+        }
     }
 
     private String getDate(long time) {
@@ -432,7 +472,7 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
                                          ArrayList<SettlementReceiptModel.CurrencyDenomination> denomination,int copy) throws IOException {
         if (validatePrinterConfiguration()){
             if (printerType.equals("TSC Printer")){
-                TSCPrinter printer=new TSCPrinter(this,printerMacId);
+                TSCPrinter printer=new TSCPrinter(this,printerMacId,"ReceiptSettlement");
                 printer.setSettleReceiptPrint(copy,username,fromdatetxt,receiptlist,denomination,expenseList);
             }
         }else {

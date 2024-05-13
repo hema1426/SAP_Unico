@@ -105,7 +105,8 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
                 public void onClick(View view) {
                   //  onMoreButtonClicked.moreOption(model.getCustomerName(),model.getCustomerCode(),model.getOutstandingAmount());
 
-                    onMoreButtonClicked.createInvoice(model.getCustomerCode(),model.getCustomerName(),model.getTaxCode(),model.getTaxPerc(),model.getTaxType());
+                    onMoreButtonClicked.createInvoice(model.getCustomerCode(),model.getCustomerName(),model.getTaxCode(),
+                            model.getTaxPerc(),model.getTaxType() , model.getBillDiscPercentage());
                 }
             });
         }
@@ -157,7 +158,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
 
     public interface OnMoreButtonClicked{
         void moreOption(String customename,String id,String outstanding);
-        void createInvoice(String customerCode,String customerName,String taxcode,String taxperc,String taxtype);
+        void createInvoice(String customerCode,String customerName,String taxcode,String taxperc,String taxtype,String BillDisc);
     }
 
     public void filterList(ArrayList<CustomerModel> filterdNames) {

@@ -41,6 +41,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.winapp.saperp.R;
 import com.winapp.saperp.activity.AddInvoiceActivity;
+import com.winapp.saperp.activity.CartActivity;
 import com.winapp.saperp.adapter.TableViewAdapter;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.fragments.CustomerFragment;
@@ -384,8 +385,21 @@ public class SalesReturnSummary extends Fragment {
         final Button cancelButton=customLayout.findViewById(R.id.buttonNo);
         final Button clearButton=customLayout.findViewById(R.id.buttonClear);
         LinearLayout mContent = customLayout.findViewById(R.id.signature_layout);
-        CaptureSignatureView mSig = new CaptureSignatureView(getActivity(), null);
-        mContent.addView(mSig, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        acceptButton.setEnabled(false);
+        acceptButton.setAlpha(0.4f);
+        CaptureSignatureView mSig = new CaptureSignatureView(getActivity(), null, new CaptureSignatureView.OnSignatureDraw() {
+            @Override
+            public void onSignatureCreated() {
+                acceptButton.setEnabled(true);
+                acceptButton.setAlpha(1f);
+            }
+        });
+        mContent.addView(
+                mSig,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+        );
+
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

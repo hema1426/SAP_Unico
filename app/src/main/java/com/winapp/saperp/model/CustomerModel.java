@@ -15,6 +15,15 @@ public class CustomerModel {
     private String taxCode;
     private String taxPerc;
     private String haveTax;
+    private String billDiscPercentage;
+
+    public String getBillDiscPercentage() {
+        return billDiscPercentage;
+    }
+
+    public void setBillDiscPercentage(String billDiscPercentage) {
+        this.billDiscPercentage = billDiscPercentage;
+    }
 
     public String getCreditLimitAmount() {
         return creditLimitAmount;

@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
@@ -16,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
@@ -108,6 +110,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
     boolean boolean_save;
     Bitmap bitmap;
     ProgressDialog progressDialog;
+
     private static final String TAG = InvoicePrintPreviewActivity.class.getSimpleName();
     public static final String SAMPLE_FILE = "android_tutorial.pdf";
     PDFView pdfView;
@@ -139,6 +142,10 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
     private TextView cngstText,cnno;
     private TextView cngstTitle;
     private LinearLayout cn_lay;
+    private LinearLayout normalLayl;
+    private LinearLayout transLayl;
+    private TextView outstanding_amountl;
+
     private TextView paymentText;
     private String username;
     private TextView userText;
@@ -147,6 +154,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
     private LinearLayout mainLayout;
     private String locationCode;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,6 +201,20 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
         cn_layl = findViewById (R.id.cn_lay);
         mainLayout=findViewById(R.id.main_layout);
         invoiceListView = findViewById (R.id.rv_invoicelist);
+        transLayl = findViewById (R.id.transLay);
+        normalLayl = findViewById (R.id.normalLay);
+        outstanding_amountl  = findViewById (R.id.outstanding_amount);
+
+        Log.e("compnam..",""+company_name);
+
+        if(company_name.equalsIgnoreCase("Trans Orient Singapore Pte Ltd")){
+            transLayl.setVisibility(View.VISIBLE);
+            normalLayl.setVisibility(View.GONE);
+        }
+        else {
+            transLayl.setVisibility(View.GONE);
+            normalLayl.setVisibility(View.VISIBLE);
+        }
         try {
             if (getIntent()!=null){
                 String invoiceNumber=getIntent().getStringExtra("invoiceNumber");
@@ -315,8 +337,12 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
 
                             double nettotal = qty * price;
                            // invoiceListModel.setTotal(String.valueOf(nettotal));
-                            invoiceListModel.setTotal(detailObject.optString("lineTotal"));
-                            invoiceListModel.setPricevalue(String.valueOf(price));
+//                            invoiceListModel.setTotal(detailObject.optString("lineTotal"));
+//                        invoiceListModel.setTransTotal(detailObject.optString("total"));
+                         invoiceListModel.setTotal(detailObject.optString("total"));
+
+                        invoiceListModel.setPricevalue(String.valueOf(price));
+                        invoiceListModel.setTransTotal(detailObject.optString("total"));
 
                             invoiceListModel.setUomCode(detailObject.optString("uomCode"));
                             invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
@@ -450,13 +476,14 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                 subtotalText.setText(Utils.twoDecimalPoint(sub_total));
                 gstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
                 netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
-                //  outstandingText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
+                  outstanding_amountl.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
                 // itemDiscount.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getItemDiscount())));
             } else {
                 // billDiscountText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
                 subtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
                 gstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
                 netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
+                outstanding_amountl.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
                 //  outstandingText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
                 //  itemDiscount.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getItemDiscount())));
             }
@@ -504,7 +531,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
         invoiceListView.setHasFixedSize(true);
         // RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         invoiceListView.setLayoutManager(new LinearLayoutManager(NewInvoicePrintPreviewActivity.this, LinearLayoutManager.VERTICAL, false));
-        adapter = new NewInvoicePrintPreviewAdapter(NewInvoicePrintPreviewActivity.this, invoiceList,"Invoice");
+        adapter = new NewInvoicePrintPreviewAdapter(NewInvoicePrintPreviewActivity.this, invoiceList,"Invoice",company_name);
         invoiceListView.setAdapter(adapter);
         mainLayout.setVisibility(View.VISIBLE);
     }
@@ -593,7 +620,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                         PrinterUtils printer=new PrinterUtils(NewInvoicePrintPreviewActivity.this,printerMacId);
                         printer.printInvoice(1,invoiceHeaderDetails,invoiceList,"false");
 
-                                /*final TSCPrinterActivity print = new TSCPrinterActivity(NewInvoicePrintPreviewActivity.this, printerMacId, printerType);
+       /*final TSCPrinterActivity print = new TSCPrinterActivity(NewInvoicePrintPreviewActivity.this, printerMacId, printerType);
                                 print.initGenericPrinter();
                                 print.setInitCompletionListener(new TSCPrinterActivity.InitCompletionListener() {
                                     @Override

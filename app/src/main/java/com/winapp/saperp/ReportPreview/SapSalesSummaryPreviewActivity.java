@@ -208,7 +208,7 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url= Utils.getBaseUrl(this) +"ReportSalesSummary";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url_Report:",url);
+        Log.w("Given_url_Report:",url+jsonBody);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Processing Please wait...");
@@ -232,6 +232,8 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
                             JSONObject detailObject=summaryDetailsArray.optJSONObject(0);
                             ReportSalesSummaryModel model=new ReportSalesSummaryModel();
                             model.setCompanyId(detailObject.optString("user"));
+                            userName.setText(detailObject.optString("user"));
+
 
                             model.setCashInHand(detailObject.optString("cashInHand"));
                             model.setTotalSales(detailObject.optString("totalSales"));

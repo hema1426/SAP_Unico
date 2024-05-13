@@ -406,7 +406,7 @@ public class RoSettlementPreviewActivity extends AppCompatActivity {
                                          int copy) throws IOException {
         if (validatePrinterConfiguration()){
             if (printerType.equals("TSC Printer")){
-                TSCPrinter printer=new TSCPrinter(this,printerMacId);
+                TSCPrinter printer=new TSCPrinter(this,printerMacId,"Settlement");
                // printer.setSettlementPrint(expenseList,customer_name,from_date,to_date,username,receiptlist,denomination,copy);
             }
         }else {

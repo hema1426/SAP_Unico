@@ -42,12 +42,14 @@ import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.ExpensePrintPreviewAdapter;
 import com.winapp.saperp.model.InvoicePrintPreviewModel;
 import com.winapp.saperp.printpreview.InvoicePrintPreviewActivity;
+import com.winapp.saperp.receipts.ReceiptsPrintPreview;
 import com.winapp.saperp.thermalprinter.PrinterUtils;
 import com.winapp.saperp.tscprinter.TSCPrinterActivity;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
+import com.winapp.saperp.zebraprinter.TSCPrinter;
 import com.winapp.saperp.zebraprinter.ZebraPrinterActivity;
 
 import org.json.JSONArray;
@@ -316,8 +318,10 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
                             invoiceListModel.setUnitPrice(detailObject.optString("price"));
                             double qty = Double.parseDouble(detailObject.optString("quantity"));
                             double price = Double.parseDouble(detailObject.optString("price"));
+                        //setAccountName
+                        invoiceListModel.setUnitPrice(detailObject.optString("price"));
 
-                            double nettotal = qty * price;
+                        double nettotal = qty * price;
                            // invoiceListModel.setTotal(String.valueOf(nettotal));
                             invoiceListModel.setTotal(detailObject.optString("lineTotal"));
                             invoiceListModel.setPricevalue(detailObject.optString("price"));
@@ -326,6 +330,7 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
                             invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
                             invoiceListModel.setItemtax(detailObject.optString("totalTax"));
                             invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                            invoiceListModel.setAccountName(detailObject.optString("accountName"));
 
                             invoiceList.add(invoiceListModel);
                         } /*else  if (Double.parseDouble(detailObject.optString("returnQty"))>0) {
@@ -609,7 +614,17 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
                     // tscPrinter.printInvoice(invoiceHeaderDetails,invoiceList);
                     try {
 
-                        PrinterUtils printer=new PrinterUtils(NewExpensePrintPreviewActivity.this,printerMacId);
+                        TSCPrinter printer=new TSCPrinter(NewExpensePrintPreviewActivity.this,printerMacId,"Expense");
+                        // try {
+                        printer.printExpense(1,invoiceHeaderDetails, invoiceList);
+                        printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
+                            @Override
+                            public void onCompleted() {
+                                Utils.setSignature("");
+                                Toast.makeText(getApplicationContext(),"Receipt printed successfully!",Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        });
    //                     printer.printInvoice(1,invoiceHeaderDetails,invoiceList,"false");
 
                                 /*final TSCPrinterActivity print = new TSCPrinterActivity(NewInvoicePrintPreviewActivity.this, printerMacId, printerType);

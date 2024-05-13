@@ -16,8 +16,46 @@ public class CreateInvoiceModel {
     private String uomCode;
     private String uomText;
 
+    private String saleableQty;
+    private String damagedQty;
+
+    public String getSaleableQty() {
+        return saleableQty;
+    }
+
+    public void setSaleableQty(String saleableQty) {
+        this.saleableQty = saleableQty;
+    }
+
+    public String getDamagedQty() {
+        return damagedQty;
+    }
+
+    public void setDamagedQty(String damagedQty) {
+        this.damagedQty = damagedQty;
+    }
+
+    public String getItemDisc() {
+        return itemDisc;
+    }
+
+    public void setItemDisc(String itemDisc) {
+        this.itemDisc = itemDisc;
+    }
+
+    private String itemDisc;
+    private String billDisc;
+
     public String getUomText() {
         return uomText;
+    }
+
+    public String getBillDisc() {
+        return billDisc;
+    }
+
+    public void setBillDisc(String billDisc) {
+        this.billDisc = billDisc;
     }
 
     public void setUomText(String uomText) {

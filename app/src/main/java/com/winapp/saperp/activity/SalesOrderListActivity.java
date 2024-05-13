@@ -14,7 +14,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -107,6 +106,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     public EditText customerNameEdittext;
     public DBHelper dbHelper;
     public TextView netTotalText;
+    double netTotalApi = 0.00;
     private ArrayList<CustomerDetails> customerDetails;
     public LinearLayout transLayout;
     public View customerLayout;
@@ -175,8 +175,9 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         companyId=user.get(SessionManager.KEY_COMPANY_CODE);
         userName=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get((SessionManager.KEY_LOCATION_CODE));
+
         customerView=findViewById(R.id.customerList);
-        netTotalText=findViewById(R.id.net_total);
+        netTotalText=findViewById(R.id.net_total_List);
         customerNameEdittext=findViewById(R.id.customer_search);
         transLayout=findViewById(R.id.trans_layout);
         customerDetails=dbHelper.getCustomer();
@@ -286,7 +287,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         salesOrderAdapter=new SalesOrderAdapterNew(this, salesOrdersView, salesOrderList, new SalesOrderAdapterNew.CallBack() {
             @Override
             public void calculateNetTotal(ArrayList<SalesOrderModel> salesList) {
-                setNettotal(salesList);
+                setNettotalFun(salesList);
             }
             @Override
             public void showMoreOption(String salesorderId,String customerName,String status){
@@ -979,6 +980,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                             model.setItemDiscount(object.optString("totalDiscount"));
                             Utils.setInvoiceMode("SalesOrder");
                             String signFlag=object.optString("signFlag");
+                            Log.d("cg_signflag",""+signFlag);
                             if (signFlag.equals("Y")){
                                 String signature=object.optString("signature");
                                 Utils.setSignature(signature);
@@ -1256,7 +1258,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         salesOrderAdapter=new SalesOrderAdapterNew(context, salesOrdersView, salesList, new SalesOrderAdapterNew.CallBack() {
             @Override
             public void calculateNetTotal(ArrayList<SalesOrderModel> salesList) {
-                setNettotal(salesList);
+                setNettotalFun(salesList);
             }
             @Override
             public void showMoreOption(String salesorderId,String customerName,String status){
@@ -1276,16 +1278,15 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     }
 
 
-    public void setNettotal(ArrayList<SalesOrderModel> salesOrderList){
-        try {
+    public void setNettotalFun(ArrayList<SalesOrderModel> salesOrderList){
             double net_amount=0.0;
             for (SalesOrderModel model:salesOrderList){
                 if (model.getNetTotal()!=null && !model.getNetTotal().equals("null")){
                     net_amount=net_amount+Double.parseDouble(model.getNetTotal());
+                    Log.w("netAmt122",""+net_amount);
                 }
             }
             netTotalText.setText("$ "+Utils.twoDecimalPoint(net_amount));
-        }catch (Exception ex){}
     }
 
       public void showRemoveAlert(String salesOrderId){
@@ -1349,6 +1350,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 String company_code=salesObject.optString("CompanyCode");
                                 String customer_code=salesObject.optString("customerCode");
                                 String customer_name=salesObject.optString("customerName");
+                                String customerBill_Disc=salesObject.optString("CustomerDiscount");
                                 String total=salesObject.optString("total");
                                 String sub_total=salesObject.optString("subTotal");
                                 String bill_discount=salesObject.optString("billDiscount");
@@ -1436,13 +1438,18 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                             object.optString("total"),
                                             object.optString("subTotal"),
                                             object.optString("taxAmount"),
-                                            object.optString("netTotal")
+                                            object.optString("netTotal"),
+                                           "",
+                                           "",
+                                           "",
+                                           ""
                                     );
 
                                     Log.w("ProductsLength:",products.length()+"");
                                     Log.w("ActualPrintProducts:",dbHelper.numberOfRowsInInvoice()+"");
                                     if (products.length()==dbHelper.numberOfRowsInInvoice()){
-                                        redirectActivity(action,customer_code,customer_name,salesorder_code,order_no);
+                                        redirectActivity(action,customer_code,customer_name,salesorder_code
+                                                ,order_no,customerBill_Disc);
                                         break;
                                     }
                                 }
@@ -1485,7 +1492,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void redirectActivity(String action,String customer_code,String customer_name,String salesorder_code,String order_no){
+    public void redirectActivity(String action,String customer_code,String customer_name,String salesorder_code,
+                                 String order_no,String customerBill_Disc){
         //  if (products.length()==dbHelper.numberOfRowsInInvoice()){
         Utils.setCustomerSession(SalesOrderListActivity.this,customer_code);
         if (action.equals("Edit")){
@@ -1493,6 +1501,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             intent.putExtra("customerName",customer_name);
             intent.putExtra("customerCode",customer_code);
             intent.putExtra("editSoNumber",salesorder_code);
+            intent.putExtra("customerBillDisc",customerBill_Disc);
             intent.putExtra("orderNo",order_no);
             intent.putExtra("from","SalesEdit");
             startActivity(intent);
@@ -1687,6 +1696,9 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 model.setStatus(object.optString("soStatus"));
                                 model.setSalesOrderCode(object.optString("code"));
                                 //  isFound=invoiceObject.optString("ErrorMessage");
+                                netTotalApi +=Double.parseDouble(object.optString("netTotal"));
+                                netTotalText.setText("$ "+Utils.twoDecimalPoint(netTotalApi));
+
                                 ArrayList<SalesOrderPrintPreviewModel.SalesList> salesLists=new ArrayList<>();
                                 model.setSalesList(salesLists);
                                 salesOrderList.add(model);
@@ -1795,8 +1807,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 salesOrderList.add(model);
 
                             }
-                            salesOrderAdapter.notifyDataSetChanged();
                             salesOrderAdapter.setLoaded();
+                            salesOrderAdapter.notifyDataSetChanged();
                             setShowHide();
                         }else {
                             setShowHide();
@@ -1905,7 +1917,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         salesOrderAdapter=new SalesOrderAdapterNew(this, salesOrdersView, salesOrderList, new SalesOrderAdapterNew.CallBack() {
             @Override
             public void calculateNetTotal(ArrayList<SalesOrderModel> salesList) {
-                setNettotal(salesList);
+                setNettotalFun(salesList);
             }
             @Override
             public void showMoreOption(String salesorderId,String customerName,String status){
@@ -2287,6 +2299,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 model.setTaxType(object.optString("taxType"));
                                 model.setTaxPerc(object.optString("taxPercentage"));
                                 model.setTaxCode(object.optString("taxCode"));
+                                model.setBillDiscPercentage(object.optString("discountPercentage"));
                                 //  model.setCustomerBarcode(object.optString("BarCode"));
                                 // model.setCustomerBarcode(String.valueOf(i));
                                 if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {
