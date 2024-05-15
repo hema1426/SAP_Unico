@@ -1252,7 +1252,7 @@ public class NewSalesReturnListActivity extends NavigationActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {//finish();
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
 
          /*   case R.id.action_remove:
@@ -1290,5 +1290,10 @@ public class NewSalesReturnListActivity extends NavigationActivity {
             }
         }
         return true;
+    }
+
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

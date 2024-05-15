@@ -1238,7 +1238,8 @@ public class ReceiptsListActivity extends NavigationActivity {
                                 //getReceiptsDetails(receiptsList.get(0).getReceiptNumber(), Integer.parseInt(noofCopy));
                            // }
                         }else {
-
+                            recyclerViewLayout.setVisibility(View.GONE);
+                            emptyLayout.setVisibility(View.VISIBLE);
                         }
 
                 /*        if (response.length()>0) {

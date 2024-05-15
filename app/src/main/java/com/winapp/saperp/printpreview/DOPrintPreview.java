@@ -53,12 +53,14 @@ import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.winapp.saperp.R;
+import com.winapp.saperp.activity.DeliveryOrderListActivity;
 import com.winapp.saperp.adapter.InvoicePrintPreviewAdapter;
 import com.winapp.saperp.model.InvoicePrintPreviewModel;
 import com.winapp.saperp.tscprinter.TSCPrinterActivity;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
+import com.winapp.saperp.zebraprinter.TSCPrinter;
 import com.winapp.saperp.zebraprinter.ZebraPrinterActivity;
 
 import org.json.JSONArray;
@@ -832,27 +834,41 @@ public class DOPrintPreview extends AppCompatActivity implements OnPageChangeLis
                     dialog.dismiss();
                     //TSCPrinter tscPrinter=new TSCPrinter(DOPrintPreview.this,printerMacId);
                     // tscPrinter.printInvoice(invoiceHeaderDetails,invoiceList);
-                    try {
-                        final TSCPrinterActivity print = new TSCPrinterActivity(DOPrintPreview.this, printerMacId, printerType);
-                        print.initGenericPrinter();
-                        print.setInitCompletionListener(new TSCPrinterActivity.InitCompletionListener() {
-                            @Override
-                            public void initCompleted() {
-                                print.printInvoice(1, invoiceHeaderDetails, invoiceList);
-                                print.setOnCompletedListener(new TSCPrinterActivity.OnCompletedListener() {
-                                    @Override
-                                    public void onCompleted() {
-                                        //helper.showLongToast(R.string.printed_successfully);
-                                        Toast.makeText(getApplicationContext(), "Printed Successfully..!", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                        });
 
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    TSCPrinter printer=new TSCPrinter(getApplicationContext(),printerMacId,"DO");
+                    try {
+                        printer.printDeliveryOrder1(1,invoiceHeaderDetails,invoiceList);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
+                    printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
+                        @Override
+                        public void onCompleted() {
+                            Utils.setSignature("");
+                            Toast.makeText(getApplicationContext(),"Delivery Order printed successfully!",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+//                    try {
+//                        final TSCPrinterActivity print = new TSCPrinterActivity(DOPrintPreview.this, printerMacId, printerType);
+//                        print.initGenericPrinter();
+//                        print.setInitCompletionListener(new TSCPrinterActivity.InitCompletionListener() {
+//                            @Override
+//                            public void initCompleted() {
+//                                print.printInvoice(1, invoiceHeaderDetails, invoiceList);
+//                                print.setOnCompletedListener(new TSCPrinterActivity.OnCompletedListener() {
+//                                    @Override
+//                                    public void onCompleted() {
+//                                        //helper.showLongToast(R.string.printed_successfully);
+//                                        Toast.makeText(getApplicationContext(), "Printed Successfully..!", Toast.LENGTH_SHORT).show();
+//                                    }
+//                                });
+//                            }
+//                        });
+//
+//                    } catch (Exception e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
 
                 } else if (printerType.equals("Zebra Printer")) {
                     ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(DOPrintPreview.this, printerMacId);

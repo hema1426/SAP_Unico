@@ -821,13 +821,13 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
            // Toast.makeText(getApplicationContext(),"TSC printer in progress",Toast.LENGTH_SHORT).show();
             // TSCPrinter tscPrinter=new TSCPrinter(SalesOrderPrintPreview.this,printerMacId);
             //  tscPrinter.printInvoice(invoiceHeaderDetails,invoiceList);
-            TSCPrinter printer=new TSCPrinter(DeliveryOrderListActivity.this,printerMacId,"Salesorder");
-            printer.printSalesOrder(copy,salesOrderHeaderDetails,salesPrintList);
+            TSCPrinter printer=new TSCPrinter(DeliveryOrderListActivity.this,printerMacId,"DO");
+          //  printer.printDeliveryOrder1(copy,salesOrderHeaderDetails,salesPrintList);
             printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
                 @Override
                 public void onCompleted() {
                     Utils.setSignature("");
-                    Toast.makeText(getApplicationContext(),"SalesOrder printed successfully!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Delivery Order printed successfully!",Toast.LENGTH_SHORT).show();
                 }
             });
         }else if (printerType.equals("Zebra Printer")){

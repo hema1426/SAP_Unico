@@ -140,7 +140,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:padding="10dp"
-                    android:layout_weight="1"
+                    android:layout_weight="0.9"
                     android:orientation="vertical"
                     android:layout_height="wrap_content">
 
@@ -178,7 +178,6 @@
                     <androidx.cardview.widget.CardView
                         xmlns:card_view="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/card_view"
-                        android:layout_margin="5dp"
                         android:elevation="10dp"
                         android:layout_gravity="center"
                         android:layout_width="match_parent"
@@ -190,10 +189,11 @@
                             android:orientation="horizontal"
                             android:id="@+id/user_name_layout"
                             android:layout_gravity="center"
+                            android:background="@drawable/shadow"
                             android:layout_height="wrap_content">
 
                             <EditText
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="40dp"
                                 android:text="Select"
                                 android:visibility="gone"
@@ -210,7 +210,7 @@
 
                             <Spinner
                                 android:id="@+id/payment_method"
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="35dp"
                                 android:entries="@array/bank_arrays"
                                 android:prompt="@string/bank_prompt" />

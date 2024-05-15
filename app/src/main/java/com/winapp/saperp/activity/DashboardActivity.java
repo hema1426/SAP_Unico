@@ -178,11 +178,19 @@ public class DashboardActivity extends NavigationActivity {
         dashboardView=findViewById(R.id.root_layout);
         titleList=new ArrayList<>();
 
-        Log.w("Logged_In_Location:",locationCode.toString());
+       Log.w("Logged_In_Location:",locationCode.toString());
+
+        if(locationCode != null && !locationCode.isEmpty()){
+            locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
+        }
+        else {
+            Toast.makeText(this,"Choose Location",Toast.LENGTH_SHORT).show();
+        }
         dbHelper.removeAllReturn();
         dbHelper.removeAllInvoiceItems();
         dbHelper.removeAllItems();
         Utils.clearCustomerSession(this);
+
 
      //   showCreditdialog(creditAmtApi);
         ArrayList<SettingsModel> settings=dbHelper.getSettings();

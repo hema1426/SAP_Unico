@@ -75,6 +75,8 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
     private ArrayList<InvoicePrintPreviewModel> invoiceHeaderDetails;
     private ArrayList<InvoicePrintPreviewModel.InvoiceList> invoiceList;
     private RecyclerView invoiceListView;
+
+    double subTotall = 0.0 ;
     private ExpensePrintPreviewAdapter adapter;
     private TextView invoiceNumberText;
     private TextView invoiceDateText;
@@ -186,7 +188,7 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
         addressText =findViewById (R.id.customer_address);
         codeText=findViewById (R.id.code_txt);
         userText =findViewById (R.id.invoice_user);
-        subtotalText =findViewById (R.id.insubtotal);
+        subtotalText =findViewById (R.id.expen_subtotal);
 //        netTotalText =findViewById (R.id.innettotal);
 //        gstText =findViewById (R.id.ingst_text);
         cnsubtotalText =findViewById (R.id.cnrsubtotal);
@@ -246,18 +248,7 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
         invoiceHeaderDetails = new ArrayList<>();
         invoiceList = new ArrayList<>();
         salesReturnList=new ArrayList<>();
-        // {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"WinApp","customerName":"WinApp","invoiceNumber":"33",
-        // "invoiceStatus":"O","invoiceDate":"6\/8\/2021 12:00:00 am","netTotal":"26.750000","balanceAmount":"26.750000","totalDiscount":
-        // "0.000000","paidAmount":"0.000000","contactPersonCode":"","createDate":"6\/8\/2021 12:00:00 am","updateDate":"6\/8\/2021 12:00:00 am",
-        // "remark":"","fDocTotal":"0.000000","fTaxAmount":"0.000000","receivedAmount":"0.000000","total":"26.750000","fTotal":"0.000000",
-        // "iTotalDiscount":"0.000000","taxTotal":"1.750000","iPaidAmount":"0.000000","currencyCode":"SGD","currencyName":"Singapore Dollar",
-        // "companyCode":"WINAPP_DEMO","docEntry":"20","invoiceDetails":[{"slNo":"1","companyCode":"WINAPP_DEMO","invoiceNo":"33",
-        // "productCode":"FG\/001245","productName":"RUM","quantity":"5.000000","price":"5.000000","currency":"SGD","taxRate":"0.000000",
-        // "discountPercentage":"0.000000","lineTotal":"26.750000","fRowTotal":"0.000000","warehouseCode":"01","salesEmployeeCode":"-1",
-        // "accountCode":"400000","taxStatus":"Y","unitPrice":"5.000000","customerCategoryNo":"","barCodes":"","totalTax":"1.750000",
-        // "fTaxAmount":"0.000000","taxCode":"","taxType":"Y","taxPerc":"0.000000","uoMCode":null,"invoiceDate":"6\/8\/2021 12:00:00 am",
-        // "dueDate":"6\/8\/2021 12:00:00 am","createDate":"6\/8\/2021 12:00:00 am","updateDate":"6\/8\/2021 12:00:00 am","createdUser":"manager"}]}]}
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
+              JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
             try {
                 Log.w("ResExpensPrint::", response.toString());
                 String statusCode=response.optString("statusCode");
@@ -332,7 +323,13 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
                             invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
                             invoiceListModel.setAccountName(detailObject.optString("accountName"));
 
-                            invoiceList.add(invoiceListModel);
+                        double subTotal = Double.parseDouble(detailObject.optString("price"));
+                        subTotall += subTotal ;
+
+                        Log.w("subbgg",""+detailObject.optString("price"));
+                        invoiceList.add(invoiceListModel);
+
+
                         } /*else  if (Double.parseDouble(detailObject.optString("returnQty"))>0) {
                            invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
                            invoiceListModel.setProductCode(detailObject.optString("productCode"));
@@ -373,6 +370,7 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
                //     model.setSalesReturnList(salesReturnList);
                     invoiceHeaderDetails.add(model);
                     if (invoiceList.size() > 0) {
+                        subtotalText.setText(String.valueOf(subTotall));
                         setInvoiceAdapter();
                     }
                     pDialog.dismiss();
@@ -464,7 +462,8 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
             if (model.getTaxType().equals("I")) {
                 double sub_total = Double.parseDouble(model.getNetTotal()) - Double.parseDouble(model.getNetTax());
                 //billDiscountText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
-                subtotalText.setText(Utils.twoDecimalPoint(sub_total));
+
+                // subtotalText.setText(Utils.twoDecimalPoint(sub_total));
 
 //                gstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
 //                netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
@@ -474,7 +473,7 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
             } else {
                 // billDiscountText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
 
-                subtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
+                //subtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
 
 //                gstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
 //                netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
@@ -621,7 +620,7 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
                             @Override
                             public void onCompleted() {
                                 Utils.setSignature("");
-                                Toast.makeText(getApplicationContext(),"Receipt printed successfully!",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(),"Expense printed successfully!",Toast.LENGTH_SHORT).show();
                                 finish();
                             }
                         });

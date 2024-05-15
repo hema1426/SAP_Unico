@@ -579,6 +579,16 @@
                     android:textSize="12sp" />
 
                 <TextView
+                    android:id="@+id/invBillDis_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="5sp"
+                    android:text="Bill Disc(SGD) :"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+                <TextView
                     android:id="@+id/ingst_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -609,6 +619,16 @@
 
                 <TextView
                     android:id="@+id/insubtotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="0.0"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/invBillDiscount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

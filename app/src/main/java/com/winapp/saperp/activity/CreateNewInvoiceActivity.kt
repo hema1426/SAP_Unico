@@ -622,6 +622,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         try {
             jsonObject.put("User", username)
             jsonObject.put("CardCode", customerCode)
+            jsonObject.put("LocationCode", locationCode)
+
             getAllProducts(jsonObject)
         } catch (e: JSONException) {
             e.printStackTrace()

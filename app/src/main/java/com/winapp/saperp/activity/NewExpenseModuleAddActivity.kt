@@ -35,6 +35,7 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner
 import com.winapp.saperp.R
 import com.winapp.saperp.adapter.ExpenseModuleAddAdapter
 import com.winapp.saperp.model.AccountModel
@@ -74,7 +75,7 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
     var expenseSaveReq: ArrayList<ExpenseSaveRequestMaster>? = ArrayList()
     var expenseCartAddList: ArrayList<ExpenseModuleAddModel> = ArrayList()
     var expenseSaveProductReq: ArrayList<ExpensePurchaseInvoiceDetail> = ArrayList()
-    private var supplierSpinner: Spinner? = null
+    private var supplierSpinner: SearchableSpinner? = null
     private var accountSpinner: Spinner? = null
     private var dateTxt: TextView? = null
     private var serviceNameTxtl: EditText? = null
@@ -134,7 +135,7 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         username = user!!.get(SessionManager.KEY_USER_NAME)
         locationCode = user!!.get(SessionManager.KEY_LOCATION_CODE)
 
-        supplierSpinner = findViewById(R.id.supplier_spinner_add) as Spinner
+        supplierSpinner = findViewById(R.id.supplier_spinner_add) as SearchableSpinner
         accountSpinner = findViewById(R.id.account_spinner_add) as Spinner
         dateTxt = findViewById(R.id.invoice_date_add)
         serviceNameTxtl = findViewById(R.id.serviceNameTxt)
@@ -642,6 +643,7 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
             adapter.add(spinnerlist[i].customerName)
         }
         supplierSpinner!!.adapter = adapter
+        supplierSpinner!!.setTitle("")
         supplierSpinner!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapter: AdapterView<*>, v: View, position: Int, id: Long) {
                 // On selecting a spinner item

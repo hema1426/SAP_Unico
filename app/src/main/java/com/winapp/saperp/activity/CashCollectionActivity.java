@@ -56,6 +56,7 @@ import com.winapp.saperp.fragments.CashInvoiceFragment;
 import com.winapp.saperp.fragments.TotalFragment;
 import com.winapp.saperp.model.BankListModel;
 import com.winapp.saperp.model.CashCollectionInvoiceModel;
+import com.winapp.saperp.model.DeliveryAddressModel;
 import com.winapp.saperp.model.PaymentTypeModel;
 import com.winapp.saperp.utils.CaptureSignatureView;
 import com.winapp.saperp.utils.Constants;
@@ -164,6 +165,8 @@ public class CashCollectionActivity extends AppCompatActivity {
         }
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Receipt");
+
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         netAmount=findViewById(R.id.net_amount);
         btnSplit=findViewById(R.id.btn_split);
@@ -675,7 +678,7 @@ public class CashCollectionActivity extends AppCompatActivity {
     }
 
     public void setBankDetails(ArrayList<String> banks){
-        autoCompleteAdapter = new ArrayAdapter<String>(CashCollectionActivity.this, android.R.layout.select_dialog_item, banks){
+        autoCompleteAdapter = new ArrayAdapter<String>(CashCollectionActivity.this, R.layout.cust_spinner_item, banks){
             public View getView(int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
                 ((TextView) v).setTextSize(12);

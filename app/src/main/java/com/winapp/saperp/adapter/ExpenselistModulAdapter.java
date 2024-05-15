@@ -313,7 +313,7 @@ public class ExpenselistModulAdapter extends RecyclerView.Adapter<RecyclerView.V
             moreOption = view.findViewById(R.id.more_optionExpense);
             statusLayout = view.findViewById(R.id.status_layout);
             indicator = view.findViewById(R.id.indicator);
-            productListView = view.findViewById(R.id.invoiceList);
+            productListView = view.findViewById(R.id.expensList);
             showHideBottomLayout = view.findViewById(R.id.show_hideExp);
             mainLayout = view.findViewById(R.id.main_layout);
             progressLayout = view.findViewById(R.id.progress_layout);
@@ -372,20 +372,7 @@ public class ExpenselistModulAdapter extends RecyclerView.Adapter<RecyclerView.V
                 response -> {
                     try {
                         Log.w("Expense_DetailsRES:", response.toString());
-                        // {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"WinApp","customerName":"WinApp",
-                        // "invoiceNumber":"16","invoiceStatus":"O","invoiceDate":"5\/8\/2021 12:00:00 am","netTotal":"15321330.000000",
-                        // "balanceAmount":"15321330.000000","totalDiscount":"0.000000","paidAmount":"0.000000","contactPersonCode":"0",
-                        // "createDate":"5\/8\/2021 12:00:00 am","updateDate":"5\/8\/2021 12:00:00 am","remark":"","fDocTotal":"0.000000",
-                        // "fTaxAmount":"0.000000","receivedAmount":"0.000000","total":"15321330.000000","fTotal":"0.000000",
-                        // "iTotalDiscount":"0.000000","taxTotal":"1002330.000000","iPaidAmount":"0.000000","currencyCode":"SGD",
-                        // "currencyName":"Singapore Dollar","companyCode":"WINAPP_DEMO","docEntry":"3",
-                        // "invoiceDetails":[{"slNo":"1","companyCode":"WINAPP_DEMO","invoiceNo":"16","productCode":"MB001",
-                        // "productName":"MilkBread","quantity":"1.000000","price":"3000.000000","currency":"INR","taxRate":"4773.000000",
-                        // "discountPercentage":"0.000000","lineTotal":"15321330.000000","fRowTotal":"0.000000","warehouseCode":"01",
-                        // "salesEmployeeCode":"-1","accountCode":"400000","taxStatus":"Y","unitPrice":"3000.000000","customerCategoryNo":"",
-                        // "barCodes":"","totalTax":"1002330.000000","fTaxAmount":"0.000000","taxCode":"","taxType":"Y","taxPerc":"0.000000",
-                        // "invoiceDate":"5\/8\/2021 12:00:00 am","dueDate":"5\/8\/2021 12:00:00 am","createDate":"5\/8\/2021 12:00:00 am",
-                        // "updateDate":"5\/8\/2021 12:00:00 am","createdUser":"manager"}]}]}
+
                         if (response.length() > 0) {
                             JSONArray responseData = response.getJSONArray("responseData");
                             JSONObject object = responseData.optJSONObject(0);
@@ -419,6 +406,7 @@ public class ExpenselistModulAdapter extends RecyclerView.Adapter<RecyclerView.V
                                 invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                 invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
                                 invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                invoiceListModel.setAccountName(detailObject.optString("accountName"));
                                 double qty = Double.parseDouble(detailObject.optString("quantity"));
                                 double price = Double.parseDouble(detailObject.optString("price"));
 

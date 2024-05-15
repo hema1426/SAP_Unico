@@ -989,7 +989,6 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 Utils.setSignature("");
                             }
 
-
                             JSONArray detailsArray=object.optJSONArray("salesOrderDetails");
                             for (int i=0;i<detailsArray.length();i++){
                                 JSONObject detailObject=detailsArray.optJSONObject(i);

@@ -47,6 +47,7 @@ public class ExpensePrintPreviewAdapter extends RecyclerView.Adapter<ExpensePrin
         viewHolder.slNo.setText(String.valueOf(position+1));
         viewHolder.serviceNameStr.setText(invoiceList.getDescription());
         viewHolder.amountStr.setText(invoiceList.getPricevalue());
+        viewHolder.accountStr.setText(invoiceList.getAccountName());
 
 //        if (invoiceList.getUomCode()!=null && !invoiceList.getUomCode().equals("null") && !invoiceList.getUomCode().isEmpty()){
 //            viewHolder.description.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")");
@@ -91,6 +92,8 @@ public class ExpensePrintPreviewAdapter extends RecyclerView.Adapter<ExpensePrin
         private TextView slNo;
         private TextView serviceNameStr;
         private TextView amountStr;
+        private TextView accountStr;
+
         private TextView price;
         private TextView total;
         public ViewHolder(View view) {
@@ -98,6 +101,8 @@ public class ExpensePrintPreviewAdapter extends RecyclerView.Adapter<ExpensePrin
             slNo=view.findViewById(R.id.expens_itemSno);
             serviceNameStr=view.findViewById(R.id.expens_itemServname);
             amountStr=view.findViewById(R.id.expens_itemServAmt);
+            accountStr=view.findViewById(R.id.expens_accountname);
+
 
         }
     }

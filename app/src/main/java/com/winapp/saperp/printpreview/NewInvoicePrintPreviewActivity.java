@@ -82,6 +82,8 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
     private TextView deliveryAddressText;
     private TextView billDiscountText;
     private TextView subtotalText;
+    private TextView billDiscountTxt;
+
     private TextView taxValueText;
     private TextView netTotalText;
     private TextView outstandingText;
@@ -189,6 +191,8 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
         paymentText=findViewById (R.id.payment_terms);
         userText =findViewById (R.id.invoice_user);
         subtotalText =findViewById (R.id.insubtotal);
+        billDiscountTxt =findViewById (R.id.invBillDiscount);
+
         netTotalText =findViewById (R.id.innettotal);
         gstText =findViewById (R.id.ingst_text);
         cnsubtotalText =findViewById (R.id.cnrsubtotal);
@@ -475,6 +479,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                 //billDiscountText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
                 subtotalText.setText(Utils.twoDecimalPoint(sub_total));
                 gstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
+                billDiscountTxt.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
                 netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
                   outstanding_amountl.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
                 // itemDiscount.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getItemDiscount())));
@@ -482,6 +487,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                 // billDiscountText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
                 subtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
                 gstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
+                billDiscountTxt.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
                 netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
                 outstanding_amountl.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
                 //  outstandingText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
