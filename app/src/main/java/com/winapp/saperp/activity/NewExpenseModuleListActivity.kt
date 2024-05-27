@@ -99,7 +99,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
-import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.text.ParseException
@@ -194,7 +193,8 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
     private var progressLayout: View? = null
     var redirectInvoice = false
     private val customerSelectCode = 23
-//    var invoiceTitlelistArray: Array<String>
+
+    //    var invoiceTitlelistArray: Array<String>
 //    var invoicepricelistArray: Array<String>
 //    var invoiceQNTlistArray: Array<String>
 //    var invoiceNOlistArray: Array<String>
@@ -445,7 +445,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
                         if (invoiceOptionLayout!!.getVisibility() == View.VISIBLE) {
                             supportActionBar!!.setTitle("Select Option")
                         } else {
-                            supportActionBar!!.setTitle("Invoices")
+                            supportActionBar!!.setTitle("Expense")
                         }
                         transLayout!!.setVisibility(View.VISIBLE)
                     }
@@ -602,7 +602,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 //                invoiceNumberValue
 //            )
 //        })
-       // deleteInvoice!!.setOnClickListener(View.OnClickListener { showRemoveAlert(invoiceNumberValue) })
+        // deleteInvoice!!.setOnClickListener(View.OnClickListener { showRemoveAlert(invoiceNumberValue) })
 //        cashCollectionLayout!!.setOnClickListener(View.OnClickListener {
 //            viewCloseBottomSheet()
 //            val intent =
@@ -775,6 +775,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             loadFragment(UnpaidInvoices())
         }
     }
+
     fun setNettotal(invoiceList: ArrayList<InvoiceModel>) {
         var net_amount = 0.0
         for (model in invoiceList) {
@@ -792,7 +793,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         val item = menu.findItem(R.id.action_barcode)
         item.setVisible(false)
         val addInvoice = menu.findItem(R.id.action_add)
-       // addInvoice.setVisible(false)
+        // addInvoice.setVisible(false)
 
 //        if (createInvoiceSetting == "true") {
 //            if (company_name == "AADHI INTERNATIONAL PTE LTD") {
@@ -803,7 +804,6 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 //        } else {
 //            addInvoice.setVisible(false)
 //        }
-
 
 
         /*  ArrayList<UserRoll> userRolls=helper.getUserPermissions();
@@ -834,8 +834,9 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) { //finish();
-            onBackPressed()
+        if (item.itemId == android.R.id.home) {
+            finish();
+            //  onBackPressed()
 
             /*   case R.id.action_remove:
                 showRemoveAlert();
@@ -890,7 +891,8 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             }
         } else if (item.itemId == R.id.action_add) {
             startActivity(
-                Intent(this, NewExpenseModuleAddActivity::class.java))
+                Intent(this, NewExpenseModuleAddActivity::class.java)
+            )
 
 //            val intent = Intent(applicationContext, CustomerListActivity::class.java)
 //            intent.putExtra("from", "iv")
@@ -1032,14 +1034,12 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
     }
 
     override fun onBackPressed() {
-        //Execute your code here
-        //Intent intent=new Intent(getApplicationContext(),MainActivity.class);
-        // startActivity(intent);
-        if (behavior!!.state == BottomSheetBehavior.STATE_EXPANDED) {
-            behavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
-        } else {
-            finish()
-        }
+        finish()
+//        if (behavior!!.state == BottomSheetBehavior.STATE_EXPANDED) {
+//            behavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
+//        } else {
+//            finish()
+//        }
     }
 
 //    private inner class GetCustomersTask : AsyncTask<Void?, Int?, String>() {
@@ -1202,7 +1202,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
                                 val `object` = response.optJSONObject("responseData")
                                 val pdfUrl = `object`.optString("pdfURL")
                                 shareMode = mode
-                              //  InvoicePdfDownload(this).execute(pdfUrl, "invoice", invoiceno)
+                                //  InvoicePdfDownload(this).execute(pdfUrl, "invoice", invoiceno)
                             } else {
                                 Toast.makeText(
                                     applicationContext,
@@ -1273,6 +1273,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             //createInvoicePdfTable(invoiceDetails);
         }
     }
+
     fun shareWhatsapp(file: File?) {
         val shareIntent = Intent()
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -1336,6 +1337,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             // TODO: handle exception
         }
     }
+
     private fun checkPermission(): Boolean {
         val result = ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE)
         return if (result == PackageManager.PERMISSION_GRANTED) {
@@ -1524,7 +1526,8 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         mYear = c[Calendar.YEAR]
         mMonth = c[Calendar.MONTH]
         mDay = c[Calendar.DAY_OF_MONTH]
-        val datePickerDialog = DatePickerDialog(this@NewExpenseModuleListActivity,
+        val datePickerDialog = DatePickerDialog(
+            this@NewExpenseModuleListActivity,
             { view, year, monthOfYear, dayOfMonth -> dateEditext!!.setText(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year) },
             mYear,
             mMonth,
@@ -1560,7 +1563,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         invoicePrintList = ArrayList()
         salesReturnList = ArrayList()
 
-               val jsonObjectRequest: JsonObjectRequest =
+        val jsonObjectRequest: JsonObjectRequest =
             object : JsonObjectRequest(Method.POST, url, jsonObject,
                 Response.Listener { response: JSONObject ->
                     try {
@@ -1649,7 +1652,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 //                                salesReturnList!!.add(salesReturnModel)
 //                            }
 //                            model.salesReturnList = salesReturnList
-          invoiceHeaderDetails!!.add(model)
+                            invoiceHeaderDetails!!.add(model)
                             printExpense(copy)
                         } else {
                             Toast.makeText(
@@ -1705,7 +1708,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 
         val requestQueue = Volley.newRequestQueue(this)
 
-        val url = Utils.getBaseUrl(this)+"vendorList"
+        val url = Utils.getBaseUrl(this) + "vendorList"
         Log.w("url_vendorlist:", url)
 
         supplierList = ArrayList()
@@ -1752,8 +1755,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
                         }
                         //  CommonMethods.cancelProgressDialog()
                     }
-                }
-                catch (e: Exception) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }, Response.ErrorListener { error: VolleyError ->
@@ -1799,7 +1801,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         )
         spinnerlist.add(0, spinnerlst)
 
-        Log.w("spinnnVal",""+spinnerlist)
+        Log.w("spinnnVal", "" + spinnerlist)
         val adapter = ArrayAdapter<String>(this, R.layout.cust_spinner_item)
         for (i in spinnerlist.indices) {
             adapter.add(spinnerlist[i].customerName)
@@ -1808,7 +1810,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         supplierSpinner!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapter: AdapterView<*>, v: View, position: Int, id: Long) {
                 // On selecting a spinner item
-                Log.w("spinnnVal1",""+spinnerlist[position].customerName)
+                Log.w("spinnnVal1", "" + spinnerlist[position].customerName)
                 selectSuppliercode = spinnerlist[position].customerCode
                 selectSupplierName = spinnerlist[position].customerName
             }
@@ -1835,20 +1837,58 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             }
         }
     }
+    @Throws(JSONException::class)
+    fun validatePrinterConfiguration(): Boolean {
+        var printetCheck = false
+        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+            Toast.makeText(
+                this@NewExpenseModuleListActivity,
+                "This device does not support bluetooth",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else if (!mBluetoothAdapter.isEnabled) {
+            // Bluetooth is not enabled :)
+            Toast.makeText(
+                this@NewExpenseModuleListActivity,
+                "Enable bluetooth and connect the printer",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            // Bluetooth is enabled
+            if (!printerType!!.isEmpty() && !printerMacId!!.isEmpty()) {
+                printetCheck = true
+            } else {
+                Toast.makeText(this@NewExpenseModuleListActivity, "Please configure Printer", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+        return printetCheck
+    }
+
 
     fun printExpense(copy: Int) {
-        Log.w("expensDetaill",""+invoiceHeaderDetails!!.get(0).customerCode)
-
-        if (printerType.equals("TSC Printer", ignoreCase = true)) {
-            val printer = TSCPrinter(this@NewExpenseModuleListActivity, printerMacId,"Expense")
-            printer.printExpense(copy, invoiceHeaderDetails, invoicePrintList)
-            printer.setOnCompletionListener {
-                Utils.setSignature("")
-                Toast.makeText(applicationContext, "Expense printed successfully!", Toast.LENGTH_SHORT).show()
-                finish()
+        if (validatePrinterConfiguration()) {
+            // Bluetooth is enabled
+            if (printerType.equals("TSC Printer", ignoreCase = true)) {
+                val printer = TSCPrinter(this@NewExpenseModuleListActivity, printerMacId, "Expense")
+                printer.printExpense(copy, invoiceHeaderDetails, invoicePrintList)
+                printer.setOnCompletionListener {
+                    Utils.setSignature("")
+                    Toast.makeText(
+                        applicationContext,
+                        "Expense printed successfully!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                }
+                // ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(NewInvoiceListActivity.this,printerMacId);
+                // zebraPrinterActivity.printInvoice(copy,invoiceHeaderDetails,invoicePrintList,"false");
             }
-            // ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(NewInvoiceListActivity.this,printerMacId);
-            // zebraPrinterActivity.printInvoice(copy,invoiceHeaderDetails,invoicePrintList,"false");
+        } else {
+            Toast.makeText(applicationContext, "Please configure the Printer", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -1887,6 +1927,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             permission.WRITE_EXTERNAL_STORAGE,
             permission.MANAGE_EXTERNAL_STORAGE
         )
+
         @JvmStatic
         fun showInvoiceOption(
             invoiceCustomerCode: String?,
@@ -1981,35 +2022,5 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 
         }
     }
-
-    @Throws(JSONException::class)
-    fun validatePrinterConfiguration(): Boolean {
-        var printetCheck = false
-        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        if (mBluetoothAdapter == null) {
-            // Device does not support Bluetooth
-            Toast.makeText(
-                this@NewExpenseModuleListActivity,
-                "This device does not support bluetooth",
-                Toast.LENGTH_SHORT
-            ).show()
-        } else if (!mBluetoothAdapter.isEnabled) {
-            // Bluetooth is not enabled :)
-            Toast.makeText(
-                this@NewExpenseModuleListActivity,
-                "Enable bluetooth and connect the printer",
-                Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            // Bluetooth is enabled
-            if (!printerType!!.isEmpty() && !printerMacId!!.isEmpty()) {
-                printetCheck = true
-            } else {
-                Toast.makeText(this@NewExpenseModuleListActivity, "Please configure Printer", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-        return printetCheck
-    }
-
 }
+

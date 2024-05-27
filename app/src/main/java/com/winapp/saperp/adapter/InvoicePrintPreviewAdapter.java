@@ -56,7 +56,12 @@ public class InvoicePrintPreviewAdapter extends RecyclerView.Adapter<InvoicePrin
             if (invoiceList.getReturnQty()!=null && !invoiceList.getReturnQty().isEmpty() && Double.parseDouble(invoiceList.getReturnQty()) > 0){
                 viewHolder.qtyValue.setText((int)Double.parseDouble(invoiceList.getNetQty())+" ( as Return)");
             }else {
-                viewHolder.qtyValue.setText((int)Double.parseDouble(invoiceList.getNetQty())+" ( as FOC)");
+                if (invoiceList.getExcQty()!=null && !invoiceList.getExcQty().isEmpty() && Double.parseDouble(invoiceList.getExcQty()) > 0) {
+                    viewHolder.qtyValue.setText((int) Double.parseDouble(invoiceList.getNetQty()) + " ( as FOC)");
+                }
+                else{
+                    viewHolder.qtyValue.setText((int) Double.parseDouble(invoiceList.getNetQty()) + " ( as FOC)"+ " ( as Exc)");
+                }
             }
         }else {
             viewHolder.qtyValue.setText((int)Double.parseDouble(invoiceList.getNetQty())+"");

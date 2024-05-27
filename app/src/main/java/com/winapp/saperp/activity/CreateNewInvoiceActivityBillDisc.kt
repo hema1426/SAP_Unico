@@ -950,7 +950,7 @@ class CreateNewInvoiceActivityBillDisc : AppCompatActivity() {
             override fun afterTextChanged(editable: Editable) {
                 //setCalculation();
                 setCalculationView()
-                if (!editable.toString().isEmpty()) {
+                if (!editable.toString().isEmpty() ) {
                     addProduct!!.setAlpha(0.9f)
                     addProduct!!.setEnabled(true)
                 } else {
@@ -1549,6 +1549,7 @@ class CreateNewInvoiceActivityBillDisc : AppCompatActivity() {
                 taxValueText!!.text.toString(),
                 netTotalValue!!.text.toString(),
                 itemdiscc,
+                "",
                 "",
                 "",
                 ""

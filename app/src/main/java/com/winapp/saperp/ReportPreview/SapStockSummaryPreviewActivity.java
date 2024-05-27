@@ -180,7 +180,9 @@ public class SapStockSummaryPreviewActivity extends AppCompatActivity {
                         String statusMessage=response.optString("statusMessage");
                         if (statusCode.equals("1")){
                             JSONArray  stockDetailsArray=response.optJSONArray("responseData");
-                            assert stockDetailsArray != null;
+                          //  assert stockDetailsArray != null;
+                            Log.w("entryStock11","..");
+
                             if (stockDetailsArray.length() > 0){
                                 JSONObject object1=stockDetailsArray.optJSONObject(0);
                                 ReportStockSummaryModel model=new ReportStockSummaryModel();
@@ -204,6 +206,7 @@ public class SapStockSummaryPreviewActivity extends AppCompatActivity {
                                 model.setReportStockSummaryDetailsList(reportStockSummaryDetailsList);
                                 reportStockSummaryList.add(model);
                                 if (reportStockSummaryDetailsList.size()>0){
+                                    Log.w("entryStock22","..");
                                     setAdapter(reportStockSummaryDetailsList);
                                 }else {
                                     Toast.makeText(getApplicationContext(),"No Record Found...!",Toast.LENGTH_SHORT).show();

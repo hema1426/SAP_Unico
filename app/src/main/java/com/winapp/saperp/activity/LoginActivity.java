@@ -33,6 +33,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
 import com.winapp.saperp.R;
+import com.winapp.saperp.ReportPreview.RoInvoicebyProductPreviewActivity;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.model.CustomerModel;
 import com.winapp.saperp.model.HomePageModel;
@@ -122,7 +123,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             passwordText.setText(loginPreferences.getString("password", ""));
             rememberMe.setChecked(true);
         }
-
         passwordToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -380,8 +380,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Log.w("savlog11",""+loginPreferences.getBoolean("saveLogin", false));
 
                                 pDialog.dismiss();
+
                                 getPrinterSetting(username);
-                                Intent intent=new Intent(getApplicationContext(),DashboardActivity.class);
+                                Intent intent=new Intent(LoginActivity.this, DashboardActivity.class);
+                                intent.putExtra("isLogin","1");
                                 startActivity(intent);
                                 finish();
                                 //  getCompaniesList();
@@ -460,7 +462,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 dbHelper.insertSettings("showDiscountAmount",object.optString("showDiscountAmount"));
                                 dbHelper.insertSettings("discountAmountValidationFrom",object.optString("discountAmountValidationFrom"));
                                 dbHelper.insertSettings("discountAmountValidationTo",object.optString("discountAmountValidationTo"));
-
+                                dbHelper.insertSettings("showSalesOrder",object.optString("showSalesOrder"));
+                                dbHelper.insertSettings("showDeliveryOrder",object.optString("showDeliveryOrder"));
+                                dbHelper.insertSettings("showInvoice",object.optString("showInvoice"));
+                                dbHelper.insertSettings("showSalesReturn",object.optString("showSalesReturn"));
+                                dbHelper.insertSettings("showCatelog",object.optString("showCatelog"));
+                                dbHelper.insertSettings("showCustomer",object.optString("showCustomer"));
+                                dbHelper.insertSettings("showProduct",object.optString("showProduct"));
                             }
                         }else {
                             Toast.makeText(getApplicationContext(),"Error,in getting Printer Settings",Toast.LENGTH_LONG).show();

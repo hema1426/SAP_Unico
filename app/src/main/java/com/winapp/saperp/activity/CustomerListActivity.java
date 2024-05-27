@@ -102,6 +102,7 @@ public class CustomerListActivity extends NavigationActivity {
     private ArrayList<CustomerDetails> allCustomersList;
     private String outstandingAmount;
     private String username;
+
     private String billDiscApi;
 
     public String createInvoiceSetting = "false";
@@ -601,7 +602,7 @@ public class CustomerListActivity extends NavigationActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_url:", url);
+        Log.w("Given_url_cust:", url+jsonObject);
         dialog = new ProgressDialog(CustomerListActivity.this);
         dialog.setMessage("Loading Customers Groups...");
         dialog.setCancelable(false);
@@ -709,6 +710,7 @@ public class CustomerListActivity extends NavigationActivity {
                                 model.setTaxPerc(object.optString("taxPercentage"));
                                 model.setTaxCode(object.optString("taxCode"));
                                 model.setBillDiscPercentage(object.optString("discountPercentage"));
+                                model.setAllowFOC(object.optString("allowFOC"));
 
                                 if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {
                                     model.setOutstandingAmount("0.00");
@@ -759,14 +761,19 @@ public class CustomerListActivity extends NavigationActivity {
     private void setAdapter(ArrayList<CustomerModel> customerNames) {
         customerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         totalCustomers.setText(customerNames.size() + " Customers");
-        customerNameAdapter = new SelectCustomerAdapter(this, customerNames, new SelectCustomerAdapter.OnMoreButtonClicked() {
+
+        customerNameAdapter = new SelectCustomerAdapter(this, customerNames,
+                new SelectCustomerAdapter.OnMoreButtonClicked() {
             @Override
-            public void moreOption(String customer, String customer_code, String outstanding) {
+            public void moreOption(String customer, String customer_code, String outstanding ,String isFOCApi) {
                 if (getIntent() != null) {
                     String from = getIntent().getStringExtra("from");
                     if (from.equals("do") || from.equals("so") || from.equals("iv") || from.equals("sales_return")) {
                         Intent returnIntent = new Intent();
                         returnIntent.putExtra("customerCode", customer_code);
+
+                        returnIntent.putExtra("isFOC", isFOCApi);
+
                         setResult(Activity.RESULT_OK, returnIntent);
                         finish();
                     } else {
@@ -784,8 +791,9 @@ public class CustomerListActivity extends NavigationActivity {
             }
 
             @Override
-            public void createInvoice(String customerCode, String cusname, String taxcode, String taxperc, String taxtype
-                    ,String billDisc) {
+            public void createInvoice(String customerCode, String cusname, String taxcode, String taxperc,
+                                      String taxtype
+                    ,String billDisc,String isFOCApi) {
                 if (createInvoiceSetting.equals("true")) {
 
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
@@ -830,6 +838,8 @@ public class CustomerListActivity extends NavigationActivity {
                         intent.putExtra("customerCode", customerCode);
                         intent.putExtra("customerBillDisc", billDisc);
                         intent.putExtra("from", from);
+                        intent.putExtra("isFOC", isFOCApi);
+
                         startActivity(intent);
                     }
 

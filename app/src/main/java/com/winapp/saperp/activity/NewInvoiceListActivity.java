@@ -9,6 +9,7 @@ import static android.os.Build.VERSION.SDK_INT;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -1656,7 +1657,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                                 object.optString("itemDiscount"),
                                                 salesObject.optString("billDiscount"),
                                                 "",
-                                                ""
+                                                "",
+                                                object.optString("foc_Qty")
                                         );
 
                                         myEdit.putString("billDisc_amt", salesObject.optString("billDiscount"));
@@ -3396,6 +3398,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                 invoiceListModel.setNetQty(detailObject.optString("quantity"));
                                 invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
                                 invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
                                 invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                 invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
                                 invoiceListModel.setUnitPrice(detailObject.optString("price"));
@@ -3494,12 +3497,33 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             }
         }
     }
+    public boolean validatePrinterConfiguration(){
+        boolean printetCheck=false;
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+            Toast.makeText(this,"This device does not support bluetooth",Toast.LENGTH_SHORT).show();
+        } else if (!mBluetoothAdapter.isEnabled()) {
+            // Bluetooth is not enabled :)
+            Toast.makeText(this,"Enable bluetooth and connect the printer",Toast.LENGTH_SHORT).show();
+        } else {
+            // Bluetooth is enabled
+            if (!printerType.isEmpty() && !printerMacId.isEmpty()){
+                printetCheck=true;
+            }else {
+                Toast.makeText(this,"Please configure Printer",Toast.LENGTH_SHORT).show();
+            }
+        }
+        return printetCheck;
+    }
 
     public void printInvoice(int copy) {
-        if (createInvoiceSetting.equals("true")) {
-            Log.w("invPrinter","cg");
-            PrinterUtils printerUtils = new PrinterUtils(this, printerMacId);
-            printerUtils.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
+        if (validatePrinterConfiguration()) {
+
+            if (createInvoiceSetting.equals("true")) {
+            Log.w("invPrinter", "cg");
+                PrinterUtils printerUtils = new PrinterUtils(this, printerMacId);
+                printerUtils.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
 
           /*  TSCPrinter printer = new TSCPrinter(NewInvoiceListActivity.this, printerMacId);
             printer.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
@@ -3510,30 +3534,33 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                     Toast.makeText(getApplicationContext(), "Invoice printed successfully!", Toast.LENGTH_SHORT).show();
                 }
             });*/
-        } else {
-            if (isInvoicePrint) {
-                Log.w("invPrinter11","");
-                if (printerType.equalsIgnoreCase("Zebra Printer")) {
-                    ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(NewInvoiceListActivity.this, printerMacId);
-                    zebraPrinterActivity.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
-                } else if (printerType.equalsIgnoreCase("TSC Printer")) {
-                    Log.w("invPrinter22","");
-                    TSCPrinter printer = new TSCPrinter(NewInvoiceListActivity.this, printerMacId);
-                    printer.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
-                    printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
-                        @Override
-                        public void onCompleted() {
-                            Utils.setSignature("");
-                            Toast.makeText(getApplicationContext(), "Invoice printed successfully!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-                    });
-                    // ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(NewInvoiceListActivity.this,printerMacId);
-                    // zebraPrinterActivity.printInvoice(copy,invoiceHeaderDetails,invoicePrintList,"false");
-                }
             } else {
-                // zebraPrinterActivity.printDeliveryOrder(copy,invoiceHeaderDetails,invoicePrintList);
+                if (isInvoicePrint) {
+                    Log.w("invPrinter11", "");
+                    if (printerType.equalsIgnoreCase("Zebra Printer")) {
+                        ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(NewInvoiceListActivity.this, printerMacId);
+                        zebraPrinterActivity.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
+                    } else if (printerType.equalsIgnoreCase("TSC Printer")) {
+                        Log.w("invPrinter22", "");
+                        TSCPrinter printer = new TSCPrinter(NewInvoiceListActivity.this, printerMacId);
+                        printer.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
+                        printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
+                            @Override
+                            public void onCompleted() {
+                                Utils.setSignature("");
+                                Toast.makeText(getApplicationContext(), "Invoice printed successfully!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        });
+                        // ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(NewInvoiceListActivity.this,printerMacId);
+                        // zebraPrinterActivity.printInvoice(copy,invoiceHeaderDetails,invoicePrintList,"false");
+                    }
+                } else {
+                    // zebraPrinterActivity.printDeliveryOrder(copy,invoiceHeaderDetails,invoicePrintList);
+                }
             }
+        }else {
+            Toast.makeText(getApplicationContext(),"Please configure the Printer",Toast.LENGTH_SHORT).show();
         }
     }
 

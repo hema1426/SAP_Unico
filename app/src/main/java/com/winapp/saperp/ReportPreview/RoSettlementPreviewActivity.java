@@ -31,6 +31,7 @@ import com.winapp.saperp.R;
 import com.winapp.saperp.ReportPreview.adapter.RoSettleDenominatPreviewAdapter;
 import com.winapp.saperp.ReportPreview.adapter.RoSettleExpensPreviewAdapter;
 import com.winapp.saperp.ReportPreview.adapter.RoSettlementPreviewAdapter;
+import com.winapp.saperp.model.SettlementReceiptDetailModel;
 import com.winapp.saperp.model.SettlementReceiptModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.Utils;
@@ -64,7 +65,7 @@ public class RoSettlementPreviewActivity extends AppCompatActivity {
     public SweetAlertDialog pDialog;
     String username = "winapp";
     String companyId = "1";
-    private ArrayList<SettlementReceiptModel> settlementReceiptModelList ;
+    private ArrayList<SettlementReceiptDetailModel> settlementReceiptModelList ;
     private ArrayList<SettlementReceiptModel.CurrencyDenomination> denominationArrayList ;
     private ArrayList<SettlementReceiptModel.Expense> expenseArrayList ;
     private TextView setle_fromdatel;
@@ -181,9 +182,20 @@ public class RoSettlementPreviewActivity extends AppCompatActivity {
             try{
                 Log.w("SettlementResponse:",response.toString());
                 JSONArray receiptDetailsArray=response.optJSONArray("DetailList");
+
+//                invoice_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalInvoiceAmount())));
+//                paid_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalPaidAmount())));
+//                less_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalLessAmount())));
+//                cash_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalCashAmount())));
+//                cheque_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalChequeAmount())));
+//
+//                invoice_collect.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalInvoiceAmount())));
+//                discount_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalLessAmount())));
+//                net_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalCashAmount())));
+//
                 for (int i=0;i<receiptDetailsArray.length();i++){
                     JSONObject receiptObject=receiptDetailsArray.optJSONObject(i);
-                    SettlementReceiptModel model =new SettlementReceiptModel();
+                    SettlementReceiptDetailModel model =new SettlementReceiptDetailModel();
                     model.setReceiptNo(receiptObject.optString("ReceiptNo"));
                     model.setReceiptDate(receiptObject.optString("ReceiptDate"));
                     model.setCustomerName(receiptObject.optString("CustomerName"));
@@ -204,11 +216,6 @@ public class RoSettlementPreviewActivity extends AppCompatActivity {
 
                     model.setBankCode(receiptObject.optString("BankCode"));
                     model.setChequeNo(receiptObject.optString("ChequeNo"));
-                    model.setTotalInvoiceAmount(receiptObject.getString("TotalInvoice"));
-                    model.setTotalPaidAmount(receiptObject.getString("TotalNetTotal"));
-                    model.setTotalLessAmount(receiptObject.getString("TotalDiscount"));
-                    model.setTotalCashAmount(receiptObject.getString("CashTotal"));
-                    model.setTotalChequeAmount(receiptObject.getString("ChequeTotal"));
 
                     settlementReceiptModelList.add(model);
                 }
@@ -292,21 +299,13 @@ public class RoSettlementPreviewActivity extends AppCompatActivity {
     }
 
 
-    private void setSettlementAdapter(ArrayList<SettlementReceiptModel> settlementReceiptModelList) {
+    private void setSettlementAdapter(ArrayList<SettlementReceiptDetailModel> settlementReceiptModelList) {
 
         settlementPreviewAdapter= new RoSettlementPreviewAdapter(this, settlementReceiptModelList);
         rv_settle_listl.setHasFixedSize(true);
         rv_settle_listl.setLayoutManager(new LinearLayoutManager(this));
         rv_settle_listl.setAdapter(settlementPreviewAdapter);
-        invoice_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalInvoiceAmount())));
-        paid_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalPaidAmount())));
-        less_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalLessAmount())));
-        cash_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalCashAmount())));
-        cheque_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalChequeAmount())));
 
-        invoice_collect.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalInvoiceAmount())));
-        discount_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalLessAmount())));
-        net_amt.setText(twoDecimalPoint(Double.parseDouble(settlementReceiptModelList.get(0).getTotalCashAmount())));
     }
 
 
@@ -401,7 +400,8 @@ public class RoSettlementPreviewActivity extends AppCompatActivity {
         return printetCheck;
     }
 
-    public void setSettlementReportPrint(ArrayList<SettlementReceiptModel.Expense> expenseList,String  from_date,String to_date,String username,ArrayList<SettlementReceiptModel> receiptlist,
+    public void setSettlementReportPrint(ArrayList<SettlementReceiptModel.Expense> expenseList,String  from_date,String to_date,
+                                         String username,ArrayList<SettlementReceiptDetailModel> receiptlist,
                                          ArrayList<SettlementReceiptModel.CurrencyDenomination> denomination,
                                          int copy) throws IOException {
         if (validatePrinterConfiguration()){

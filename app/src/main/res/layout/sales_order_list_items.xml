@@ -55,7 +55,7 @@
                 android:textSize="13sp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:maxWidth="280dp"
+                android:maxWidth="250dp"
                 android:id="@+id/name"
                 android:textColor="#212121"
                 android:text="Azmal Trading Company"
@@ -207,12 +207,12 @@
                 android:layout_height="0dp"/>
 
             <ImageView
-                android:layout_width="wrap_content"
                 android:id="@+id/show_hide"
-                android:tag="hide"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
-                android:layout_height="wrap_content"/>
+                android:tag="hide" />
 
         </LinearLayout>
 

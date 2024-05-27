@@ -1441,7 +1441,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                            "",
                                            "",
                                            "",
-                                           ""
+                                           "",
+                                           object.optString("focQty")
                                     );
 
                                     Log.w("ProductsLength:",products.length()+"");

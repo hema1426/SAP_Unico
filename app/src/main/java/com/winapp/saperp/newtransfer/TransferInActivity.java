@@ -574,7 +574,7 @@ public class TransferInActivity extends AppCompatActivity {
                     }else {
                         assert responseData != null;
                         String docNum=responseData.optString("docNum");
-                        Toast.makeText(getApplicationContext(),"Transfer Saved Success...!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Stock Request Saved Success...!",Toast.LENGTH_SHORT).show();
                         Intent intent=new Intent(getApplicationContext(), StockRequestListActivity.class);
                         if (isPrintEnable) {
                             intent.putExtra("docNum",docNum);
@@ -724,6 +724,8 @@ public class TransferInActivity extends AppCompatActivity {
 
                                 for (int i = 0; i < pdtArray.length(); i++) {
                                     JSONObject jsonObject = pdtArray.getJSONObject(i);
+                                    Log.w("entrTranwww",""+transferType);
+
                                     if (transferType.equals("Transfer In")) {
                                         if (jsonObject.optInt("stockInHand") > 0){
                                             TransferInModel.TransferInDetails transferInDetails = new TransferInModel.TransferInDetails();
@@ -732,6 +734,8 @@ public class TransferInActivity extends AppCompatActivity {
                                             transferInDetails.setStockInHand((jsonObject.optInt("stockInHand")));
                                             transferInDetails.setQty("");
                                             transferInDetailsl.add(transferInDetails);
+                                            Log.w("entrTransqqq",""+transferInDetailsl.size());
+
                                         }
                                     }else {
                                         TransferInModel.TransferInDetails transferInDetails = new TransferInModel.TransferInDetails();
@@ -742,9 +746,12 @@ public class TransferInActivity extends AppCompatActivity {
                                         transferInDetailsl.add(transferInDetails);
                                     }
                                 }
+                                Log.w("entrTransddd",""+transferInDetailsl.size());
+
                                 if (transferInDetailsl.size() > 0) {
                                     transferInModel.setTransferInDetails(transferInDetailsl);
                                     setTransferInAdapter(transferInDetailsl);
+                                    Log.w("entrTrans",""+transferInDetailsl.size());
                                 }
                             } else{
                                 transferInAdapter.notifyDataSetChanged();
@@ -752,6 +759,8 @@ public class TransferInActivity extends AppCompatActivity {
                                 transferInView.setAdapter(null);
                                 pdtsizel.setText("0 Products");
                                 Toast.makeText(getApplicationContext(),statusMessage,Toast.LENGTH_SHORT).show();
+                                Log.w("entrTransff","");
+
                             }
 
                         } catch (Exception e) {

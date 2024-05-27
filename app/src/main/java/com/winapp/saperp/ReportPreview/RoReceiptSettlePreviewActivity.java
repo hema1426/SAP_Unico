@@ -31,6 +31,7 @@ import com.winapp.saperp.R;
 import com.winapp.saperp.ReportPreview.adapter.RoSettleDenominatPreviewAdapter;
 import com.winapp.saperp.ReportPreview.adapter.RoSettleExpensPreviewAdapter;
 import com.winapp.saperp.ReportPreview.adapter.RoReceiptSettlePreviewAdapter;
+import com.winapp.saperp.model.SettlementReceiptDetailModel;
 import com.winapp.saperp.model.SettlementReceiptModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.Utils;
@@ -65,6 +66,8 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
     String username = "winapp";
     String companyId = "1";
     private ArrayList<SettlementReceiptModel> settlementReceiptModelList ;
+    private ArrayList<SettlementReceiptDetailModel> settlementReceiptDetailModelList ;
+
     private ArrayList<SettlementReceiptModel.CurrencyDenomination> denominationArrayList ;
     private ArrayList<SettlementReceiptModel.Expense> expenseArrayList ;
     private TextView setle_fromdatel;
@@ -181,6 +184,7 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
         pDialog.show();
 
         settlementReceiptModelList = new ArrayList<>();
+        settlementReceiptDetailModelList = new ArrayList<>();
         denominationArrayList = new ArrayList<>();
         expenseArrayList = new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
@@ -198,7 +202,6 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
 
                         setle_fromdatel.setText(resObject.getString("receiptDate"));
 
-                        JSONArray receiptDetailsArray = resObject.optJSONArray("reportSettlementWithReceiptDetails");
                         SettlementReceiptModel model1 = new SettlementReceiptModel();
 
                         invoice_amt.setText(twoDecimalPoint(Double.parseDouble(resObject.getString("totalInvoiceAmount"))));
@@ -211,35 +214,30 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
                         model1.setTotalInvoiceAmount(resObject.optString("totalInvoiceAmount"));
                         model1.setTotalPaidAmount(resObject.optString("totalPaidAmount"));
                         model1.setTotalLessAmount(resObject.optString("totalLessAmount"));
-                        model1.setTotalCashAmount(resObject.optString("totalTransferAmount"));
+                        model1.setTotalCashAmount(resObject.optString("totalCashAmount"));
                         model1.setTotalChequeAmount(resObject.optString("totalCheckAmount"));
 
-                        for (int i = 0; i < Objects.requireNonNull(receiptDetailsArray).length(); i++) {
-                            JSONObject receiptObject = receiptDetailsArray.optJSONObject(i);
-                            SettlementReceiptModel model = new SettlementReceiptModel();
-                            model.setReceiptNo(receiptObject.optString("receiptNo"));
-                            model.setReceiptDate(receiptObject.optString("receiptDate"));
-                            model.setCustomerName(receiptObject.optString("customerName"));
-                            model.setCustomerCode(receiptObject.optString("customerCode"));
-                    model.setPaidAmount(receiptObject.optString("receiptTotal"));
-                    model.setCreditAmount(receiptObject.optString("paymodeTotal"));
-//                    double finalAmount = Double.parseDouble(receiptObject.optString("PaidAmount")) - Double.parseDouble(receiptObject.optString("CreditAmount"));
-//                    model.setFinalPaidAmount(twoDecimalPoint(finalAmount));
-                            model.setPaymode(receiptObject.optString("paymode"));
-//                    receiptObject.optString("ChequeDate");
-//                    if(!receiptObject.optString("ChequeDate").isEmpty() &&
-//                            !receiptObject.optString("ChequeDate").equalsIgnoreCase("null")) {
-//                        String chequedate = receiptObject.optString("ChequeDate");
-//                        String date_value= chequedate.replaceAll("[^0-9]", "");
-//                        getDate(Long.parseLong(date_value));
-//                        model.setChequeDate(getDate(Long.parseLong(date_value)));
-//                    }
+                        JSONArray receiptDetailsArray = resObject.optJSONArray("reportSettlementWithReceiptDetails");
 
-                            //   model.setBankCode(receiptObject.optString("BankCode"));
-                            //   model.setChequeNo(receiptObject.optString("ChequeNo"));
+                        if (receiptDetailsArray.length() > 0) {
 
+                            for (int i = 0; i < Objects.requireNonNull(receiptDetailsArray).length(); i++) {
+                                JSONObject receiptObject = receiptDetailsArray.optJSONObject(i);
+                                SettlementReceiptDetailModel model = new SettlementReceiptDetailModel();
 
-                            settlementReceiptModelList.add(model);
+                                model.setReceiptNo(receiptObject.optString("receiptNo"));
+                                model.setReceiptDate(receiptObject.optString("receiptDate"));
+                                model.setCustomerName(receiptObject.optString("customerName"));
+                                model.setCustomerCode(receiptObject.optString("customerCode"));
+                                model.setPaidAmount(receiptObject.optString("paymodeTotal"));
+                                model.setCreditAmount(receiptObject.optString("receiptTotal"));
+                                model.setPaymode(receiptObject.optString("paymode"));
+                                   model.setChequeDate(receiptObject.optString("chequeDate"));
+                                   model.setBankCode(receiptObject.optString("bankCode"));
+                                   model.setChequeNo(receiptObject.optString("chequeNo"));
+
+                                settlementReceiptDetailModelList.add(model);
+                            }
                         }
                         Log.w("denominatsss",""+resObject.optJSONArray("reportSettlementWithReceiptDenomination"));
 
@@ -277,6 +275,7 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
                                 expenseArrayList.add(expense);
                             }
                         }
+                        settlementReceiptModelList.add(model1);
 
                double excessOrShortage = denominattotalapi - (Double.parseDouble(resObject.getString("totalCashAmount"))
                        - expensetotalapi);
@@ -291,13 +290,14 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
                             shortage_total_layl.setVisibility(View.VISIBLE);
                         }
                     }
+
                 }
                 else {
                     Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();
                 }
 
                 if (settlementReceiptModelList.size()>0){
-                    setSettlementAdapter(settlementReceiptModelList);
+                    setSettlementAdapter(settlementReceiptDetailModelList);
                 }
                 if (denominationArrayList.size()>0){
                     denominatlay.setVisibility(View.VISIBLE);
@@ -356,7 +356,7 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
     }
 
 
-    private void setSettlementAdapter(ArrayList<SettlementReceiptModel> settlementReceiptModelList) {
+    private void setSettlementAdapter(ArrayList<SettlementReceiptDetailModel> settlementReceiptModelList) {
 
         settlementPreviewAdapter= new RoReceiptSettlePreviewAdapter(this, settlementReceiptModelList);
         rv_settle_listl.setHasFixedSize(true);
@@ -432,7 +432,7 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
                 // Bluetooth is enabled
                 if (!printerType.isEmpty()){
                     try {
-                        setSettlementReportPrint(expenseArrayList,settlementReceiptModelList,denominationArrayList,1);
+                        setSettlementReportPrint(expenseArrayList,settlementReceiptModelList,settlementReceiptDetailModelList,denominationArrayList,1);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -469,11 +469,12 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
 
     public void setSettlementReportPrint(ArrayList<SettlementReceiptModel.Expense> expenseList,
                                          ArrayList<SettlementReceiptModel> receiptlist,
+                                         ArrayList<SettlementReceiptDetailModel> receiptDetaillist,
                                          ArrayList<SettlementReceiptModel.CurrencyDenomination> denomination,int copy) throws IOException {
         if (validatePrinterConfiguration()){
             if (printerType.equals("TSC Printer")){
                 TSCPrinter printer=new TSCPrinter(this,printerMacId,"ReceiptSettlement");
-                printer.setSettleReceiptPrint(copy,username,fromdatetxt,receiptlist,denomination,expenseList);
+                printer.setSettleReceiptPrint(copy,username,fromdatetxt,receiptlist,receiptDetaillist,denomination,expenseList);
             }
         }else {
             Toast.makeText(getApplicationContext(),"Please configure the Printer",Toast.LENGTH_SHORT).show();

@@ -42,11 +42,46 @@ public class NewInvoicePrintPreviewAdapter extends RecyclerView.Adapter<NewInvoi
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         InvoicePrintPreviewModel.InvoiceList invoiceList=invoiceLists.get(position);
         viewHolder.slNo.setText(String.valueOf(position+1));
+//        viewHolder.product.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")");
+
         if (invoiceList.getUomCode()!=null && !invoiceList.getUomCode().equals("null") && !invoiceList.getUomCode().isEmpty()){
-            viewHolder.product.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")");
-        }else {
-            viewHolder.product.setText(invoiceList.getDescription());
+            if (Double.parseDouble(invoiceList.getTotal()) < 0.00){
+                viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")"+" (as Return)");
+            }else if (Double.parseDouble(invoiceList.getTotal())==0.00){
+                if (invoiceList.getReturnQty()!=null && !invoiceList.getReturnQty().isEmpty() && Double.parseDouble(invoiceList.getReturnQty()) > 0){
+                    viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")"+" ( as Return)");
+                }else {
+                    if (invoiceList.getExcQty()!=null && !invoiceList.getExcQty().isEmpty() && Double.parseDouble(invoiceList.getExcQty()) > 0) {
+                        viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")" + " ( as FOC)");
+                    }
+                    else{
+                        viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")" + " ( as FOC)"+ " ( as Exc)");
+                    }
+                }
+            }else {
+                viewHolder.product.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")");
+            }
         }
+        else {
+
+            if (Double.parseDouble(invoiceList.getTotal()) < 0.00){
+                viewHolder.product.setText(Double.parseDouble(invoiceList.getDescription())+" (as Return)");
+            }else if (Double.parseDouble(invoiceList.getTotal())==0.00){
+                if (invoiceList.getReturnQty()!=null && !invoiceList.getReturnQty().isEmpty() && Double.parseDouble(invoiceList.getReturnQty()) > 0){
+                    viewHolder.product.setText((invoiceList.getDescription())+" ( as Return)");
+                }else {
+                    if (invoiceList.getExcQty()!=null && !invoiceList.getExcQty().isEmpty() && Double.parseDouble(invoiceList.getExcQty()) > 0) {
+                        viewHolder.product.setText((invoiceList.getDescription()) + " ( as FOC)");
+                    }
+                    else{
+                        viewHolder.product.setText((invoiceList.getDescription()) + " ( as FOC)"+ " ( as Exc)");
+                    }
+                }
+            }else {
+                viewHolder.product.setText((invoiceList.getDescription()));
+            }
+        }
+
         Log.w("cpmadpta",""+companyName);
 
         if(companyName.equalsIgnoreCase("Trans Orient Singapore Pte Ltd")){

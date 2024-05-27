@@ -3,6 +3,7 @@ package com.winapp.saperp.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,7 +107,8 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
                   //  onMoreButtonClicked.moreOption(model.getCustomerName(),model.getCustomerCode(),model.getOutstandingAmount());
 
                     onMoreButtonClicked.createInvoice(model.getCustomerCode(),model.getCustomerName(),model.getTaxCode(),
-                            model.getTaxPerc(),model.getTaxType() , model.getBillDiscPercentage());
+                            model.getTaxPerc(),model.getTaxType() , model.getBillDiscPercentage() , model.getAllowFOC());
+
                 }
             });
         }
@@ -114,7 +116,8 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
         viewHolder.moreIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onMoreButtonClicked.moreOption(model.getCustomerName(),model.getCustomerCode(),model.getOutstandingAmount());
+                onMoreButtonClicked.moreOption(model.getCustomerName(),model.getCustomerCode(),model.getOutstandingAmount()
+                ,model.getAllowFOC());
             }
         });
 
@@ -157,8 +160,9 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
     }
 
     public interface OnMoreButtonClicked{
-        void moreOption(String customename,String id,String outstanding);
-        void createInvoice(String customerCode,String customerName,String taxcode,String taxperc,String taxtype,String BillDisc);
+        void moreOption(String customename,String id,String outstanding ,String isFoc);
+        void createInvoice(String customerCode,String customerName,String taxcode,String taxperc,String taxtype,
+                           String BillDisc,String isFOC);
     }
 
     public void filterList(ArrayList<CustomerModel> filterdNames) {

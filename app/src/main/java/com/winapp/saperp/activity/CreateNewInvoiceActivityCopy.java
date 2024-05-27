@@ -1502,6 +1502,7 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
                             netTotalValue.getText().toString(),"",
                             "",
                             "",
+                            "",
                             ""
                     );
 

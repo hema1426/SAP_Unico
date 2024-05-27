@@ -100,6 +100,7 @@
                     android:padding="5dp"
                     android:focusableInTouchMode="true"
                     android:layout_weight="1"
+                    android:visibility="gone"
                     android:orientation="vertical"
                     android:layout_height="wrap_content">
 

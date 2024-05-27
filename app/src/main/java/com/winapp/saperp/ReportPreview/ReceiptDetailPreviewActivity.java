@@ -197,6 +197,10 @@ public class ReceiptDetailPreviewActivity extends AppCompatActivity {
                                     details.setReceiptTotal(detailsObject.optString("receiptTotal"));
                                     details.setCustomerCode(detailsObject.optString("customerCode"));
                                     details.setCustomerName(detailsObject.optString("customerName"));
+                                    details.setChequeDate(detailsObject.optString("chequeDate"));
+                                    details.setBankCode(detailsObject.optString("bankCode"));
+                                    details.setChequeNo(detailsObject.optString("chequeNo"));
+
                                     receiptDetailsList.add(details);
 
                                     // Get the Invoice Details for the Particular products

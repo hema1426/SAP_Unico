@@ -1244,7 +1244,8 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                             "",
                                             "",
                                             "",
-                                            ""
+                                            "",
+                                            "0"
                                     );
 
                                     Log.w("ProductsLength:",products.length()+"");

@@ -15,7 +15,16 @@ public class CustomerModel {
     private String taxCode;
     private String taxPerc;
     private String haveTax;
+    private String allowFOC;
     private String billDiscPercentage;
+
+    public String getAllowFOC() {
+        return allowFOC;
+    }
+
+    public void setAllowFOC(String allowFOC) {
+        this.allowFOC = allowFOC;
+    }
 
     public String getBillDiscPercentage() {
         return billDiscPercentage;

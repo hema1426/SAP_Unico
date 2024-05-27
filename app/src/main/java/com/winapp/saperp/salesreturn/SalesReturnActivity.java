@@ -43,7 +43,9 @@ import com.winapp.saperp.activity.NavigationActivity;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.model.CartModel;
 import com.winapp.saperp.model.CustomerDetails;
+import com.winapp.saperp.model.CustomerGroupModel;
 import com.winapp.saperp.model.CustomerModel;
+import com.winapp.saperp.model.NewLocationModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
@@ -97,9 +99,9 @@ public class SalesReturnActivity extends NavigationActivity implements View.OnCl
     private Button searchButton;
     private Button cancelSearch;
     private Context mContext;
-    private ArrayList<String> locationList;
     private SearchableSpinner customerListSpinner;
     private SearchableSpinner locationSpinner;
+    private String locName = "" ;
     private int mYear, mMonth, mDay, mHour, mMinute;
     private EditText fromDate;
     private EditText toDate;
@@ -114,6 +116,8 @@ public class SalesReturnActivity extends NavigationActivity implements View.OnCl
     private String salesReturnNumber;
     private String noofCopy="1";
     private int FILTER_CUSTOMER_CODE=134;
+    private ArrayList<NewLocationModel.LocationDetails> locationDetailsl;
+    private ArrayList<NewLocationModel.LocationDetails> locationList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +160,7 @@ public class SalesReturnActivity extends NavigationActivity implements View.OnCl
         productButton.setOnClickListener(this::onClick);
         summaryButton.setOnClickListener(this::onClick);
         locationList=new ArrayList<>();
-        locationList.add(locationCode);
+        //locationList.add(locationCode);
         locationSpinner.setTitle("Select Location");
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
@@ -181,8 +185,12 @@ public class SalesReturnActivity extends NavigationActivity implements View.OnCl
                 }
             }
         }
+        Log.w("locatretun:",""+Utils.getLocationList());
 
-        setLocationDataToAdapter(locationList);
+        locationList = Utils.getLocationList();
+        if(locationList.size() > 0){
+            setLocationDataToAdapter(locationList);
+        }
 
         customerSearchList=new ArrayList<>();
         customerList=dbHelper.getAllCustomers();
@@ -262,7 +270,7 @@ public class SalesReturnActivity extends NavigationActivity implements View.OnCl
                     Toast.makeText(getApplicationContext(),"From date should not be greater than to date",Toast.LENGTH_SHORT).show();
                 } else{
                     searchFilterView.setVisibility(View.GONE);
-                  SalesReturnList.filterSearch(customer_name, locationSpinner.getSelectedItem().toString(), fromDateText.getText().toString(), toDateText.getText().toString());
+                  SalesReturnList.filterSearch(customer_name,locName, fromDateText.getText().toString(), toDateText.getText().toString());
                 }
             }
         });
@@ -313,14 +321,30 @@ public class SalesReturnActivity extends NavigationActivity implements View.OnCl
         customerListSpinner.setOnItemSelectedListener(this);
     }
 
-    public void setLocationDataToAdapter(ArrayList<String> arrayList) {
-        // Creating ArrayAdapter using the string array and default spinner layout
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(SalesReturnActivity.this, android.R.layout.simple_spinner_item, arrayList);
-        // Specify layout to be used when list of choices appears
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Applying the adapter to our spinner
-        locationSpinner.setAdapter(arrayAdapter);
-        locationSpinner.setOnItemSelectedListener(this);
+//    public void setLocationDataToAdapter(ArrayList<String> arrayList) {
+//        // Creating ArrayAdapter using the string array and default spinner layout
+//        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(SalesReturnActivity.this, android.R.layout.simple_spinner_item, arrayList);
+//        // Specify layout to be used when list of choices appears
+//        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        // Applying the adapter to our spinner
+//        locationSpinner.setAdapter(arrayAdapter);
+//        locationSpinner.setOnItemSelectedListener(this);
+//    }
+
+    public void setLocationDataToAdapter(ArrayList<NewLocationModel.LocationDetails> locationList) {
+        ArrayAdapter<NewLocationModel.LocationDetails> adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, locationList);
+        locationSpinner.setAdapter(adapter);
+        locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String groupCode = locationList.get(position).getLocationCode();
+                 locName = locationList.get(position).getLocationName();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
     @Override

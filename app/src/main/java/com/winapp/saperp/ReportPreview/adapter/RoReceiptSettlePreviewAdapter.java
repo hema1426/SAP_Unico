@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.winapp.saperp.R;
+import com.winapp.saperp.model.SettlementReceiptDetailModel;
 import com.winapp.saperp.model.SettlementReceiptModel;
 
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ import java.util.ArrayList;
 
 public class RoReceiptSettlePreviewAdapter extends RecyclerView.Adapter<RoReceiptSettlePreviewAdapter.MyViewHolder> {
     private Context context;
-    private ArrayList<SettlementReceiptModel> dataList;
+    private ArrayList<SettlementReceiptDetailModel> dataList;
 
-    public RoReceiptSettlePreviewAdapter(Context context, ArrayList<SettlementReceiptModel> settlementReceiptModelList) {
+    public RoReceiptSettlePreviewAdapter(Context context, ArrayList<SettlementReceiptDetailModel> settlementReceiptModelList) {
         this.context = context;
         this.dataList = settlementReceiptModelList;
     }
@@ -34,7 +35,7 @@ public class RoReceiptSettlePreviewAdapter extends RecyclerView.Adapter<RoReceip
         return new MyViewHolder(LayoutInflater.from(context).inflate(R.layout.ro_receipt_settle_preview_item, parent, false));
     }
 
-    public ArrayList<SettlementReceiptModel> getGRAlist() {
+    public ArrayList<SettlementReceiptDetailModel> getGRAlist() {
         return dataList;
     }
 
@@ -79,13 +80,13 @@ public class RoReceiptSettlePreviewAdapter extends RecyclerView.Adapter<RoReceip
             this.chequedate = (TextView) itemView.findViewById(R.id.cheque_date_setle);
         }
 
-        public void updateList(ArrayList<SettlementReceiptModel> list) {
+        public void updateList(ArrayList<SettlementReceiptDetailModel> list) {
             dataList = list;
             notifyDataSetChanged();
         }
 
         @SuppressLint("ClickableViewAccessibility")
-        public void setData(SettlementReceiptModel settlementItem) {
+        public void setData(SettlementReceiptDetailModel settlementItem) {
 
             setle_name.setText(settlementItem.getCustomerName());
             setle_no.setText(settlementItem.getReceiptNo());

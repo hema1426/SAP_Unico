@@ -122,6 +122,14 @@ public class DashboardActivity extends NavigationActivity {
     public String fromWarehouseName = "";
     public boolean isPermissionToChangeLocation = false;
     public boolean isCheckedCreditLimit = false;
+    public boolean isCheckedSO = false;
+    public boolean isCheckedDO = false;
+    public boolean isCheckedInvoice = false;
+    public boolean isCheckedSalesReturn = false;
+    public boolean isCheckedCatalog = false;
+    public boolean isCheckedCustomer = false;
+    public boolean isCheckedProduct = false;
+
     public Dialog creditDialog;
     public TextView itemSize_creditl;
     public String creditAmtApi = "10500";
@@ -146,6 +154,7 @@ public class DashboardActivity extends NavigationActivity {
         companyLogoString=company.get(SessionManager.KEY_COMPANY_LOGO);
         companyCode =user.get(SessionManager.KEY_COMPANY_CODE);
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
+
         catalogLayout=findViewById(R.id.catalog_layout);
         salesOrderLayout=findViewById(R.id.sales_order_layout);
         invoiceLayout=findViewById(R.id.invoice_layout);
@@ -178,7 +187,14 @@ public class DashboardActivity extends NavigationActivity {
         dashboardView=findViewById(R.id.root_layout);
         titleList=new ArrayList<>();
 
-       Log.w("Logged_In_Location:",locationCode.toString());
+        if (getIntent()!=null) {
+            String login = getIntent().getStringExtra("isLogin");
+            if(Objects.equals(login, "1")){
+                Intent intent = new Intent(DashboardActivity.this, DashboardActivity.class);
+                startActivity(intent);
+            }
+
+        }
 
         if(locationCode != null && !locationCode.isEmpty()){
             locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
@@ -186,6 +202,9 @@ public class DashboardActivity extends NavigationActivity {
         else {
             Toast.makeText(this,"Choose Location",Toast.LENGTH_SHORT).show();
         }
+
+        Log.w("Logged_In_Location:",locationCode.toString());
+
         dbHelper.removeAllReturn();
         dbHelper.removeAllInvoiceItems();
         dbHelper.removeAllItems();
@@ -194,12 +213,14 @@ public class DashboardActivity extends NavigationActivity {
 
      //   showCreditdialog(creditAmtApi);
         ArrayList<SettingsModel> settings=dbHelper.getSettings();
+
+
         if (settings!=null) {
             if (settings.size() > 0) {
                 for (SettingsModel model : settings) {
                     if (model.getSettingName().equals("showLocationPermission")) {
-                        Log.w("SettingName:", model.getSettingName());
-                        Log.w("SettingValue:", model.getSettingValue());
+                        Log.w("SettingNameloc:", model.getSettingName());
+                        Log.w("SettingValueloc:", model.getSettingValue());
                         if (model.getSettingValue().equals("True")) {
                             isPermissionToChangeLocation = true;
                         } else {
@@ -207,19 +228,143 @@ public class DashboardActivity extends NavigationActivity {
                         }
                     }
                     else if (model.getSettingName().equals("creditLimitSwitch")) {
-                        Log.w("SettingNameI:", model.getSettingName());
-                        Log.w("SettingValueI:", model.getSettingValue());
+                        Log.w("SettingNamecrdt:", model.getSettingName());
+                        Log.w("SettingValuecrdt:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             isCheckedCreditLimit = true;
                         } else {
                             isCheckedCreditLimit = false;
                         }
                     }
+                    else if (model.getSettingName().equals("showSalesOrder")) {
+                        Log.w("SettingNameSO:", model.getSettingName());
+                        Log.w("SettingValueSO:", model.getSettingValue());
+                        if (model.getSettingValue().equals("True")) {
+                            isCheckedSO = true;
+                        } else {
+                            isCheckedSO = false;
+                        }
+                    }
+                    else if (model.getSettingName().equals("showDeliveryOrder")) {
+                        Log.w("SettingNameDO:", model.getSettingName());
+                        Log.w("SettingValueDO:", model.getSettingValue());
+                        if (model.getSettingValue().equals("True")) {
+                            isCheckedDO = true;
+                        } else {
+                            isCheckedDO = false;
+                        }
+                    }
+                    else if (model.getSettingName().equals("showInvoice")) {
+                        Log.w("SettingNameInv:", model.getSettingName());
+                        Log.w("SettingValueInv:", model.getSettingValue());
+                        if (model.getSettingValue().equals("True")) {
+                            isCheckedInvoice = true;
+                        } else {
+                            isCheckedInvoice = false;
+                        }
+                    }
+                    else if (model.getSettingName().equals("showSalesReturn")) {
+                        Log.w("SettingNameSaleRet:", model.getSettingName());
+                        Log.w("SettingValueSaleRet:", model.getSettingValue());
+                        if (model.getSettingValue().equals("True")) {
+                            isCheckedSalesReturn = true;
+                        } else {
+                            isCheckedSalesReturn = false;
+                        }
+                    }
+                    else if (model.getSettingName().equals("showCatelog")) {
+                        Log.w("SettingNameCatal:", model.getSettingName());
+                        Log.w("SettingValueCatal:", model.getSettingValue());
+                        if (model.getSettingValue().equals("True")) {
+                            isCheckedCatalog = true;
+                        } else {
+                            isCheckedCatalog = false;
+                        }
+                    }
+                    else if (model.getSettingName().equals("showCustomer")) {
+                        Log.w("SettingNameCust:", model.getSettingName());
+                        Log.w("SettingValueCust:", model.getSettingValue());
+                        if (model.getSettingValue().equals("True")) {
+                            isCheckedCustomer = true;
+                        } else {
+                            isCheckedCustomer = false;
+                        }
+                    }
+                    else if (model.getSettingName().equals("showProduct")) {
+                        Log.w("SettingNamePdt:", model.getSettingName());
+                        Log.w("SettingValuePdt:", model.getSettingValue());
+                        if (model.getSettingValue().equals("True")) {
+                            isCheckedProduct = true;
+                        } else {
+                            isCheckedProduct = false;
+                        }
+                    }
 
                 }
             }
+            if(isCheckedSO) {
+                salesOrderLayout.setAlpha(0.9F);
+                salesOrderLayout.setEnabled(true);
+                salesOrderLayout.setClickable(true);
+            }
+            else {
+                salesOrderLayout.setAlpha(0.4F);
+                salesOrderLayout.setEnabled(false);
+                salesOrderLayout.setClickable(false);
+            }
+
+            if(isCheckedCatalog) {
+                catalogCard.setAlpha(0.9F);
+                catalogCard.setEnabled(true);
+            }
+            else {
+                catalogCard.setAlpha(0.4F);
+                catalogCard.setEnabled(false);
+            }
+            if(isCheckedSalesReturn) {
+                salesReturnLayout.setAlpha(0.9F);
+                salesReturnLayout.setEnabled(true);
+            }
+            else {
+                salesReturnLayout.setAlpha(0.4F);
+                salesReturnLayout.setEnabled(false);
+            }
+            if(isCheckedDO) {
+                deliveryLayout.setAlpha(0.9F);
+                deliveryLayout.setEnabled(true);
+            }
+            else {
+                deliveryLayout.setAlpha(0.4F);
+                deliveryLayout.setEnabled(false);
+            }
+            if(isCheckedCustomer) {
+                customerLayout.setAlpha(0.9F);
+                customerLayout.setEnabled(true);
+            }
+            else {
+                customerLayout.setAlpha(0.4F);
+                customerLayout.setEnabled(false);
+            }
+            if(isCheckedProduct) {
+                productsLayout.setAlpha(0.9F);
+                productsLayout.setEnabled(true);
+            }
+            else {
+                productsLayout.setAlpha(0.4F);
+                productsLayout.setEnabled(false);
+            }
 
 
+            if(isCheckedInvoice) {
+                invoiceLayout.setAlpha(0.9F);
+                invoiceLayout.setEnabled(true);
+                invoiceLayout.setClickable(true);
+            }
+            else {
+                invoiceLayout.setAlpha(0.4F);
+                invoiceLayout.setEnabled(false);
+                invoiceLayout.setClickable(false);
+            }
    //     Log.w("CompanyLogoString:",companyLogoString);
       /*  if (companyLogoString!=null && !companyLogoString.isEmpty()){
             byte[] imageByteArray = Base64.decode(companyLogoString, Base64.DEFAULT);
@@ -247,7 +392,7 @@ public class DashboardActivity extends NavigationActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.w("creditsetting",""+isCheckedCreditLimit);
+        Log.w("creditsetting",isCheckedCreditLimit+"..."+isPermissionToChangeLocation);
 
         if (isCheckedCreditLimit){
 
@@ -370,7 +515,6 @@ public class DashboardActivity extends NavigationActivity {
                // startActivity(intent);
             }
         });
-
         catalogCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -388,7 +532,6 @@ public class DashboardActivity extends NavigationActivity {
                 startActivity(intent);
             }
         });
-
         invoiceLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -624,7 +767,10 @@ public class DashboardActivity extends NavigationActivity {
                             }
                             if (locationDetailsl.size()>0){
                                 locationModel.setLocationDetailsArrayList(locationDetailsl);
+                                Utils.setLocationList(locationDetailsl);
                             }
+                            Log.w("locatretun1:",""+Utils.getLocationList().size());
+
                         }
                     }catch (Exception e){
                         e.printStackTrace();

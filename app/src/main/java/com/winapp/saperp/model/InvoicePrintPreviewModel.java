@@ -264,6 +264,15 @@ public class InvoicePrintPreviewModel {
         private String customerItemCode;
 
         private String accountName;
+        private String excQty;
+
+        public String getExcQty() {
+            return excQty;
+        }
+
+        public void setExcQty(String excQty) {
+            this.excQty = excQty;
+        }
 
         public String getAccountName() {
             return accountName;

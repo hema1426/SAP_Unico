@@ -59,6 +59,7 @@ public class Utils {
 
     public static String orderDate="";
     public static String orderNo="";
+    public static ArrayList<NewLocationModel.LocationDetails> locationDetails;
 
     public static String getOrderDate() {
         return orderDate;
@@ -160,6 +161,13 @@ public class Utils {
         }
     }
 
+    public static ArrayList<NewLocationModel.LocationDetails> getLocationList() {
+        return locationDetails;
+    }
+
+    public static void setLocationList(ArrayList<NewLocationModel.LocationDetails> locationList) {
+        Utils.locationDetails = locationList;
+    }
     // email validation
     public static boolean isValidMail(String email) {
         String EMAIL_STRING = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -407,7 +415,6 @@ public class Utils {
         customerPredEdit.putString("customerId", "");
         customerPredEdit.apply();
     }
-
     public static void w(String TAG, String message) {
         int maxLogSize = 2000;
         for (int i = 0; i <= message.length() / maxLogSize; i++) {

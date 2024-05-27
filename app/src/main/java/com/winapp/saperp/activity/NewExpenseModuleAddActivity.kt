@@ -306,6 +306,8 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
                         if (responseData.length() > 0) {
 
                             Toast.makeText(this, statusMsg, Toast.LENGTH_SHORT).show()
+                            finish()
+
                             startActivity(
                                 Intent(this, NewExpenseModuleListActivity::class.java)
                             )
@@ -365,7 +367,6 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest)
     }
-
     fun showAlertDialogForSave() {
         val builder1 = AlertDialog.Builder(this)
         builder1.setTitle("Information...!")
@@ -375,8 +376,8 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         builder1.setPositiveButton(
             "Yes"
         ) { dialog, id ->
-                Log.w("expen_sav","")
-                createJson()
+            Log.w("expen_sav","")
+            createJson()
         }
         builder1.setNegativeButton(
             "No"
@@ -873,15 +874,26 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                isback = true
-                backAlertdialog()
-                true
+                if (expenseAddlist.size > 0) {
+                    isback = true
+                    backAlertdialog()
+                }
+                    true
             }
 
             R.id.action_save -> {
-                if(expenseAddAdapter != null && expenseAddlist.size > 0){
-                save_btn!!.setEnabled(true)
-                showAlertDialogForSave()
+                if(expenseAddAdapter != null ){
+                    if (allTotaltxt!!.text.toString().toDouble() > 0) {
+                        save_btn!!.setEnabled(true)
+                        showAlertDialogForSave()
+                    }
+                    else{
+                        Toast.makeText(
+                            applicationContext,
+                            " Nettotal should be great than zero",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
                 else{
                     Toast.makeText(this, "add product!", Toast.LENGTH_SHORT).show()
@@ -1124,29 +1136,28 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
 
     fun backAlertdialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Save")
-            .setMessage("Are you want to save?")
+        builder.setTitle("Warning..!")
+        builder.setMessage("All Products Will be cleared ,Are you sure want to back?")
             .setCancelable(true)
             .setPositiveButton("Yes") { dialog, id ->
-//                    if (isConvert) {
-//                        saveConvertInvoicebody()
-//                    } else {
-//                        savejsonbody()
-//                    }
-                if(expenseAddAdapter != null && expenseAddlist.size > 0){
-                    createJson()
-                }
-                else{
-                    Toast.makeText(this, "add product!", Toast.LENGTH_SHORT).show()
-                }
+//
+//                if(expenseAddAdapter != null && expenseAddlist.size > 0){
+//                    createJson()
+//                }
+//                else{
+//                    Toast.makeText(this, "add product!", Toast.LENGTH_SHORT).show()
+//                }
                 dialog.dismiss()
+                finish()
             }
             .setNegativeButton("No") { dialog, id ->
-                if (isback) {
-                    this@NewExpenseModuleAddActivity.onSuperBackPressed()
-                } else {
-                    dialog.dismiss()
-                }
+//                if (isback) {
+//                    this@NewExpenseModuleAddActivity.onSuperBackPressed()
+//                } else {
+//                    dialog.dismiss()
+//                }
+                dialog.dismiss()
+
             }
         val alert = builder.create()
         alert.show()

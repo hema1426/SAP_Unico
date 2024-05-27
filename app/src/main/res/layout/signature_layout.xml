@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:orientation="vertical"
             android:id="@+id/signature_layout"
-            android:layout_height="130dp"/>
+            android:layout_height="200dp"/>
 
         <com.winapp.saperp.utils.CaptureSignatureView
             android:layout_width="match_parent"

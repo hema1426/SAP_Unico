@@ -67,6 +67,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public String BILL_DISC = "bill_disc";
     public String SALEABLE = "saleable";
     public String DAMAGED = "damaged";
+    public String EXCHANGE_QTY = "exchange_qty";
 
     public String UOM_CODE = "uom_code";
     public String UOM_TEXT = "uom_text";
@@ -138,7 +139,7 @@ public class DBHelper extends SQLiteOpenHelper {
         );
 
         db.execSQL("CREATE TABLE " + CREATE_INVOICE_TABLE + " " +
-                "(ID INTEGER PRIMARY KEY AUTOINCREMENT," + PRODUCT_CODE + " TEXT," + PRODUCT_NAME + " TEXT," + UOM_CODE + " TEXT," + UOM_TEXT + " TEXT," + ACTUAL_QTY + " TEXT," + STOCK_QTY + " TEXT," + RETURN_QTY + " TEXT," + NET_QTY + " TEXT," + FOC_QTY + " TEXT," + PRICE + " TEXT," + TOTAL + " TEXT," + SUB_TOTAL + " TEXT," + GST_AMOUNT + " TEXT," + NET_TOTAL + " TEXT," + ITEM_DISC + " TEXT,"+ BILL_DISC +" TEXT,"+ SALEABLE + " TEXT,"+ DAMAGED +" TEXT )"
+                "(ID INTEGER PRIMARY KEY AUTOINCREMENT," + PRODUCT_CODE + " TEXT," + PRODUCT_NAME + " TEXT," + UOM_CODE + " TEXT," + UOM_TEXT + " TEXT," + ACTUAL_QTY + " TEXT," + STOCK_QTY + " TEXT," + RETURN_QTY + " TEXT," + NET_QTY + " TEXT," + FOC_QTY + " TEXT," + PRICE + " TEXT," + TOTAL + " TEXT," + SUB_TOTAL + " TEXT," + GST_AMOUNT + " TEXT," + NET_TOTAL + " TEXT," + ITEM_DISC + " TEXT,"+ BILL_DISC +" TEXT,"+ SALEABLE + " TEXT,"+ DAMAGED +" TEXT,"+ EXCHANGE_QTY +" TEXT )"
         );
 
         db.execSQL("CREATE TABLE " + RETURN_PRODUCT_TABLE + " " +
@@ -1038,7 +1039,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean insertCreateInvoiceCartEdit(String productCode, String productName, String
             uomcode, String actualQty, String returnQty, String netQty, String foc, String price,
             String stock, String total, String subTotal, String gstAmount, String netTotal ,
-          String itemDisc ,String billDisc ,String saleable ,String damaged) {
+          String itemDisc ,String billDisc ,String saleable ,String damaged ,String exchangeQty) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         // contentValues.put(PRODUCT_CODE, productCode+" ");
@@ -1059,6 +1060,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(BILL_DISC, billDisc);
         contentValues.put(SALEABLE, saleable);
         contentValues.put(DAMAGED, damaged);
+        contentValues.put(EXCHANGE_QTY, exchangeQty);
 
         db.insert(CREATE_INVOICE_TABLE, null, contentValues);
         Log.w("InsertProductValues:", contentValues.toString());
@@ -1072,7 +1074,7 @@ public class DBHelper extends SQLiteOpenHelper {
                                            String netQty, String foc,
                                            String price, String stock, String total, String subTotal,
                                            String gstAmount, String netTotal, String itemDisc ,String billDisc
-            ,String saleable,String damaged) {
+            ,String saleable,String damaged,String exchangeQty) {
         Cursor cursor = null;
         String netqty = null;
         String focQty = null;
@@ -1106,10 +1108,11 @@ public class DBHelper extends SQLiteOpenHelper {
                     contentValues.put(BILL_DISC, billDisc);
                     contentValues.put(SALEABLE, saleable);
                     contentValues.put(DAMAGED, damaged);
+                    contentValues.put(EXCHANGE_QTY, exchangeQty);
                     db.update(CREATE_INVOICE_TABLE, contentValues, "product_code = ?", new String[]{productCode});
                     Log.w("Cart_updated", "Success");
                     Toast.makeText(context, "Product Updated Successfully", Toast.LENGTH_LONG).show();
-                    Log.w("InsertProductValues:", contentValues.toString());
+                    Log.w("InsertProductValuesIn:", contentValues.toString());
                 } else {
 
                     ContentValues contentValues = new ContentValues();
@@ -1131,8 +1134,9 @@ public class DBHelper extends SQLiteOpenHelper {
                     contentValues.put(BILL_DISC, billDisc);
                     contentValues.put(SALEABLE, saleable);
                     contentValues.put(DAMAGED, damaged);
+                    contentValues.put(EXCHANGE_QTY, exchangeQty);
                     db.insert(CREATE_INVOICE_TABLE, null, contentValues);
-                    Log.w("InsertProductValues:", contentValues.toString());
+                    Log.w("InsertProductValuesIn:", contentValues.toString());
                 }
             } else {
                 ContentValues contentValues = new ContentValues();
@@ -1154,8 +1158,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 contentValues.put(BILL_DISC, billDisc);
                 contentValues.put(SALEABLE, saleable);
                 contentValues.put(DAMAGED, damaged);
+                contentValues.put(EXCHANGE_QTY, exchangeQty);
                 db.insert(CREATE_INVOICE_TABLE, null, contentValues);
-                Log.w("InsertProductValues:", contentValues.toString());
+                Log.w("InsertProductValuesIn:", contentValues.toString());
             }
         } catch (Exception ex) {
         } finally {
@@ -1379,6 +1384,7 @@ public class DBHelper extends SQLiteOpenHelper {
             data.setBillDisc(cursor.getString(cursor.getColumnIndex(BILL_DISC)));
             data.setSaleableQty(cursor.getString(cursor.getColumnIndex(SALEABLE)));
             data.setDamagedQty(cursor.getString(cursor.getColumnIndex(DAMAGED)));
+            data.setExchangeQty(cursor.getString(cursor.getColumnIndex(EXCHANGE_QTY)));
 
             array_list.add(data);
             cursor.moveToNext();
@@ -1432,6 +1438,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public void removeAllItems() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_CART, null, null);
+        db.close();
+    }
+    public void removeSettings() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SETTINGS, null, null);
         db.close();
     }
 

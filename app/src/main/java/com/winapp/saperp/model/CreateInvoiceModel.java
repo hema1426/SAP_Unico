@@ -18,6 +18,15 @@ public class CreateInvoiceModel {
 
     private String saleableQty;
     private String damagedQty;
+    private String exchangeQty;
+
+    public String getExchangeQty() {
+        return exchangeQty;
+    }
+
+    public void setExchangeQty(String exchangeQty) {
+        this.exchangeQty = exchangeQty;
+    }
 
     public String getSaleableQty() {
         return saleableQty;

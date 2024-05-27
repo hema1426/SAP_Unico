@@ -57,6 +57,7 @@ import com.winapp.saperp.model.ReceiptDetailsModel;
 import com.winapp.saperp.model.ReceiptSummaryModel;
 import com.winapp.saperp.model.ReportSalesSummaryModel;
 import com.winapp.saperp.model.ReportStockSummaryModel;
+import com.winapp.saperp.model.SettlementReceiptDetailModel;
 import com.winapp.saperp.model.SettlementReceiptModel;
 import com.winapp.saperp.model.StockBadRequestReturnModel;
 import com.winapp.saperp.model.UserListModel;
@@ -115,6 +116,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     private String status_value="";
     private SweetAlertDialog pDialog;
     private JsonObjectRequest jsonObjectRequest;
+    private String  dateSettlement = "";
     private ArrayList<InvoiceByProductModel> invoiceByProductList;
     private ArrayList<InvoiceByProductModel.ProductDetails> productDetailsList;
     private ArrayList<InvoiceSummaryModel> invoiceSummaryList;
@@ -279,7 +281,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 receiptSummary.setChecked(false);
                 settlementReport.setChecked(false);
                 settle_receiptReport.setChecked(false);
-                showFilterAlertDialog(view,"Customer Statement");
+                showFilterAlertDialog(view,"Customer Outstanding");
             }
         }else if (view.getId()==R.id.receipt_details){
             if (receiptDetails.isChecked()){
@@ -439,7 +441,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             setStatusList(status.get());
 
             if (title.equals("Receipt Details") || title.equals("Receipt Summary") || title.equals("Stock Summary")
-                    || title.equals("Bad Stock Report") || title.equals("Customer Statement")){
+                    || title.equals("Bad Stock Report") || title.equals("Customer Outstanding")){
                 stattusLayout.setVisibility(View.GONE);
             }else {
                 stattusLayout.setVisibility(View.VISIBLE);
@@ -572,7 +574,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                     startActivity(intent);
                                 }
                                 break;
-                            case "Customer Statement":
+                            case "Customer Outstanding":
                                 if (!customerListSpinner.getSelectedItem().toString().equals("Select Customer")) {
                                     dialog.dismiss();
                                     progressDialog.setMessage("Printing in Progress...!");
@@ -803,6 +805,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             pDialog.setCancelable(false);
             pDialog.show();
             ArrayList<SettlementReceiptModel> settlementReceiptDetails =new ArrayList<>();
+            ArrayList<SettlementReceiptDetailModel> settlementReceiptDetailModels =new ArrayList<>();
+
             ArrayList<SettlementReceiptModel.CurrencyDenomination> settlementDenomination=new ArrayList<>();
             ArrayList<SettlementReceiptModel.Expense> settlementExpenses=new ArrayList<>();
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
@@ -811,7 +815,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                     JSONArray receiptDetailsArray=response.optJSONArray("DetailList");
                     for (int i=0;i<receiptDetailsArray.length();i++){
                         JSONObject receiptObject=receiptDetailsArray.optJSONObject(i);
-                        SettlementReceiptModel model =new SettlementReceiptModel();
+                        SettlementReceiptDetailModel model =new SettlementReceiptDetailModel();
                         model.setReceiptNo(receiptObject.optString("ReceiptNo"));
                         model.setReceiptDate(receiptObject.optString("ReceiptDate"));
                         model.setCustomerName(receiptObject.optString("CustomerName"));
@@ -825,7 +829,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                         model.setBankCode(receiptObject.optString("BankCode"));
                         model.setChequeNo(receiptObject.optString("ChequeNo"));
                         // Add the Values to main Arraylist
-                        settlementReceiptDetails.add(model);
+                        settlementReceiptDetailModels.add(model);
                     }
                     JSONArray denominationArray=response.optJSONArray("DetailSettlementList");
                     assert denominationArray != null;
@@ -905,77 +909,98 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             pDialog.setTitleText("Processing Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
-            ArrayList<SettlementReceiptModel> settlementReceiptDetails =new ArrayList<>();
+            ArrayList<SettlementReceiptDetailModel> settlementReceiptDetailModelList =new ArrayList<>();
+            ArrayList<SettlementReceiptModel> settlementReceiptModels =new ArrayList<>();
             ArrayList<SettlementReceiptModel.CurrencyDenomination> settlementDenomination=new ArrayList<>();
             ArrayList<SettlementReceiptModel.Expense> settlementExpenses=new ArrayList<>();
             jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
-                try{
-                    Log.w("SettlementResponse:",response.toString());
+                try {
+                    Log.w("SettlementResponse:", response.toString());
 
-                    String statusCode=response.optString("statusCode");
-                    String statusMessage=response.optString("statusMessage");
-                    if (statusCode.equals("1")){
-                        JSONArray jsonArray=response.optJSONArray("responseData");
-                        JSONObject detailObject=jsonArray.optJSONObject(0);
+                    String statusCode = response.optString("statusCode");
+                    String statusMessage = response.optString("statusMessage");
+                    if (statusCode.equals("1")) {
 
-                        JSONArray receiptDetailsArray=detailObject.optJSONArray("reportSettlementWithReceiptDetails");
-
-                    for (int i=0;i<receiptDetailsArray.length();i++){
-                        JSONObject receiptObject=receiptDetailsArray.optJSONObject(i);
-                        SettlementReceiptModel model =new SettlementReceiptModel();
-
-                        model.setReceiptNo(receiptObject.optString("receiptNo"));
-                        model.setReceiptDate(receiptObject.optString("receiptDate"));
-                        model.setCustomerName(receiptObject.optString("customerName"));
-                        model.setCustomerCode(receiptObject.optString("customerCode"));
-                        model.setPaymode(receiptObject.optString("Paymode"));
-//                        model.setChequeDate(receiptObject.optString("ChequeDate"));
-//                        model.setBankCode(receiptObject.optString("BankCode"));
-//                        model.setChequeNo(receiptObject.optString("ChequeNo"));
+                        JSONArray jsonArray = response.optJSONArray("responseData");
+                        if (jsonArray.length() > 0) {
+                        JSONObject detailObject = jsonArray.optJSONObject(0);
+                            SettlementReceiptModel model1 = new SettlementReceiptModel();
 
 
-//                        model.setTotalInvoiceAmount(receiptObject.getString("totalInvoiceAmount"));
-//                        model.setTotalPaidAmount(receiptObject.getString("totalPaidAmount"));
-//                        model.setTotalLessAmount(receiptObject.getString("totalLessAmount"));
-//                        model.setTotalCashAmount(receiptObject.getString("totalTransferAmount"));
-//                        model.setTotalChequeAmount(receiptObject.getString("totalCheckAmount"));
+                            dateSettlement = detailObject.optString("receiptDate");
+
+                            model1.setTotalInvoiceAmount(detailObject.optString("totalInvoiceAmount"));
+                            model1.setTotalPaidAmount(detailObject.optString("totalPaidAmount"));
+                            model1.setTotalLessAmount(detailObject.optString("totalLessAmount"));
+                            model1.setTotalCashAmount(detailObject.optString("totalCashAmount"));
+                            model1.setTotalChequeAmount(detailObject.optString("totalCheckAmount"));
+
+                            settlementReceiptModels.add(model1);
+                        JSONArray receiptDetailsArray = detailObject.optJSONArray("reportSettlementWithReceiptDetails");
+                        for (int i = 0; i < receiptDetailsArray.length(); i++) {
+                            JSONObject receiptObject = receiptDetailsArray.optJSONObject(i);
+                            SettlementReceiptDetailModel model = new SettlementReceiptDetailModel();
+                            model.setReceiptNo(receiptObject.optString("receiptNo"));
+                            model.setReceiptDate(receiptObject.optString("receiptDate"));
+                            model.setCustomerName(receiptObject.optString("customerName"));
+                            model.setCustomerCode(receiptObject.optString("customerCode"));
+                            model.setPaidAmount(receiptObject.optString("paymodeTotal"));
+                            model.setCreditAmount(receiptObject.optString("receiptTotal"));
+                            model.setPaymode(receiptObject.optString("paymode"));
+
+                        model.setChequeDate(receiptObject.optString("chequeDate"));
+                        model.setBankCode(receiptObject.optString("bankCode"));
+                        model.setChequeNo(receiptObject.optString("chequeNo"));
+
+                            settlementReceiptDetailModelList.add(model);
 
 
-                        // Add the Values to main Arraylist
-                        settlementReceiptDetails.add(model);
-                    }
-
-                    JSONArray denominationArray=detailObject.optJSONArray("reportSettlementWithReceiptDenomination");
-                    assert denominationArray != null;
-                    if (denominationArray.length()>0){
-                        for (int i=0;i<denominationArray.length();i++){
-                            JSONObject denominationObject=denominationArray.optJSONObject(i);
-                            SettlementReceiptModel.CurrencyDenomination denomination=new SettlementReceiptModel.CurrencyDenomination();
-                            denomination.setDenomination(denominationObject.optString("denomination"));
-                            denomination.setCount(denominationObject.optString("count"));
-                            denomination.setTotal(denominationObject.optString("total"));
-                            // Adding the Denomination Details to the Arraylist
-                            settlementDenomination.add(denomination);
                         }
-                    }
 
-                    JSONArray expenseArray=detailObject.optJSONArray("reportSettlementWithReceiptExpenses");
-                    assert expenseArray!=null;
-                    if (denominationArray.length()>0){
-                        for (int i=0;i<expenseArray.length();i++){
-                            JSONObject expenseObject=expenseArray.optJSONObject(i);
-                            SettlementReceiptModel.Expense expense=new SettlementReceiptModel.Expense();
-                            expense.setExpeneName(expenseObject.optString("expenses"));
-                            expense.setExpenseTotal(expenseObject.optString("total"));
-                            // Adding the expense Details to Arraylist
-                            settlementExpenses.add(expense);
+                        JSONArray denominationArray = detailObject.optJSONArray("reportSettlementWithReceiptDenomination");
+                        assert denominationArray != null;
+                        if (denominationArray.length() > 0) {
+                            for (int i = 0; i < denominationArray.length(); i++) {
+                                JSONObject denominationObject = denominationArray.optJSONObject(i);
+                                SettlementReceiptModel.CurrencyDenomination denomination = new SettlementReceiptModel.CurrencyDenomination();
+                                denomination.setDenomination(denominationObject.optString("denomination"));
+                                denomination.setCount(denominationObject.optString("count"));
+                                denomination.setTotal(denominationObject.optString("total"));
+                                // Adding the Denomination Details to the Arraylist
+                                settlementDenomination.add(denomination);
+                            }
                         }
-                    }
-                    pDialog.dismiss();
-                    clearAllSelection();
-                    }else {
+
+                        JSONArray expenseArray = detailObject.optJSONArray("reportSettlementWithReceiptExpenses");
+                        assert expenseArray != null;
+                        if (denominationArray.length() > 0) {
+                            for (int i = 0; i < expenseArray.length(); i++) {
+                                JSONObject expenseObject = expenseArray.optJSONObject(i);
+                                SettlementReceiptModel.Expense expense = new SettlementReceiptModel.Expense();
+                                expense.setExpeneName(expenseObject.optString("expenses"));
+                                expense.setExpenseTotal(expenseObject.optString("total"));
+                                // Adding the expense Details to Arraylist
+                                settlementExpenses.add(expense);
+                            }
+                        }
+                        pDialog.dismiss();
+                        clearAllSelection();
+                            if (settlementReceiptDetailModelList.size()>0){
+                                setSettlementWithReceiptPrint(dateSettlement ,settlementExpenses,settlementReceiptModels,settlementReceiptDetailModelList,settlementDenomination,copy);
+                            }else {
+                                Toast.makeText(getApplicationContext(),"No Record Found...",Toast.LENGTH_SHORT).show();
+                            }
+
+                }else {
+                            pDialog.dismiss();
+                            progressDialog.dismiss();
+                            Toast.makeText(getApplicationContext(),"No data",Toast.LENGTH_SHORT).show();
+                }
+                }
+                else {
                         Toast.makeText(getApplicationContext(),statusMessage,Toast.LENGTH_SHORT).show();
                     }
+
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -1759,6 +1784,9 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                     details.setReceiptTotal(detailsObject.optString("receiptTotal"));
                                     details.setCustomerCode(detailsObject.optString("customerCode"));
                                     details.setCustomerName(detailsObject.optString("customerName"));
+                                    details.setChequeDate(detailsObject.optString("chequeDate"));
+                                    details.setBankCode(detailsObject.optString("bankCode"));
+                                    details.setChequeNo(detailsObject.optString("chequeNo"));
                                     receiptDetailsList.add(details);
 
                                     // Get the Invoice Details for the Particular products
@@ -2142,6 +2170,26 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         requestQueue.add(jsonObjectRequest);
     }
 
+    public void setSettlementWithReceiptPrint(String date,ArrayList<SettlementReceiptModel.Expense> expenseList,
+                                              ArrayList<SettlementReceiptModel> receiptlist,
+                                              ArrayList<SettlementReceiptDetailModel> receiptDetaillist,
+                                              ArrayList<SettlementReceiptModel.CurrencyDenomination> denomination,int copy)
+
+            throws IOException {
+        if (validatePrinterConfiguration()){
+            if (printerType.equals("TSC Printer")){
+                TSCPrinter printer=new TSCPrinter(this,printerMacId,"ReceiptSummary");
+                printer.setSettleReceiptPrint(copy,username,date,receiptlist,receiptDetaillist,denomination,expenseList);
+                Utils.setSignature("");
+            }
+            else {
+                Toast.makeText(getApplicationContext(),"This Printer not Support...!",Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            Toast.makeText(getApplicationContext(),"Please configure the Printer",Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void setReceiptSummaryPrint(ArrayList<ReceiptSummaryModel> receiptDetails,int copy) throws IOException {
         if (validatePrinterConfiguration()){
             if (printerType.equals("Zebra Printer")){
@@ -2226,7 +2274,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(this,printerMacId);
                 zebraPrinterActivity.printCustomerStatement(copy,invoiceSummaryList);
             }else if (printerType.equals("TSC Printer")){
-                TSCPrinter printer=new TSCPrinter(this,printerMacId,"Customer Statement");
+                TSCPrinter printer=new TSCPrinter(this,printerMacId,"Customer Outstanding");
                 try {
                     printer.printCustomerStatement(copy,customerStateList,from_date,to_date);
                     Utils.setSignature("");

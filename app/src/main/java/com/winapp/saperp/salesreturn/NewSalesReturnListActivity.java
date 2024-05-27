@@ -1253,8 +1253,8 @@ public class NewSalesReturnListActivity extends NavigationActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-
+           // onBackPressed();
+            finish();
          /*   case R.id.action_remove:
                 showRemoveAlert();
                 break;*/

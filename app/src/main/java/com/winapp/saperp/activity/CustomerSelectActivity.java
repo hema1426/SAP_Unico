@@ -90,12 +90,13 @@ public class CustomerSelectActivity extends AppCompatActivity {
         customerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         customerNameAdapter=new SelectCustomerAdapter(this, customerNames, new SelectCustomerAdapter.OnMoreButtonClicked() {
             @Override
-            public void moreOption(String customer,String id,String outstanding) {
+            public void moreOption(String customer,String id,String outstanding ,String isFoc) {
 
             }
 
             @Override
-            public void createInvoice(String customerCode, String customerName, String taxcode, String taxperc, String taxtype, String billdisc) {
+            public void createInvoice(String customerCode, String customerName, String taxcode,
+                                      String taxperc, String taxtype, String billdisc ,String isFoc) {
 
             }
         });

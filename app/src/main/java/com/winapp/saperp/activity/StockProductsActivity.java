@@ -545,7 +545,9 @@ public class StockProductsActivity extends NavigationActivity {
             ArrayList<ProductsModel> filteredProducts = new ArrayList<>();
             //   for (ProductsModel s : selectProductAdapter.getProductsList()) {
             Log.w("filtStock11","$ "+action);
-            if( AppUtils.getProductsList()!= null && AppUtils.getProductsList().size() >0) {
+      //  Log.w("pdtsizee","..."+ AppUtils.getProductsList().size());
+
+        if( AppUtils.getProductsList()!= null && AppUtils.getProductsList().size() >0) {
                 for (ProductsModel s : AppUtils.getProductsList()) {
                     if (action.equals("In Stock")) {
                         if (s.getStockQty() != null && !s.getStockQty().equals("null")) {
@@ -827,6 +829,8 @@ public class StockProductsActivity extends NavigationActivity {
                             });
                         }
                         else{
+                            AppUtils.setProductsList(productList);
+
                             emptyLayout.setVisibility(View.VISIBLE);
                             productRecyclerView.setVisibility(View.GONE);
                         }

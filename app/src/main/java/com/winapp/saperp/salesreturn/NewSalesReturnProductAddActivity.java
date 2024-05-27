@@ -1181,6 +1181,7 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                             netTotalValue.getText().toString(),"",
                             "",
                             "",
+                            "",
                             ""
                     );
 
@@ -1733,7 +1734,7 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url= Utils.getBaseUrl(this) +"CustomerProductList";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_SAP_PROUCT_URL:",url);
+        Log.w("Given_SAP_PROUCT_URL:",url+jsonObject);
         productList=new ArrayList<>();
         products=new ArrayList<>();
         progressDialog =new ProgressDialog(this);
@@ -1744,12 +1745,7 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                 response -> {
                     try{
                         progressDialog.dismiss();
-                        //  {"productCode":"FG\/001245","productName":"RUM","companyName":"","supplierCategoryNumber":"","uomCode":"Ctn",
-                        //  "uomName":"Carton","cartonPrice":"3000.000000","piecePrice":"0.000000","pcsPerCarton":"100.000000",
-                        //  "price":"100.000000","taxType":"E","havTax":"Y","taxCode":"SR","taxRate":"7.000000","barCode":"",
-                        //  "isActive":"N","createUser":"1","createDate":"13\/07\/2021","modifyDate":"29\/07\/2021","remarks":"",
-                        //  "warehouse":"01","stockInHand":"0.000000","averagePrice":0,"manageBatchOrSerial":"None","manageBatchNumber":"N",
-                        //  "manageSerialNumber":"N","batchNumber":"","expiryDate":null,"manufactureDate":"31\/07\/2021","imageURL":""}
+
                         Log.w("Response_SAP_PRODUCTS:",response.toString());
                         // Loop through the array elements
                         JSONArray productArray=response.optJSONArray("responseData");
@@ -1800,6 +1796,7 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                                 public void run() {
                                     AppUtils.setProductsList(productList);
                                     progressDialog.dismiss();
+                                    setProductsDisplay("All Products");
                                     // dbHelper.insertProducts(getActivity(),productList);
                                 }
                             });
@@ -3510,6 +3507,7 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
             rootJsonObject.put("signature",signatureString);
             rootJsonObject.put("latitude",current_latitude);
             rootJsonObject.put("longitude",current_longitude);
+            rootJsonObject.put("uomCode","PCS");
 
             // Sales Details Add to the Objects
             ArrayList<CreateInvoiceModel> localCart=dbHelper.getAllInvoiceProducts();
@@ -3565,7 +3563,8 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                 saleObject.put("returnNetTotal", return_subtotal+"");
 
                 saleObject.put("taxCode",object.optString("taxCode"));
-                saleObject.put("uomCode",model.getUomCode());
+//                saleObject.put("uomCode",model.getUomCode());
+                saleObject.put("uomCode","PCS");
                 saleObject.put("retailPrice","0.00");
                 saleObject.put("DamageStock","");
                 saleObject.put("itemRemarks","");

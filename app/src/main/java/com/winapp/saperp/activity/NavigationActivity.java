@@ -317,7 +317,9 @@ public class NavigationActivity extends AppCompatActivity {
 //                        loginPrefsEditor.commit();
                         Utils.clearCustomerSession(NavigationActivity.this);
                         helper.removeAllItems();
+                        helper.removeSettings();
                         session.logoutUser();
+
                         dialog.cancel();
                     }
                 });

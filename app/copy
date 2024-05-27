@@ -192,7 +192,7 @@
                 if (invoice.getReturnQty()!=null && !invoice.getReturnQty().isEmpty() && Double.parseDouble(invoice.getReturnQty()) > 0){
                     productName=invoice.getDescription()+"-(as Return)";
                 }else {
-                    productName=invoice.getDescription()+"-(as FOC)";
+                    productName=invoice.getDescription()+"-(Zas FOC)";
                 }
             }else if (Double.parseDouble(twoDecimalPoint(Double.parseDouble(invoice.getTotal())))>0.00){
                 productName=invoice.getDescription();

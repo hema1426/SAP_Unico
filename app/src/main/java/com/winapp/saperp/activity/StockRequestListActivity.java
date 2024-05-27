@@ -533,7 +533,8 @@ public class StockRequestListActivity extends NavigationActivity implements View
                     "0.00","",
                     "",
                     "",
-                    ""
+                    "",
+                    "0"
             );
         }
         int count=dbHelper.numberOfRowsInInvoice();

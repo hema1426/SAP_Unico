@@ -455,6 +455,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
             customerNameText.setText(model.getCustomerName());
             paymentText.setText(model.getPaymentTerm());
             userText.setText(username);
+            Log.w("custAddres",""+model.getAddress());
 
             if (model.getAddress().isEmpty()){
                 addressText.setVisibility(View.GONE);

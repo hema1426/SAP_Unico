@@ -569,7 +569,7 @@ public class TransferListProductActivity extends NavigationActivity implements V
             transferType = transferMode;
             // Intent intent=new Intent(getApplicationContext(),TransferActivity.class);
             //intent.putExtra("transferType",transferType);
-            //  startActivity(intent);
+            // startActivity(intent);
 
             Intent intent = new Intent(getApplicationContext(), TransferInActivity.class);
             intent.putExtra("transferType", transferType);

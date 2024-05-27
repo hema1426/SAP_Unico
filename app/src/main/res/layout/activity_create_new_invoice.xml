@@ -191,7 +191,7 @@
                                 android:layout_marginTop="5dp"
                                 android:text="Product UOM  "
                                 android:textColor="#212121"
-                                android:textSize="12sp"
+                                android:textSize="11sp"
                                 android:textStyle="bold"
                                 android:visibility="invisible" />
                             <TextView
@@ -275,14 +275,30 @@
 
                         </RelativeLayout>
 
+                        <LinearLayout
+                            android:id="@+id/deliveryAddr_lay"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                           android:orientation="vertical"
+                            >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Delivery Address"
+                            android:textColor="#212121"
+                            android:layout_marginTop="5dp"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:visibility="visible" />
 
                         <Spinner
                             android:id="@+id/delivery_addr_spinner"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_gravity="center"
-                            android:layout_marginTop="5dp"
                             android:background="@drawable/spinner_bg" />
+                        </LinearLayout>
 
                     </LinearLayout>
 
@@ -595,6 +611,7 @@
                                 android:layout_marginTop="5dp"
                                 android:background="@drawable/create_invoice_background"
                                 android:hint="FOC"
+                                android:enabled="false"
                                 android:inputType="number"
                                 android:maxLength="4"
                                 android:maxLines="1"
