@@ -87,6 +87,7 @@ import com.winapp.saperp.utils.InternetConnectivity;
 import com.winapp.saperp.utils.LocationTrack;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.SettingUtils;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.Utils;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
 import com.winapp.saperp.zebraprinter.ZebraPrinterActivity;
@@ -142,6 +143,8 @@ public class CartActivity extends AppCompatActivity {
     private SweetAlertDialog pDialog;
     private JSONObject customerResponse=new JSONObject();
     private String companyCode;
+    String percentApi ="";
+
     private String subTotalValue;
     private String netTotalvalue;
     private String netTax;
@@ -231,6 +234,7 @@ public class CartActivity extends AppCompatActivity {
     public static String current_latitude="0.00";
     public static String current_longitude="0.00";
     public String currentDateString;
+    private SharedPreferenceUtil sharedPreferenceUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,6 +244,11 @@ public class CartActivity extends AppCompatActivity {
         session=new SessionManager(this);
         mCompressor = new FileCompressor(this);
         user=session.getUserDetails();
+        sharedPreferenceUtil =new SharedPreferenceUtil(this);
+
+        percentApi = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_CART_ITEM_DISC,"");
+        Log.w("percentApi..",""+percentApi);
+
         companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
         userName=user.get(SessionManager.KEY_USER_NAME);
         companyName=user.get(SessionManager.KEY_COMPANY_NAME);
@@ -1914,6 +1923,7 @@ public class CartActivity extends AppCompatActivity {
                 }else {
                     invoiceObject.put("itemDiscount","0.00");
                 }
+                invoiceObject.put("DiscountPercentage",percentApi);
                 invoiceObject.put("totalTax",model.getCART_TAX_VALUE());
                 invoiceObject.put("subTotal",model.getSubTotal());
                 invoiceObject.put("netTotal",model.getCART_COLUMN_NET_PRICE());
@@ -2157,7 +2167,7 @@ public class CartActivity extends AppCompatActivity {
 //                Log.w("cartPricss",""+Utils.twoDecimalPoint(priceValue)+
 //                        "cart_unit.."+model.getCART_UNIT_PRICE());
 
-                saleObject.put("itemDiscountPercentage","0");
+                saleObject.put("DiscountPercentage",percentApi);
                 saleObject.put("totalTax",model.getCART_TAX_VALUE());
                 saleObject.put("subTotal",model.getSubTotal());
                 saleObject.put("netTotal",model.getCART_COLUMN_NET_PRICE());

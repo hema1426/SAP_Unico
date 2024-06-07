@@ -875,9 +875,17 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         return when (item.itemId) {
             android.R.id.home -> {
                 if (expenseAddlist.size > 0) {
-                    isback = true
                     backAlertdialog()
+                    Log.w("backexpens","")
+                } else {
+                    Log.w("backexpens11","")
+                    this@NewExpenseModuleAddActivity.onSuperBackPressed()
                 }
+
+//                if (expenseAddlist.size > 0) {
+////                    isback = true
+//                //   onSuperBackPressed()
+//                }
                     true
             }
 

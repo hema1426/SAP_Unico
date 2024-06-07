@@ -476,12 +476,18 @@ public class TransferListProductActivity extends NavigationActivity implements V
 
     public void printTransfer(String transferNo, ArrayList<TransferDetailModel> transferDetailModels, String type) {
         if (transferDetailModels.size() > 0) {
+            if (Utils.validatePrinterConfiguration(this,printerType,printerMacId)) {
+
+
             TSCPrinter printer = new TSCPrinter(this, printerMacId, "Transfer");
             try {
                 printer.printTransferDetail(1, transferNo, type, transferDetailModels);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        }else {
+            Toast.makeText(getApplicationContext(),"Please configure the Printer",Toast.LENGTH_SHORT).show();
         }
     }
 

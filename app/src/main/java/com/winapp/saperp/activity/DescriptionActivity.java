@@ -61,6 +61,7 @@ import com.winapp.saperp.model.SettingsModel;
 import com.winapp.saperp.model.UomModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.Utils;
 import com.google.gson.Gson;
 
@@ -87,6 +88,9 @@ public class DescriptionActivity extends AppCompatActivity {
     private TextView availability;
     private TextView netPrice;
     private TextView ctnQty;
+    private SharedPreferenceUtil sharedPreferenceUtil;
+
+    double percentApi = 0.0;
     private TextView pcsQty;
     private EditText ctnQtyValue;
     private EditText pcsQtyValue;
@@ -171,7 +175,7 @@ public class DescriptionActivity extends AppCompatActivity {
         }else {
             Log.w("This is not tablet","Success");
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            setContentView(R.layout.description_mobile_layout);
+            setContentView(R.layout.cart_selectpdt_next);
         }
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
@@ -179,6 +183,8 @@ public class DescriptionActivity extends AppCompatActivity {
 
         session=new SessionManager(this);
         dbHelper=new DBHelper(this);
+        sharedPreferenceUtil =new SharedPreferenceUtil(this);
+
         mainImage=findViewById(R.id.item_image);
         itemName=findViewById(R.id.item_nameDesc);
         availability=findViewById(R.id.availabilty);
@@ -225,6 +231,7 @@ public class DescriptionActivity extends AppCompatActivity {
         pcsQtyValue.setSelectAllOnFocus(true);
         ctnQtyValue.setSelectAllOnFocus(true);
 
+        sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_CART_ITEM_DISC,"0.0");
 
       /*  ArrayList<SettingsModel> settings1=dbHelper.getSettings();
         if (settings1!=null) {
@@ -283,6 +290,7 @@ public class DescriptionActivity extends AppCompatActivity {
                 setCalculation();
             }
         });
+
 
         focSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -1198,6 +1206,9 @@ public class DescriptionActivity extends AppCompatActivity {
             }
         }
     }
+    public double calculatePercentage(double obtained, double total) {
+        return obtained * 100 / total;
+    }
 
     private void setUOMCode(ArrayList<UomModel> uomList) {
         uomSpinnerCart.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -1456,10 +1467,15 @@ public class DescriptionActivity extends AppCompatActivity {
             if (discount != 0.0) {
                 net_amount = net_amount - discount;
             }
+
+            percentApi=calculatePercentage(discount,cprice);
+
             netPrice.setText(twoDecimalPoint(net_amount));
             taxCalculation(net_amount);
 
-            Log.w("cartEnty","");
+            sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_CART_ITEM_DISC, Utils.twoDecimalPoint(percentApi));
+
+            Log.w("cartDis ",""+percentApi);
         } catch (Exception ex) {
         }
     }
@@ -1760,7 +1776,7 @@ public class DescriptionActivity extends AppCompatActivity {
                         focType,
                         exchangeEditext.getText().toString(),
                         exchangeType,
-                        discountEditext.getText().toString(),
+                        String.valueOf(percentApi),
                         returnEditext.getText().toString(),
                         returnType, "",
                         String.valueOf(total),

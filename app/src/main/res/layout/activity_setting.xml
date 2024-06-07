@@ -175,7 +175,7 @@
                 android:layout_width="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
-                android:id="@+id/title"
+                android:id="@+id/title1a"
                 android:textSize="12sp"
                 android:textColor="#212121"
                 android:text="Catalog to Invoice"
@@ -184,7 +184,7 @@
                 android:layout_width="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:textSize="10sp"
-                android:layout_below="@id/title"
+                android:layout_below="@id/title1a"
                 android:textColor="#757575"
                 android:text="Converting catalog to invoice save"
                 android:layout_height="wrap_content"/>
@@ -195,7 +195,7 @@
                 android:tag="invoice_switch"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
-                android:id="@+id/invoice_switch"
+                android:id="@+id/invoice_switch1"
                 android:layout_centerInParent="true"
                 android:layout_height="wrap_content"/>
 
@@ -248,7 +248,43 @@
         android:layout_width="match_parent"
         android:layout_marginTop="10dp"
         android:background="#f2f2f2"
+        android:visibility="gone"
         android:layout_height="1dip"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/title"
+            android:textSize="12sp"
+            android:textColor="#212121"
+            android:text="Catalog to Invoice"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textSize="10sp"
+            android:layout_below="@id/title"
+            android:textColor="#757575"
+            android:text="Converting catalog to invoice save"
+            android:layout_height="wrap_content"/>
+
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:tag="invoice_switch"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:id="@+id/invoice_switch"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
 
     <RelativeLayout
         android:layout_width="match_parent"

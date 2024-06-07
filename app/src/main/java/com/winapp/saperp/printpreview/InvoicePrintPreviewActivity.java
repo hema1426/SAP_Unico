@@ -350,6 +350,7 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                                     invoiceListModel.setLqty(detailObject.optString("unitQty"));
                                     invoiceListModel.setCqty(detailObject.optString("cartonQty"));
                                     invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
                                     invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
                                     invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                                     if (detailObject.optString("itemID") != null) {

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -431,7 +432,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
         dialog.setMessage("Getting Settlement Details...");
         dialog.setCancelable(false);
         dialog.show();
-        Log.w("Given_url:",url);
+        Log.w("Given_settlemtEdit_url:",url+jsonObject);
         expenseList=new ArrayList<>();
         expenseList.clear();
         currencyList=new ArrayList<>();
@@ -515,6 +516,8 @@ public class SettlementListActivity extends NavigationActivity implements View.O
     }
 
     public void printSettlement(){
+        if (Utils.validatePrinterConfiguration(this,printerType,printerMacId)) {
+
         if (printerType.equals("Zebra Printer")) {
             ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(SettlementListActivity.this, printerMacId);
             zebraPrinterActivity.printSettlement(1,
@@ -538,7 +541,12 @@ public class SettlementListActivity extends NavigationActivity implements View.O
                 e.printStackTrace();
             }
         }
+
+        }else {
+            Toast.makeText(getApplicationContext(),"Please configure the Printer",Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     /* @Override
     protected void onResume() {

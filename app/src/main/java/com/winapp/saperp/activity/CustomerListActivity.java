@@ -871,6 +871,7 @@ public class CustomerListActivity extends NavigationActivity {
             }
             //calling a method of the adapter class and passing the filtered list
             customerNameAdapter.filterList(filterdNames);
+            totalCustomers.setText(filterdNames.size() + " Customers");
 
         } catch (Exception ex) {
             Log.e("Error_in_filter", Objects.requireNonNull(ex.getMessage()));

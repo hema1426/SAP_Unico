@@ -334,7 +334,8 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                             invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
                             invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                             invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
-                            invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                        invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                        invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
                             invoiceListModel.setUnitPrice(detailObject.optString("price"));
                             double qty = Double.parseDouble(detailObject.optString("quantity"));
                             double price = Double.parseDouble(detailObject.optString("price"));

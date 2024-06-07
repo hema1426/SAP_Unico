@@ -420,6 +420,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
         printerType = sharedPreferences!!.getString("printer_type", "")
         printerMacId = sharedPreferences!!.getString("mac_address", "")
         Log.w("macIdd..",""+printerMacId +"type.."+printerType)
+        Log.w("billDiscInvoice..",""+pref_bill_disc_percent)
 
         productAutoComplete!!.setEnabled(false)
         item_discount_ed!!.isEnabled = false
@@ -3377,14 +3378,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     if(stockQtyValue!!.text.toString().isNotEmpty()){
                         if(uomList[i].uomCode.equals("CTN",true)) {
                             var ctnStockVal = 0.00
-                            var baseCtnQty = 120
+                            var baseCtnQty = uomList[i].baseQty.toDouble()
                             var pdtStock = pdtStockVal!!.toDouble()
 
                             ctnStockVal = pdtStock / baseCtnQty
                             stockQtyValue!!.setText(ctnStockVal.toString())
                             Log.w("ctnStockkk",""+ctnStockVal)
-                            Log.w("ctnStock11",""+pdtStock)
-
+                            Log.w("ctnStock11",""+baseCtnQty)
                         }
                         else{
                             stockQtyValue!!.setText(pdtStockVal.toString())
@@ -3398,7 +3398,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
 
 
     private fun setUOMCode(uomList: ArrayList<UomModel>) {
-
         uomSpinner!!.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -3414,13 +3413,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                     uomName = uomSpinner!!.selectedItem.toString()
                 if(uomName.equals("CTN",true)) {
                     var ctnStockVal = 0.00
-                    var baseCtnQty = 120
-                    var pdtStock = stockQtyValue!!.text.toString().toDouble()
+                    var baseCtnQty = uomList[position].baseQty.toDouble()
+
+                    var pdtStock = pdtStockVal!!.toDouble()
 
                     ctnStockVal = pdtStock / baseCtnQty
                     stockQtyValue!!.setText(ctnStockVal.toString())
                     Log.w("ctnStockaa",""+ctnStockVal)
-                    Log.w("ctnStock22",""+pdtStock)
+                    Log.w("ctnStock22",""+baseCtnQty)
                 }
                 else{
                     stockQtyValue!!.setText(pdtStockVal.toString())
@@ -4011,10 +4011,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                                             NewInvoiceListActivity::class.java
                                         )
                                         startActivity(intent)
-                                        myEdit!!.putString("billDisc_amt","0.0")
-                                        myEdit!!.putString("billDisc_percent","0.0")
-                                        myEdit!!.apply()
-
                                         finish()
                                     } else {
                                         Toast.makeText(
@@ -4033,6 +4029,10 @@ class CreateNewInvoiceActivity : AppCompatActivity() {
                                 redirectActivity()
                             }
                             isPrintEnable = false
+
+                            myEdit!!.putString("billDisc_amt","0.0")
+                            myEdit!!.putString("billDisc_percent","0.0")
+                            myEdit!!.apply()
                         }
                     } else {
 //                    Log.w("ErrorValues:",responseData.optString("error"));

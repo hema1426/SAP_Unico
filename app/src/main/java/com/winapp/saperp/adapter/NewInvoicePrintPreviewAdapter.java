@@ -43,44 +43,77 @@ public class NewInvoicePrintPreviewAdapter extends RecyclerView.Adapter<NewInvoi
         InvoicePrintPreviewModel.InvoiceList invoiceList=invoiceLists.get(position);
         viewHolder.slNo.setText(String.valueOf(position+1));
 //        viewHolder.product.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")");
+        if (invoiceList.getUomCode()!=null && !invoiceList.getUomCode().equals("null")
+                && !invoiceList.getUomCode().isEmpty()) {
 
-        if (invoiceList.getUomCode()!=null && !invoiceList.getUomCode().equals("null") && !invoiceList.getUomCode().isEmpty()){
-            if (Double.parseDouble(invoiceList.getTotal()) < 0.00){
-                viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")"+" (as Return)");
-            }else if (Double.parseDouble(invoiceList.getTotal())==0.00){
-                if (invoiceList.getReturnQty()!=null && !invoiceList.getReturnQty().isEmpty() && Double.parseDouble(invoiceList.getReturnQty()) > 0){
-                    viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")"+" ( as Return)");
-                }else {
-                    if (invoiceList.getExcQty()!=null && !invoiceList.getExcQty().isEmpty() && Double.parseDouble(invoiceList.getExcQty()) > 0) {
-                        viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")" + " ( as FOC)");
-                    }
-                    else{
-                        viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")" + " ( as FOC)"+ " ( as Exc)");
-                    }
+            if (invoiceList.getFocQty() != null && !invoiceList.getFocQty().isEmpty()
+                    && Double.parseDouble(invoiceList.getFocQty()) > 0) {
+                if (invoiceList.getExcQty() != null && !invoiceList.getExcQty().isEmpty()
+                        && Double.parseDouble(invoiceList.getExcQty()) > 0) {
+                    Log.w("excInv", "" + invoiceList.getExcQty());
+
+                    viewHolder.product.setText((invoiceList.getDescription()) +
+                            " (" + invoiceList.getUomCode() + ")" + " ( as FOC)" + " ( as Exc)");
+                } else {
+                    Log.w("excInv11", "" + invoiceList.getExcQty());
+
+                    viewHolder.product.setText((invoiceList.getDescription()) +
+                            " (" + invoiceList.getUomCode() + ")" + " ( as FOC)");
                 }
-            }else {
-                viewHolder.product.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")");
+            } else {
+                if (invoiceList.getExcQty() != null && !invoiceList.getExcQty().isEmpty()
+                        && Double.parseDouble(invoiceList.getExcQty()) > 0) {
+                    viewHolder.product.setText((invoiceList.getDescription()) +
+                            " (" + invoiceList.getUomCode() + ")" + " ( as Exc)");
+
+                }
+                else{
+             viewHolder.product.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")");
+                }
             }
         }
+
         else {
-
-            if (Double.parseDouble(invoiceList.getTotal()) < 0.00){
-                viewHolder.product.setText(Double.parseDouble(invoiceList.getDescription())+" (as Return)");
-            }else if (Double.parseDouble(invoiceList.getTotal())==0.00){
-                if (invoiceList.getReturnQty()!=null && !invoiceList.getReturnQty().isEmpty() && Double.parseDouble(invoiceList.getReturnQty()) > 0){
-                    viewHolder.product.setText((invoiceList.getDescription())+" ( as Return)");
-                }else {
-                    if (invoiceList.getExcQty()!=null && !invoiceList.getExcQty().isEmpty() && Double.parseDouble(invoiceList.getExcQty()) > 0) {
-                        viewHolder.product.setText((invoiceList.getDescription()) + " ( as FOC)");
-                    }
-                    else{
-                        viewHolder.product.setText((invoiceList.getDescription()) + " ( as FOC)"+ " ( as Exc)");
-                    }
-                }
-            }else {
-                viewHolder.product.setText((invoiceList.getDescription()));
-            }
+            viewHolder.product.setText(invoiceList.getDescription());
         }
+
+//            if (invoiceList.getUomCode()!=null && !invoiceList.getUomCode().equals("null") && !invoiceList.getUomCode().isEmpty()){
+//            if (Double.parseDouble(invoiceList.getTotal()) < 0.00){
+//                viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")"+" (as Return)");
+//            }else if (Double.parseDouble(invoiceList.getTotal())==0.00){
+//                if (invoiceList.getReturnQty()!=null && !invoiceList.getReturnQty().isEmpty() && Double.parseDouble(invoiceList.getReturnQty()) > 0){
+//                    viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")"+" ( as Return)");
+//                }else {
+//                    if (invoiceList.getExcQty()!=null && !invoiceList.getExcQty().isEmpty() && Double.parseDouble(invoiceList.getExcQty()) > 0) {
+//                        viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")" + " ( as FOC)");
+//                    }
+//                    else{
+//                        viewHolder.product.setText((invoiceList.getDescription())+" ("+invoiceList.getUomCode()+")" + " ( as FOC)"+ " ( as Exc)");
+//                    }
+//                }
+//            }else {
+//                viewHolder.product.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")");
+//            }
+//        }
+//        else {
+//
+//            if (Double.parseDouble(invoiceList.getTotal()) < 0.00){
+//                viewHolder.product.setText(Double.parseDouble(invoiceList.getDescription())+" (as Return)");
+//            }else if (Double.parseDouble(invoiceList.getTotal())==0.00){
+//                if (invoiceList.getReturnQty()!=null && !invoiceList.getReturnQty().isEmpty() && Double.parseDouble(invoiceList.getReturnQty()) > 0){
+//                    viewHolder.product.setText((invoiceList.getDescription())+" ( as Return)");
+//                }else {
+//                    if (invoiceList.getExcQty()!=null && !invoiceList.getExcQty().isEmpty() && Double.parseDouble(invoiceList.getExcQty()) > 0) {
+//                        viewHolder.product.setText((invoiceList.getDescription()) + " ( as FOC)");
+//                    }
+//                    else{
+//                        viewHolder.product.setText((invoiceList.getDescription()) + " ( as FOC)"+ " ( as Exc)");
+//                    }
+//                }
+//            }else {
+//                viewHolder.product.setText((invoiceList.getDescription()));
+//            }
+//        }
 
         Log.w("cpmadpta",""+companyName);
 

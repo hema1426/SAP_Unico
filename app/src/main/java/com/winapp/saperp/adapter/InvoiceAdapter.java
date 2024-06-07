@@ -414,6 +414,7 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 invoiceListModel.setNetQty(detailObject.optString("quantity"));
                                 invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
                                 invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
                                 invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                 invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
                                 invoiceListModel.setUnitPrice(detailObject.optString("price"));

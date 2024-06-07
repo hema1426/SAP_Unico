@@ -1,5 +1,6 @@
 package com.winapp.saperp.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,7 @@ public class SalesOrderPrintPreviewAdapter extends RecyclerView.Adapter<SalesOrd
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         SalesOrderPrintPreviewModel.SalesList salesList = this.salesList.get(position);

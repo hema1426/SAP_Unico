@@ -1195,7 +1195,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url = Utils.getBaseUrl(this) + "InvoiceDetails";
         // Initialize a new JsonArrayRequest instance
-        Timber.w(url);
+        Log.w("invoicDetail",""+url+jsonObject);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Getting Invoice Details...");
@@ -3322,7 +3322,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url = Utils.getBaseUrl(this) + "InvoiceDetails";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:", url);
+        Log.w("Given_url:", url+jsonObject);
         // pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         // pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         // pDialog.setTitleText("Generating Print Preview...");
@@ -3386,7 +3386,6 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                             } else {
                                 Utils.setSignature("");
                             }
-
                             JSONArray detailsArray = object.optJSONArray("invoiceDetails");
                             for (int i = 0; i < detailsArray.length(); i++) {
                                 JSONObject detailObject = detailsArray.optJSONObject(i);

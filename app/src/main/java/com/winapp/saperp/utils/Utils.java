@@ -3,6 +3,7 @@ package com.winapp.saperp.utils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -258,6 +259,26 @@ public class Utils {
         String tot = df.format(d);
 
         return tot;
+    }
+
+    public static boolean validatePrinterConfiguration(Activity activity, String printerType, String printerMacId){
+        boolean printetCheck=false;
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+            Toast.makeText(activity,"This device does not support bluetooth",Toast.LENGTH_SHORT).show();
+        } else if (!mBluetoothAdapter.isEnabled()) {
+            // Bluetooth is not enabled :)
+            Toast.makeText(activity,"Enable bluetooth and connect the printer",Toast.LENGTH_SHORT).show();
+        } else {
+            // Bluetooth is enabled
+            if (!printerType.isEmpty() && !printerMacId.isEmpty()){
+                printetCheck=true;
+            }else {
+                Toast.makeText(activity,"Please configure Printer",Toast.LENGTH_SHORT).show();
+            }
+        }
+        return printetCheck;
     }
 
     public static String fourDecimalPoint(double d) {

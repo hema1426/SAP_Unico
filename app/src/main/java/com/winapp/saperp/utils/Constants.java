@@ -125,6 +125,9 @@ public class Constants {
     public static String TRANS_ORIENT_DEMO ="https://c21326-EasySales-Test.cloudiax.com/api/";
     // transOrient live
 
+    //http://c21326-easysales-test.cloudiax.com:11014/
+    public static String TRANS_ORIENT_RAYMANG ="http://c21326-easysales-test.cloudiax.com:11014/api/";
+
     public static String foodgle_LIVE ="https://c21202app01p01.cloudiax.com:10093/api/";
 
     public static String SHABAN ="http://129.150.58.169:95/api/";

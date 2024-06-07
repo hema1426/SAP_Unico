@@ -1129,23 +1129,53 @@ public class PrinterUtils extends AppCompatActivity {
                             y += LINE_SPACING;
                             TscDll.sendcommand("TEXT 5," + y + ",\"Bold.TTF\",0,8,8,\"" + index + "\"\n");
                             String productName = "";
-                            if (Double.parseDouble(twoDecimalPoint(Double.parseDouble(invoice.getTotal()))) == 0.00) {
-                                if (invoice.getReturnQty() != null && !invoice.getReturnQty().isEmpty() && Double.parseDouble(invoice.getReturnQty()) > 0) {
-                                    productName = invoice.getDescription() + "-(as Return)";
-                                } else {
-                                    if (invoice.getExcQty()!=null && !invoice.getExcQty().isEmpty()
+
+                            if (invoice.getUomCode()!=null && !invoice.getUomCode().equals("null")
+                                    && !invoice.getUomCode().isEmpty()) {
+
+                                if (invoice.getFocQty() != null && !invoice.getFocQty().isEmpty()
+                                        && Double.parseDouble(invoice.getFocQty()) > 0) {
+                                    if (invoice.getExcQty() != null && !invoice.getExcQty().isEmpty()
                                             && Double.parseDouble(invoice.getExcQty()) > 0) {
-                                        productName = invoice.getDescription() + "-(as FOC)";
+
+                                        productName = ((invoice.getDescription()) +
+                                                " (" + invoice.getUomCode() + ")" + " ( as FOC)" + " ( as Exc)");
+                                    } else {
+
+                                        productName = ((invoice.getDescription()) +
+                                                " (" + invoice.getUomCode() + ")" + " ( as FOC)");
                                     }
-                                    else {
-                                        productName = invoice.getDescription() + "-(as FOC)"+ "-(as Exc)";
+                                } else {
+                                    if (invoice.getExcQty() != null && !invoice.getExcQty().isEmpty()
+                                            && Double.parseDouble(invoice.getExcQty()) > 0) {
+                                        productName = ((invoice.getDescription()) +
+                                                " (" + invoice.getUomCode() + ")" + " ( as Exc)");
+
+                                    }
+                                    else{
+                                        productName = (invoice.getDescription()+" ("+invoice.getUomCode()+")");
                                     }
                                 }
-                            } else if (Double.parseDouble(twoDecimalPoint(Double.parseDouble(invoice.getTotal()))) > 0.00) {
-                                productName = invoice.getDescription();
-                            } else {
-                                productName = invoice.getDescription() + "-(as RTN)";
                             }
+
+
+//                            if (Double.parseDouble(twoDecimalPoint(Double.parseDouble(invoice.getTotal()))) == 0.00) {
+//                                if (invoice.getReturnQty() != null && !invoice.getReturnQty().isEmpty() && Double.parseDouble(invoice.getReturnQty()) > 0) {
+//                                    productName = invoice.getDescription() + "-(as Return)";
+//                                } else {
+//                                    if (invoice.getExcQty()!=null && !invoice.getExcQty().isEmpty()
+//                                            && Double.parseDouble(invoice.getExcQty()) > 0) {
+//                                        productName = invoice.getDescription() + "-(as FOC)";
+//                                    }
+//                                    else {
+//                                        productName = invoice.getDescription() + "-(as FOC)"+ "-(as Exc)";
+//                                    }
+//                                }
+//                            } else if (Double.parseDouble(twoDecimalPoint(Double.parseDouble(invoice.getTotal()))) > 0.00) {
+//                                productName = invoice.getDescription();
+//                            } else {
+//                                productName = invoice.getDescription() + "-(as RTN)";
+//                            }
                             String uomcode = "";
                             String custItemCode = "";
                             if (invoice.getUomCode() != null && !invoice.getUomCode().isEmpty() && !invoice.getUomCode().equals("null")) {
@@ -1156,7 +1186,7 @@ public class PrinterUtils extends AppCompatActivity {
                                 custItemCode = "-" + invoice.getCustomerItemCode();
                             }
                             if (showUom.equals("true")) {
-                                TscDll.sendcommand("TEXT 50," + y + ",\"Bold.TTF\",0,8,8,\"" + productName + uomcode + custItemCode + "\"\n");
+                                TscDll.sendcommand("TEXT 50," + y + ",\"Bold.TTF\",0,8,8,\"" + productName + custItemCode + "\"\n");
                             } else {
                                 TscDll.sendcommand("TEXT 50," + y + ",\"Bold.TTF\",0,8,8,\"" + productName + custItemCode + "\"\n");
                             }
