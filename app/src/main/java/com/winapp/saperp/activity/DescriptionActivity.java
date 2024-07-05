@@ -121,7 +121,7 @@ public class DescriptionActivity extends AppCompatActivity {
     int lqty=0;
     double pcspercarton=0;
     // Customer details arraylist
-    ArrayList<CustomerDetails> customerDetails;
+    ArrayList<CustomerDetails> customerDetails = new ArrayList<>();
     boolean isQtyEntered=false;
     private TextView totalTextView;
     private TextView taxTextView;
@@ -538,17 +538,22 @@ public class DescriptionActivity extends AppCompatActivity {
                 if (isReverseCalculationEnabled){
                     if (isCartonPriceEdit){
                         if (ctnPrice.getText().toString().equals("")){
-                            unitPrice.removeTextChangedListener(loosePriceTextWatcher);
-                            unitPrice.setText("");
-                            unitPrice.addTextChangedListener(loosePriceTextWatcher);
+                            if (s.toString().equals(".")) {
+                                ctnPrice.setText("0.");
+                                unitPrice.removeTextChangedListener(loosePriceTextWatcher);
+                                unitPrice.setText("");
+                                unitPrice.addTextChangedListener(loosePriceTextWatcher);
+                            }
                         }
                         if (!ctnQty.getText().toString().equals("")){
                             double pcspercarton=Double.parseDouble(ctnQty.getText().toString());
                             double carton_price=0;
-                            if (ctnPrice.getText().toString().equals("")){
-                                carton_price=0;
-                            }else {
-                                carton_price=Double.parseDouble(ctnPrice.getText().toString());
+                            if (!s.toString().equals(".")) {
+                                if (ctnPrice.getText().toString().equals("")) {
+                                    carton_price = 0;
+                                } else {
+                                    carton_price = Double.parseDouble(ctnPrice.getText().toString());
+                                }
                             }
                             if (pcspercarton>1){
                                 double unit_price=(carton_price / pcspercarton);
@@ -556,14 +561,16 @@ public class DescriptionActivity extends AppCompatActivity {
                                 unitPrice.setText(twoDecimalPoint(unit_price));
                                 unitPrice.addTextChangedListener(loosePriceTextWatcher);
                             }else {
-                                if (!ctnPrice.getText().toString().isEmpty()){
-                                    unitPrice.removeTextChangedListener(loosePriceTextWatcher);
-                                    unitPrice.setText(twoDecimalPoint(Double.parseDouble(ctnPrice.getText().toString())));
-                                    unitPrice.addTextChangedListener(loosePriceTextWatcher);
-                                }else {
-                                    unitPrice.removeTextChangedListener(loosePriceTextWatcher);
-                                    unitPrice.setText("0.00");
-                                    unitPrice.addTextChangedListener(loosePriceTextWatcher);
+                                if (!s.toString().equals(".")) {
+                                    if (!ctnPrice.getText().toString().isEmpty()) {
+                                        unitPrice.removeTextChangedListener(loosePriceTextWatcher);
+                                        unitPrice.setText(twoDecimalPoint(Double.parseDouble(ctnPrice.getText().toString())));
+                                        unitPrice.addTextChangedListener(loosePriceTextWatcher);
+                                    } else {
+                                        unitPrice.removeTextChangedListener(loosePriceTextWatcher);
+                                        unitPrice.setText("0.00");
+                                        unitPrice.addTextChangedListener(loosePriceTextWatcher);
+                                    }
                                 }
                             }
                         }
@@ -642,9 +649,23 @@ public class DescriptionActivity extends AppCompatActivity {
         addToCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                double discout = 0.0 ;
+
                 SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
                 selectCustomerId = sharedPreferences.getString("customerId", "");
                 if (selectCustomerId != null && !selectCustomerId.isEmpty()) {
+                    if (!discountEditext.getText().toString().isEmpty()) {
+                        discout = Double.parseDouble(discountEditext.getText().toString());
+                    }
+
+                    if (!ctnPrice.getText().toString().isEmpty()){
+                        if (!ctnPrice.getText().toString().equals(".")) {
+
+                            percentApi=calculatePercentage(discout, Double.parseDouble(ctnPrice.getText().toString()));
+                            Log.w("cartDis ",""+percentApi+discout+ctnPrice.getText().toString() );
+                        }
+                    }
+
                     if (isProductExist(model.getProductCode().trim())){
                         showExistingProductAlert(model.getProductCode(),model.getProductName(),model.getProductImage());
                     }else {
@@ -682,7 +703,10 @@ public class DescriptionActivity extends AppCompatActivity {
                             }
 
                             if (!ctnPrice.getText().toString().isEmpty()){
-                                cartonprice=ctnPrice.getText().toString();
+                                if (!ctnPrice.getText().toString().equals(".")) {
+
+                                    cartonprice = ctnPrice.getText().toString();
+                                }
                             }
 
                             if (!discountEditext.getText().toString().isEmpty()){
@@ -697,9 +721,11 @@ public class DescriptionActivity extends AppCompatActivity {
                             double total=(Double.parseDouble(ctn_qty) * Double.parseDouble(cartonprice)) + (Double.parseDouble(loose_qty) * Double.parseDouble(lPriceCalc));
                             double sub_total=total-return_amt-Double.parseDouble(discount);
 
-                            if (pcsQtyValue.getText().toString().isEmpty() && ctnQtyValue.getText().toString().isEmpty()){
+                            if (pcsQtyValue.getText().toString().isEmpty() && ctnQtyValue.getText().toString().isEmpty() &&
+                                    !ctnQtyValue.getText().toString().equals(".")){
                                 isQtyEntered=false;
-                            }else isQtyEntered= !pcsQtyValue.getText().toString().equals("0") || !ctnQtyValue.getText().toString().equals("0");
+                            }else isQtyEntered= !pcsQtyValue.getText().toString().equals("0") ||
+                                    (!ctnQtyValue.getText().toString().equals("0") && !ctnQtyValue.getText().toString().equals("."));
 
                             if (isQtyEntered && Double.parseDouble(netTotalTextView.getText().toString())>0){
 
@@ -722,7 +748,7 @@ public class DescriptionActivity extends AppCompatActivity {
                                         focType,
                                         exchangeEditext.getText().toString(),
                                         exchangeType,
-                                        discountEditext.getText().toString(),
+                                        String.valueOf(Utils.twoDecimalPoint(percentApi)),
                                         returnEditext.getText().toString(),
                                         returnType,"",
                                         String.valueOf(total),
@@ -1392,7 +1418,7 @@ public class DescriptionActivity extends AppCompatActivity {
 
     public void setCalculation() {
         // Define the Required variables to calulate the Amount
-        try {
+    //    try {
             double cnQty = 0.0;
             double lqty = 0.0;
             double pcspercarton = 0.0;
@@ -1405,7 +1431,10 @@ public class DescriptionActivity extends AppCompatActivity {
             double return_qty = 0;
 
             if (!ctnPrice.getText().toString().isEmpty()) {
-                cprice = Double.parseDouble(ctnPrice.getText().toString());
+                if (!ctnPrice.getText().toString().equals(".")) {
+
+                    cprice = Double.parseDouble(ctnPrice.getText().toString());
+                }
             }
             if (!unitPrice.getText().toString().isEmpty()) {
                 lprice = Double.parseDouble(unitPrice.getText().toString());
@@ -1467,17 +1496,19 @@ public class DescriptionActivity extends AppCompatActivity {
             if (discount != 0.0) {
                 net_amount = net_amount - discount;
             }
-
-            percentApi=calculatePercentage(discount,cprice);
+//        if (!discountEditext.getText().toString().isEmpty()) {
+//            discount = Double.parseDouble(discountEditext.getText().toString());
+//        }
+//            percentApi=calculatePercentage(discount,cprice);
+//        Log.w("cartDis ",""+percentApi);
 
             netPrice.setText(twoDecimalPoint(net_amount));
             taxCalculation(net_amount);
 
             sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_CART_ITEM_DISC, Utils.twoDecimalPoint(percentApi));
 
-            Log.w("cartDis ",""+percentApi);
-        } catch (Exception ex) {
-        }
+//        } catch (Exception ex) {
+//        }
     }
 
  /*   // calculation for the product
@@ -1517,38 +1548,39 @@ public class DescriptionActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
         String selectCustomerId = sharedPreferences.getString("customerId", "");
+
         if (selectCustomerId != null && !selectCustomerId.isEmpty()) {
             customerDetails = dbHelper.getCustomer(selectCustomerId);
             //setAllValues(customerDetails);
-        }
-        String taxValue=customerDetails.get(0).getTaxPerc();
-        String taxType=customerDetails.get(0).getTaxType();
-        String itemDisc="";
-        double taxAmount=0.0;
-        double netTotal=0.0;
-        Log.w("TaxTypeCart:",taxType);
-        Log.w("TaxValueCart:",taxValue);
 
-        if (!taxType.matches("") && !taxValue.matches("")) {
-            Log.w("cartEntytax","");
+            String taxValue = customerDetails.get(0).getTaxPerc();
+            String taxType = customerDetails.get(0).getTaxType();
+            String itemDisc = "";
+            double taxAmount = 0.0;
+            double netTotal = 0.0;
+            Log.w("TaxTypeCart:", taxType);
+            Log.w("TaxValueCart:", taxValue);
 
-            double taxValueCalc = Double.parseDouble(taxValue);
+            if (!taxType.matches("") && !taxValue.matches("")) {
+                Log.w("cartEntytax", "");
 
-            if (taxType.matches("E")) {
+                double taxValueCalc = Double.parseDouble(taxValue);
+
+                if (taxType.matches("E")) {
                     taxAmount = (subTotal * taxValueCalc) / 100;
                     String prodTax = fourDecimalPoint(taxAmount);
 
                     netTotal = subTotal + taxAmount;
                     String ProdNetTotal = twoDecimalPoint(netTotal);
 
-                    Log.w("Tax_1",prodTax);
-                    Log.w("Net_amount:",ProdNetTotal);
+                    Log.w("Tax_1", prodTax);
+                    Log.w("Net_amount:", ProdNetTotal);
                     taxTitle.setText("GST ( Exc )");
                     totalTextView.setText(twoDecimalPoint(subTotal));
                     taxTextView.setText(String.valueOf(prodTax));
                     netTotalTextView.setText(ProdNetTotal);
 
-            } else if (taxType.matches("I")) {
+                } else if (taxType.matches("I")) {
                     taxAmount = (subTotal * taxValueCalc) / (100 + taxValueCalc);
                     String prodTax = fourDecimalPoint(taxAmount);
 
@@ -1560,32 +1592,33 @@ public class DescriptionActivity extends AppCompatActivity {
                     String totalIncl = twoDecimalPoint(dTotalIncl);
                     Log.d("totalIncl", "" + totalIncl);
 
-                    Log.w("Tax_1",prodTax);
-                    Log.w("Net_amount:",ProdNetTotal);
+                    Log.w("Tax_1", prodTax);
+                    Log.w("Net_amount:", ProdNetTotal);
                     taxTitle.setText("GST ( Inc )");
                     totalTextView.setText(totalIncl);
                     taxTextView.setText(String.valueOf(prodTax));
                     netTotalTextView.setText(ProdNetTotal);
 
-            } else if (taxType.matches("Z")) {
+                } else if (taxType.matches("Z")) {
                     netTotal = subTotal + taxAmount;
                     netTotal = subTotal;
                     String ProdNetTotal = twoDecimalPoint(netTotal);
-                    Log.w("Net_amount:",ProdNetTotal);
+                    Log.w("Net_amount:", ProdNetTotal);
                     taxTitle.setText("GST ( Zero )");
                     totalTextView.setText(twoDecimalPoint(subTotal));
                     taxTextView.setText("0.0");
                     netTotalTextView.setText(ProdNetTotal);
+                }
+            } else if (taxValue.matches("")) {
+                netTotal = subTotal + taxAmount;
+                netTotal = subTotal;
+                String ProdNetTotal = twoDecimalPoint(netTotal);
+                Log.w("Net_amount:", ProdNetTotal);
+                taxTitle.setText("GST ( Zero )");
+                totalTextView.setText(twoDecimalPoint(subTotal));
+                taxTextView.setText("0.0");
+                netTotalTextView.setText(ProdNetTotal);
             }
-        } else if (taxValue.matches("")) {
-            netTotal = subTotal + taxAmount;
-            netTotal = subTotal;
-            String ProdNetTotal = twoDecimalPoint(netTotal);
-            Log.w("Net_amount:",ProdNetTotal);
-            taxTitle.setText("GST ( Zero )");
-            totalTextView.setText(twoDecimalPoint(subTotal));
-            taxTextView.setText("0.0");
-            netTotalTextView.setText(ProdNetTotal);
         }
     }
 
@@ -1735,7 +1768,9 @@ public class DescriptionActivity extends AppCompatActivity {
             }
 
             if (!ctnPrice.getText().toString().isEmpty()) {
+                if (!ctnPrice.getText().toString().equals(".")){
                 cartonprice = ctnPrice.getText().toString();
+                }
             }
 
             if (!discountEditext.getText().toString().isEmpty()) {

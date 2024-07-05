@@ -233,6 +233,9 @@ public class TransferProductAddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transfer_product_add);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        signatureString="";
+
         session=new SessionManager(this);
         user=session.getUserDetails();
         dbHelper=new DBHelper(this);

@@ -1407,7 +1407,7 @@ public class CategoriesTabFragments extends Fragment implements PopupMenu.OnMenu
                                     product.setUnitCost(productObject.optString("price"));
                                     product.setLastPrice( productObject.optString("lastSalesPrice"));
                                     product.setPcsPerCarton(productObject.optString("pcsPerCarton"));
-                                product.setDefaultUom(productObject.optString("defaultPurchaseUOM"));
+                                product.setDefaultUom(productObject.optString("defaultSalesUOM"));
                                 if(!productObject.optString("uomCode").isEmpty() || productObject.optString("uomCode")!= null){
                                     product.setUomCode(productObject.optString("uomCode"));
                                 }

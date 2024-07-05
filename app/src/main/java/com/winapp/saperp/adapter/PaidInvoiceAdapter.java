@@ -369,6 +369,8 @@ public class PaidInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                 invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                 invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
                                 invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                invoiceListModel.setUomCode(detailObject.optString("uomCode"));
+
                                 double qty = Double.parseDouble(detailObject.optString("quantity"));
                                 double price = Double.parseDouble(detailObject.optString("price"));
 

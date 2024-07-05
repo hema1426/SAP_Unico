@@ -47,6 +47,7 @@ import com.winapp.saperp.model.CustomerGroupModel;
 import com.winapp.saperp.model.CustomerModel;
 import com.winapp.saperp.model.SalesReturnModel;
 import com.winapp.saperp.utils.Constants;
+import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
@@ -180,7 +181,7 @@ public class NewSalesReturnListActivity extends NavigationActivity {
         cancelSearch=findViewById(R.id.btn_cancel);
         searchButton=findViewById(R.id.btn_search);
         searchFilterView=findViewById(R.id.search_filter);
-        customerNameText=findViewById(R.id.customer_name_value);
+        customerNameText=findViewById(R.id.customer_name_return);
         recyclerViewLayout=findViewById(R.id.reclerview_layout);
         editLayout=findViewById(R.id.edit_layout);
         deleteLayout=findViewById(R.id.delete_layout);
@@ -485,6 +486,7 @@ public class NewSalesReturnListActivity extends NavigationActivity {
             @Override
             public void onClick(View view) {
                 customerNameText.setText("");
+                selectCustomerCode= "";
                 fromDateText.setText(formattedDate);
                 toDateText.setText(formattedDate);
                 searchFilterView.setVisibility(View.GONE);
@@ -579,12 +581,15 @@ public class NewSalesReturnListActivity extends NavigationActivity {
                         String tax_code=salesObject.optString("taxCode");
                         String phone_no=salesObject.optString("DelPhoneNo");
                         String so_date=salesObject.optString("soDate");
-                        String signFlag=salesObject.optString("signFlag");
-                        if (signFlag.equals("Y")){
-                            String signature=salesObject.optString("signature");
+                     //   String signFlag=salesObject.optString("signFlag");
+                        if (salesObject.optString("signature")!=null &&
+                                !salesObject.optString("signature").equals("null") && !salesObject.optString("signature").isEmpty()){
+                            String signature = salesObject.optString("signature");
                             Utils.setSignature(signature);
+                            createSignature();
+                        } else {
+                            Utils.setSignature("");
                         }
-
                         dbHelper.removeCustomer();
                         dbHelper.insertCustomer(
                                 customer_code,
@@ -742,8 +747,22 @@ public class NewSalesReturnListActivity extends NavigationActivity {
                                 model.setTaxType(object.optString("taxType"));
                                 model.setTaxValue(object.optString("taxPerc"));
                                 model.setSignFlag(object.optString("signFlag"));
-                                if (model.getSubTotal().equals("Y")){
-                                    Utils.setSignature(object.optString("signature"));
+                                model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
+                                model.setAddress1(object.optString("address1"));
+                                model.setAddress2(object.optString("address2"));
+                                model.setAddress3(object.optString("address3"));
+                                model.setAddressstate(object.optString("block")+" "+object.optString("street")+" "
+                                        +object.optString("city"));
+                                model.setAddresssZipcode(object.optString("countryName")+" "+object.optString("state")+" "
+                                        +object.optString("zipcode"));
+                               // String signFlag = object.optString("signFlag");
+                                if (object.optString("signature")!=null &&
+                                        !object.optString("signature").equals("null") && !object.optString("signature").isEmpty()){
+                                    String signature = object.optString("signature");
+                                    Utils.setSignature(signature);
+                                    createSignature();
+                                } else {
+                                    Utils.setSignature("");
                                 }
 
                                 JSONArray salesReturnDetails=object.optJSONArray("salesReturnDetails");
@@ -808,7 +827,15 @@ public class NewSalesReturnListActivity extends NavigationActivity {
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
-
+    private void createSignature() {
+        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
+            try {
+                ImageUtil.saveStamp(this, Utils.getSignature(), "Signature");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public void printSalesReturn(int copy) throws IOException {
         if (printerType.equals("TSC Printer")){
             // TSCPrinter tscPrinter=new TSCPrinter(SalesReturnPrintPreview.this,printerMacId);
@@ -821,7 +848,7 @@ public class NewSalesReturnListActivity extends NavigationActivity {
                 zebraPrinterActivity.printSalesReturn(copy, salesReturnHeader, salesPrintReturnList);
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+                   }
         }
     }
 
@@ -1274,6 +1301,7 @@ public class NewSalesReturnListActivity extends NavigationActivity {
             if (searchFilterView.getVisibility()==View.VISIBLE){
                 searchFilterView.setVisibility(View.GONE);
                 customerNameText.setText("");
+                selectCustomerCode= "";
                 isSearchCustomerNameClicked=false;
                 if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                     behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -1281,6 +1309,7 @@ public class NewSalesReturnListActivity extends NavigationActivity {
                 //slideUp(searchFilterView);
             }else {
                 customerNameText.setText("");
+                selectCustomerCode= "";
                 isSearchCustomerNameClicked=false;
                 searchFilterView.setVisibility(View.VISIBLE);
                 if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {

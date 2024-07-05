@@ -35,12 +35,18 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/action_scan_menu"
+        android:icon="@drawable/ic_barcode_white_24"
+        android:title="Save"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_save"
         android:icon="@drawable/ic_baseline_save_24"
         android:title="Save"
         android:orderInCategory="100"
         app:showAsAction="always" />
-
 
     <group
         android:id="@+id/drawermenu_group_2"

@@ -142,9 +142,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
-import timber.log.Timber;
 
-public class NewInvoiceListActivity extends NavigationActivity implements View.OnClickListener, TabLayout.OnTabSelectedListener, OnPageChangeListener, OnLoadCompleteListener, AdapterView.OnItemSelectedListener {
+public class NewInvoiceListActivity extends NavigationActivity
+        implements View.OnClickListener, TabLayout.OnTabSelectedListener, OnPageChangeListener,
+        OnLoadCompleteListener, AdapterView.OnItemSelectedListener {
 
     // Define the Button Variables
     private TextView allInvoiceButton;
@@ -199,6 +200,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     private View searchFilterView;
     private EditText customerNameText;
     private EditText fromDate;
+    private LinearLayout fromDatelay;
     private EditText toDate;
     private Spinner invoiceStatus;
     private int mYear, mMonth, mDay, mHour, mMinute;
@@ -362,6 +364,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         invoiceStatus = findViewById(R.id.invoice_status);
         customerNameText = findViewById(R.id.customer_name_value);
         fromDate = findViewById(R.id.from_date);
+        fromDatelay = findViewById(R.id.fromdateLay);
         toDate = findViewById(R.id.to_date);
         searchButton = findViewById(R.id.btn_search);
         transLayout = findViewById(R.id.trans_layout);
@@ -399,6 +402,10 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         shareLayout = findViewById(R.id.share_layout);
         printLayout = findViewById(R.id.print_layout);
         cancelButton = findViewById(R.id.cancel);
+
+        myEdit.putString("billDisc_amt","0.0");
+        myEdit.putString("billDisc_percent","0.0");
+        myEdit.apply();
 
         company_name = user.get(SessionManager.KEY_COMPANY_NAME);
         company_address1 = user.get(SessionManager.KEY_ADDRESS1);
@@ -630,6 +637,14 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                 try {
                     ((TextView) parent.getChildAt(0)).setTextColor(Color.BLUE);
                     ((TextView) parent.getChildAt(0)).setTextSize(12);
+                     if (invoiceStatus.getSelectedItem().equals("UNPAID")) {
+                      //  invoice_status = "O";
+                         fromDatelay.setAlpha(0.4F);
+                         fromDatelay.setEnabled(false);
+                     } else {
+                         fromDatelay.setAlpha(0.9F);
+                         fromDatelay.setEnabled(true);
+                     }
                 } catch (Exception ed) {
                 }
             }
@@ -700,6 +715,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                             invoice_status = "C";
                         } else if (invoiceStatus.getSelectedItem().equals("UNPAID")) {
                             invoice_status = "O";
+                            fromDateString = "" ;
                         }
                         if (selectedUser != null && !selectedUser.isEmpty()) {
                             username = selectedUser;
@@ -1545,7 +1561,7 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         String url= Utils.getBaseUrl(this) +"DuplicateInvoiceDetails";
         Log.w("JsonValue:",jsonObject.toString());
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url_salesEdit:",url);
+        Log.w("Given_url_duplicat:",url);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Getting Invoice Details...");
@@ -1566,11 +1582,13 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                     String customer_code = salesObject.optString("customerCode");
                                     String customer_name = salesObject.optString("customerName");
                                     String total = salesObject.optString("total");
+                                    String inv_date = salesObject.optString("invoiceDate");
                                     String sub_total = salesObject.optString("subTotal");
                                     String bill_discount = salesObject.optString("billDiscount");
                                     String item_discount = salesObject.optString("ItemDiscount");
                                     String tax = salesObject.optString("taxTotal");
-                                    String customerBill_Disc=salesObject.optString("CustomerDiscount");
+                                    String customerBill_Disc=salesObject.optString("customerDiscountPercentage");
+                                   // String customerBill_Disc=salesObject.optString("billDiscountPercentage");
                                     String net_total = salesObject.optString("netTotal");
                                     String currency_rate = salesObject.optString("CurrencyRate");
                                     String currency_name = salesObject.optString("currencyName");
@@ -1668,7 +1686,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                         Log.w("ProductsLength:", products.length() + "");
                                         Log.w("ActualPrintProducts:", dbHelper.numberOfRowsInInvoice() + "");
                                         if (products.length() == dbHelper.numberOfRowsInInvoice()) {
-                                            redirectActivity(customer_code, customer_name, invoiceNo,customerBill_Disc);
+                                            redirectActivity(customer_code, customer_name, invoiceNo
+                                                    ,customerBill_Disc,inv_date);
                                             break;
                                         }
                                     }
@@ -1719,7 +1738,8 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
     }
 
 
-    public void redirectActivity(String customer_code, String customer_name, String inv_code , String customerBill_Disc) {
+    public void redirectActivity(String customer_code, String customer_name, String inv_code ,
+                                 String customerBill_Disc,String inv_date) {
         //  if (products.length()==dbHelper.numberOfRowsInInvoice()){
 
           Utils.setCustomerSession(NewInvoiceListActivity.this, customer_code);
@@ -1727,8 +1747,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
         Intent intent = new Intent(getApplicationContext(), CreateNewInvoiceActivity.class);
         intent.putExtra("customerCode", customer_code);
         intent.putExtra("duplicateInvNo", inv_code);
+        intent.putExtra("duplicateInvDate", inv_date);
         intent.putExtra("customerName", customer_name);
-        intent.putExtra("customerBillDisc", customerBill_Disc);
+       // intent.putExtra("customerBillDisc", customerBill_Disc);
         intent.putExtra("from", "Duplicate");
         startActivity(intent);
         finish();
@@ -2412,7 +2433,9 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
             // Initialize a new JsonArrayRequest instance
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("InvoiceNo", invoiceno);
+
             String url = Utils.getBaseUrl(this) + "DownloadPDFInvoice";
+
             Log.w("Given_url_PdfDownload:", url + "/" + jsonObject.toString());
             pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
             pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
@@ -3359,8 +3382,14 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                             model.setOverAllTotal(object.optString("overAllTotal"));
                             // model.setAddress(object.optString("street"));
                             model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
+                            model.setAddress1(object.optString("address1"));
                             model.setAddress2(object.optString("address2"));
                             model.setAddress3(object.optString("address3"));
+                            model.setAddressstate(object.optString("block")+" "+object.optString("street")+" "
+                                    +object.optString("city"));
+                            model.setAddresssZipcode(object.optString("countryName")+" "+object.optString("state")+" "
+                                    +object.optString("zipcode"));
+
                             // model.setDeliveryAddress(model.getAddress());
                             model.setSubTotal(object.optString("subTotal"));
                             model.setNetTax(object.optString("taxTotal"));
@@ -3387,38 +3416,142 @@ public class NewInvoiceListActivity extends NavigationActivity implements View.O
                                 Utils.setSignature("");
                             }
                             JSONArray detailsArray = object.optJSONArray("invoiceDetails");
-                            for (int i = 0; i < detailsArray.length(); i++) {
+                            for (int i=0;i<detailsArray.length();i++) {
                                 JSONObject detailObject = detailsArray.optJSONObject(i);
-                                InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
-                                invoiceListModel.setProductCode(detailObject.optString("productCode"));
-                                invoiceListModel.setDescription(detailObject.optString("productName"));
-                                invoiceListModel.setLqty(detailObject.optString("unitQty"));
-                                invoiceListModel.setCqty(detailObject.optString("cartonQty"));
-                                invoiceListModel.setNetQty(detailObject.optString("quantity"));
-                                invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
-                                invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
-                                invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
-                                invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
-                                invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
-                                invoiceListModel.setUnitPrice(detailObject.optString("price"));
-                                if (detailObject.optString("itemID") != null) {
-                                    invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                if (Double.parseDouble(detailObject.optString("quantity")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("");
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
+                                    invoiceListModel.setUomCode(detailObject.optString("uomCode"));
+
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal(String.valueOf(nettotal));
+                                    invoiceListModel.setPricevalue(String.valueOf(price));
+
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoicePrintList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr1","");
+
                                 }
-                                double qty1 = Double.parseDouble(detailObject.optString("quantity"));
-                                double price1 = Double.parseDouble(detailObject.optString("price"));
-                                double nettotal1 = qty1 * price1;
-                                invoiceListModel.setTotal(detailObject.optString("lineTotal"));
-                                invoiceListModel.setPricevalue(String.valueOf(price1));
+                                if (!detailObject.optString("returnQty").isEmpty() && !detailObject.optString("returnQty").equals("null")
+                                        && Double.parseDouble(detailObject.optString("returnQty")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("returnQty"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("Return");
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
 
-                                invoiceListModel.setUomCode(detailObject.optString("uomCode"));
-                                invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
-                                invoiceListModel.setItemtax(detailObject.optString("totalTax"));
-                                invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
-                                invoicePrintList.add(invoiceListModel);
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal("0.00");
+                                    invoiceListModel.setPricevalue("0.00");
 
-                                model.setInvoiceList(invoicePrintList);
-                                invoiceHeaderDetails.add(model);
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoicePrintList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr2","");
+
+                                }
+                                if (!detailObject.optString("exc_Qty").isEmpty() && !detailObject.optString("exc_Qty").equals("null")
+                                        && Double.parseDouble(detailObject.optString("exc_Qty")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("Exchange");
+
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
+
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal("0.00");
+                                    invoiceListModel.setPricevalue("0.00");
+
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoicePrintList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr3","");
+
+                                }
+                                if (!detailObject.optString("foc_Qty").isEmpty() && !detailObject.optString("foc_Qty").equals("null")
+                                        && Double.parseDouble(detailObject.optString("foc_Qty")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("FOC");
+
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
+
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal("0.00");
+                                    invoiceListModel.setPricevalue("0.00");
+
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoicePrintList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr4","");
+
+                                }
+
+
                             }
+                            model.setInvoiceList(invoicePrintList);
 
                             JSONArray SRArray = object.optJSONArray("sR_Details");
                             assert SRArray != null;

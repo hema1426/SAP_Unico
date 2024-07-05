@@ -19,6 +19,15 @@ public class CreateInvoiceModel {
     private String saleableQty;
     private String damagedQty;
     private String exchangeQty;
+    private String productBarCode;
+
+    public String getProductBarCode() {
+        return productBarCode;
+    }
+
+    public void setProductBarCode(String productBarCode) {
+        this.productBarCode = productBarCode;
+    }
 
     public String getExchangeQty() {
         return exchangeQty;

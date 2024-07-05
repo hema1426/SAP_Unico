@@ -2098,6 +2098,7 @@ public class SalesReturnProduct extends Fragment {
                                 product.setWeight("");
                                 product.setProductImage(productObject.optString("imageURL"));
                                 product.setWholeSalePrice("0.00");
+                                product.setBarcode(productObject.optString("barcode"));
                                 product.setRetailPrice(productObject.optDouble("retailPrice"));
                                 product.setCartonPrice(productObject.optString("cartonPrice"));
                                 product.setPcsPerCarton(productObject.optString("pcsPerCarton"));

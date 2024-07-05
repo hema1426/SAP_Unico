@@ -11,6 +11,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,11 +24,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.winapp.saperp.R;
 import com.winapp.saperp.ReportPreview.adapter.RoCustomerPreviewPrintAdapter;
+import com.winapp.saperp.ReportPreview.adapter.SapRoCustomerOutstandingARPreviewAdapter;
 import com.winapp.saperp.model.CustomerStateModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.Utils;
@@ -49,7 +51,7 @@ import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class RoCustomerPreviewActivity extends AppCompatActivity {
+public class RoCustomerOutstandPreviewActivity extends AppCompatActivity {
     private TextView companyNametext;
     private TextView companyAddress1Text;
     private TextView companyAddress2Text;
@@ -65,11 +67,22 @@ public class RoCustomerPreviewActivity extends AppCompatActivity {
     SweetAlertDialog pDialog;
     private ArrayList<CustomerStateModel> customerStateList ;
     private ArrayList<CustomerStateModel.CustInvoiceDetails> custInvoiceDetailsList ;
-    private TextView fromdat,todat,nettotal,balance,cust_name;
+    private ArrayList<CustomerStateModel.CustInvoiceDetailsAR> custInvoiceDetailsARList ;
+
+    private TextView fromdat,todat,nettotal,nettotal_txt_final,nettotalAr1;
+    private TextView balance,balanceAr1,balance_final,cust_name;
     private RecyclerView customerListView;
     private RoCustomerPreviewPrintAdapter adapter;
-    String mNettotal,mBalance;
+    private SapRoCustomerOutstandingARPreviewAdapter adapter1;
 
+    private RecyclerView customerListView1;
+    private LinearLayout ArCustlistLayl;
+    double mNettotal =0.0;
+    double mBalance =0.0;
+    double mNettotal1 =0.0;
+    double mBalance1 =0.0;
+    double mNettotalFinal =0.0;
+    double mBalanceFinal =0.0;
     private String printerMacId;
     private String printerType;
     private SharedPreferences sharedPreferences;
@@ -85,7 +98,7 @@ public class RoCustomerPreviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ro_customer_preview);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Customer Outstanding");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Customer Outstanding Period");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);
@@ -99,6 +112,12 @@ public class RoCustomerPreviewActivity extends AppCompatActivity {
         balance =findViewById (R.id.balance_txt);
         cust_name =findViewById (R.id.customer_txt);
         customerListView = findViewById (R.id.rv_customerlist);
+        customerListView1 = findViewById (R.id.rv_customerlist1);
+        ArCustlistLayl = findViewById (R.id.ArCustlistLay);
+        nettotalAr1 =findViewById (R.id.nettotal_txt1);
+        nettotal_txt_final =findViewById (R.id.nettotal_txt_final);
+        balanceAr1 =findViewById (R.id.balance_txt1);
+        balance_final =findViewById (R.id.balance_txt_final);
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType=sharedPreferences.getString("printer_type","");
@@ -162,6 +181,7 @@ public class RoCustomerPreviewActivity extends AppCompatActivity {
 
         customerStateList =new ArrayList<>();
         custInvoiceDetailsList =new ArrayList<>();
+        custInvoiceDetailsARList =new ArrayList<>();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
             try{
@@ -179,8 +199,10 @@ public class RoCustomerPreviewActivity extends AppCompatActivity {
                         CustomerStateModel model = new CustomerStateModel();
                         model.setCustomerName(detailObject.optString("customerName"));
 
-                        double nettotal1 = 0.00;
-                        double balance1 = 0.00;
+                        double nettotal1 = 0.0;
+                        double nettotal2 = 0.0;
+                        double balance1 = 0.0;
+                        double balance2 = 0.0;
                         JSONArray jsonArray1 = detailObject.optJSONArray("reportCustomerStatementDetails");
 
                         for (int i = 0; i < Objects.requireNonNull(jsonArray1).length(); i++) {
@@ -192,21 +214,62 @@ public class RoCustomerPreviewActivity extends AppCompatActivity {
                             custInvoiceDetailModel.setBalanceAmount(Utils.twoDecimalPoint(Double.parseDouble(object.optString("balance"))));
                             nettotal1 += Double.parseDouble(object.optString("netTotal"));
                             balance1 += Double.parseDouble(object.optString("balance"));
+                            mNettotal = Double.parseDouble(twoDecimalPoint(nettotal1));
+                            mBalance = Double.parseDouble(twoDecimalPoint(balance1));
+
                             custInvoiceDetailsList.add(custInvoiceDetailModel);
                         }
-                        nettotal.setText(Utils.twoDecimalPoint(nettotal1));
-                        balance.setText(Utils.twoDecimalPoint(balance1));
-                        model.setCustInvoiceDetailList(custInvoiceDetailsList);
-                        customerStateList.add(model);
-                    } else {
+                        JSONArray jsonArray2 = detailObject.optJSONArray("reportCustomerARCreditMemoStatementDetails");
+                        if (jsonArray2.length() > 0) {
+                            for (int i = 0; i < Objects.requireNonNull(jsonArray2).length(); i++) {
+                                JSONObject object = jsonArray2.optJSONObject(i);
+                                CustomerStateModel.CustInvoiceDetailsAR custInvoiceDetailModel1 = new CustomerStateModel.CustInvoiceDetailsAR();
+
+                                custInvoiceDetailModel1.setInvoiceNumber(object.optString("arInvoiceNo"));
+                                custInvoiceDetailModel1.setInvoiceDate(object.optString("arInvoiceDate"));
+                                custInvoiceDetailModel1.setNetTotal(object.optString("arNetTotal"));
+                                custInvoiceDetailModel1.setBalanceAmount(object.optString("arBalance"));
+
+                                nettotal2 += Double.parseDouble(object.optString("arNetTotal"));
+                                balance2 += Double.parseDouble(object.optString("arBalance"));
+                                mNettotal1 = Double.parseDouble(twoDecimalPoint(nettotal2));
+                                mBalance1 = Double.parseDouble(twoDecimalPoint(balance2));
+
+                                custInvoiceDetailsARList.add(custInvoiceDetailModel1);
+                            }
+                        }
+                            model.setCustInvoiceDetailList(custInvoiceDetailsList);
+                            model.setCustInvoiceDetailsARList(custInvoiceDetailsARList);
+                            customerStateList.add(model);
+
+                            if (custInvoiceDetailsList.size() > 0) {
+                                setCustomerAdapter(customerStateList);
+                                nettotal.setText(String.valueOf(nettotal1));
+                                balance.setText(String.valueOf(balance1));
+                            }
+                            if (custInvoiceDetailsARList.size() > 0) {
+                                setCustomerAdapterAR(customerStateList);
+                                ArCustlistLayl.setVisibility(View.VISIBLE);
+
+                                nettotalAr1.setText(String.valueOf(mNettotal1));
+                                balanceAr1.setText(String.valueOf(mBalance1));
+                                mNettotalFinal = mNettotal - mNettotal1;
+                                mBalanceFinal = mBalance - mBalance1;
+                                nettotal_txt_final.setText(twoDecimalPoint(mNettotalFinal));
+                                balance_final.setText(twoDecimalPoint(mBalanceFinal));
+                                Log.w("custnettot", "" + mNettotal + ".." + mBalance);
+                                Log.w("custnettot11", "" + mNettotal1 + ".." + mBalance1);
+                                Log.w("custnettotfinal", "" + mNettotalFinal + ".." + mBalanceFinal);
+                            } else {
+                                ArCustlistLayl.setVisibility(View.GONE);
+                            }
+
+                        } else {
                         finish();
                         Toast.makeText(getApplicationContext(), "No Customer Statement Found..!", Toast.LENGTH_SHORT).show();
                     }
                 }
                 pDialog.dismiss();
-                if (customerStateList.size()>0){
-                    setCustomerAdapter(customerStateList);
-                }
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -252,11 +315,17 @@ public class RoCustomerPreviewActivity extends AppCompatActivity {
     public void setCustomerAdapter(ArrayList<CustomerStateModel> customerStateLists ) {
         cust_name.setText(customerStateLists.get(0).getCustomerName());
         customerListView.setHasFixedSize(true);
-        customerListView.setLayoutManager(new LinearLayoutManager(RoCustomerPreviewActivity.this, LinearLayoutManager.VERTICAL, false));
-        adapter = new RoCustomerPreviewPrintAdapter(RoCustomerPreviewActivity.this, custInvoiceDetailsList, "Transfer Detail");
+        customerListView.setLayoutManager(new LinearLayoutManager(RoCustomerOutstandPreviewActivity.this, LinearLayoutManager.VERTICAL, false));
+        adapter = new RoCustomerPreviewPrintAdapter(RoCustomerOutstandPreviewActivity.this, custInvoiceDetailsList, "Transfer Detail");
         customerListView.setAdapter(adapter);
     }
-
+    public void setCustomerAdapterAR(ArrayList<CustomerStateModel> customerStateLists ) {
+        //  cust_name.setText(customerStateLists.get(0).getCustomerName());
+        customerListView1.setHasFixedSize(true);
+        customerListView1.setLayoutManager(new LinearLayoutManager(RoCustomerOutstandPreviewActivity.this, LinearLayoutManager.VERTICAL, false));
+        adapter1 = new SapRoCustomerOutstandingARPreviewAdapter(RoCustomerOutstandPreviewActivity.this, custInvoiceDetailsARList, "Transfer Detail");
+        customerListView1.setAdapter(adapter1);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

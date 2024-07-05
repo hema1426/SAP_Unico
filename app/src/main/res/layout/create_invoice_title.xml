@@ -104,6 +104,18 @@
             android:text="@string/foc"
             android:textSize="12sp"
             />
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/table_header_cell_bg"
+            android:text="Exchange"
+            android:textSize="12sp"
+            />
 
 
         <TextView

@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.Editable;
@@ -30,30 +29,25 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
-import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.cete.dynamicpdf.J;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.winapp.saperp.R;
-import com.winapp.saperp.ReportPreview.SapRoCustomerOutstandPreviewActivity;
-import com.winapp.saperp.ReportPreview.SapSalesSummaryPreviewActivity;
+import com.winapp.saperp.ReportPreview.CustomerLisrOutstandPreviewActivity;
 import com.winapp.saperp.adapter.SelectCustomerAdapter;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.googlemap.MapsActivity;
 import com.winapp.saperp.model.CustomerDetails;
 import com.winapp.saperp.model.CustomerGroupModel;
 import com.winapp.saperp.model.CustomerModel;
-import com.winapp.saperp.model.DeliveryAddressModel;
 import com.winapp.saperp.model.SettingsModel;
 import com.winapp.saperp.model.UserRoll;
 import com.winapp.saperp.salesreturn.NewSalesReturnProductAddActivity;
 import com.winapp.saperp.utils.BarCodeScanner;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
-import com.winapp.saperp.utils.SettingUtils;
 import com.winapp.saperp.utils.Utils;
 
 import org.json.JSONArray;
@@ -434,7 +428,7 @@ public class CustomerListActivity extends NavigationActivity {
             @Override
             public void onClick(View v) {
                 viewCloseBottomSheet();
-                Intent intent = new Intent(CustomerListActivity.this, SapRoCustomerOutstandPreviewActivity.class);
+                Intent intent = new Intent(CustomerListActivity.this, CustomerLisrOutstandPreviewActivity.class);
                 intent.putExtra("fromDate", Utils.getCurrentDateWithSlace().toString());
                 intent.putExtra("toDate", Utils.getCurrentDateWithSlace().toString());
                 intent.putExtra("locationCode", "");
@@ -451,7 +445,7 @@ public class CustomerListActivity extends NavigationActivity {
             @Override
             public void onClick(View v) {
                 viewCloseBottomSheet();
-                Intent intent = new Intent(CustomerListActivity.this, SapRoCustomerOutstandPreviewActivity.class);
+                Intent intent = new Intent(CustomerListActivity.this, CustomerLisrOutstandPreviewActivity.class);
                 intent.putExtra("fromDate", Utils.getCurrentDateWithSlace().toString());
                 intent.putExtra("toDate", Utils.getCurrentDateWithSlace().toString());
                 intent.putExtra("locationCode", "");

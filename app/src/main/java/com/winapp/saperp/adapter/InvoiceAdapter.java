@@ -362,7 +362,7 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         String url= Utils.getBaseUrl(mContext) +"InvoiceDetails";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_urlAdapt:",url+jsonObject);
         invoiceshowList =new ArrayList<>();
         ArrayList<InvoicePrintPreviewModel> pdfInvoiceList=new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url,
@@ -404,36 +404,173 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             model.setItemDiscount(object.optString("ItemDiscount"));
 
                             JSONArray products=object.getJSONArray("invoiceDetails");
+//                            for (int i=0;i<products.length();i++) {
+//                                JSONObject detailObject = products.getJSONObject(i);
+//                                InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+//                                invoiceListModel.setProductCode(detailObject.optString("productCode"));
+//                                invoiceListModel.setDescription(detailObject.optString("productName"));
+//                                invoiceListModel.setLqty(detailObject.optString("unitQty"));
+//                                invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+//                                invoiceListModel.setNetQty(detailObject.optString("quantity"));
+//                                invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
+//                                invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+//                                invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+//                                invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+//                                invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+//                                invoiceListModel.setUnitPrice(detailObject.optString("price"));
+//                                double qty = Double.parseDouble(detailObject.optString("quantity"));
+//                                double price = Double.parseDouble(detailObject.optString("price"));
+//
+//                                double nettotal = qty * price;
+//                                // invoiceListModel.setTotal(String.valueOf(nettotal));
+////                                invoiceListModel.setTotal(detailObject.optString("lineTotal"));
+//                               invoiceListModel.setTotal(detailObject.optString("total"));
+////                                invoiceListModel.setTransTotal(detailObject.optString("total"));
+//                                invoiceListModel.setPricevalue(String.valueOf(price));
+//
+//                                invoiceListModel.setUomCode(detailObject.optString("uomCode"));
+//                                invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+//                                invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+//                                invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+//                                invoiceshowList.add(invoiceListModel);
+//                            }
+
                             for (int i=0;i<products.length();i++) {
-                                JSONObject detailObject = products.getJSONObject(i);
-                                InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
-                                invoiceListModel.setProductCode(detailObject.optString("productCode"));
-                                invoiceListModel.setDescription(detailObject.optString("productName"));
-                                invoiceListModel.setLqty(detailObject.optString("unitQty"));
-                                invoiceListModel.setCqty(detailObject.optString("cartonQty"));
-                                invoiceListModel.setNetQty(detailObject.optString("quantity"));
-                                invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
-                                invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
-                                invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
-                                invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
-                                invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
-                                invoiceListModel.setUnitPrice(detailObject.optString("price"));
-                                double qty = Double.parseDouble(detailObject.optString("quantity"));
-                                double price = Double.parseDouble(detailObject.optString("price"));
+                                JSONObject detailObject = products.optJSONObject(i);
+                                if (Double.parseDouble(detailObject.optString("quantity")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setUomCode(detailObject.optString("uomCode"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("");
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
 
-                                double nettotal = qty * price;
-                                // invoiceListModel.setTotal(String.valueOf(nettotal));
-//                                invoiceListModel.setTotal(detailObject.optString("lineTotal"));
-                               invoiceListModel.setTotal(detailObject.optString("total"));
-//                                invoiceListModel.setTransTotal(detailObject.optString("total"));
-                                invoiceListModel.setPricevalue(String.valueOf(price));
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal(String.valueOf(nettotal));
+                                    invoiceListModel.setPricevalue(String.valueOf(price));
 
-                                invoiceListModel.setUomCode(detailObject.optString("uomCode"));
-                                invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
-                                invoiceListModel.setItemtax(detailObject.optString("totalTax"));
-                                invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
-                                invoiceshowList.add(invoiceListModel);
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoiceshowList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr1","");
+
+                                }
+                                if (!detailObject.optString("returnQty").isEmpty() && !detailObject.optString("returnQty").equals("null")
+                                        && Double.parseDouble(detailObject.optString("returnQty")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("returnQty"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("Return");
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
+
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal("0.00");
+                                    invoiceListModel.setPricevalue("0.00");
+
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoiceshowList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr2","");
+
+                                }
+                                if (!detailObject.optString("exc_Qty").isEmpty() && !detailObject.optString("exc_Qty").equals("null")
+                                        && Double.parseDouble(detailObject.optString("exc_Qty")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("Exchange");
+
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
+
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal("0.00");
+                                    invoiceListModel.setPricevalue("0.00");
+
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoiceshowList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr3","");
+
+                                }
+                                if (!detailObject.optString("foc_Qty").isEmpty() && !detailObject.optString("foc_Qty").equals("null")
+                                        && Double.parseDouble(detailObject.optString("foc_Qty")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("FOC");
+
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
+
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal("0.00");
+                                    invoiceListModel.setPricevalue("0.00");
+
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoiceshowList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr4","");
+
+                                }
+
+
                             }
+
 
                             model.setInvoiceList(invoiceshowList);
                             pdfInvoiceList.add(model);

@@ -21,7 +21,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.StrictMode;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -48,7 +47,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -56,10 +54,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 import com.winapp.saperp.R;
 import com.winapp.saperp.activity.AddInvoiceActivity;
-import com.winapp.saperp.activity.CustomerListActivity;
 import com.winapp.saperp.activity.FilterCustomerListActivity;
 import com.winapp.saperp.activity.NavigationActivity;
-import com.winapp.saperp.activity.NewInvoiceListActivity;
 import com.winapp.saperp.adapter.SelectCustomerAdapter;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.model.CustomerDetails;
@@ -67,6 +63,7 @@ import com.winapp.saperp.model.CustomerGroupModel;
 import com.winapp.saperp.model.CustomerModel;
 import com.winapp.saperp.utils.BarCodeScanner;
 import com.winapp.saperp.utils.Constants;
+import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
@@ -852,6 +849,15 @@ public class ReceiptsListActivity extends NavigationActivity {
                             model.setReceiptNumber(responseObject.optString("receiptNumber"));
                             model.setReceiptDate(responseObject.optString("receiptDate"));
                             model.setPayMode(responseObject.optString("payMode"));
+                            model.setAddress(responseObject.optString("address1") + responseObject.optString("address2") + responseObject.optString("address3"));
+                            model.setAddress1(responseObject.optString("address1"));
+                            model.setAddress2(responseObject.optString("address2"));
+                            model.setAddress3(responseObject.optString("address3"));
+                            model.setAddressstate(responseObject.optString("block")+" "+responseObject.optString("street")+" "
+                                    +responseObject.optString("city"));
+                            model.setAddresssZipcode(responseObject.optString("countryName")+" "+responseObject.optString("state")+" "
+                                    +responseObject.optString("zipcode"));
+
                             model.setCustomerCode(responseObject.optString("customerCode"));
                             model.setCustomerName(responseObject.optString("customerName"));
                             model.setTotalAmount(responseObject.optString("netTotal"));
@@ -863,6 +869,15 @@ public class ReceiptsListActivity extends NavigationActivity {
                             model.setBankTransferDate(responseObject.optString("bankTransferDate"));
                             model.setBalanceAmount(responseObject.optString("balanceAmount"));
                             model.setCreditAmount(responseObject.optString("totalDiscount"));
+                           // model.setSignFlag(responseObject.optString("signFlag"));
+                           // String signFlag = responseObject.optString("signFlag");
+                            if (responseObject.optString("signature")!=null && !responseObject.optString("signature").equals("null") && !responseObject.optString("signature").isEmpty()){
+                                String signature = responseObject.optString("signature");
+                                Utils.setSignature(signature);
+                                createSignature();
+                            } else {
+                                Utils.setSignature("");
+                            }
                             JSONArray detailsArray=responseObject.optJSONArray("receiptDetails");
                             for (int i=0;i<detailsArray.length();i++){
                                 JSONObject object=detailsArray.getJSONObject(i);
@@ -915,7 +930,15 @@ public class ReceiptsListActivity extends NavigationActivity {
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
-
+    private void createSignature() {
+        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
+            try {
+                ImageUtil.saveStamp(this, Utils.getSignature(), "Signature");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /*private void getReceiptsDetails(String receiptNumber,int copy) throws JSONException {
         // Initialize a new RequestQueue instance
         JSONObject jsonObject = new JSONObject();

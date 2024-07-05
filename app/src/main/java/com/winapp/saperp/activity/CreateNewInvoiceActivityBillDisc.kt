@@ -2475,7 +2475,7 @@ class CreateNewInvoiceActivityBillDisc : AppCompatActivity() {
                             product.lastPrice = productObject.optString("lastSalesPrice")
                             product.minimumSellingPrice =
                                 productObject.optString("minimumSellingPrice")
-                            product.defaultUom = productObject.optString("defaultPurchaseUOM")
+                            product.defaultUom = productObject.optString("defaultSalesUOM")
                             if (productObject.optString("stockInHand") != "null") {
                                 product.stockQty = productObject.optString("stockInHand")
                             } else {

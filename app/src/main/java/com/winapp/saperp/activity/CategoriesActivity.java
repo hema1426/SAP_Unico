@@ -293,7 +293,7 @@ public class CategoriesActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_urlGroup:", url);
+        Log.w("Given_urlGroup:", url+jsonObject);
         dialog = new ProgressDialog(CategoriesActivity.this);
         dialog.setMessage("Loading Customers Groups...");
         dialog.setCancelable(false);

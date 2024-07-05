@@ -40,11 +40,13 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @SuppressLint("StaticFieldLeak")
     public static Context mContext;
     public static CallBack callBack;
+    public static String activityl;
 
-    public OrderHistoryAdapter(Context context, RecyclerView mRecyclerView, ArrayList<OrderHistoryModel> orderList, CallBack callBack) {
+    public OrderHistoryAdapter(Context context, RecyclerView mRecyclerView,String activity, ArrayList<OrderHistoryModel> orderList, CallBack callBack) {
 
         OrderHistoryAdapter.orderList = orderList;
         orderFilterList = orderList;
+        activityl =activity ;
         mContext=context;
         OrderHistoryAdapter.callBack =callBack;
 
@@ -95,37 +97,37 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if ( viewHolder instanceof SalesOrderViewHolder) {
             OrderHistoryModel model=orderList.get(position);
             ((SalesOrderViewHolder) viewHolder).orderDate.setText(model.getOrderDate());
-            ((SalesOrderViewHolder) viewHolder).orderTime.setText(model.getOrderTime());
+           // ((SalesOrderViewHolder) viewHolder).orderTime.setText(model.getOrderTime());
             ((SalesOrderViewHolder) viewHolder).customerName.setText(model.getCustomerName());
-            ((SalesOrderViewHolder) viewHolder).orderStatus.setText(model.getOrderStatus());
+            //((SalesOrderViewHolder) viewHolder).orderStatus.setText(model.getOrderStatus());
             ((SalesOrderViewHolder) viewHolder).orderId.setText(model.getOrderNumber());
             ((SalesOrderViewHolder) viewHolder).paidAmount.setText(model.getPaidAmount());
-            ((SalesOrderViewHolder) viewHolder).dueDays.setText(model.getDueDelayDays());
+          //  ((SalesOrderViewHolder) viewHolder).dueDays.setText(model.getDueDelayDays());
             ((SalesOrderViewHolder) viewHolder).dueAmount.setText(model.getDueAmount());
 
-            ((SalesOrderViewHolder) viewHolder).btnShowDetails.setOnClickListener(new View.OnClickListener() {
+            ((SalesOrderViewHolder) viewHolder).rootLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     // Onclick of the Load the Products details
                     Intent intent=new Intent(mContext, OrderDetailsActivity.class);
-                    intent.putExtra("activityFrom", AddInvoiceActivity.activityFrom);
-                    intent.putExtra("customerCode",model.getCustomerCode());
-                    intent.putExtra("orderNumber",model.getOrderId());
-                    intent.putExtra("orderDate",model.getOrderDate());
-                    intent.putExtra("customerName",model.getCustomerName());
-                    intent.putExtra("paidAmount",model.getPaidAmount());
-                    intent.putExtra("dueAmount",model.getDueAmount());
-                    intent.putExtra("orderStatus",model.getOrderStatus());
+                    intent.putExtra("activityFrom", activityl);
+                    intent.putExtra("customerCodeHis",model.getCustomerCode());
+                    intent.putExtra("orderNumberHis",model.getOrderId());
+                    intent.putExtra("orderDateHis",model.getOrderDate());
+                    intent.putExtra("customerNameHis",model.getCustomerName());
+                    intent.putExtra("paidAmountHis",model.getPaidAmount());
+                    intent.putExtra("dueAmountHis",model.getDueAmount());
+                   // intent.putExtra("orderStatusHis",model.getOrderStatus());
                     mContext.startActivity(intent);
                     ((Activity)mContext).finish();
                 }
             });
 
-            if (model.getOrderStatus().equals("Open")){
-                ((SalesOrderViewHolder) viewHolder).orderStatus.setTextColor(Color.parseColor("#229954"));
-            }else {
-                ((SalesOrderViewHolder) viewHolder).orderStatus.setTextColor(Color.parseColor("#5DADE2"));
-            }
+//            if (model.getOrderStatus().equals("Open")){
+//                ((SalesOrderViewHolder) viewHolder).orderStatus.setTextColor(Color.parseColor("#229954"));
+//            }else {
+//                ((SalesOrderViewHolder) viewHolder).orderStatus.setTextColor(Color.parseColor("#5DADE2"));
+//            }
 
             if (position % 2==1){
                 ((SalesOrderViewHolder) viewHolder).rootLayout.setBackgroundColor(Color.parseColor("#f3f3f3"));
@@ -149,27 +151,27 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     static class SalesOrderViewHolder extends RecyclerView.ViewHolder {
         private TextView orderDate;
-        private TextView orderTime;
+      //  private TextView orderTime;
         private TextView customerName;
         private TextView orderId;
-        private TextView orderStatus;
+      //  private TextView orderStatus;
         private TextView paidAmount;
         private TextView dueAmount;
-        private TextView dueDays;
-        private ImageView btnShowDetails;
+       // private TextView dueDays;
+      //  private TextView btnShowDetails;
         private LinearLayout rootLayout;
         public SalesOrderViewHolder(View view) {
             super(view);
-            orderDate=view.findViewById(R.id.order_date);
-            orderTime=view.findViewById(R.id.order_time);
-            customerName=view.findViewById(R.id.customer_name_value);
-            orderId=view.findViewById(R.id.order_id);
-            orderStatus=view.findViewById(R.id.order_status);
-            paidAmount=view.findViewById(R.id.paid_amount);
-            dueAmount=view.findViewById(R.id.due_amount);;
-            dueDays=view.findViewById(R.id.due_days);
-            btnShowDetails=view.findViewById(R.id.btn_show_order);
-            rootLayout=view.findViewById(R.id.rootLayout);
+            orderDate=view.findViewById(R.id.order_dateHis);
+           // orderTime=view.findViewById(R.id.order_time);
+            customerName=view.findViewById(R.id.customer_nameHis);
+            orderId=view.findViewById(R.id.order_idHis);
+          //  orderStatus=view.findViewById(R.id.order_status);
+            paidAmount=view.findViewById(R.id.paid_amountHis);
+            dueAmount=view.findViewById(R.id.due_amountHis);;
+           // dueDays=view.findViewById(R.id.due_days);
+           // btnShowDetails=view.findViewById(R.id.reOrderTxt);
+            rootLayout=view.findViewById(R.id.orderHistoryLay);
         }
     }
 

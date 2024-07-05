@@ -14,7 +14,8 @@
     <string name="title_activity_profile">Profile</string>
     <string name="is_not_valid_mac_address"> is not a valid MAC Address</string>
 
-
+    <string name="sales_orders">Sales Orders</string>
+    <string name="invoices">Invoices</string>
     <string name="register">Don\'t have an Account? <font fgcolor='#FF4CD964'>Register.</font></string> <!--green-->
     <string name="login">Have an Account? <font fgcolor='#FF4CD964'>Login.</font></string> <!--green-->
 

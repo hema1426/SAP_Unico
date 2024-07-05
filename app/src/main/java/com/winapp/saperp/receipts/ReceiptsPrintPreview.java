@@ -51,6 +51,7 @@ import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.winapp.saperp.R;
 import com.winapp.saperp.utils.Constants;
+import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
@@ -80,6 +81,7 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
     private SessionManager session;
     private HashMap<String, String> user;
     Double netTotal = 0.0;
+    Double netBal = 0.0;
 
     private ArrayList<ReceiptPrintPreviewModel> receiptsHeaderDetails;
     private ArrayList<ReceiptPrintPreviewModel.ReceiptsDetails> receiptsList;
@@ -92,7 +94,7 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
     private TextView addressText;
     private TextView deliveryAddressText;
     private TextView billDiscountText;
-    private TextView subtotalText;
+    private TextView balanceReceipt;
     private TextView taxValueText;
     private TextView netTotalText;
     private TextView outstandingText;
@@ -134,7 +136,15 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
     Button cancelButton;
     private String locationCode;
 
+    LinearLayout address1Layout;
+    LinearLayout address2Layout;
+    LinearLayout address3Layout;
+    LinearLayout address4Layout;
 
+    TextView customerAddress1;
+    TextView customerAddress2;
+    TextView customerAddress3;
+    TextView customerAddress4;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,7 +166,7 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
         customerNameText = findViewById(R.id.customer_name_value);
         deliveryAddressText = findViewById(R.id.delivery_address);
         billDiscountText = findViewById(R.id.bill_disc);
-        subtotalText = findViewById(R.id.balance_value);
+        balanceReceipt = findViewById(R.id.balance_value);
         taxValueText = findViewById(R.id.tax);
         netTotalText = findViewById(R.id.net_total);
         outstandingText = findViewById(R.id.outstanding_amount);
@@ -168,6 +178,17 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
         addressLayout = findViewById(R.id.adressLayout);
         rootLayout = findViewById(R.id.rootLayout);
         paymodeText=findViewById(R.id.pay_mode);
+
+        address1Layout=findViewById(R.id.address1Layout);
+        address2Layout=findViewById(R.id.address2Layout);
+        address3Layout=findViewById(R.id.address3Layout);
+        address4Layout=findViewById(R.id.address4Layout);
+
+        customerAddress1=findViewById(R.id.cus_address1);
+        customerAddress2=findViewById(R.id.cus_address2);
+        customerAddress3=findViewById(R.id.cus_address3);
+        customerAddress4=findViewById(R.id.cus_address4);
+
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType = sharedPreferences.getString("printer_type", "");
         printerMacId = sharedPreferences.getString("mac_address", "");
@@ -307,6 +328,15 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
                             model.setReceiptNumber(responseObject.optString("receiptNumber"));
                             model.setReceiptDate(responseObject.optString("receiptDate"));
                             model.setPayMode(responseObject.optString("payMode"));
+                            model.setAddress(responseObject.optString("address1") + responseObject.optString("address2") + responseObject.optString("address3"));
+                            model.setAddress1(responseObject.optString("address1"));
+                            model.setAddress2(responseObject.optString("address2"));
+                            model.setAddress3(responseObject.optString("address3"));
+                            model.setAddressstate(responseObject.optString("block")+" "+responseObject.optString("street")+" "
+                                    +responseObject.optString("city"));
+                            model.setAddresssZipcode(responseObject.optString("countryName")+" "+responseObject.optString("state")+" "
+                                    +responseObject.optString("zipcode"));
+
                             model.setCustomerCode(responseObject.optString("customerCode"));
                             model.setCustomerName(responseObject.optString("customerName"));
                             model.setTotalAmount(responseObject.optString("netTotal"));
@@ -320,10 +350,13 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
                             Utils.setInvoiceMode("Invoice");
                             Utils.setReceiptMode("true");
                             if (responseObject.optString("signature")!=null && !responseObject.optString("signature").equals("null") && !responseObject.optString("signature").isEmpty()){
-                                Utils.setSignature(responseObject.optString("signature"));
-                            }else {
+                                String signature = responseObject.optString("signature");
+                                Utils.setSignature(signature);
+                                createSignature();
+                            } else {
                                 Utils.setSignature("");
                             }
+
                             JSONArray detailsArray=responseObject.optJSONArray("receiptDetails");
                             for (int i=0;i<detailsArray.length();i++){
                                 JSONObject object=detailsArray.getJSONObject(i);
@@ -336,6 +369,7 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
                                 invoiceListModel.setBalanceAmount(object.optString("balanceAmount"));
 
                                 netTotal += Double.parseDouble(object.optString("paidAmount"));
+                                netBal += Double.parseDouble(object.optString("balanceAmount"));
 
                                 receiptsList.add(invoiceListModel);
                             }
@@ -343,6 +377,8 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
                             receiptsHeaderDetails.add(model);
                             if (receiptsList.size() > 0) {
                                 netTotalText.setText(Utils.twoDecimalPoint(netTotal));
+                                balanceReceipt.setText(Utils.twoDecimalPoint(netBal));
+
                                 setInvoiceAdapter();
                             }
                         }else {
@@ -386,6 +422,17 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
         requestQueue.add(jsonObjectRequest);
     }
 
+    private void createSignature() {
+        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
+            try {
+                ImageUtil.saveStamp(this, Utils.getSignature(), "Signature");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     public void setInvoiceAdapter() {
         for (ReceiptPrintPreviewModel model : receiptsHeaderDetails) {
             receiptNumberText.setText(model.getReceiptNumber());
@@ -393,6 +440,34 @@ public class ReceiptsPrintPreview extends AppCompatActivity implements OnPageCha
             customerCodetext.setText(model.getCustomerCode());
             paymodeText.setText(model.getPayMode());
             customerNameText.setText(model.getCustomerName());
+
+            if (!model.getAddress1().isEmpty()){
+                address1Layout.setVisibility(View.VISIBLE);
+                customerAddress1.setText(model.getAddress1());
+            }
+            if (!model.getAddress2().isEmpty()){
+                address2Layout.setVisibility(View.VISIBLE);
+                customerAddress2.setText(model.getAddress2());
+            }
+            if (!model.getAddress3().isEmpty()){
+                address3Layout.setVisibility(View.VISIBLE);
+                customerAddress3.setText(model.getAddress3());
+            }
+            if (!model.getAddressstate().isEmpty() ) {
+                if (!model.getAddresssZipcode().isEmpty()) {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddressstate() + " " + model.getAddresssZipcode());
+                } else {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddressstate());
+                }
+            }
+            else{
+                if (!model.getAddresssZipcode().isEmpty() ) {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddresssZipcode());
+                }
+            }
         }
 
         companyNametext.setText(company_name);

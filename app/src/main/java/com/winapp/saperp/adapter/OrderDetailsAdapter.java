@@ -46,7 +46,7 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
 
             OrderDetailsModel model= orderDetailsList.get(position);
             viewHolder.productName.setText(model.getProductName());
-            viewHolder.ctnQty.setText(model.getCtnQty());
+            viewHolder.ctnQty.setText(model.getCartonPrice());
             viewHolder.pcsQty.setText(model.getPcsQty());
             viewHolder.netQty.setText(model.getNetQty());
             viewHolder.netAmount.setText("$ "+model.getNetAmount());

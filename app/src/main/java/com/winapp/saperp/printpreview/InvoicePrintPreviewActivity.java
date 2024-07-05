@@ -145,10 +145,12 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
     LinearLayout address1Layout;
     LinearLayout address2Layout;
     LinearLayout address3Layout;
+    LinearLayout address4Layout;
 
     TextView customerAddress1;
     TextView customerAddress2;
     TextView customerAddress3;
+    TextView customerAddress4;
     String company_phone;
     String company_gst;
     private ArrayList<InvoicePrintPreviewModel.SalesReturnList> salesReturnList ;
@@ -204,10 +206,12 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
         address1Layout=findViewById(R.id.address1Layout);
         address2Layout=findViewById(R.id.address2Layout);
         address3Layout=findViewById(R.id.address3Layout);
+        address4Layout=findViewById(R.id.address4Layout);
 
         customerAddress1=findViewById(R.id.cus_address1);
         customerAddress2=findViewById(R.id.cus_address2);
         customerAddress3=findViewById(R.id.cus_address3);
+        customerAddress4=findViewById(R.id.cus_address4);
 
         pdfView = findViewById(R.id.pdfView);
         View bottomSheet = findViewById(R.id.design_bottom_sheet);
@@ -283,7 +287,6 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
         pDialog.setCancelable(false);
         pDialog.show();
         invoiceHeaderDetails = new ArrayList<>();
-        invoiceList = new ArrayList<>();
         salesReturnList=new ArrayList<>();
        // {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"WinApp","customerName":"WinApp","invoiceNumber":"33",
         // "invoiceStatus":"O","invoiceDate":"6\/8\/2021 12:00:00 am","netTotal":"26.750000","balanceAmount":"26.750000","totalDiscount":
@@ -304,7 +307,13 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                         if (statusCode.equals("1")){
                             JSONArray responseData=response.getJSONArray("responseData");
                             JSONObject object=responseData.optJSONObject(0);
-
+//                            if (!object.optString("ReturnQty").isEmpty() && !object.optString("ReturnQty").equals("null") && Double.parseDouble(object.optString("ReturnQty")) > 0) {
+//
+//                                if (Double.parseDouble(object.optString("FOCQty")) > 0) {
+//                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+//                                    if (Double.parseDouble(object.optString("Qty")) > 0) {
+//
+//                                        if (Double.parseDouble(object.optString("ExchangeQty")) > 0) {
                             InvoicePrintPreviewModel model = new InvoicePrintPreviewModel();
                             model.setInvoiceNumber(object.optString("invoiceNumber"));
                             model.setInvoiceDate(object.optString("invoiceDate"));
@@ -327,6 +336,12 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                             model.setAddress1(object.optString("address1"));
                             model.setAddress2(object.optString("address2"));
                             model.setAddress3(object.optString("address3"));
+
+                            model.setAddressstate(object.optString("block")+" "+object.optString("street")+" "
+                                    +object.optString("city"));
+                            model.setAddresssZipcode(object.optString("countryName")+" "+object.optString("state")+" "
+                                    +object.optString("zipcode"));
+
                             model.setSoNumber(object.optString("soNumber"));
                             model.setSoDate(object.optString("soDate"));
                             model.setDoDate(object.optString("doDate"));
@@ -341,9 +356,11 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                             }
 
                             JSONArray detailsArray=object.optJSONArray("invoiceDetails");
-                            for (int i=0;i<detailsArray.length();i++){
-                                JSONObject detailObject=detailsArray.optJSONObject(i);
-                                if (Double.parseDouble(detailObject.optString("quantity"))>0) {
+                            invoiceList = new ArrayList<>();
+
+                            for (int i=0;i<detailsArray.length();i++) {
+                                JSONObject detailObject = detailsArray.optJSONObject(i);
+                                if (Double.parseDouble(detailObject.optString("quantity")) > 0) {
                                     InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
                                     invoiceListModel.setProductCode(detailObject.optString("productCode"));
                                     invoiceListModel.setDescription(detailObject.optString("productName"));
@@ -353,6 +370,7 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                                     invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
                                     invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
                                     invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("");
                                     if (detailObject.optString("itemID") != null) {
                                         invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
                                     }
@@ -370,8 +388,108 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                                     invoiceListModel.setItemtax(detailObject.optString("totalTax"));
                                     invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
                                     invoiceList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr1","");
 
                                 }
+                                if (!detailObject.optString("returnQty").isEmpty() && !detailObject.optString("returnQty").equals("null")
+                                        && Double.parseDouble(detailObject.optString("returnQty")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("returnQty"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("Return");
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
+
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal("0.00");
+                                    invoiceListModel.setPricevalue("0.00");
+
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoiceList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr2","");
+
+                                }
+                                if (!detailObject.optString("exc_Qty").isEmpty() && !detailObject.optString("exc_Qty").equals("null")
+                                        && Double.parseDouble(detailObject.optString("exc_Qty")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("Exchange");
+
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
+
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal("0.00");
+                                    invoiceListModel.setPricevalue("0.00");
+
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoiceList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr3","");
+
+                                }
+                                if (!detailObject.optString("foc_Qty").isEmpty() && !detailObject.optString("foc_Qty").equals("null")
+                                        && Double.parseDouble(detailObject.optString("foc_Qty")) > 0) {
+                                    InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
+                                    invoiceListModel.setProductCode(detailObject.optString("productCode"));
+                                    invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setLqty(detailObject.optString("unitQty"));
+                                    invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+                                    invoiceListModel.setNetQty(detailObject.optString("quantity"));
+                                    invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+                                    invoiceListModel.setNetQuantity(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+                                    invoiceListModel.setSaleType("FOC");
+
+                                    if (detailObject.optString("itemID") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    }
+                                    invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+                                    invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double price = Double.parseDouble(detailObject.optString("price"));
+
+                                    double nettotal = qty * price;
+                                    invoiceListModel.setTotal("0.00");
+                                    invoiceListModel.setPricevalue("0.00");
+
+                                    invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+                                    invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+                                    invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    invoiceList.add(invoiceListModel);
+                                    Log.w("invoicSizeEntr4","");
+
+                                }
+                            }
 
                                 JSONArray SRArray=object.optJSONArray("sR_Details");
                                 assert SRArray != null;
@@ -385,10 +503,12 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                                     salesReturnList.add(salesReturnModel);
                                 }
 
+                                Log.w("invoicSize",""+invoiceList.size());
+
                                 model.setSalesReturnList(salesReturnList);
                                 model.setInvoiceList(invoiceList);
                                 invoiceHeaderDetails.add(model);
-                            }
+
                             if (invoiceList.size() > 0) {
                                 setInvoiceAdapter();
                             }
@@ -462,6 +582,21 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                 address3Layout.setVisibility(View.VISIBLE);
                 customerAddress3.setText(model.getAddress3());
             }
+            if (!model.getAddressstate().isEmpty() ) {
+                if (!model.getAddresssZipcode().isEmpty()) {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddressstate() + " " + model.getAddresssZipcode());
+                } else {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddressstate());
+                }
+            }
+            else{
+                    if (!model.getAddresssZipcode().isEmpty() ) {
+                        address4Layout.setVisibility(View.VISIBLE);
+                        customerAddress4.setText(model.getAddresssZipcode());
+                    }
+                }
           /*  if (!model.getDeliveryAddress().isEmpty()) {
                 addressLayout.setVisibility(View.VISIBLE);
                 deliveryAddressText.setText(model.getDeliveryAddress());

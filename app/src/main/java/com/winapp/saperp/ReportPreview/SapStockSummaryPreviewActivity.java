@@ -322,6 +322,7 @@ public class SapStockSummaryPreviewActivity extends AppCompatActivity {
 
     public void setStockSummaryPrint(ArrayList<ReportStockSummaryModel> receiptDetails, int copy) throws IOException {
         if (validatePrinterConfiguration()){
+            Log.w("stockpdtNameee",""+reportStockSummaryList.get(0).reportStockSummaryDetailsList.get(0).getProductName());
             if (printerType.equals("TSC Printer")){
                 if (receiptDetails.size()>0){
                     TSCPrinter printer=new TSCPrinter(this,printerMacId,"StockSummary");

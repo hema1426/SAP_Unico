@@ -50,6 +50,7 @@ import com.winapp.saperp.salesreturn.NewSalesReturnListActivity
 import com.winapp.saperp.utils.Constants
 import com.winapp.saperp.utils.GridSpacingItemDecoration
 import com.winapp.saperp.utils.SessionManager
+import com.winapp.saperp.utils.SharedPreferenceUtil
 import com.winapp.saperp.utils.Utils
 import org.json.JSONException
 import org.json.JSONObject
@@ -66,8 +67,8 @@ class DashboardActivity : NavigationActivity() {
     private var userName: TextView? = null
     private var dateText: TextView? = null
     private val customerList: ArrayList<CustomerModel>? = null
-    private val session: SessionManager? = null
-    private val user: HashMap<String, String>? = null
+    private var session1: SessionManager? = null
+    private var user1: HashMap<String, String>? = null
     private var company: HashMap<String, String>? = null
     private var companyCode: String? = null
     private var dbHelper: DBHelper? = null
@@ -84,6 +85,8 @@ class DashboardActivity : NavigationActivity() {
     private var settingsLayout: LinearLayout? = null
     private var catalogCard: CardView? = null
     private var creditLimit_Img: ImageView? = null
+    private var sharedPreferenceUtil: SharedPreferenceUtil? = null
+
     var locationCode: String? = null
     private var timeText: TextView? = null
     var dialog: AlertDialog? = null
@@ -97,6 +100,11 @@ class DashboardActivity : NavigationActivity() {
     var fromWarehouseName = ""
     var isPermissionToChangeLocation = false
     var isCheckedCreditLimit = false
+    var creditDialog: Dialog? = null
+    var itemSize_creditl: TextView? = null
+    var creditAmtApi = "10500"
+    private var sharedPref_billdisc: SharedPreferences? = null
+    private var myEdit: SharedPreferences.Editor? = null
     var isCheckedSO = false
     var isCheckedDO = false
     var isCheckedInvoice = false
@@ -104,11 +112,6 @@ class DashboardActivity : NavigationActivity() {
     var isCheckedCatalog = false
     var isCheckedCustomer = false
     var isCheckedProduct = false
-    var creditDialog: Dialog? = null
-    var itemSize_creditl: TextView? = null
-    var creditAmtApi = "10500"
-    private var sharedPref_billdisc: SharedPreferences? = null
-    private var myEdit: SharedPreferences.Editor? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,12 +126,14 @@ class DashboardActivity : NavigationActivity() {
         userName = findViewById(R.id.user_name)
         dateText = findViewById(R.id.date)
         dbHelper = DBHelper(this)
-        session = SessionManager(this)
-        user = session.userDetails
-        company = session.companyDetails
+        session1 = SessionManager(this)
+        sharedPreferenceUtil = SharedPreferenceUtil(this)
+
+        user1 = session1!!.userDetails
+        company = session1!!.companyDetails
         companyLogoString = company!!.get(SessionManager.KEY_COMPANY_LOGO)
-        companyCode = user[SessionManager.KEY_COMPANY_CODE]
-        locationCode = user[SessionManager.KEY_LOCATION_CODE]
+        companyCode = user1!![SessionManager.KEY_COMPANY_CODE]
+        locationCode = user1!![SessionManager.KEY_LOCATION_CODE]
         catalogLayout = findViewById(R.id.catalog_layout)
         salesOrderLayout = findViewById(R.id.sales_order_layout)
         invoiceLayout = findViewById(R.id.invoice_layout)
@@ -152,9 +157,9 @@ class DashboardActivity : NavigationActivity() {
         val df = SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault())
         val formattedDate = df.format(c)
         dateText!!.setText(formattedDate)
-        session = SessionManager(this)
-        user = session.userDetails
-        userName!!.setText(user[SessionManager.KEY_USER_NAME])
+        session1 = SessionManager(this)
+        user1 = session1!!.userDetails
+        userName!!.setText(user1!![SessionManager.KEY_USER_NAME])
 
         sharedPref_billdisc = getSharedPreferences("BillDiscPref", MODE_PRIVATE)
         myEdit = sharedPref_billdisc!!.edit()
@@ -162,6 +167,7 @@ class DashboardActivity : NavigationActivity() {
         myEdit!!.putString("billDisc_amt","0.0")
         myEdit!!.putString("billDisc_percent","0.0")
         myEdit!!.apply()
+        sharedPreferenceUtil!!.setStringPreference(sharedPreferenceUtil!!.KEY_ACTIVITY, "DO")
 
         dashboardView = findViewById(R.id.root_layout)
         titleList = ArrayList()
@@ -173,7 +179,7 @@ class DashboardActivity : NavigationActivity() {
             }
         }
         if (locationCode != null && !locationCode!!.isEmpty()) {
-            locationCode = user[SessionManager.KEY_LOCATION_CODE]
+            locationCode = user1!![SessionManager.KEY_LOCATION_CODE]
         } else {
             Toast.makeText(this, "Choose Location", Toast.LENGTH_SHORT).show()
         }
@@ -243,7 +249,7 @@ class DashboardActivity : NavigationActivity() {
                         isCheckedCatalog = if (model.settingValue == "True") {
                             true
                         } else {
-                            true
+                            false
                         }
                     } else if (model.settingName == "showCustomer") {
                         Log.w("SettingNameCust:", model.settingName)
@@ -264,7 +270,7 @@ class DashboardActivity : NavigationActivity() {
                     }
                 }
             }
-            if (isCheckedSO) {
+            if (isCheckedSO && (locationCode != null && !locationCode!!.isEmpty()) ) {
                 salesOrderLayout!!.setAlpha(0.9f)
                 salesOrderLayout!!.setEnabled(true)
                 salesOrderLayout!!.setClickable(true)
@@ -273,42 +279,42 @@ class DashboardActivity : NavigationActivity() {
                 salesOrderLayout!!.setEnabled(false)
                 salesOrderLayout!!.setClickable(false)
             }
-            if (isCheckedCatalog) {
+            if (isCheckedCatalog && (locationCode != null && !locationCode!!.isEmpty()) ) {
                 catalogCard!!.setAlpha(0.9f)
                 catalogCard!!.setEnabled(true)
             } else {
                 catalogCard!!.setAlpha(0.4f)
                 catalogCard!!.setEnabled(false)
             }
-            if (isCheckedSalesReturn) {
+            if (isCheckedSalesReturn && (locationCode != null && !locationCode!!.isEmpty()) ) {
                 salesReturnLayout!!.setAlpha(0.9f)
                 salesReturnLayout!!.setEnabled(true)
             } else {
                 salesReturnLayout!!.setAlpha(0.4f)
                 salesReturnLayout!!.setEnabled(false)
             }
-            if (isCheckedDO) {
+            if (isCheckedDO && (locationCode != null && !locationCode!!.isEmpty()) ) {
                 deliveryLayout!!.setAlpha(0.9f)
                 deliveryLayout!!.setEnabled(true)
             } else {
                 deliveryLayout!!.setAlpha(0.4f)
                 deliveryLayout!!.setEnabled(false)
             }
-            if (isCheckedCustomer) {
+            if (isCheckedCustomer && (locationCode != null && !locationCode!!.isEmpty()) ) {
                 customerLayout!!.setAlpha(0.9f)
                 customerLayout!!.setEnabled(true)
             } else {
                 customerLayout!!.setAlpha(0.4f)
                 customerLayout!!.setEnabled(false)
             }
-            if (isCheckedProduct) {
+            if (isCheckedProduct && (locationCode != null && !locationCode!!.isEmpty()) ) {
                 productsLayout!!.setAlpha(0.9f)
                 productsLayout!!.setEnabled(true)
             } else {
                 productsLayout!!.setAlpha(0.4f)
                 productsLayout!!.setEnabled(false)
             }
-            if (isCheckedInvoice) {
+            if (isCheckedInvoice && (locationCode != null && !locationCode!!.isEmpty()) ) {
                 invoiceLayout!!.setAlpha(0.9f)
                 invoiceLayout!!.setEnabled(true)
                 invoiceLayout!!.setClickable(true)
@@ -372,7 +378,7 @@ class DashboardActivity : NavigationActivity() {
         titleList.add("Product");
         titleList.add("Goods Receive");
         titleList.add("Settings");*/
-            val userRolls = helper.userPermissions
+            val userRolls = helper!!.userPermissions
             if (userRolls.size > 0) {
                 for (roll in userRolls) {
                     when (roll.formName) {
@@ -457,10 +463,14 @@ class DashboardActivity : NavigationActivity() {
             startActivity(intent)
         })
         salesOrderLayout!!.setOnClickListener(View.OnClickListener {
+            sharedPreferenceUtil!!.setStringPreference(sharedPreferenceUtil!!.KEY_ACTIVITY, "SalesOrder")
+
             val intent = Intent(this@DashboardActivity, SalesOrderListActivity::class.java)
             startActivity(intent)
         })
         invoiceLayout!!.setOnClickListener(View.OnClickListener {
+            sharedPreferenceUtil!!.setStringPreference(sharedPreferenceUtil!!.KEY_ACTIVITY, "Invoice")
+
             val intent = Intent(this@DashboardActivity, NewInvoiceListActivity::class.java)
             startActivity(intent)
         })
@@ -469,6 +479,8 @@ class DashboardActivity : NavigationActivity() {
             startActivity(intent)
         })
         deliveryLayout!!.setOnClickListener(View.OnClickListener {
+            sharedPreferenceUtil!!.setStringPreference(sharedPreferenceUtil!!.KEY_ACTIVITY, "DO")
+
             val intent = Intent(this@DashboardActivity, DeliveryOrderListActivity::class.java)
             startActivity(intent)
         })
@@ -489,6 +501,8 @@ class DashboardActivity : NavigationActivity() {
         salesReturnLayout!!.setOnClickListener(View.OnClickListener {
             /*  Intent intent=new Intent(DashboardActivity.this, SalesReturnActivity.class);
                     startActivity(intent);*/
+            sharedPreferenceUtil!!.setStringPreference(sharedPreferenceUtil!!.KEY_ACTIVITY, "SalesReturn")
+
             val intent = Intent(this@DashboardActivity, NewSalesReturnListActivity::class.java)
             startActivity(intent)
 
@@ -608,8 +622,8 @@ class DashboardActivity : NavigationActivity() {
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         try {
-            user = session.userDetails
-            locationCode = user[SessionManager.KEY_LOCATION_CODE]
+            user1 = session1!!.userDetails
+            locationCode = user1!![SessionManager.KEY_LOCATION_CODE]
             menu.getItem(0).setVisible(true)
             menu.getItem(0).setTitle("Location : $locationCode")
         } catch (ex: Exception) {
@@ -916,7 +930,7 @@ class DashboardActivity : NavigationActivity() {
         var textCartItemCount: TextView? = null
         var mCartItemCount = 0
         fun setupBadge() {
-            mCartItemCount = helper.numberOfRows()
+            mCartItemCount = helper!!.numberOfRows()
             if (textCartItemCount != null) {
                 if (mCartItemCount == 0) {
                     if (textCartItemCount!!.visibility != View.GONE) {

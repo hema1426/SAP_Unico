@@ -36,6 +36,8 @@ public class ReceiptPrintPreViewAdapter extends RecyclerView.Adapter<ReceiptPrin
         viewHolder.invoiceNo.setText(receiptList.getInvoiceNumber());
         viewHolder.invoiceDate.setText(receiptList.getInvoiceDate());
         viewHolder.amount.setText(receiptList.getAmount());
+        viewHolder.discount.setText(receiptList.getDiscountAmount());
+
     }
 
     @Override
@@ -48,12 +50,15 @@ public class ReceiptPrintPreViewAdapter extends RecyclerView.Adapter<ReceiptPrin
         private TextView invoiceNo;
         private TextView invoiceDate;
         private TextView amount;
+        private TextView discount;
         public ViewHolder(View view) {
             super(view);
             slNo=view.findViewById(R.id.sl_no);
             invoiceNo=view.findViewById(R.id.invoice_no);
             invoiceDate=view.findViewById(R.id.invoice_date);
             amount=view.findViewById(R.id.amount);
+            discount=view.findViewById(R.id.disc_receipt);
+
         }
     }
 

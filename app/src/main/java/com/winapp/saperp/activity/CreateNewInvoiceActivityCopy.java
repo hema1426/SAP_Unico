@@ -2351,7 +2351,7 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
                         product.setUnitCost(productObject.optString("price"));
                         product.setLastPrice(productObject.optString("lastSalesPrice"));
                         product.setMinimumSellingPrice(productObject.optString("minimumSellingPrice"));
-                        product.setDefaultUom(productObject.optString("defaultPurchaseUOM"));
+                        product.setDefaultUom(productObject.optString("defaultSalesUOM"));
 
                         if (!productObject.optString("stockInHand").equals("null")) {
                             product.setStockQty(productObject.optString("stockInHand"));

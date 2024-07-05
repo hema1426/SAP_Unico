@@ -294,6 +294,113 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/address1Layout"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="12sp"
+                    android:text="Address 1 : "
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/cus_address1"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/address2Layout"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="12sp"
+                    android:text="Address 2 : "
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="20dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:text=":"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/cus_address2"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/address3Layout"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="12sp"
+                    android:text="Address 3 : "
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/cus_address3"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:id="@+id/address4Layout"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="12sp"
+                    android:text="Address 4"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="20dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text=":"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/cus_address4"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
         </LinearLayout>
         <View
             android:layout_width="match_parent"
@@ -319,7 +426,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:text="Invoice No"
+                android:text="Inv No"
                 android:textSize="12sp"
                 android:gravity="center"
                 android:textStyle="bold"
@@ -329,7 +436,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:text="Invoice Date"
+                android:text="Inv Date"
                 android:gravity="center"
                 android:textSize="12sp"
                 android:textColor="#042B97"
@@ -340,7 +447,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:text="Amount"
+                android:text="Amt"
                 android:layout_weight="1"
                 android:textColor="#042B97"
                 android:textStyle="bold"
@@ -348,6 +455,15 @@
                 android:gravity="center"
                 android:layout_height="wrap_content"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:text="Disc"
+                android:layout_weight="1"
+                android:textColor="#042B97"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:layout_height="wrap_content"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -437,32 +553,28 @@
                 android:layout_width="0dip"
                 android:layout_weight="1"
                 android:layout_height="0dip"/>
-
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:orientation="horizontal"
-                android:visibility="gone"
-                android:layout_gravity="end"
+                android:layout_gravity="right"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_width="100dp"
+                    android:layout_width="120dp"
                     android:padding="5dp"
-                    android:textStyle="bold"
-                    android:textColor="#212121"
+                    android:textSize="11sp"
+                    android:textColor="#042B97"
                     android:layout_marginRight="10dp"
-                    android:textSize="12sp"
-                    android:text="Sub Total  :"
+                    android:textStyle="bold"
+                    android:text="Total Amount : "
                     android:layout_height="wrap_content"/>
-
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:padding="5dp"
-                    android:id="@+id/balance_value"
                     android:textStyle="bold"
-                    android:textColor="#212121"
+                    android:textColor="#042B97"
+                    android:id="@+id/net_total"
                     android:textSize="12sp"
                     android:layout_gravity="center"
                     android:gravity="center"
@@ -470,7 +582,6 @@
 
 
             </LinearLayout>
-
 
 
         </LinearLayout>
@@ -541,30 +652,30 @@
 
 
         </LinearLayout>
-
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:orientation="horizontal"
-            android:layout_gravity="right"
+            android:visibility="visible"
+            android:layout_gravity="end"
             android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="100dp"
+                android:layout_width="120dp"
                 android:padding="5dp"
-                android:textSize="12sp"
+                android:textStyle="bold"
                 android:textColor="#042B97"
                 android:layout_marginRight="10dp"
-                android:textStyle="bold"
-                android:text="Total Amount  :"
+                android:textSize="11sp"
+                android:text="Net Balance : "
                 android:layout_height="wrap_content"/>
+
 
             <TextView
                 android:layout_width="wrap_content"
                 android:padding="5dp"
+                android:id="@+id/balance_value"
                 android:textStyle="bold"
                 android:textColor="#042B97"
-                android:id="@+id/net_total"
                 android:textSize="12sp"
                 android:layout_gravity="center"
                 android:gravity="center"
@@ -572,6 +683,7 @@
 
 
         </LinearLayout>
+
 
         <View
             android:layout_width="match_parent"

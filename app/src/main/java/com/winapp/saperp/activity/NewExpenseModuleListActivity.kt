@@ -7,12 +7,14 @@ import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Build.VERSION
 import android.os.Bundle
@@ -61,6 +63,7 @@ import com.cete.dynamicpdf.pageelements.Label
 import com.github.barteksc.pdfviewer.PDFView
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
+import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -100,7 +103,12 @@ import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -124,8 +132,8 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
     private val invoiceList: ArrayList<InvoiceModel>? = null
     private var pDialog: SweetAlertDialog? = null
     var pageNo = 1
-    private val session: SessionManager? = null
-    private val user: HashMap<String, String>? = null
+    private var session1: SessionManager? = null
+    private var user1: HashMap<String, String>? = null
     private var companyId: String? = null
     var supplierList: ArrayList<SupplierModel>? = ArrayList()
 
@@ -136,7 +144,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
     private var viewPager: ViewPager? = null
     private var operationLayout: LinearLayout? = null
     private var emptyLayout: LinearLayout? = null
-    private val toolbar: Toolbar? = null
+    private val toolbar1: Toolbar? = null
     private val lettersRecyclerview: RecyclerView? = null
     private var customerView: RecyclerView? = null
     private val adapter: SortAdapter? = null
@@ -163,7 +171,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
     private var fromDate: EditText? = null
     private var toDate: EditText? = null
     private var invoiceStatus: Spinner? = null
-    private var supplierSpinner: Spinner? = null
+    private var supplierSpinner: SearchableSpinner? = null
     private var mYear = 0
     private var mMonth = 0
     private var mDay = 0
@@ -211,10 +219,11 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
     private var company_address3: String? = null
     private var pdfGenerateDialog: ProgressDialog? = null
     var oustandingAmount = "0.0"
+    private var pd: ProgressDialog? = null
+
     var emptyTextView: TextView? = null
     var isInvoicePrint = true
     private var username: String? = null
-    private var pd: ProgressDialog? = null
     var shareLayout: LinearLayout? = null
     var printLayout: LinearLayout? = null
     var cancelButton: Button? = null
@@ -237,19 +246,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 
         Objects.requireNonNull(supportActionBar)!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setTitle("Expense")
-        pd = ProgressDialog(this@NewExpenseModuleListActivity)
-        pd!!.setMessage("Downloading Product Image, please wait ...")
-        pd!!.isIndeterminate = true
-        pd!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-        pd!!.setCancelable(false)
-        pd!!.setButton(
-            DialogInterface.BUTTON_NEGATIVE,
-            "CANCEL"
-        ) { dialog, whichButton -> dialog.dismiss() }
-        pd!!.setProgressNumberFormat("%1d KB/%2d KB")
-        pdfGenerateDialog = ProgressDialog(this)
-        pdfGenerateDialog!!.setCancelable(false)
-        pdfGenerateDialog!!.setMessage("Expense Pdf generating please wait...")
+
         allInvoiceButton = findViewById(R.id.btn_all_invoice)
         paidInvoiceButton = findViewById(R.id.btn_paid_invoice)
         outstandingInvoiceButton = findViewById(R.id.btn_outstanding_invoice)
@@ -260,25 +257,25 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         invoiceView = findViewById(R.id.invoice_view)
         paidView = findViewById(R.id.paid_view)
         invoiceListView = findViewById(R.id.invoiceList)
-        session = SessionManager(this)
-        user = session.userDetails
-        companyId = user[SessionManager.KEY_COMPANY_CODE]
-        username = user[SessionManager.KEY_USER_NAME]
+        session1 = SessionManager(this)
+        user1 = session1!!.userDetails
+        companyId = user1!!!![SessionManager.KEY_COMPANY_CODE]
+        username = user1!![SessionManager.KEY_USER_NAME]
         operationLayout = findViewById(R.id.operation_layout)
         emptyLayout = findViewById(R.id.empty_layout)
         emptyTextView = findViewById(R.id.empty_text)
         netTotalText = findViewById(R.id.net_total_value)
-        session = SessionManager(this)
+        session1 = SessionManager(this)
         dbHelper = DBHelper(this)
-        companyCode = user[SessionManager.KEY_COMPANY_CODE]
-        locationCode = user[SessionManager.KEY_LOCATION_CODE]
+        companyCode = user1!![SessionManager.KEY_COMPANY_CODE]
+        locationCode = user1!![SessionManager.KEY_LOCATION_CODE]
         customerView = findViewById(R.id.customerList)
         totalCustomers = findViewById(R.id.total_customers)
         cancelSheet = findViewById(R.id.cancel_sheet)
         viewPager = findViewById(R.id.pager)
         searchFilterView = findViewById(R.id.search_filter)
         invoiceStatus = findViewById(R.id.invoice_status)
-        supplierSpinner = findViewById(R.id.supplier_name_spinner) as Spinner
+        supplierSpinner = findViewById(R.id.supplier_name_spinner)
         fromDate = findViewById(R.id.from_date)
         toDate = findViewById(R.id.to_date)
         searchButton = findViewById(R.id.btn_searchExpens)
@@ -314,22 +311,39 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         shareLayout = findViewById(R.id.share_layout)
         printLayout = findViewById(R.id.print_layout)
         cancelButton = findViewById(R.id.cancel)
-        company_name = user[SessionManager.KEY_COMPANY_NAME]
-        company_address1 = user[SessionManager.KEY_ADDRESS1]
-        company_address2 = user[SessionManager.KEY_ADDRESS2]
-        company_address3 = user[SessionManager.KEY_ADDRESS3]
+        company_name = user1!![SessionManager.KEY_COMPANY_NAME]
+        company_address1 = user1!![SessionManager.KEY_ADDRESS1]
+        company_address2 = user1!![SessionManager.KEY_ADDRESS2]
+        company_address3 = user1!![SessionManager.KEY_ADDRESS3]
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE)
         printerType = sharedPreferences!!.getString("printer_type", "")
         printerMacId = sharedPreferences!!.getString("mac_address", "")
 
         // PrinterUtils printerUtils=new PrinterUtils(this,printerMacId);
         //   printerUtils.connectPrinter();
+
+
+        pd = ProgressDialog(this@NewExpenseModuleListActivity)
+        pd!!.setMessage("Downloading Product Image, please wait ...")
+        pd!!.isIndeterminate = true
+        pd!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+        pd!!.setCancelable(false)
+        pd!!.setButton(
+            DialogInterface.BUTTON_NEGATIVE, "CANCEL"
+        ) { dialog, whichButton -> dialog.dismiss() }
+        pd!!.setProgressNumberFormat("%1d KB/%2d KB")
+        pdfGenerateDialog = ProgressDialog(this)
+        pdfGenerateDialog!!.setCancelable(false)
+        pdfGenerateDialog!!.setMessage("Expense Pdf generating please wait...")
+
         emptyTextView!!.setVisibility(View.VISIBLE)
         dbHelper!!.removeAllItems()
         dbHelper!!.removeAllInvoiceItems()
         AddInvoiceActivity.order_no = ""
         Log.w("Printer_Mac_Id:", printerMacId!!)
         Log.w("Printer_Type:", printerType!!)
+
+
 
         try {
             getVendorList()
@@ -452,7 +466,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 
                     BottomSheetBehavior.STATE_COLLAPSED -> {
                         Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_COLLAPSED")
-                        supportActionBar!!.setTitle("Invoices")
+                        supportActionBar!!.setTitle("Expense")
                         transLayout!!.setVisibility(View.GONE)
                         if (redirectInvoice) {
                             CustomerFragment.isLoad = true
@@ -729,6 +743,243 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         // printBookmarksTree(pdfView.getTableOfContents(), "-");
     }
 
+
+    fun getInvoicePdf(invoiceno: String?, mode: String) {
+        try {
+            // Initialize a new RequestQueue instance
+            val requestQueue = Volley.newRequestQueue(this)
+            // Initialize a new JsonArrayRequest instance
+            val jsonObject = JSONObject()
+            jsonObject.put("InvoiceNo", invoiceno)
+            val url = Utils.getBaseUrl(this) + "DownloadPDFAPInvoice"
+            Log.w("Given_url_PdfDownload:", "$url/$jsonObject")
+            pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
+            pDialog!!.progressHelper.barColor = Color.parseColor("#A5DC86")
+            pDialog!!.setTitleText("Generating Pdf...")
+            pDialog!!.setCancelable(false)
+            pDialog!!.show()
+            val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+                Method.POST,
+                url,
+                jsonObject,
+                Response.Listener { response: JSONObject ->
+                    try {
+                        pDialog!!.dismiss()
+                        Log.w("InvoicePdfResponse:", response.toString())
+                        //    {"statusCode":1,"statusMessage":"Success",
+                        //    "responseData":{"pdfURL":"http:\/\/172.16.5.60:8349\/PDF\/InvoiceNo_15031.pdf"}}
+                        if (response.length() > 0) {
+                            val statusCode = response.optString("statusCode")
+                            if (statusCode == "1") {
+                                val `object` = response.optJSONObject("responseData")
+                                val pdfUrl = `object`.optString("pdfURL")
+                                shareMode = mode
+                                InvoicePdfDownload(this).execute(pdfUrl, "invoice", invoiceno)
+                            } else {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Error in Getting report..",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                },
+                Response.ErrorListener { error: VolleyError ->
+                    Log.w(
+                        "Error_throwing:",
+                        error.toString()
+                    )
+                }) {
+                override fun getHeaders(): Map<String, String> {
+                    val params = java.util.HashMap<String, String>()
+                    val creds = String.format(
+                        "%s:%s",
+                        Constants.API_SECRET_CODE,
+                        Constants.API_SECRET_PASSWORD
+                    )
+                    val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
+                    params["Authorization"] = auth
+                    return params
+                }
+            }
+            jsonObjectRequest.setRetryPolicy(object : RetryPolicy {
+                override fun getCurrentTimeout(): Int {
+                    return 50000
+                }
+
+                override fun getCurrentRetryCount(): Int {
+                    return 50000
+                }
+
+                @Throws(VolleyError::class)
+                override fun retry(error: VolleyError) {
+                }
+            })
+            // Add JsonArrayRequest to the RequestQueue
+            requestQueue.add(jsonObjectRequest)
+        } catch (ex: java.lang.Exception) {
+        }
+    }
+
+    private inner class InvoicePdfDownload(private val c: Context) :
+        AsyncTask<String?, Int?, String?>() {
+        private var file_progress_count = 0
+        var newFile: File? = null
+        override fun doInBackground(vararg sUrl: String?): String? {
+            var `is`: InputStream? = null
+            var os: OutputStream? = null
+            var con: HttpURLConnection? = null
+            val length: Int
+            try {
+                val url = URL(sUrl[0])
+                con = url.openConnection() as HttpURLConnection
+                con!!.connect()
+                if (con.responseCode != HttpURLConnection.HTTP_OK) {
+                    return "HTTP CODE: " + con.responseCode + " " + con.responseMessage
+                }
+                length = con.contentLength
+                pd!!.max = length / 1000
+                `is` = con.inputStream
+                Log.w("DownloadImageURL:", url.toString())
+
+                //String folderPath = Environment.getExternalStorageDirectory() + "/CatalogErp/Products";
+                val folder = File(Constants.getFolderPath(this@NewExpenseModuleListActivity))
+                if (!folder.exists()) {
+                    val productsDirectory =
+                        File(Constants.getFolderPath(this@NewExpenseModuleListActivity))
+                    productsDirectory.mkdirs()
+                }
+
+                //create a new file
+                val filepath = sUrl[1] + "_" + sUrl[2]
+                val newfilePath = filepath.replace("/", "_")
+                newFile = File(
+                    Constants.getFolderPath(this@NewExpenseModuleListActivity),
+                    "$newfilePath.pdf"
+                )
+                if (newFile!!.exists()) {
+                    newFile!!.delete()
+                }
+                Log.w("GivenFilePath:", newFile.toString())
+                newFile!!.createNewFile()
+                //os = new FileOutputStream(Environment.getExternalStorageDirectory()+File.separator+"CatalogImages" + File.separator + "a-computer-engineer.jpg");
+                os = FileOutputStream(newFile)
+                val data = ByteArray(4096)
+                var total: Long = 0
+                var count: Int
+                while (`is`.read(data).also { count = it } != -1) {
+                    if (isCancelled) {
+                        `is`.close()
+                        return null
+                    }
+                    total += count.toLong()
+                    if (length > 0) {
+                        publishProgress(total.toInt())
+                    }
+                    file_progress_count = (100 * total / length.toLong()).toInt()
+                    os.write(data, 0, count)
+                }
+            } catch (e: Exception) {
+                Log.w("File_Write_Error:", e.message!!)
+                return e.toString()
+            } finally {
+                try {
+                    os?.close()
+                    `is`?.close()
+                } catch (ioe: IOException) {
+                }
+                con?.disconnect()
+            }
+            return null
+        }
+
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            pd!!.setMessage("Downloading Pdf..")
+            pd!!.show()
+        }
+
+        fun onProgressUpdate(vararg progress: Int) {
+            super.onProgressUpdate()
+            pd!!.isIndeterminate = false
+            pd!!.progress = progress[0] / 1000
+        }
+
+        override fun onPostExecute(result: String?) {
+            try {
+                Log.w("ProgressCount:", file_progress_count.toString() + "")
+                if (file_progress_count == 100) {
+                    pd!!.dismiss()
+                    if (newFile!!.exists()) {
+                        if (shareMode == "Share") {
+                            pdfFile = newFile
+                            displayFromAsset(newFile)
+                        } else {
+                            shareWhatsapp(newFile)
+                        }
+                    } else {
+                        Toast.makeText(applicationContext, "NO file Download", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+                if (result != null) {
+                }
+            } catch (exception: Exception) {
+            }
+        }
+    }
+    private fun displayFromAsset(assetFileName: File?) {
+        Log.w("DisplayFileName::", assetFileName.toString())
+        customerLayout!!.visibility = View.GONE
+        invoiceOptionLayout!!.visibility = View.GONE
+        pdfViewLayout!!.visibility = View.VISIBLE
+        if (behavior!!.state == BottomSheetBehavior.STATE_COLLAPSED) {
+            behavior!!.setState(BottomSheetBehavior.STATE_EXPANDED)
+        } else {
+            behavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
+        }
+        pdfView!!.fromFile(assetFileName)
+            .defaultPage(pageNumber)
+            .enableSwipe(true)
+            .swipeHorizontal(false)
+            .onPageChange(this)
+            .enableAnnotationRendering(true)
+            .onLoad(this)
+            .scrollHandle(DefaultScrollHandle(this))
+            .load()
+    }
+
+
+    fun viewPdfLayout(
+        invoiceNumber: String,
+        invoiceDetails: java.util.ArrayList<InvoicePrintPreviewModel>?
+    ) {
+        //pdfGenerateDialog.show();
+        if (VERSION.SDK_INT >= 23) {
+            if (checkPermission()) {
+                storagePath = Environment.getExternalStorageDirectory()
+                invoiceNO = invoiceNumber
+                FILE =
+                    Environment.getExternalStorageDirectory().toString() + "/" + invoiceNO + ".pdf"
+                fatchinvoiceList(invoiceDetails!!)
+                //createInvoicePdfTable(invoiceDetails);
+            } else {
+                requestPermission() // Code for permission
+            }
+        } else {
+            storagePath = Environment.getExternalStorageDirectory()
+            invoiceNO = invoiceNumber
+            FILE =
+                Environment.getExternalStorageDirectory().toString() + "/" + invoiceNO + ".pdf"
+            fatchinvoiceList(invoiceDetails)
+            //createInvoicePdfTable(invoiceDetails);
+        }
+    }
+
     override fun onResume() {
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE)
         printerType = sharedPreferences!!.getString("printer_type", "")
@@ -746,7 +997,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             outstandingInvoiceButton!!.setTextColor(Color.parseColor("#212121"))
             invoiceView!!.visibility = View.GONE
             paidView!!.visibility = View.VISIBLE
-            visibleFragment = "invoices"
+            visibleFragment = "Expense"
             invalidateOptionsMenu()
             loadFragment(ExpenseModuleListFragment())
         } else if (view.id == R.id.btn_paid_invoice) {
@@ -824,7 +1075,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             }
         }*/this.menu = menu
         val filter = menu.findItem(R.id.action_filter)
-        if (visibleFragment == "invoices") {
+        if (visibleFragment == "Expense") {
             filter.setVisible(true)
             //filter.setVisible(false);
         } else {
@@ -1035,110 +1286,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
 
     override fun onBackPressed() {
         finish()
-//        if (behavior!!.state == BottomSheetBehavior.STATE_EXPANDED) {
-//            behavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
-//        } else {
-//            finish()
-//        }
     }
-
-//    private inner class GetCustomersTask : AsyncTask<Void?, Int?, String>() {
-//        var TAG = javaClass.simpleName
-//        override fun onPreExecute() {
-//            super.onPreExecute()
-//            customerList = ArrayList()
-//            emptyTextView!!.text = "Customers List loading please wait..."
-//        }
-//
-//        protected override fun doInBackground(vararg arg0: Void): String {
-//            Log.d("$TAG DoINBackGround", "On doInBackground...")
-//            // Initialize a new RequestQueue instance
-//            val requestQueue = Volley.newRequestQueue(this@NewExpenseModuleListActivity)
-//            val url =
-//                Utils.getBaseUrl(this@NewExpenseModuleListActivity) + "MasterApi/GetCustomer_All?Requestdata={CompanyCode:" + companyCode + "}"
-//            Log.w("Given_url:", url)
-//            val jsonArrayRequest: JsonArrayRequest = object : JsonArrayRequest(Method.GET,
-//                url, null,
-//                Response.Listener { response: JSONArray ->
-//                    try {
-//                        // pDialog.dismiss();
-//                        // Loop through the array elements
-//                        Log.w("Customer_Response:", response.toString())
-//                        for (i in 0 until response.length()) {
-//                            // Get current json object
-//                            val customerObject = response.getJSONObject(i)
-//                            val model = CustomerModel()
-//                            model.customerCode = customerObject.optString("CustomerCode")
-//                            model.customerName = customerObject.optString("CustomerName")
-//                            model.customerAddress = customerObject.optString("Address1")
-//                            model.haveTax = customerObject.optString("HaveTax")
-//                            model.taxType = customerObject.optString("TaxType")
-//                            model.taxPerc = customerObject.optString("TaxPerc")
-//                            model.taxCode = customerObject.optString("TaxCode")
-//                            if (customerObject.optString("BalanceAmount") == "null" || customerObject.optString(
-//                                    "BalanceAmount"
-//                                ).isEmpty()
-//                            ) {
-//                                model.outstandingAmount = "0.00"
-//                            } else {
-//                                model.outstandingAmount = customerObject.optString("BalanceAmount")
-//                            }
-//                            customerList!!.add(model)
-//                        }
-//                    } catch (e: Exception) {
-//                        e.printStackTrace()
-//                    }
-//                }, Response.ErrorListener { error: VolleyError ->
-//
-//                    // Do something when error occurred
-//                    Log.w("Error_throwing:", error.toString())
-//                }) {
-//                override fun getHeaders(): Map<String, String> {
-//                    val params = HashMap<String, String>()
-//                    val creds = String.format(
-//                        "%s:%s",
-//                        Constants.API_SECRET_CODE,
-//                        Constants.API_SECRET_PASSWORD
-//                    )
-//                    val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
-//                    params["Authorization"] = auth
-//                    return params
-//                }
-//            }
-//            jsonArrayRequest.setRetryPolicy(object : RetryPolicy {
-//                override fun getCurrentTimeout(): Int {
-//                    return 50000
-//                }
-//
-//                override fun getCurrentRetryCount(): Int {
-//                    return 50000
-//                }
-//
-//                @Throws(VolleyError::class)
-//                override fun retry(error: VolleyError) {
-//                }
-//            })
-//            // Add JsonArrayRequest to the RequestQueue
-//            requestQueue.add(jsonArrayRequest)
-//            return "You are at PostExecute"
-//        }
-//
-//        override fun onPostExecute(result: String) {
-//            super.onPostExecute(result)
-//            if (customerList!!.size > 0) {
-//                emptyTextView!!.visibility = View.GONE
-//                customerView!!.visibility = View.VISIBLE
-//                dbHelper!!.removeAllCustomers()
-//                dbHelper!!.insertCustomerList(customerList)
-//                setAdapter(customerList)
-//            } else {
-//                customerView!!.visibility = View.GONE
-//                emptyTextView!!.text = "No Customer found.."
-//                emptyTextView!!.visibility = View.VISIBLE
-//                progressLayout!!.visibility = View.GONE
-//            }
-//        }
-//   }
 
     fun showProductDeleteAlert(customerId: String) {
         val builder1 = AlertDialog.Builder(this)
@@ -1171,108 +1319,6 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         alert11.show()
     }
 
-    fun getInvoicePdf(invoiceno: String?, mode: String) {
-        try {
-            // Initialize a new RequestQueue instance
-            val requestQueue = Volley.newRequestQueue(this)
-            // Initialize a new JsonArrayRequest instance
-            val jsonObject = JSONObject()
-            jsonObject.put("InvoiceNo", invoiceno)
-            val url = Utils.getBaseUrl(this) + "DownloadPDFInvoice"
-            Log.w("Given_url_PdfDownload:", "$url/$jsonObject")
-            pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
-            pDialog!!.progressHelper.barColor = Color.parseColor("#A5DC86")
-            pDialog!!.setTitleText("Generating Pdf...")
-            pDialog!!.setCancelable(false)
-            pDialog!!.show()
-            val jsonObjectRequest: JsonObjectRequest = @SuppressLint("LogNotTimber")
-            object : JsonObjectRequest(
-                Method.POST,
-                url,
-                jsonObject,
-                Response.Listener { response: JSONObject ->
-                    try {
-                        pDialog!!.dismiss()
-                        Log.w("InvoicePdfResponse:", response.toString())
-                        //    {"statusCode":1,"statusMessage":"Success",
-                        //    "responseData":{"pdfURL":"http:\/\/172.16.5.60:8349\/PDF\/InvoiceNo_15031.pdf"}}
-                        if (response.length() > 0) {
-                            val statusCode = response.optString("statusCode")
-                            if (statusCode == "1") {
-                                val `object` = response.optJSONObject("responseData")
-                                val pdfUrl = `object`.optString("pdfURL")
-                                shareMode = mode
-                                //  InvoicePdfDownload(this).execute(pdfUrl, "invoice", invoiceno)
-                            } else {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "Error in Getting report..",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                },
-                Response.ErrorListener { error: VolleyError ->
-                    Log.w(
-                        "Error_throwing:",
-                        error.toString()
-                    )
-                }) {
-                override fun getHeaders(): Map<String, String> {
-                    val params = HashMap<String, String>()
-                    val creds = String.format(
-                        "%s:%s",
-                        Constants.API_SECRET_CODE,
-                        Constants.API_SECRET_PASSWORD
-                    )
-                    val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
-                    params["Authorization"] = auth
-                    return params
-                }
-            }
-            jsonObjectRequest.setRetryPolicy(object : RetryPolicy {
-                override fun getCurrentTimeout(): Int {
-                    return 50000
-                }
-
-                override fun getCurrentRetryCount(): Int {
-                    return 50000
-                }
-
-                @Throws(VolleyError::class)
-                override fun retry(error: VolleyError) {
-                }
-            })
-            // Add JsonArrayRequest to the RequestQueue
-            requestQueue.add(jsonObjectRequest)
-        } catch (ex: Exception) {
-        }
-    }
-
-    fun viewPdfLayout(invoiceNumber: String, invoiceDetails: ArrayList<InvoicePrintPreviewModel>) {
-        //pdfGenerateDialog.show();
-        if (VERSION.SDK_INT >= 23) {
-            if (checkPermission()) {
-                storagePath = Environment.getExternalStorageDirectory()
-                invoiceNO = invoiceNumber
-                FILE =
-                    Environment.getExternalStorageDirectory().toString() + "/" + invoiceNO + ".pdf"
-                fatchinvoiceList(invoiceDetails)
-                //createInvoicePdfTable(invoiceDetails);
-            } else {
-                requestPermission() // Code for permission
-            }
-        } else {
-            storagePath = Environment.getExternalStorageDirectory()
-            invoiceNO = invoiceNumber
-            FILE = Environment.getExternalStorageDirectory().toString() + "/" + invoiceNO + ".pdf"
-            fatchinvoiceList(invoiceDetails)
-            //createInvoicePdfTable(invoiceDetails);
-        }
-    }
 
     fun shareWhatsapp(file: File?) {
         val shareIntent = Intent()
@@ -1381,7 +1427,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         }
     }
 
-    fun fatchinvoiceList(invoiceDetails: ArrayList<InvoicePrintPreviewModel>) {
+    fun fatchinvoiceList(invoiceDetails: ArrayList<InvoicePrintPreviewModel>?) {
         // Create a document and set it's properties
         val objDocument = Document()
         objDocument.creator = "Powered By : Google.com"
@@ -1390,9 +1436,10 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         // Create a page to add to the document
         val objPage = Page(PageSize.LETTER, PageOrientation.PORTRAIT, 20.0f)
         val strText = "INVOICE"
-        val invoiceTitle =
-            Label(strText, 0f, 0f, 504f, 100f, Font.getHelvetica(), 20f, TextAlign.CENTER)
+        val invoiceTitle = Label(strText, 0f, 0f, 504f, 100f, Font.getHelvetica(), 20f, TextAlign.CENTER)
+
         // Create a Label to add to the page
+
         val objLabel = Label(
             "$company_name\n$company_address1\n $company_address2\n$company_address3",
             0f,
@@ -1405,7 +1452,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         )
         val objLabel2 = Label(
             """
-    Invoice Number: ${invoiceDetails[0].invoiceNumber}
+    Invoice Number: ${invoiceDetails!![0].invoiceNumber}
     Invoice Date: ${invoiceDetails[0].invoiceDate}
     Customer Name: ${invoiceDetails[0].customerName}
     """.trimIndent(), 0f, 100f, 504f, 100f, Font.getHelvetica(), 12f, TextAlign.RIGHT
@@ -1422,7 +1469,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         for (model in invoiceDetails) {
             Log.w("BiggestLength:", PdfUtils.getLength(model.invoiceList).toString() + "")
             val titleLabel = Label(
-                "SNo" + PdfUtils.snoSpace() + "Description    " + PdfUtils.getDescriptionSpace(
+                "SNo" + PdfUtils.snoSpace() + "Description   " + PdfUtils.getDescriptionSpace(
                     15,
                     '\t'
                 ) + "Qty" + PdfUtils.qtySpace() + "Price" + PdfUtils.priceSpace() + "Total",
@@ -1544,7 +1591,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
     }
 
     @Throws(JSONException::class)
-    private fun getExpensePrintDetails(invoiceNumber: String?, copy: Int) {
+    fun getExpensePrintDetails(invoiceNumber: String?, copy: Int) {
         // Initialize a new RequestQueue instance
         val jsonObject = JSONObject()
         // jsonObject.put("CompanyCode", companyId);
@@ -1807,6 +1854,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             adapter.add(spinnerlist[i].customerName)
         }
         supplierSpinner!!.adapter = adapter
+        supplierSpinner!!.setTitle("")
         supplierSpinner!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapter: AdapterView<*>, v: View, position: Int, id: Long) {
                 // On selecting a spinner item
@@ -1913,7 +1961,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         var invoicePrintLayout: LinearLayout? = null
         var doPrintLayout: LinearLayout? = null
         private var cancelInvoiceLayout: LinearLayout? = null
-        private var visibleFragment = "invoices"
+        private var visibleFragment = "Expense"
         var selectCustomerId = ""
         var REQUEST_PERMISSIONS = 154
         private var FILE: String? = null
@@ -2021,6 +2069,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             }
 
         }
+
     }
 }
 

@@ -57,6 +57,7 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
         dbHelper=new DBHelper(context);
         viewHolder.productName.setText(model.getProductName());
         viewHolder.productCode.setText(model.getProductCode());
+
         if (model.getStockQty()!=null && !model.getStockQty().equals("null")){
             if (Double.parseDouble(model.getStockQty()) == 0 || Double.parseDouble(model.getStockQty()) < 0 ) {
                 viewHolder.stockQty.setText(model.getStockQty()+" ( No Stock )");

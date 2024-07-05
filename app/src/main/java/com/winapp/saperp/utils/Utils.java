@@ -29,6 +29,7 @@ import com.winapp.saperp.model.ProductsModel;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class Utils {
     public static String receiptMode = "";
     public static String currentDateTime = "";
     public static String logo = "";
+    public static String invoiceDate = "";
     public static String qrcode = "";
     public static String unpaid = "";
     public static String paid = "";
@@ -117,7 +119,13 @@ public class Utils {
     public static void setCurrentDateTime(String currentDateTime) {
         Utils.currentDateTime = currentDateTime;
     }
+    public static String getInvoiceDate() {
+        return invoiceDate;
+    }
 
+    public static void setInvoiceDate(String invoiceDate) {
+        Utils.invoiceDate = invoiceDate;
+    }
     public static String getReceiptMode() {
         return receiptMode;
     }
@@ -161,7 +169,23 @@ public class Utils {
             Utils.setReceiptMode("");
         }
     }
-
+    public static String getNextInvoiceDate(String date) throws ParseException {
+        String dt = date;  // Start date
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar c = Calendar.getInstance();
+        c.setTime(sdf.parse(dt));
+        c.add(Calendar.DATE, 1);  // number of days to add
+        dt = sdf.format(c.getTime());
+        System.out.println("GivenNextDate: "+dt);
+        return dt;
+    }
+    public static String getDayOfTheDate(String givenDate) throws ParseException {
+        DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Format f = new SimpleDateFormat("EEEE");
+        String str = f.format(sdf.parse(givenDate));
+        System.out.println("Day_Name: "+str);
+        return str;
+    }
     public static ArrayList<NewLocationModel.LocationDetails> getLocationList() {
         return locationDetails;
     }

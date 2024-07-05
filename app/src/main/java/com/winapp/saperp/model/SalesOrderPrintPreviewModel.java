@@ -22,6 +22,9 @@ public class SalesOrderPrintPreviewModel {
     private String address1;
     private String address2;
     private String address3;
+
+    private String addressstate;
+    private String addresssZipcode;
     private ArrayList<SalesList> salesList;
 
     public String getAddress1() {
@@ -158,6 +161,22 @@ public class SalesOrderPrintPreviewModel {
 
     public void setOutStandingAmount(String outStandingAmount) {
         this.outStandingAmount = outStandingAmount;
+    }
+
+    public String getAddressstate() {
+        return addressstate;
+    }
+
+    public void setAddressstate(String addressstate) {
+        this.addressstate = addressstate;
+    }
+
+    public String getAddresssZipcode() {
+        return addresssZipcode;
+    }
+
+    public void setAddresssZipcode(String addresssZipcode) {
+        this.addresssZipcode = addresssZipcode;
     }
 
     public ArrayList<SalesList> getSalesList() {

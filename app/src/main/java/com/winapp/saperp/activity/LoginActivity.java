@@ -469,6 +469,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 dbHelper.insertSettings("showCatelog",object.optString("showCatelog"));
                                 dbHelper.insertSettings("showCustomer",object.optString("showCustomer"));
                                 dbHelper.insertSettings("showProduct",object.optString("showProduct"));
+                                dbHelper.insertSettings("HAVESETTLEMENTBYDATE",object.optString("showProduct"));
+
                             }
                         }else {
                             Toast.makeText(getApplicationContext(),"Error,in getting Printer Settings",Toast.LENGTH_LONG).show();

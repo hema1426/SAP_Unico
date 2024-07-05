@@ -7,15 +7,11 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -35,20 +31,18 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.cete.dynamicpdf.io.G;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 import com.winapp.saperp.R;
 import com.winapp.saperp.ReportPreview.ReceiptDetailPreviewActivity;
 import com.winapp.saperp.ReportPreview.ReceiptSummaryPreviewActivity;
-import com.winapp.saperp.ReportPreview.RoCustomerPreviewActivity;
+import com.winapp.saperp.ReportPreview.RoCustomerOutstandDatePreviewActivity;
+import com.winapp.saperp.ReportPreview.RoCustomerOutstandPreviewActivity;
 import com.winapp.saperp.ReportPreview.RoInvoicebyProductPreviewActivity;
-import com.winapp.saperp.ReportPreview.RoInvoicebySummaryPreviewActivity;
 import com.winapp.saperp.ReportPreview.RoReceiptSettlePreviewActivity;
 import com.winapp.saperp.ReportPreview.RoSettlementPreviewActivity;
 import com.winapp.saperp.ReportPreview.SapSalesSummaryPreviewActivity;
 import com.winapp.saperp.ReportPreview.SapStockReturnPreviewActivity;
 import com.winapp.saperp.ReportPreview.SapStockSummaryPreviewActivity;
-import com.winapp.saperp.model.AppUtils;
 import com.winapp.saperp.model.CustomerModel;
 import com.winapp.saperp.model.CustomerStateModel;
 import com.winapp.saperp.model.InvoiceByProductModel;
@@ -70,8 +64,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -90,6 +82,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     private CheckBox invoiceByProduct;
     private CheckBox invoiceSummary;
     private CheckBox customerStatement;
+    private CheckBox customerStatementDatel;
     private CheckBox receiptSummary;
     private CheckBox receiptDetails;
     private CheckBox settlementReport;
@@ -137,6 +130,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     private ArrayList<ReportStockSummaryModel.ReportStockSummaryDetails> reportStockSummaryDetailsList;
     private ArrayList<CustomerStateModel> customerStateList ;
     private ArrayList<CustomerStateModel.CustInvoiceDetails> custInvoiceDetailsList ;
+    private ArrayList<CustomerStateModel.CustInvoiceDetailsAR> custInvoiceDetailsARList ;
+
     private TextView stockSummaryReport;
     private String currentDate;
     private String currentDateString;
@@ -177,6 +172,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         invoiceByProduct=findViewById(R.id.invoice_by_product);
         invoiceSummary=findViewById(R.id.invoice_by_summary);
         customerStatement=findViewById(R.id.customer_statement);
+        customerStatementDatel=findViewById(R.id.customer_statement_date);
         receiptDetails=findViewById(R.id.receipt_details);
         receiptSummary=findViewById(R.id.receipt_summary);
         settlementReport=findViewById(R.id.settlement_report);
@@ -193,6 +189,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         invoiceSummary.setOnClickListener(this);
         invoiceByProduct.setOnClickListener(this);
         customerStatement.setOnClickListener(this);
+        customerStatementDatel.setOnClickListener(this);
         receiptSummary.setOnClickListener(this);
         receiptDetails.setOnClickListener(this);
         settlementReport.setOnClickListener(this);
@@ -260,6 +257,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 receiptSummary.setChecked(false);
                 settlementReport.setChecked(false);
                 settle_receiptReport.setChecked(false);
+                customerStatementDatel.setChecked(false);
+
                 showFilterAlertDialog(view,"Invoice By Products");
             }
         }else if (view.getId()==R.id.invoice_by_summary){
@@ -270,19 +269,35 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 receiptSummary.setChecked(false);
                 settlementReport.setChecked(false);
                 settle_receiptReport.setChecked(false);
+                customerStatementDatel.setChecked(false);
+
                 showFilterAlertDialog(view,"Invoice By Summary");
             }
 
-        }else if (view.getId()==R.id.customer_statement){
-            if (customerStatement.isChecked()){
+        }else if (view.getId()==R.id.customer_statement) {
+            if (customerStatement.isChecked()) {
                 invoiceSummary.setChecked(false);
                 invoiceByProduct.setChecked(false);
                 receiptDetails.setChecked(false);
                 receiptSummary.setChecked(false);
                 settlementReport.setChecked(false);
                 settle_receiptReport.setChecked(false);
-                showFilterAlertDialog(view,"Customer Outstanding");
+                customerStatementDatel.setChecked(false);
+                showFilterAlertDialog(view, "Customer Outstanding Period");
             }
+        }
+            else if (view.getId()==R.id.customer_statement_date){
+                if (customerStatementDatel.isChecked()){
+                    invoiceSummary.setChecked(false);
+                    invoiceByProduct.setChecked(false);
+                    receiptDetails.setChecked(false);
+                    receiptSummary.setChecked(false);
+                    settlementReport.setChecked(false);
+                    settle_receiptReport.setChecked(false);
+                    customerStatement.setChecked(false);
+                    showFilterAlertDialog(view,"Customer Outstanding Statement (as on Date)");
+                }
+
         }else if (view.getId()==R.id.receipt_details){
             if (receiptDetails.isChecked()){
                 invoiceSummary.setChecked(false);
@@ -291,6 +306,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 customerStatement.setChecked(false);
                 settlementReport.setChecked(false);
                 settle_receiptReport.setChecked(false);
+                customerStatementDatel.setChecked(false);
+
                 showFilterAlertDialog(view,"Receipt Details");
             }
         }else if (view.getId()==R.id.receipt_summary){
@@ -301,6 +318,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 customerStatement.setChecked(false);
                 settlementReport.setChecked(false);
                 settle_receiptReport.setChecked(false);
+                customerStatementDatel.setChecked(false);
+
                 showFilterAlertDialog(view,"Receipt Summary");
             }
         }else if (view.getId()==R.id.settlement_report){
@@ -311,6 +330,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 receiptDetails.setChecked(false);
                 customerStatement.setChecked(false);
                 settle_receiptReport.setChecked(false);
+                customerStatementDatel.setChecked(false);
+
                 showFilterAlertDialog(view,"Settlement Report");
             }
         }else if (view.getId()==R.id.settle_receipt_report){
@@ -321,6 +342,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 receiptDetails.setChecked(false);
                 customerStatement.setChecked(false);
                 settlementReport.setChecked(false);
+                customerStatementDatel.setChecked(false);
+
                 showFilterAlertDialog(view,"Settlement With Receipt");
             }
         }
@@ -441,7 +464,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             setStatusList(status.get());
 
             if (title.equals("Receipt Details") || title.equals("Receipt Summary") || title.equals("Stock Summary")
-                    || title.equals("Bad Stock Report") || title.equals("Customer Outstanding")){
+                    || title.equals("Bad Stock Report") || title.equals("Customer Outstanding Period")){
                 stattusLayout.setVisibility(View.GONE);
             }else {
                 stattusLayout.setVisibility(View.VISIBLE);
@@ -457,6 +480,12 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 toDate.setVisibility(View.GONE);
                 userName.setVisibility(View.VISIBLE);
                 //  userListLayout.setVisibility(View.VISIBLE);
+            }
+
+            if (title.equals("Customer Outstanding Statement (as on Date)")){
+                fromDate.setVisibility(View.GONE);
+                stattusLayout.setVisibility(View.GONE);
+                userListLayout.setVisibility(View.GONE);
             }
 
             Date c = Calendar.getInstance().getTime();
@@ -574,7 +603,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                     startActivity(intent);
                                 }
                                 break;
-                            case "Customer Outstanding":
+                            case "Customer Outstanding Period":
                                 if (!customerListSpinner.getSelectedItem().toString().equals("Select Customer")) {
                                     dialog.dismiss();
                                     progressDialog.setMessage("Printing in Progress...!");
@@ -588,7 +617,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                             e.printStackTrace();
                                         }
                                     }else {
-                                        Intent intent=new Intent(ReportsActivity.this, RoCustomerPreviewActivity.class);
+                                        Intent intent=new Intent(ReportsActivity.this, RoCustomerOutstandPreviewActivity.class);
                                         intent.putExtra("fromDate",from_date);
                                         intent.putExtra("toDate",to_date);
                                         intent.putExtra("locationCode",locationCode);
@@ -600,7 +629,37 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                         startActivity(intent);
                                     }
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "Select Customer for Statement", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Select Customer", Toast.LENGTH_SHORT).show();
+                                }
+                                break;
+                            case "Customer Outstanding Statement (as on Date)":
+                                if (!customerListSpinner.getSelectedItem().toString().equals("Select Customer")) {
+                                    dialog.dismiss();
+                                    progressDialog.setMessage("Printing in Progress...!");
+                                    progressDialog.show();
+                                    if (isPrintEnable){
+                                        try {
+                                            getCustomerStatementDate(customer_id, customername[0].toString(),
+                                                    "", toDateString, "O",
+                                                    Integer.parseInt(noOfCopyText.getText().toString()));
+
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }else {
+                                        Intent intent=new Intent(ReportsActivity.this, RoCustomerOutstandDatePreviewActivity.class);
+                                        intent.putExtra("fromDate","");
+                                        intent.putExtra("toDate",to_date);
+                                        intent.putExtra("locationCode",locationCode);
+                                        intent.putExtra("companyId",companyCode);
+                                        intent.putExtra("customerCode",customer_id);
+                                        intent.putExtra("customerName",customer_name);
+                                        intent.putExtra("userName",username);
+                                        // intent.putExtra("allUserFilter",isAllUserCheck[0]);
+                                        startActivity(intent);
+                                    }
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Select Customer", Toast.LENGTH_SHORT).show();
                                 }
                                 break;
                             case "Receipt Details":
@@ -1526,14 +1585,14 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
-
-    private void getCustomerStatement(String customer_id,String customer_name,String from_date,String to_date, String status,int copy) throws JSONException {
+    private void getCustomerStatement( String customer_id,String customer_name,String from_date,String to_date, String status,int copy) throws JSONException {
 
         // Initialize a new RequestQueue instance
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("CustomerCode",customer_id);
         jsonObject.put("Status",status);
         jsonObject.put("FromDate",from_date);
+
         jsonObject.put("ToDate",to_date);
         jsonObject.put("LocationCode",locationCode);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -1541,14 +1600,14 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         // Initialize a new JsonArrayRequest instance
         Log.w("Given_url:",url+"/"+jsonObject.toString());
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-       pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-       pDialog.setTitleText("Processing Please wait...");
-       pDialog.setCancelable(false);
-       pDialog.show();
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Processing Please wait...");
+        pDialog.setCancelable(false);
+        pDialog.show();
 
         customerStateList =new ArrayList<>();
         custInvoiceDetailsList =new ArrayList<>();
-
+        custInvoiceDetailsARList =new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
             try{
                 Log.w("CustStat:",response.toString());
@@ -1580,7 +1639,23 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                             balance1 += Double.parseDouble(object.optString("balance"));
                             custInvoiceDetailsList.add(custInvoiceDetailModel);
                         }
+
+                        JSONArray jsonArray2 = detailObject.optJSONArray("reportCustomerARCreditMemoStatementDetails");
+                        if (jsonArray2.length() > 0) {
+                            for (int i = 0; i < Objects.requireNonNull(jsonArray2).length(); i++) {
+                                JSONObject object = jsonArray2.optJSONObject(i);
+                                CustomerStateModel.CustInvoiceDetailsAR custInvoiceDetailModel1 = new CustomerStateModel.CustInvoiceDetailsAR();
+
+                                custInvoiceDetailModel1.setInvoiceNumber(object.optString("arInvoiceNo"));
+                                custInvoiceDetailModel1.setInvoiceDate(object.optString("arInvoiceDate"));
+                                custInvoiceDetailModel1.setNetTotal(object.optString("arNetTotal"));
+                                custInvoiceDetailModel1.setBalanceAmount(object.optString("arBalance"));
+
+                                custInvoiceDetailsARList.add(custInvoiceDetailModel1);
+                            }
+                        }
                         model.setCustInvoiceDetailList(custInvoiceDetailsList);
+                        model.setCustInvoiceDetailsARList(custInvoiceDetailsARList);
                         customerStateList.add(model);
                     } else {
                         Toast.makeText(getApplicationContext(), "No Customer Statement Found..!", Toast.LENGTH_SHORT).show();
@@ -1626,6 +1701,123 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
+
+    private void getCustomerStatementDate( String customer_id,String customer_name,String from_date,String to_date, String status,int copy) throws JSONException {
+
+        // Initialize a new RequestQueue instance
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("CustomerCode",customer_id);
+        jsonObject.put("Status",status);
+        jsonObject.put("FromDate","");
+        jsonObject.put("ToDate",to_date);
+        jsonObject.put("LocationCode",locationCode);
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        url= Utils.getBaseUrl(this) +"reportcustomerstatementToDate";
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_urlDate:",url+"/"+jsonObject.toString());
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Processing Please wait...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        customerStateList =new ArrayList<>();
+        custInvoiceDetailsList =new ArrayList<>();
+        custInvoiceDetailsARList =new ArrayList<>();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
+            try{
+                Log.w("CustStatDate:",response.toString());
+
+                //pDialog.dismiss();
+                String statusCode=response.optString("statusCode");
+                String statusMessage=response.optString("statusMessage");
+                if (statusCode.equals("1")) {
+                    JSONArray jsonArray = response.optJSONArray("responseData");
+                    assert jsonArray != null;
+                    if (jsonArray.length() > 0) {
+                        JSONObject detailObject = jsonArray.optJSONObject(0);
+
+                        CustomerStateModel model = new CustomerStateModel();
+                        model.setCustomerName(detailObject.optString("customerName"));
+
+                        double nettotal1 = 0.0;
+                        double balance1 = 0.0;
+                        JSONArray jsonArray1 = detailObject.optJSONArray("reportCustomerStatementDetails");
+
+                        for (int i = 0; i < Objects.requireNonNull(jsonArray1).length(); i++) {
+                            JSONObject object = jsonArray1.optJSONObject(i);
+                            CustomerStateModel.CustInvoiceDetails custInvoiceDetailModel = new CustomerStateModel.CustInvoiceDetails();
+                            custInvoiceDetailModel.setInvoiceNumber(object.optString("invoiceNo"));
+                            custInvoiceDetailModel.setInvoiceDate(object.optString("invoiceDate"));
+                            custInvoiceDetailModel.setNetTotal(object.optString("netTotal"));
+                            custInvoiceDetailModel.setBalanceAmount(object.optString("balance"));
+                            nettotal1 += Double.parseDouble(object.optString("netTotal"));
+                            balance1 += Double.parseDouble(object.optString("balance"));
+                            custInvoiceDetailsList.add(custInvoiceDetailModel);
+                        }
+
+                        JSONArray jsonArray2 = detailObject.optJSONArray("reportCustomerARCreditMemoStatementDetails");
+                        if (jsonArray2.length() > 0) {
+                            for (int i = 0; i < Objects.requireNonNull(jsonArray2).length(); i++) {
+                                JSONObject object = jsonArray2.optJSONObject(i);
+                                CustomerStateModel.CustInvoiceDetailsAR custInvoiceDetailModel1 = new CustomerStateModel.CustInvoiceDetailsAR();
+
+                                custInvoiceDetailModel1.setInvoiceNumber(object.optString("arInvoiceNo"));
+                                custInvoiceDetailModel1.setInvoiceDate(object.optString("arInvoiceDate"));
+                                custInvoiceDetailModel1.setNetTotal(object.optString("arNetTotal"));
+                                custInvoiceDetailModel1.setBalanceAmount(object.optString("arBalance"));
+
+                                custInvoiceDetailsARList.add(custInvoiceDetailModel1);
+                            }
+                        }
+                        model.setCustInvoiceDetailList(custInvoiceDetailsList);
+                        model.setCustInvoiceDetailsARList(custInvoiceDetailsARList);
+                        customerStateList.add(model);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "No Customer Statement Found..!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                clearAllSelection();
+                pDialog.dismiss();
+                if (customerStateList.size()>0){
+                    setCustomerStatementPrint(copy);
+                }
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }, error -> {
+            // Do something when error occurred
+            // pDialog.dismiss();
+            Log.w("Error_throwing:",error.toString());
+        }){
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+
 
 /*
     private void getCustomerStatement(String customer_id,String customer_name,String from_date,String to_date,String status,int copy) throws JSONException {
@@ -2114,13 +2306,13 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                     reportStockSummaryModel.setBalance(object.optString("balance"));
                                     reportStockSummaryModel.setOtherInorOut(object.optString("otherInorOut"));
 
-                                    Log.e("pdtcodee",""+object.optString("productCode"));
                                     reportStockSummaryDetailsList.add(reportStockSummaryModel);
                                 }
                                 model.setReportStockSummaryDetailsList(reportStockSummaryDetailsList);
                                 reportStockSummaryList.add(model);
 
                                 if (reportStockSummaryDetailsList.size()>0){
+
                                     TSCPrinter printer=new TSCPrinter(this,printerMacId,"StockSummary");
                                     printer.printReportStockSummary(copy,from_date,to_date,locationCode,companyCode,reportStockSummaryList);
                                     clearAllSelection();

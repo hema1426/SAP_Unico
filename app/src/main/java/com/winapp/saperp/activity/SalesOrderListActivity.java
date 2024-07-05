@@ -955,7 +955,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
                     try{
-                        Log.w("Sales_Details:",response.toString());
+                        Log.w("Sales_Details_list:",response.toString()+jsonObject);
                         String statusCode=response.optString("statusCode");
                         if (statusCode.equals("1")){
                             JSONArray responseData=response.getJSONArray("responseData");
@@ -967,9 +967,15 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                             model.setCustomerCode(object.optString("customerCode"));
                             model.setCustomerName(object.optString("customerName"));
                             model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
+                            model.setAddress1(object.optString("address1"));
                             model.setAddress2(object.optString("address2"));
                             model.setAddress3(object.optString("address3"));
-                           // model.setDeliveryAddress(model.getAddress());
+                            model.setAddressstate(object.optString("block")+" "+object.optString("street")+" "
+                                    +object.optString("city"));
+                            model.setAddresssZipcode(object.optString("countryName")+" "+object.optString("state")+" "
+                                    +object.optString("zipcode"));
+
+                            // model.setDeliveryAddress(model.getAddress());
                             model.setSubTotal(object.optString("subTotal"));
                             model.setNetTax(object.optString("taxTotal"));
                             model.setNetTotal(object.optString("netTotal"));
@@ -1101,16 +1107,19 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
 
 
     private void sentPrintDate(int copy) throws IOException {
-        if (printerType.equals("TSC Printer")){
-            TSCPrinter printer=new TSCPrinter(SalesOrderListActivity.this,printerMacId,"SalesOrder");
-            printer.printSalesOrder(copy,salesOrderHeaderDetails,salesPrintList);
-            printer.setOnCompletionListener(() -> {
-                Utils.setSignature("");
-                Toast.makeText(getApplicationContext(),"SalesOrder printed successfully!",Toast.LENGTH_SHORT).show();
-            });
-        }else if (printerType.equals("Zebra Printer")){
-            ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(SalesOrderListActivity.this,printerMacId);
-            zebraPrinterActivity.printSalesOrder(copy,salesOrderHeaderDetails,salesPrintList);
+        if (Utils.validatePrinterConfiguration(this,printerType,printerMacId)) {
+
+            if (printerType.equals("TSC Printer")) {
+                TSCPrinter printer = new TSCPrinter(SalesOrderListActivity.this, printerMacId, "SalesOrder");
+                printer.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList);
+                printer.setOnCompletionListener(() -> {
+                    Utils.setSignature("");
+                    Toast.makeText(getApplicationContext(), "SalesOrder printed successfully!", Toast.LENGTH_SHORT).show();
+                });
+            } else if (printerType.equals("Zebra Printer")) {
+                ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(SalesOrderListActivity.this, printerMacId);
+                zebraPrinterActivity.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList);
+            }
         }
     }
 
@@ -1273,6 +1282,10 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             }
         });
         salesOrdersView.setAdapter(salesOrderAdapter);
+        if (salesOrderList.size()>0){
+            setNettotalFun(salesOrderList);
+        }
+
         selectedCustomerId="";
     }
 
@@ -1349,7 +1362,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 String company_code=salesObject.optString("CompanyCode");
                                 String customer_code=salesObject.optString("customerCode");
                                 String customer_name=salesObject.optString("customerName");
-                                String customerBill_Disc=salesObject.optString("CustomerDiscount");
+                                String customerBill_Disc=salesObject.optString("customerDiscountPercentage");
+
                                 String total=salesObject.optString("total");
                                 String sub_total=salesObject.optString("subTotal");
                                 String bill_discount=salesObject.optString("billDiscount");
@@ -1495,6 +1509,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     public void redirectActivity(String action,String customer_code,String customer_name,String salesorder_code,
                                  String order_no,String customerBill_Disc){
         //  if (products.length()==dbHelper.numberOfRowsInInvoice()){
+        Log.w("acttionSO",""+action);
         Utils.setCustomerSession(SalesOrderListActivity.this,customer_code);
         if (action.equals("Edit")){
             Intent intent=new Intent(getApplicationContext(),CreateNewInvoiceActivity.class);
@@ -1512,6 +1527,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             intent.putExtra("customerCode",customer_code);
             intent.putExtra("editSoNumber",salesorder_code);
             intent.putExtra("orderNo",order_no);
+            intent.putExtra("customerBillDisc",customerBill_Disc);
+            Log.w("acttionSOdisc",""+customerBill_Disc);
             intent.putExtra("from","ConvertInvoice");
             startActivity(intent);
             finish();
@@ -1696,8 +1713,9 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 model.setStatus(object.optString("soStatus"));
                                 model.setSalesOrderCode(object.optString("code"));
                                 //  isFound=invoiceObject.optString("ErrorMessage");
-                                netTotalApi +=Double.parseDouble(object.optString("netTotal"));
-                                netTotalText.setText("$ "+Utils.twoDecimalPoint(netTotalApi));
+
+                               // netTotalApi +=Double.parseDouble(object.optString("netTotal"));
+                               // netTotalText.setText("$ "+Utils.twoDecimalPoint(netTotalApi));
 
                                 ArrayList<SalesOrderPrintPreviewModel.SalesList> salesLists=new ArrayList<>();
                                 model.setSalesList(salesLists);
@@ -1931,9 +1949,12 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                     behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
             }
+
         });
         salesOrdersView.setAdapter(salesOrderAdapter);
-
+        if (salesOrderList.size()>0){
+            setNettotalFun(salesOrderList);
+        }
        /* salesOrderAdapter.setOnLoadMoreListener(new SalesOrderAdapterNew.OnLoadMoreListener() {
             @Override
             public void onLoadMore() {

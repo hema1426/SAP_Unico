@@ -44,6 +44,7 @@ import com.winapp.saperp.model.CustomerModel;
 import com.winapp.saperp.model.SalesReturnModel;
 import com.winapp.saperp.receipts.ReceiptsListActivity;
 import com.winapp.saperp.utils.Constants;
+import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 
@@ -51,6 +52,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -549,9 +551,13 @@ public class SalesReturnList extends Fragment {
                                 String phone_no=salesObject.optString("DelPhoneNo");
                                 String so_date=salesObject.optString("soDate");
                                 String signFlag=salesObject.optString("signFlag");
-                                if (signFlag.equals("Y")){
-                                    String signature=salesObject.optString("signature");
+                                if (salesObject.optString("signature")!=null &&
+                                        !salesObject.optString("signature").equals("null") && !salesObject.optString("signature").isEmpty()){
+                                    String signature = salesObject.optString("signature");
                                     Utils.setSignature(signature);
+                                    createSignature();
+                                } else {
+                                    Utils.setSignature("");
                                 }
 
                                 dbHelper.removeCustomer();
@@ -676,6 +682,15 @@ public class SalesReturnList extends Fragment {
         requestQueue.add(jsonObjectRequest);
     }
 
+    private void createSignature() {
+        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
+            try {
+                ImageUtil.saveStamp(mContext, Utils.getSignature(), "Signature");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void getCustomers(){
         // Initialize a new RequestQueue instance

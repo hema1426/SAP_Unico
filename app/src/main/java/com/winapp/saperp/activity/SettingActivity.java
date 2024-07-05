@@ -75,7 +75,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class SettingActivity extends AppCompatActivity implements Runnable,CompoundButton.OnCheckedChangeListener {
+public class SettingActivity extends AppCompatActivity implements Runnable, CompoundButton.OnCheckedChangeListener {
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch invoiceSwitch;
@@ -113,7 +113,7 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
     private ImageView refeshItem;
     private ArrayList<CustomerModel> customerList;
     private SessionManager session;
-    private HashMap<String,String > user;
+    private HashMap<String, String> user;
     private String companyId;
     private String locationCode;
     public static ArrayList<ProductsModel> productList;
@@ -125,15 +125,15 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
     private boolean isEmailValid;
     private boolean isPasswordValid;
     private AlertDialog alertDialog;
-    private String  isLProductSettingLogin="";
+    private String isLProductSettingLogin = "";
     private ArrayList<CustomerDetails> allCustomersList;
     private ProgressDialog pd;
     private ImageView iv;
     public ProductImageDownload di;
     public Button downloadImage;
     public ArrayList<ProductImageModel> productsImagesList;
-    private int imageCount=0;
-    private int showCount=1;
+    private int imageCount = 0;
+    private int showCount = 1;
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -153,7 +153,7 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
     };
 
     public SwitchCompat inv_switch;
-    public SwitchCompat sales_switch,discount_Switch , signature_Switch;
+    public SwitchCompat sales_switch, discount_Switch, signature_Switch;
     public SwitchCompat receipt_switch;
     public SwitchCompat uom_Switch;
     public SwitchCompat creditLimit_Switch;
@@ -164,24 +164,24 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-      //  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Settings");
-        productsImagesList=new ArrayList<>();
+        productsImagesList = new ArrayList<>();
         pd = new ProgressDialog(SettingActivity.this);
         pd.setMessage("Downloading Product Images, please wait ...");
         pd.setIndeterminate(true);
         pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         pd.setCancelable(false);
-        pd.setButton(DialogInterface.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton){
+        pd.setButton(DialogInterface.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
                 new ProductImageDownload(SettingActivity.this).cancel(true);
                 dialog.dismiss();
             }
         });
         pd.setProgressNumberFormat("%1d KB/%2d KB");
 
-        requestBlePermissions(this,134);
-       // checkPermission();
+        requestBlePermissions(this, 134);
+        // checkPermission();
         verifyStoragePermissions(this);
 
         pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -191,27 +191,27 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
             }
         });
 
-        invoiceSwitch=findViewById(R.id.invoice_switch);
-        createInvoiceSwitch=findViewById(R.id.create_invoice_switch);
-        btnScan=findViewById(R.id.scan);
-        dbHelper=new DBHelper(this);
-        macAddress=findViewById(R.id.mac_address);
-        macAddressLayout=findViewById(R.id.mac_address_layout);
-        saveChangesBtn=findViewById(R.id.save_changes);
-        settingsList=dbHelper.getSettings();
+        invoiceSwitch = findViewById(R.id.invoice_switch);
+        createInvoiceSwitch = findViewById(R.id.create_invoice_switch);
+        btnScan = findViewById(R.id.scan);
+        dbHelper = new DBHelper(this);
+        macAddress = findViewById(R.id.mac_address);
+        macAddressLayout = findViewById(R.id.mac_address_layout);
+        saveChangesBtn = findViewById(R.id.save_changes);
+        settingsList = dbHelper.getSettings();
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         myEdit = sharedPreferences.edit();
-        radioPrinterGroup=findViewById(R.id.radioGroup);
-        tscPrinterRadio=findViewById(R.id.tsc_printer);
-        zebraPrinterRadio=findViewById(R.id.zebra_printer);
-        inch_2_BlutoothRadio=findViewById(R.id.inch_2_5printer);
-        inch_3_BluetoothRadio=findViewById(R.id.inch_3printer);
-        refeshItem=findViewById(R.id.refresh_item);
-        productSettingLayout=findViewById(R.id.product_setting_layout);
-        btnLogin=findViewById(R.id.login);
-        alllowNegativeStockSwitch=findViewById(R.id.allow_negative_stock);
-        downloadImage=findViewById(R.id.download);
-        signature_Switch  = findViewById(R.id.signatureSwitch);
+        radioPrinterGroup = findViewById(R.id.radioGroup);
+        tscPrinterRadio = findViewById(R.id.tsc_printer);
+        zebraPrinterRadio = findViewById(R.id.zebra_printer);
+        inch_2_BlutoothRadio = findViewById(R.id.inch_2_5printer);
+        inch_3_BluetoothRadio = findViewById(R.id.inch_3printer);
+        refeshItem = findViewById(R.id.refresh_item);
+        productSettingLayout = findViewById(R.id.product_setting_layout);
+        btnLogin = findViewById(R.id.login);
+        alllowNegativeStockSwitch = findViewById(R.id.allow_negative_stock);
+        downloadImage = findViewById(R.id.download);
+        signature_Switch = findViewById(R.id.signatureSwitch);
         discount_Switch = findViewById(R.id.discountSwitch);
         inv_switch = findViewById(R.id.invSwitch);
         sales_switch = findViewById(R.id.salesSwitch);
@@ -229,17 +229,17 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         signature_Switch.setOnCheckedChangeListener(this);
         discount_Switch.setOnCheckedChangeListener(this);
 
-        session=new SessionManager(this);
-        user=session.getUserDetails();
-        companyId=user.get(SessionManager.KEY_COMPANY_CODE);
-        locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
+        session = new SessionManager(this);
+        user = session.getUserDetails();
+        companyId = user.get(SessionManager.KEY_COMPANY_CODE);
+        locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
 
-        printerType = sharedPreferences.getString("printer_type","");
-        printerMacId = sharedPreferences.getString("mac_address","");
-        isLProductSettingLogin = sharedPreferences.getString("isProductSettingLogin","");
+        printerType = sharedPreferences.getString("printer_type", "");
+        printerMacId = sharedPreferences.getString("mac_address", "");
+        isLProductSettingLogin = sharedPreferences.getString("isProductSettingLogin", "");
 
-        ArrayList<SettingsModel> settings=dbHelper.getSettings();
-        if (settings!=null) {
+        ArrayList<SettingsModel> settings = dbHelper.getSettings();
+        if (settings != null) {
             if (settings.size() > 0) {
                 for (SettingsModel model : settings) {
                     if (model.getSettingName().equals("create_invoice_switch")) {
@@ -247,77 +247,71 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             createInvoiceSwitch.setChecked(true);
-                        }else {
+                        } else {
                             createInvoiceSwitch.setChecked(false);
                         }
-                    }else if (model.getSettingName().equals("invSwitch")) {
+                    } else if (model.getSettingName().equals("invSwitch")) {
                         Log.w("SettingName:", model.getSettingName());
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             inv_switch.setChecked(true);
-                        }else {
+                        } else {
                             inv_switch.setChecked(false);
                         }
-                    }else if (model.getSettingName().equals("salesSwitch")) {
+                    } else if (model.getSettingName().equals("salesSwitch")) {
                         Log.w("SettingName:", model.getSettingName());
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             sales_switch.setChecked(true);
-                        }else {
+                        } else {
                             sales_switch.setChecked(false);
                         }
-                    }
-                    else if (model.getSettingName().equals("receiptSwitch")) {
+                    } else if (model.getSettingName().equals("receiptSwitch")) {
                         Log.w("SettingName:", model.getSettingName());
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             receipt_switch.setChecked(true);
-                        }else {
+                        } else {
                             receipt_switch.setChecked(false);
                         }
-                    }
-                    else if (model.getSettingName().equals("UomSwitch")) {
+                    } else if (model.getSettingName().equals("UomSwitch")) {
                         Log.w("SettingName:", model.getSettingName());
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             uom_Switch.setChecked(true);
-                        }else {
+                        } else {
                             uom_Switch.setChecked(false);
                         }
-                    }
-                    else if (model.getSettingName().equals("creditLimitSwitch")) {
+                    } else if (model.getSettingName().equals("creditLimitSwitch")) {
                         Log.w("SettingName:", model.getSettingName());
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             creditLimit_Switch.setChecked(true);
-                        }else {
+                        } else {
                             creditLimit_Switch.setChecked(false);
                         }
-                    }
-                    else if (model.getSettingName().equals("deliveryAddressSwitch")) {
+                    } else if (model.getSettingName().equals("deliveryAddressSwitch")) {
                         Log.w("SettingName:", model.getSettingName());
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             deliveryAddress_Switch.setChecked(true);
-                        }else {
+                        } else {
                             deliveryAddress_Switch.setChecked(false);
                         }
-                    }
-                    else if (model.getSettingName().equals("signatureSwitch")) {
+                    } else if (model.getSettingName().equals("signatureSwitch")) {
                         Log.w("SettingName:", model.getSettingName());
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             signature_Switch.setChecked(true);
-                        }else {
+                        } else {
                             signature_Switch.setChecked(false);
                         }
-                    }
-                    else if (model.getSettingName().equals("discountSwitch")) {
+                    } else if (model.getSettingName().equals("discountSwitch")) {
                         Log.w("SettingName:", model.getSettingName());
                         Log.w("SettingValue:", model.getSettingValue());
                         if (model.getSettingValue().equals("1")) {
                             discount_Switch.setChecked(true);
-                        }else {
+                        } else {
                             discount_Switch.setChecked(false);
                         }
                     }
@@ -326,43 +320,43 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
             }
         }
 
-        if (isLProductSettingLogin.equals("true")){
+        if (isLProductSettingLogin.equals("true")) {
             productSettingLayout.setVisibility(View.VISIBLE);
             btnLogin.setText("Logout");
-        }else {
+        } else {
             productSettingLayout.setVisibility(View.GONE);
             btnLogin.setText("Login");
         }
 
-        if (printerType!=null && !printerType.isEmpty()){
-            if (printerType.equals("TSC Printer")){
+        if (printerType != null && !printerType.isEmpty()) {
+            if (printerType.equals("TSC Printer")) {
                 tscPrinterRadio.setChecked(true);
-            }else if (printerType.equals("3 Inch Bluetooth Generic")){
+            } else if (printerType.equals("3 Inch Bluetooth Generic")) {
                 inch_3_BluetoothRadio.setChecked(true);
-            }else if (printerType.equals("2.5 Inch Bluetooth Generic")){
+            } else if (printerType.equals("2.5 Inch Bluetooth Generic")) {
                 inch_2_BlutoothRadio.setChecked(true);
             } else {
                 zebraPrinterRadio.setChecked(true);
             }
         }
 
-        if (printerMacId!=null && !printerMacId.isEmpty()){
+        if (printerMacId != null && !printerMacId.isEmpty()) {
             macAddressLayout.setVisibility(View.VISIBLE);
             macAddress.setText(printerMacId);
         }
 
-        if (settingsList.size()>0){
-            for (SettingsModel model:settingsList){
-                if (model.getSettingName().equals(invoiceSwitch.getTag().toString())){
-                    if (model.getSettingValue().equals("1")){
+        if (settingsList.size() > 0) {
+            for (SettingsModel model : settingsList) {
+                if (model.getSettingName().equals(invoiceSwitch.getTag().toString())) {
+                    if (model.getSettingValue().equals("1")) {
                         invoiceSwitch.setChecked(true);
-                    }else {
+                    } else {
                         invoiceSwitch.setChecked(false);
                     }
-                }else if (model.getSettingName().equals(alllowNegativeStockSwitch.getTag().toString())){
-                    if (model.getSettingValue().equals("1")){
+                } else if (model.getSettingName().equals(alllowNegativeStockSwitch.getTag().toString())) {
+                    if (model.getSettingValue().equals("1")) {
                         alllowNegativeStockSwitch.setChecked(true);
-                    }else {
+                    } else {
                         alllowNegativeStockSwitch.setChecked(false);
                     }
                 }
@@ -372,11 +366,11 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         invoiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.v("Switch State=", ""+isChecked);
-                if (isChecked){
-                    dbHelper.insertSettings(invoiceSwitch.getTag().toString(),"1");
-                }else {
-                    dbHelper.insertSettings(invoiceSwitch.getTag().toString(),"0");
+                Log.v("Switch State=", "" + isChecked);
+                if (isChecked) {
+                    dbHelper.insertSettings(invoiceSwitch.getTag().toString(), "1");
+                } else {
+                    dbHelper.insertSettings(invoiceSwitch.getTag().toString(), "0");
                 }
             }
         });
@@ -384,11 +378,11 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         createInvoiceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.v("Switch State=", ""+isChecked);
-                if (isChecked){
-                    dbHelper.insertSettings(createInvoiceSwitch.getTag().toString(),"1");
-                }else {
-                    dbHelper.insertSettings(createInvoiceSwitch.getTag().toString(),"0");
+                Log.v("Switch State=", "" + isChecked);
+                if (isChecked) {
+                    dbHelper.insertSettings(createInvoiceSwitch.getTag().toString(), "1");
+                } else {
+                    dbHelper.insertSettings(createInvoiceSwitch.getTag().toString(), "0");
                 }
             }
         });
@@ -396,11 +390,11 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         alllowNegativeStockSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                Log.w("NeStock_Switch_Status:",""+isChecked);
-                if (isChecked){
-                    dbHelper.insertSettings(alllowNegativeStockSwitch.getTag().toString(),"1");
-                }else {
-                    dbHelper.insertSettings(alllowNegativeStockSwitch.getTag().toString(),"0");
+                Log.w("NeStock_Switch_Status:", "" + isChecked);
+                if (isChecked) {
+                    dbHelper.insertSettings(alllowNegativeStockSwitch.getTag().toString(), "1");
+                } else {
+                    dbHelper.insertSettings(alllowNegativeStockSwitch.getTag().toString(), "0");
                 }
             }
         });
@@ -427,18 +421,18 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         saveChangesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-             //   if (!macAddress.getText().toString().isEmpty()){
-                    int selectedId=radioPrinterGroup.getCheckedRadioButtonId();
-                    printerSelectButton=findViewById(selectedId);
-                    String printer_type=printerSelectButton.getText().toString();
-                    String printet_mac_id=macAddress.getText().toString().trim();
-                    myEdit.putString("printer_type", printer_type);
-                    myEdit.putString("mac_address", printet_mac_id);
-                    myEdit.apply();
-                    finish();
-             //   }else {
+                //   if (!macAddress.getText().toString().isEmpty()){
+                int selectedId = radioPrinterGroup.getCheckedRadioButtonId();
+                printerSelectButton = findViewById(selectedId);
+                String printer_type = printerSelectButton.getText().toString();
+                String printet_mac_id = macAddress.getText().toString().trim();
+                myEdit.putString("printer_type", printer_type);
+                myEdit.putString("mac_address", printet_mac_id);
+                myEdit.apply();
+                finish();
+                //   }else {
                 //    Toast.makeText(getApplicationContext(),"Scan the Printer Mac Id",Toast.LENGTH_LONG).show();
-              //  }
+                //  }
             }
         });
 
@@ -452,10 +446,10 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (btnLogin.getText().toString().equals("Login")){
+                if (btnLogin.getText().toString().equals("Login")) {
                     showLoginAlert();
-                }else {
-                    AlertDialog.Builder builder=new AlertDialog.Builder(SettingActivity.this);
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SettingActivity.this);
                     builder.setMessage("Are you sure want to Logout product Settings ?");
                     builder.setCancelable(false);
                     builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -474,7 +468,7 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
                             dialogInterface.dismiss();
                         }
                     });
-                    AlertDialog alertDialog=builder.create();
+                    AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 }
             }
@@ -483,11 +477,11 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         downloadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (productsImagesList.size()!=0){
+                if (productsImagesList.size() != 0) {
                     pd.show();
                     getAllImages(productsImagesList);
-                }else {
-                    Toast.makeText(getApplicationContext(),"There is no products to download,refresh data and try again",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "There is no products to download,refresh data and try again", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -512,7 +506,7 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
             ActivityCompat.requestPermissions(activity, BLE_PERMISSIONS, requestCode);
     }
 
-    public void checkPermission(){
+    public void checkPermission() {
         if (ContextCompat.checkSelfPermission(SettingActivity.this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 ActivityCompat.requestPermissions(SettingActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
@@ -521,17 +515,17 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         }
     }
 
-    public void showLoginAlert(){
+    public void showLoginAlert() {
         // load the dialog_promt_user.xml layout and inflate to view
         LayoutInflater layoutinflater = LayoutInflater.from(SettingActivity.this);
         View promptUserView = layoutinflater.inflate(R.layout.login_dialog, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(SettingActivity.this);
         alertDialogBuilder.setView(promptUserView);
         alertDialogBuilder.setCancelable(false);
-        userIdText =promptUserView.findViewById(R.id.username);
-        passwordText=promptUserView.findViewById(R.id.password);
-        Button buttonLogin=promptUserView.findViewById(R.id.buttonLogin);
-        Button buttonCancel=promptUserView.findViewById(R.id.buttonCancel);
+        userIdText = promptUserView.findViewById(R.id.username);
+        passwordText = promptUserView.findViewById(R.id.password);
+        Button buttonLogin = promptUserView.findViewById(R.id.buttonLogin);
+        Button buttonCancel = promptUserView.findViewById(R.id.buttonCancel);
         // prompt for username
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -579,19 +573,19 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         if (isEmailValid && isPasswordValid) {
             userIdText.setError(null);
             passwordText.setError(null);
-            setSession(userIdText.getText().toString(),passwordText.getText().toString());
+            setSession(userIdText.getText().toString(), passwordText.getText().toString());
         }
     }
 
-    public void setSession(String username,String password){
-        if (username.trim().equals("admin124") && password.trim().equals("settings")){
+    public void setSession(String username, String password) {
+        if (username.trim().equals("admin124") && password.trim().equals("settings")) {
             productSettingLayout.setVisibility(View.VISIBLE);
             btnLogin.setText("Logout");
             alertDialog.dismiss();
             myEdit.putString("isProductSettingLogin", "true");
             myEdit.apply();
-        }else {
-            Toast.makeText(getApplicationContext(),"Username or Password mismatch",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Username or Password mismatch", Toast.LENGTH_SHORT).show();
             myEdit.putString("isProductSettingLogin", "false");
             myEdit.apply();
             productSettingLayout.setVisibility(View.GONE);
@@ -599,19 +593,19 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
         }
     }
 
-    public void showRefreshAlert(){
+    public void showRefreshAlert() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(SettingActivity.this);
         alertDialog.setTitle("Information..!");
         alertDialog.setMessage("Are you sure want to Refresh the Data ?");
         alertDialog.setCancelable(false);
         alertDialog.setPositiveButton("YES", (dialog, id) -> {
-                    dialog.cancel();
-                    try {
-                        getCustomers();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                });
+            dialog.cancel();
+            try {
+                getCustomers();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
         alertDialog.setNegativeButton("NO",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -654,8 +648,12 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
             case REQUEST_CONNECT_DEVICE:
                 if (mResultCode == Activity.RESULT_OK) {
                     Bundle mExtra = mDataIntent.getExtras();
+                    assert mExtra != null;
                     String mDeviceAddress = mExtra.getString("DeviceAddress");
-                    Log.v(TAG, "Coming incoming address " + mDeviceAddress);
+                    Log.w("bluetho",""+mDeviceAddress);
+                    macAddress.setText(mDeviceAddress);
+
+                    Log.w(TAG, "Coming incoming address " + mDeviceAddress);
                     mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(mDeviceAddress);
                  /*   mBluetoothConnectProgressDialog = ProgressDialog.show(this, "Connecting...", mBluetoothDevice.getName() + " : " + mBluetoothDevice.getAddress(), true, false);
                     mBluetoothConnectProgressDialog.setButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -664,7 +662,17 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
                             mBluetoothConnectProgressDialog.dismiss();
                         }
                     });*/
-                    showAlert(mBluetoothDevice.getName(),mBluetoothDevice.getAddress());
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
+                    showAlert(mBluetoothDevice.getName(), mBluetoothDevice.getAddress());
 
                     Thread mBlutoothConnectThread = new Thread(this);
                     mBlutoothConnectThread.start();
@@ -687,17 +695,17 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
     }
 
 
-    public void showAlert(String deviceName,String deviceaddress){
+    public void showAlert(String deviceName, String deviceaddress) {
         //the first thing you need to to is to initialize the progressDialog Class like this
-        progressBarDialog= new ProgressDialog(this);
+        progressBarDialog = new ProgressDialog(this);
         progressBarDialog.setIcon(R.drawable.ic_print);
         progressBarDialog.setCancelable(false);
-       // progressBarDialog.setTitle("Connecting...");
-        progressBarDialog.setMessage("Connecting....  "+deviceName+"-"+deviceaddress);
+        // progressBarDialog.setTitle("Connecting...");
+        progressBarDialog.setMessage("Connecting....  " + deviceName + "-" + deviceaddress);
         progressBarDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         //set the Cancel button
-        progressBarDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener(){
-            public void onClick(DialogInterface dialog, int whichButton){
+        progressBarDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
                 dialog.dismiss();
             }
         });
@@ -706,17 +714,47 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
 
 
     private void ListPairedDevices() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         Set<BluetoothDevice> mPairedDevices = mBluetoothAdapter.getBondedDevices();
         if (mPairedDevices.size() > 0) {
             for (BluetoothDevice mDevice : mPairedDevices) {
-                Log.v(TAG, "PairedDevices: " + mDevice.getName() + "  " + mDevice.getAddress());
+                Log.w(TAG, "PairedDevices: " + mDevice.getName() + "  " + mDevice.getAddress());
             }
         }
     }
 
     public void run() {
         try {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             mBluetoothSocket = mBluetoothDevice.createRfcommSocketToServiceRecord(applicationUUID);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             mBluetoothAdapter.cancelDiscovery();
             mBluetoothSocket.connect();
             mHandler.sendEmptyMessage(0);
@@ -737,6 +775,7 @@ public class SettingActivity extends AppCompatActivity implements Runnable,Compo
     }
 
     private Handler mHandler = new Handler() {
+        @SuppressLint("HandlerLeak")
         @Override
         public void handleMessage(Message msg) {
            // mBluetoothConnectProgressDialog.dismiss();

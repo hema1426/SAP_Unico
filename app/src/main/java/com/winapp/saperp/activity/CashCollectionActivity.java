@@ -165,6 +165,7 @@ public class CashCollectionActivity extends AppCompatActivity {
         }
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Receipt");
+        signatureString = "";
 
         Log.w("activity_cg",getClass().getSimpleName().toString());
 
@@ -775,7 +776,24 @@ public class CashCollectionActivity extends AppCompatActivity {
                             closeSheet();
                             if (Double.parseDouble(selectedAmount.getText().toString()) > 0){
                                 //showAlert();
-                                showSaveAlert();
+                                if (Double.parseDouble(differenceAmount.getText().toString())< 0) {
+                                    netAmount.setError(null);
+                                    Toast.makeText(getApplicationContext(),"Excess Amount should not be negative",Toast.LENGTH_SHORT).show();
+                                }else {
+                                    ArrayList<CashCollectionInvoiceModel> cashReceipts=CashInvoiceFragment.cashCollectionInvoiceAdapter.getList();
+                                    double net_paid_amount=0.0;
+                                    for (CashCollectionInvoiceModel model:cashReceipts){
+                                        if (model.getPayable()!=null && !model.getPayable().isEmpty() && !model.getPayable().equals("null"))
+                                            net_paid_amount+=Double.parseDouble(model.getPayable());
+                                    }
+                                    if (net_paid_amount > 0){
+                                        netAmount.setError(null);
+                                        //showAlert();
+                                        showSaveAlert();
+                                    }else {
+                                        Toast.makeText(getApplicationContext(),"Select Invoice to save receipt",Toast.LENGTH_SHORT).show();
+                                    }
+                                }
                             }else {
                                 netAmount.setError(null);
                                 Toast.makeText(getApplicationContext(),"Add Invoice amount to proceed",Toast.LENGTH_SHORT).show();
@@ -790,14 +808,34 @@ public class CashCollectionActivity extends AppCompatActivity {
                         closeSheet();
                         if (Double.parseDouble(selectedAmount.getText().toString()) > 0){
                            // showAlert();
-                            showSaveAlert();
+                            if (Double.parseDouble(differenceAmount.getText().toString())< 0) {
+                                netAmount.setError(null);
+                                Toast.makeText(getApplicationContext(),"Excess Amount should not be negative",Toast.LENGTH_SHORT).show();
+                            }else {
+                                ArrayList<CashCollectionInvoiceModel> cashReceipts=CashInvoiceFragment.cashCollectionInvoiceAdapter.getList();
+                                double net_paid_amount=0.0;
+                                for (CashCollectionInvoiceModel model:cashReceipts){
+                                    if (model.getPayable()!=null && !model.getPayable().isEmpty() && !model.getPayable().equals("null"))
+                                        net_paid_amount+=Double.parseDouble(model.getPayable());
+                                }
+                                if (net_paid_amount > 0){
+                                    netAmount.setError(null);
+                                    //showAlert();
+                                    showSaveAlert();
+                                }else {
+                                    Toast.makeText(getApplicationContext(),"Select Invoice to save receipt",Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }else {
                             netAmount.setError(null);
                             Toast.makeText(getApplicationContext(),"Add Invoice amount to proceed",Toast.LENGTH_SHORT).show();
                         }
                     }
                 }else {
-                    if (!netAmount.getText().toString().isEmpty() && netAmount.getText().toString()!=null && Double.parseDouble(netAmount.getText().toString()) > 0 ){
+                    if (!netAmount.getText().toString().isEmpty() &&
+                            netAmount.getText().toString()!=null &&
+                            Double.parseDouble(netAmount.getText().toString()) > 0 ){
+
                         if (Double.parseDouble(differenceAmount.getText().toString())< 0) {
                             netAmount.setError(null);
                             Toast.makeText(getApplicationContext(),"Excess Amount should not be negative",Toast.LENGTH_SHORT).show();

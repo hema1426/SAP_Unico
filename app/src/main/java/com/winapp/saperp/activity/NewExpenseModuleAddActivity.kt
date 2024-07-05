@@ -42,19 +42,24 @@ import com.winapp.saperp.model.AccountModel
 import com.winapp.saperp.model.ExpenseModuleAddModel
 import com.winapp.saperp.model.ExpensePurchaseInvoiceDetail
 import com.winapp.saperp.model.ExpenseSaveRequestMaster
+import com.winapp.saperp.model.InvoicePrintPreviewModel
 import com.winapp.saperp.model.SupplierModel
+import com.winapp.saperp.utils.CaptureSignatureView
 import com.winapp.saperp.utils.CommonMethodKotl
 import com.winapp.saperp.utils.CommonMethodKotl.showError_dialog
 import com.winapp.saperp.utils.Constants
+import com.winapp.saperp.utils.ImageUtil
 import com.winapp.saperp.utils.SessionManager
 import com.winapp.saperp.utils.Utils
 import com.winapp.saperp.utils.Utils.showKeyboard
+import com.winapp.saperp.zebraprinter.TSCPrinter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -73,6 +78,10 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
     var supplierList: ArrayList<SupplierModel>? = ArrayList()
     var accountList: ArrayList<AccountModel>? = ArrayList()
     var expenseSaveReq: ArrayList<ExpenseSaveRequestMaster>? = ArrayList()
+    private var invoiceHeaderDetails: ArrayList<InvoicePrintPreviewModel>? = null
+    private var invoicePrintList: ArrayList<InvoicePrintPreviewModel.InvoiceList>? = null
+    private var salesReturnList: ArrayList<InvoicePrintPreviewModel.SalesReturnList>? = null
+
     var expenseCartAddList: ArrayList<ExpenseModuleAddModel> = ArrayList()
     var expenseSaveProductReq: ArrayList<ExpensePurchaseInvoiceDetail> = ArrayList()
     private var supplierSpinner: SearchableSpinner? = null
@@ -114,11 +123,13 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
     private var okButton: Button? = null
     var amountText: EditText? = null
     private var alert: AlertDialog? = null
-    private val signatureAlert: AlertDialog? = null
-    var invoicePrintCheck: CheckBox? = null
+    private var signatureAlert: AlertDialog? = null
+    var expensePrintCheck: CheckBox? = null
     var saveTitle: TextView? = null
     private var saveMessage: TextView? = null
     var signatureCapture: ImageView? = null
+    var isPrintEnable = false
+    var signatureString = ""
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("MissingInflatedId")
@@ -173,7 +184,7 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
             if (selectSuppliercode!!.isNotEmpty() && !selectAccountcode!!.equals("0")) {
 
                 if (isEdit) {
-                    existPdtadd(selectedServices)
+                    existPdtadd(selectedServices,selectAccountcode!!)
                 } else {
                     addDetail()
                 }
@@ -224,7 +235,7 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
     fun createJson() {
         if (expenseAddAdapter!!.getList().size > 0) {
             var expenseSaveReqModel = ExpenseSaveRequestMaster()
-
+            expenseCartAddList = ArrayList()
             expenseCartAddList = expenseAddAdapter!!.getList()
             Log.w("exp_Model:", ""+expenseCartAddList)
 
@@ -289,7 +300,7 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
             Method.POST, url, null,
             Response.Listener { response: JSONObject ->
 
-                Log.e("EXPENsave_res:", response.toString())
+                Log.w("EXPENsave_res:", response.toString())
 
                 try {
 //                    GlobalScope.launch {
@@ -300,17 +311,17 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
                     val statusMsg = response.optString("statusMessage")
 //
                     if (statusCode == "1") {
-
                         val responseData = response.optJSONObject("responseData")!!
                         Log.e("expenssavraa", "")
                         if (responseData.length() > 0) {
-
                             Toast.makeText(this, statusMsg, Toast.LENGTH_SHORT).show()
                             finish()
+                            if(isPrintEnable){
+                                getExpensePrintDetails("",1)
+                            }
 
                             startActivity(
-                                Intent(this, NewExpenseModuleListActivity::class.java)
-                            )
+                                Intent(this, NewExpenseModuleListActivity::class.java))
                         }
                     } else {
                         val responseData = response.optJSONObject("responseData")!!
@@ -367,25 +378,212 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest)
     }
-    fun showAlertDialogForSave() {
-        val builder1 = AlertDialog.Builder(this)
-        builder1.setTitle("Information...!")
+//    fun showAlertDialogForSave() {
+//        val builder1 = AlertDialog.Builder(this)
+//        builder1.setTitle("Information...!")
+//
+//        builder1.setMessage("Are you sure want to save ?")
+//        builder1.setCancelable(false)
+//        builder1.setPositiveButton(
+//            "Yes"
+//        ) { dialog, id ->
+//            Log.w("expen_sav","")
+//        }
+//        builder1.setNegativeButton(
+//            "No"
+//        ) { dialog, id -> dialog.cancel() }
+//        val alert11 = builder1.create()
+//        alert11.show()
+//    }
 
-        builder1.setMessage("Are you sure want to save ?")
-        builder1.setCancelable(false)
-        builder1.setPositiveButton(
-            "Yes"
-        ) { dialog, id ->
-            Log.w("expen_sav","")
-            createJson()
-        }
-        builder1.setNegativeButton(
-            "No"
-        ) { dialog, id -> dialog.cancel() }
-        val alert11 = builder1.create()
-        alert11.show()
+    @Throws(JSONException::class)
+    fun getExpensePrintDetails(invoiceNumber: String?, copy: Int) {
+        // Initialize a new RequestQueue instance
+        val jsonObject = JSONObject()
+        // jsonObject.put("CompanyCode", companyId);
+        jsonObject.put("InvoiceNo", invoiceNumber)
+        jsonObject.put("LocationCode", locationCode)
+        val requestQueue = Volley.newRequestQueue(this)
+        val url = Utils.getBaseUrl(this) + "APInvoiceDetails"
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_urlExp:", url)
+        // pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        // pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        // pDialog.setTitleText("Generating Print Preview...");
+        // pDialog.setCancelable(false);
+        //  pDialog.show();
+        invoiceHeaderDetails = ArrayList()
+        invoicePrintList = ArrayList()
+        salesReturnList = ArrayList()
+
+        val jsonObjectRequest: JsonObjectRequest =
+            object : JsonObjectRequest(Method.POST, url, jsonObject,
+                Response.Listener { response: JSONObject ->
+                    try {
+                        Log.w("ResExpens::", response.toString())
+                        val statusCode = response.optString("statusCode")
+                        if (statusCode == "1") {
+                            val responseData = response.getJSONArray("responseData")
+                            val `object` = responseData.optJSONObject(0)
+                            val model = InvoicePrintPreviewModel()
+                            model.invoiceNumber = `object`.optString("poNo")
+                            model.invoiceDate = `object`.optString("poDate")
+                            model.customerCode = `object`.optString("vendorCode")
+                            model.customerName = `object`.optString("vendorName")
+                            model.overAllTotal = `object`.optString("overAllTotal")
+                            // model.setAddress(object.optString("street"));
+                            model.address =
+                                `object`.optString("address1") + `object`.optString("address2") + `object`.optString(
+                                    "address3"
+                                )
+                            model.address2 = `object`.optString("address2")
+                            model.address3 = `object`.optString("address3")
+                            // model.setDeliveryAddress(model.getAddress());
+                            model.subTotal = `object`.optString("subTotal")
+                            model.netTax = `object`.optString("taxTotal")
+                            model.netTotal = `object`.optString("netTotal")
+                            model.paymentTerm = `object`.optString("paymentTerm")
+                            model.taxType = `object`.optString("taxType")
+                            model.taxValue = `object`.optString("taxPerc")
+                            model.outStandingAmount = `object`.optString("totalOutstandingAmount")
+                            model.balanceAmount = `object`.optString("balanceAmount")
+                            Utils.setInvoiceOutstandingAmount(`object`.optString("balanceAmount"))
+                            Utils.setInvoiceMode("Invoice")
+                            model.billDiscount = `object`.optString("billDiscount")
+                            model.itemDiscount = `object`.optString("totalDiscount")
+                            model.soNumber = `object`.optString("soNumber")
+                            model.soDate = `object`.optString("soDate")
+                            model.doDate = `object`.optString("doDate")
+                            model.doNumber = `object`.optString("doNumber")
+                            val signFlag = `object`.optString("signFlag")
+                            if (signFlag == "Y") {
+                                val signature = `object`.optString("signature")
+                                Utils.setSignature(signature)
+                                createSignature()
+                            } else {
+                                Utils.setSignature("")
+                            }
+                            val detailsArray = `object`.optJSONArray("purchaseInvoiceDetails")
+                            for (i in 0 until detailsArray.length()) {
+                                val detailObject = detailsArray.optJSONObject(i)
+                                val invoiceListModel = InvoicePrintPreviewModel.InvoiceList()
+                                invoiceListModel.productCode = detailObject.optString("productCode")
+                                invoiceListModel.description = detailObject.optString("productName")
+                                invoiceListModel.lqty = detailObject.optString("unitQty")
+                                invoiceListModel.cqty = detailObject.optString("cartonQty")
+                                invoiceListModel.netQty = detailObject.optString("quantity")
+                                invoiceListModel.netQuantity = detailObject.optString("netQuantity")
+                                invoiceListModel.focQty = detailObject.optString("foc_Qty")
+                                invoiceListModel.returnQty = detailObject.optString("returnQty")
+                                invoiceListModel.cartonPrice = detailObject.optString("cartonPrice")
+                                invoiceListModel.accountName = detailObject.optString("accountName")
+
+                                invoiceListModel.unitPrice = detailObject.optString("price")
+                                val qty1 = detailObject.optString("quantity").toDouble()
+                                val price1 = detailObject.optString("price").toDouble()
+                                val nettotal1 = qty1 * price1
+                                invoiceListModel.total = detailObject.optString("lineTotal")
+                                invoiceListModel.pricevalue = price1.toString()
+                                invoiceListModel.uomCode = detailObject.optString("uomCode")
+                                invoiceListModel.pcsperCarton =
+                                    detailObject.optString("pcsPerCarton")
+                                invoiceListModel.itemtax = detailObject.optString("totalTax")
+                                invoiceListModel.subTotal = detailObject.optString("subTotal")
+                                invoicePrintList!!.add(invoiceListModel)
+                                model.invoiceList = invoicePrintList
+                                invoiceHeaderDetails!!.add(model)
+                            }
+//                            val SRArray = `object`.optJSONArray("sR_Details")!!
+//                            if (SRArray.length() > 0) {
+//                                val SRoblect = SRArray.optJSONObject(0)
+//                                val salesReturnModel = InvoicePrintPreviewModel.SalesReturnList()
+//                                salesReturnModel.salesReturnNumber =
+//                                    SRoblect.optString("salesReturnNumber")
+//                                salesReturnModel.setsRSubTotal(SRoblect.optString("sR_SubTotal"))
+//                                salesReturnModel.setsRTaxTotal(SRoblect.optString("sR_TaxTotal"))
+//                                salesReturnModel.setsRNetTotal(SRoblect.optString("sR_NetTotal"))
+//                                salesReturnList!!.add(salesReturnModel)
+//                            }
+//                            model.salesReturnList = salesReturnList
+                            invoiceHeaderDetails!!.add(model)
+                            printExpense(copy)
+                        } else {
+                            Toast.makeText(
+                                applicationContext,
+                                "Error in printing Data...",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }, Response.ErrorListener { error: VolleyError ->
+                    // Do something when error occurred
+                    //  pDialog.dismiss();
+                    Log.w("Error_throwing:", error.toString())
+                    Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_SHORT).show()
+                }) {
+                override fun getHeaders(): Map<String, String> {
+                    val params = HashMap<String, String>()
+                    val creds = String.format(
+                        "%s:%s",
+                        Constants.API_SECRET_CODE,
+                        Constants.API_SECRET_PASSWORD
+                    )
+                    val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
+                    params["Authorization"] = auth
+                    return params
+                }
+            }
+        jsonObjectRequest.setRetryPolicy(object : RetryPolicy {
+            override fun getCurrentTimeout(): Int {
+                return 50000
+            }
+
+            override fun getCurrentRetryCount(): Int {
+                return 50000
+            }
+
+            @Throws(VolleyError::class)
+            override fun retry(error: VolleyError) {
+            }
+        })
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest)
     }
 
+    private fun createSignature() {
+        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
+            try {
+                ImageUtil.saveStamp(this, Utils.getSignature(), "Signature")
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+    fun printExpense(copy: Int) {
+        if (Utils.validatePrinterConfiguration(this,printerType!!,printerMacId)) {
+            // Bluetooth is enabled
+            if (printerType.equals("TSC Printer", ignoreCase = true)) {
+                val printer = TSCPrinter(this@NewExpenseModuleAddActivity, printerMacId, "Expense")
+                printer.printExpense(copy, invoiceHeaderDetails, invoicePrintList)
+                printer.setOnCompletionListener {
+                    Utils.setSignature("")
+                    Toast.makeText(
+                        applicationContext,
+                        "Expense printed successfully!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                }
+                // ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(NewInvoiceListActivity.this,printerMacId);
+                // zebraPrinterActivity.printInvoice(copy,invoiceHeaderDetails,invoicePrintList,"false");
+            }
+        } else {
+            Toast.makeText(applicationContext, "Please configure the Printer", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
     @RequiresApi(Build.VERSION_CODES.O)
     fun getDate(dateEditext: TextView) {
         // Get Current Date
@@ -741,10 +939,19 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         }
     }
 
-    fun existPdtadd(expenseNameStr: String) {
+    fun existPdtadd(expenseNameStr: String , selectAcctcode : String) {
         var isSearched = false
         var currentIndex = 0
+        var selectAcctcode1 = ""
         if (isProductAlreadyExist(expenseNameStr)) {
+
+            if (isAccountAlreadyExist(selectAcctcode)) {
+                selectAcctcode1 = selectAcctcode
+            }
+            else{
+                selectAcctcode1 = selectAccountcode!!
+            }
+
 //            var addlist = addAdapter!!.getCartList().filter { it.productCode == product_code }
             for ((index, model) in expenseAddlist!!.withIndex()) {
                 if (model.expenseName == expenseNameStr) {
@@ -753,7 +960,7 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
                         serviceNameTxtl!!.text.toString(),
                         service_amount_Txt!!.text.toString().toDouble(),
                         selectSuppliercode!!,
-                        selectAccountcode!!
+                        selectAcctcode1!!
                     )
 
                     Log.w("ggExpens", "..")
@@ -838,6 +1045,18 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         }
         return isCheck
     }
+    fun isAccountAlreadyExist(accountStr: String): Boolean {
+        var isCheck = false
+        if (expenseAddAdapter != null) {
+            for (model in expenseAddAdapter!!.getList()) {
+                if (model.accountCode == accountStr) {
+                    isCheck = true
+                    break
+                }
+            }
+        }
+        return isCheck
+    }
 
     fun showExistingProductAlert(productName: String) {
         val builder1 = AlertDialog.Builder(this)
@@ -846,7 +1065,7 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
         builder1.setCancelable(false)
         builder1.setPositiveButton("YES") { dialog, id ->
             dialog.cancel()
-            existPdtadd(serviceNameTxtl!!.text.toString())
+            existPdtadd(serviceNameTxtl!!.text.toString(),selectAccountcode!!)
         }
         builder1.setNegativeButton(
             "NO"
@@ -890,47 +1109,132 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
             }
 
             R.id.action_save -> {
-                if(expenseAddAdapter != null ){
-                    if (allTotaltxt!!.text.toString().toDouble() > 0) {
-                        save_btn!!.setEnabled(true)
-                        showAlertDialogForSave()
-                    }
-                    else{
-                        Toast.makeText(
-                            applicationContext,
-                            " Nettotal should be great than zero",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                if(expenseAddlist.size > 0 ) {
+                    showSaveAlert()
                 }
                 else{
-                    Toast.makeText(this, "add product!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        applicationContext,
+                        "Add Service Details",
+                        Toast.LENGTH_LONG
+                    ).show()
+
                 }
-//                val localCart: java.util.ArrayList<CreateInvoiceModel> =
-//                    dbHelper.getAllInvoiceProducts()
-//                if (localCart.size > 0) {
-//                    if (activityFrom == "iv" || activityFrom == "ConvertInvoice") {
-//                        if (createInvoiceValidation()) {
-//                            showSaveAlert()
-//                        } else {
-//                            showAlertForCreditLimit()
-//                        }
-//                    } else {
-//                        showSaveAlert()
-//                    }
-//                } else {
-//                    Toast.makeText(
-//                        applicationContext,
-//                        "Add the Product First...!",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                }
+             //   showAlertDialogForSave()
                 true
             }
 
             else -> super.onOptionsItemSelected(item)
         }
         //  return super.onOptionsItemSelected(item);
+    }
+
+    fun showSignatureAlert() {
+        val alertDialog = AlertDialog.Builder(this)
+        val customLayout = layoutInflater.inflate(R.layout.signature_layout, null)
+        alertDialog.setView(customLayout)
+        val acceptButton = customLayout.findViewById<Button>(R.id.buttonYes)
+        val cancelButton = customLayout.findViewById<Button>(R.id.buttonNo)
+        val clearButton = customLayout.findViewById<Button>(R.id.buttonClear)
+        val mContent = customLayout.findViewById<LinearLayout>(R.id.signature_layout)
+        acceptButton.isEnabled = false
+        acceptButton.alpha = 0.4f
+
+        val mSig = CaptureSignatureView(this, null, CaptureSignatureView.OnSignatureDraw {
+            Log.w("SignatureString:", acceptButton.isEnabled.toString())
+            acceptButton.isEnabled = true
+            acceptButton.alpha = 1f
+        })
+        mContent.addView(
+            mSig,
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
+        acceptButton.setOnClickListener {
+            // byte[] signature = captureSignatureView.getBytes();
+            if(it.isEnabled) {
+                signatureString = ""
+                val signature = mSig.bitmap
+                signatureCapture!!.setImageBitmap(signature)
+                CreateNewInvoiceActivity.signatureString = ImageUtil.convertBimaptoBase64(signature)
+                Utils.setSignature(CreateNewInvoiceActivity.signatureString)
+                signatureAlert!!.dismiss()
+                Log.w("SignatureString_data:", CreateNewInvoiceActivity.signatureString!!)
+            }
+        }
+        cancelButton.setOnClickListener { signatureAlert!!.dismiss() }
+        clearButton.setOnClickListener {
+            CreateNewInvoiceActivity.signatureString = ""
+            Utils.setSignature("")
+            mSig.ClearCanvas()
+        }
+        signatureAlert = alertDialog.create()
+        signatureAlert!!.setCanceledOnTouchOutside(false)
+        signatureAlert!!.show()
+    }
+
+    fun showSaveAlert() {
+        try {
+            // create an alert builder
+            val builder = AlertDialog.Builder(this@NewExpenseModuleAddActivity)
+            // set the custom layout
+            builder.setCancelable(false)
+            val customLayout = layoutInflater.inflate(R.layout.expense_save_option, null)
+            builder.setView(customLayout)
+            // add a button
+            okButton = customLayout.findViewById(R.id.btn_ok)
+            cancelButton = customLayout.findViewById(R.id.btn_cancel)
+            expensePrintCheck = customLayout.findViewById(R.id.expense_print_check)
+            saveMessage = customLayout.findViewById(R.id.save_message)
+            saveTitle = customLayout.findViewById(R.id.save_title)
+            signatureCapture = customLayout.findViewById(R.id.signature_capture)
+            val noOfCopy = customLayout.findViewById<TextView>(R.id.no_of_copy)
+            val copyPlus = customLayout.findViewById<Button>(R.id.increase)
+            val copyMinus = customLayout.findViewById<Button>(R.id.decrease)
+            val signatureButton = customLayout.findViewById<Button>(R.id.btn_signature)
+            val copyLayout = customLayout.findViewById<LinearLayout>(R.id.print_layout)
+
+            signatureButton.setOnClickListener { showSignatureAlert() }
+            expensePrintCheck!!.setOnClickListener(View.OnClickListener {
+                if (expensePrintCheck!!.isChecked()) {
+                    isPrintEnable = true
+                    copyLayout.visibility = View.VISIBLE
+                } else {
+                    isPrintEnable = false
+                    copyLayout.visibility = View.GONE
+                }
+            })
+            copyPlus.setOnClickListener {
+                val copyvalue = noOfCopy.text.toString()
+                var copy = copyvalue.toInt()
+                copy++
+                noOfCopy.text = copy.toString() + ""
+            }
+            copyMinus.setOnClickListener {
+                if (noOfCopy.text.toString() != "1") {
+                    val copyvalue = noOfCopy.text.toString()
+                    var copy = copyvalue.toInt()
+                    copy--
+                    noOfCopy.text = copy.toString() + ""
+                }
+            }
+
+            // create and show the alert dialog
+            alert = builder.create()
+            alert!!.show()
+            okButton!!.setOnClickListener(View.OnClickListener { view1: View? ->
+                try {
+                    createJson()
+                        alert!!.dismiss()
+                } catch (exception: Exception) {
+                }
+            })
+            cancelButton!!.setOnClickListener(View.OnClickListener {
+                save_btn!!.setEnabled(true)
+                alert!!.cancel()
+            })
+        } catch (exception: Exception) {
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -195,7 +195,7 @@ public class ExpenselistModulAdapter extends RecyclerView.Adapter<RecyclerView.V
                     //((NewInvoiceListActivity)mContext).viewPdfLayout();
                     try {
                         // getInvoiceDetails(invoice.getInvoiceNumber(),viewHolder,position,invoice,"pdf");
-                        ((NewInvoiceListActivity) mContext).getInvoicePdf(invoice.getInvoiceCode(), "Share");
+                        ((NewExpenseModuleListActivity) mContext).getInvoicePdf(invoice.getInvoiceCode(), "Share");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -209,7 +209,7 @@ public class ExpenselistModulAdapter extends RecyclerView.Adapter<RecyclerView.V
                     //((NewInvoiceListActivity)mContext).viewPdfLayout();
                     try {
                         // getInvoiceDetails(invoice.getInvoiceNumber(),viewHolder,position,invoice,"pdf");
-                        ((NewInvoiceListActivity) mContext).getInvoicePdf(invoice.getInvoiceCode(), "Whatsapp");
+                        ((NewExpenseModuleListActivity) mContext).getInvoicePdf(invoice.getInvoiceCode(), "Whatsapp");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -434,7 +434,7 @@ public class ExpenselistModulAdapter extends RecyclerView.Adapter<RecyclerView.V
                         }
 
                         if (action.equals("pdf")) {
-                            ((NewInvoiceListActivity) mContext).viewPdfLayout(invoiceNumber, pdfInvoiceList);
+                            ((NewExpenseModuleListActivity) mContext).viewPdfLayout(invoiceNumber, pdfInvoiceList);
                         }
 
                     } catch (Exception e) {

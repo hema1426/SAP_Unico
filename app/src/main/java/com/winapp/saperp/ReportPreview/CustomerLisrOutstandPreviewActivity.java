@@ -11,6 +11,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.winapp.saperp.R;
+import com.winapp.saperp.ReportPreview.adapter.SapRoCustomerOutstandingARPreviewAdapter;
 import com.winapp.saperp.ReportPreview.adapter.SapRoCustomerOutstandingPreviewAdapter;
 import com.winapp.saperp.model.CustomerStateModel;
 import com.winapp.saperp.utils.Constants;
@@ -48,17 +51,27 @@ import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class SapRoCustomerOutstandPreviewActivity extends AppCompatActivity {
+public class CustomerLisrOutstandPreviewActivity extends AppCompatActivity {
 
     String companyId = "1";
     String locationCode;
     SweetAlertDialog pDialog;
     private ArrayList<CustomerStateModel> customerStateList ;
     private ArrayList<CustomerStateModel.CustInvoiceDetails> custInvoiceDetailsList ;
-    private TextView fromdat,todat,nettotal,balance,cust_name;
+    private ArrayList<CustomerStateModel.CustInvoiceDetailsAR> custInvoiceDetailsARList ;
+    private TextView fromdat,todat,nettotal,nettotal_txt_final,nettotalAr1;
+    private TextView balance,balanceAr1,balance_final,cust_name;
     private RecyclerView customerListView;
+    private RecyclerView customerListView1;
+    private LinearLayout ArCustlistLayl;
     private SapRoCustomerOutstandingPreviewAdapter adapter;
-    String mNettotal,mBalance;
+    private SapRoCustomerOutstandingARPreviewAdapter adapter1;
+    double mNettotal =0.0;
+    double mBalance =0.0;
+    double mNettotal1 =0.0;
+    double mBalance1 =0.0;
+    double mNettotalFinal =0.0;
+    double mBalanceFinal =0.0;
     private String printerMacId;
     private String printerType;
     private SharedPreferences sharedPreferences;
@@ -81,9 +94,15 @@ public class SapRoCustomerOutstandPreviewActivity extends AppCompatActivity {
         fromdat =findViewById (R.id.fromdate_txt);
         todat =findViewById (R.id.todate_txt);
         nettotal =findViewById (R.id.nettotal_txt);
+        nettotalAr1 =findViewById (R.id.nettotal_txt1);
+        nettotal_txt_final =findViewById (R.id.nettotal_txt_final);
         balance =findViewById (R.id.balance_txt);
+        balanceAr1 =findViewById (R.id.balance_txt1);
+        balance_final =findViewById (R.id.balance_txt_final);
         cust_name =findViewById (R.id.customer_txt);
         customerListView = findViewById (R.id.rv_customerlist);
+        customerListView1 = findViewById (R.id.rv_customerlist1);
+        ArCustlistLayl = findViewById (R.id.ArCustlistLay);
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType=sharedPreferences.getString("printer_type","");
@@ -145,6 +164,7 @@ public class SapRoCustomerOutstandPreviewActivity extends AppCompatActivity {
 
         customerStateList =new ArrayList<>();
         custInvoiceDetailsList =new ArrayList<>();
+        custInvoiceDetailsARList =new ArrayList<>();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
             try{
@@ -162,7 +182,10 @@ public class SapRoCustomerOutstandPreviewActivity extends AppCompatActivity {
                                 model.setCustomerName(detailObject.optString("customerName"));
 
                                 double nettotal1 = 0.0;
+                                double nettotal2 = 0.0;
                                 double balance1 = 0.0;
+                                double balance2 = 0.0;
+
                                 JSONArray jsonArray1 = detailObject.optJSONArray("reportCustomerStatementDetails");
 
                                 for (int i = 0; i < Objects.requireNonNull(jsonArray1).length(); i++) {
@@ -176,19 +199,59 @@ public class SapRoCustomerOutstandPreviewActivity extends AppCompatActivity {
 
                                     nettotal1 += Double.parseDouble(object.optString("netTotal"));
                                     balance1 += Double.parseDouble(object.optString("balance"));
-                                    mNettotal = twoDecimalPoint(nettotal1);
-                                    mBalance = twoDecimalPoint(balance1);
+                                    mNettotal = Double.parseDouble(twoDecimalPoint(nettotal1));
+                                    mBalance = Double.parseDouble(twoDecimalPoint(balance1));
 
                                     custInvoiceDetailsList.add(custInvoiceDetailModel);
                                 }
+
+                                JSONArray jsonArray2 = detailObject.optJSONArray("reportCustomerARCreditMemoStatementDetails");
+                                if (jsonArray2.length() > 0) {
+                                    for (int i = 0; i < Objects.requireNonNull(jsonArray2).length(); i++) {
+                                        JSONObject object = jsonArray2.optJSONObject(i);
+                                        CustomerStateModel.CustInvoiceDetailsAR custInvoiceDetailModel1 = new CustomerStateModel.CustInvoiceDetailsAR();
+
+                                        custInvoiceDetailModel1.setInvoiceNumber(object.optString("arInvoiceNo"));
+                                        custInvoiceDetailModel1.setInvoiceDate(object.optString("arInvoiceDate"));
+                                        custInvoiceDetailModel1.setNetTotal(object.optString("arNetTotal"));
+                                        custInvoiceDetailModel1.setBalanceAmount(object.optString("arBalance"));
+
+                                        nettotal2 += Double.parseDouble(object.optString("arNetTotal"));
+                                        balance2 += Double.parseDouble(object.optString("arBalance"));
+                                        mNettotal1 = Double.parseDouble(twoDecimalPoint(nettotal2));
+                                        mBalance1 = Double.parseDouble(twoDecimalPoint(balance2));
+
+                                        custInvoiceDetailsARList.add(custInvoiceDetailModel1);
+                                    }
+                                }
+
+
                                 model.setCustInvoiceDetailList(custInvoiceDetailsList);
+                                model.setCustInvoiceDetailsARList(custInvoiceDetailsARList);
                                 customerStateList.add(model);
 
                                 if (custInvoiceDetailsList.size() > 0) {
                                     setCustomerAdapter(customerStateList);
-                                    nettotal.setText(mNettotal);
-                                    balance.setText(mBalance);
+                                    nettotal.setText(String.valueOf(mNettotal));
+                                    balance.setText(String.valueOf(mBalance));
                                 }
+                                if (custInvoiceDetailsARList.size() > 0) {
+                                    setCustomerAdapterAR(customerStateList);
+                                    ArCustlistLayl.setVisibility(View.VISIBLE);
+
+                                    nettotalAr1.setText(String.valueOf(mNettotal1));
+                                    balanceAr1.setText(String.valueOf(mBalance1));
+                                    mNettotalFinal = mNettotal - mNettotal1;
+                                    mBalanceFinal = mBalance - mBalance1;
+                                    nettotal_txt_final.setText(twoDecimalPoint(mNettotalFinal));
+                                    balance_final.setText(twoDecimalPoint(mBalanceFinal));
+                                    Log.w("custnettot", "" + mNettotal + ".." + mBalance);
+                                    Log.w("custnettot11", "" + mNettotal1 + ".." + mBalance1);
+                                    Log.w("custnettotfinal", "" + mNettotalFinal + ".." + mBalanceFinal);
+                                } else {
+                                    ArCustlistLayl.setVisibility(View.GONE);
+                                }
+
                             }
                             else {
                                 pDialog.dismiss();
@@ -245,9 +308,16 @@ public class SapRoCustomerOutstandPreviewActivity extends AppCompatActivity {
     public void setCustomerAdapter(ArrayList<CustomerStateModel> customerStateLists ) {
         cust_name.setText(customerStateLists.get(0).getCustomerName());
         customerListView.setHasFixedSize(true);
-        customerListView.setLayoutManager(new LinearLayoutManager(SapRoCustomerOutstandPreviewActivity.this, LinearLayoutManager.VERTICAL, false));
-        adapter = new SapRoCustomerOutstandingPreviewAdapter(SapRoCustomerOutstandPreviewActivity.this, custInvoiceDetailsList, "Transfer Detail");
+        customerListView.setLayoutManager(new LinearLayoutManager(CustomerLisrOutstandPreviewActivity.this, LinearLayoutManager.VERTICAL, false));
+        adapter = new SapRoCustomerOutstandingPreviewAdapter(CustomerLisrOutstandPreviewActivity.this, custInvoiceDetailsList, "Transfer Detail");
         customerListView.setAdapter(adapter);
+    }
+    public void setCustomerAdapterAR(ArrayList<CustomerStateModel> customerStateLists ) {
+      //  cust_name.setText(customerStateLists.get(0).getCustomerName());
+        customerListView1.setHasFixedSize(true);
+        customerListView1.setLayoutManager(new LinearLayoutManager(CustomerLisrOutstandPreviewActivity.this, LinearLayoutManager.VERTICAL, false));
+        adapter1 = new SapRoCustomerOutstandingARPreviewAdapter(CustomerLisrOutstandPreviewActivity.this, custInvoiceDetailsARList, "Transfer Detail");
+        customerListView1.setAdapter(adapter1);
     }
 
     @Override

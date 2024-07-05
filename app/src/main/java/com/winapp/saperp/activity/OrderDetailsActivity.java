@@ -30,6 +30,7 @@ import com.android.volley.toolbox.Volley;
 import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.OrderDetailsAdapter;
 import com.winapp.saperp.db.DBHelper;
+import com.winapp.saperp.model.CustomerDetails;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
@@ -112,14 +113,14 @@ public class OrderDetailsActivity extends AppCompatActivity {
         checkAllProducts=findViewById(R.id.check_all_products);
 
         if (getIntent()!=null){
-            orderNumber=getIntent().getStringExtra("orderNumber");
+            orderNumber=getIntent().getStringExtra("orderNumberHis");
             activityFrom=getIntent().getStringExtra("activityFrom");
-            order_date=getIntent().getStringExtra("orderDate");
-            customer_name=getIntent().getStringExtra("customerName");
-            customer_code=getIntent().getStringExtra("customerCode");
-            paid_amount=getIntent().getStringExtra("paidAmount");
-            due_amount=getIntent().getStringExtra("dueAmount");
-            order_status=getIntent().getStringExtra("orderStatus");
+            order_date=getIntent().getStringExtra("orderDateHis");
+            customer_name=getIntent().getStringExtra("customerNameHis");
+            customer_code=getIntent().getStringExtra("customerCodeHis");
+            paid_amount=getIntent().getStringExtra("paidAmountHis");
+            due_amount=getIntent().getStringExtra("dueAmountHis");
+           // order_status=getIntent().getStringExtra("orderStatus");
             getSupportActionBar().setTitle(customer_name);
             orderId.setText(orderNumber);
             orderDate.setText(order_date);
@@ -127,11 +128,12 @@ public class OrderDetailsActivity extends AppCompatActivity {
             paidAmount.setText(paid_amount);
             dueAmount.setText(due_amount);
             orderStatus.setText(order_status);
-            if (order_status.equals("Open")){
-                orderStatus.setTextColor(Color.parseColor("#229954"));
-            }else {
-                orderStatus.setTextColor(Color.parseColor("#5DADE2"));
-            }
+//            if (order_status.equals("Open")){
+//                orderStatus.setTextColor(Color.parseColor("#229954"));
+//            }else {
+//                orderStatus.setTextColor(Color.parseColor("#5DADE2"));
+//            }
+
 
             if (activityFrom.equals("SalesOrder")){
                 salesOrderNumber=orderNumber;
@@ -387,7 +389,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
                                 model.setProductId(object.optString("ProductCode"));
                                 model.setProductName(object.optString("ProductName"));
                                 model.setCtnQty(cqty);
-                                model.setPcsQty(lqty);
+                                model.setPcsQty(object.optString("PcsPerCarton"));
                                 model.setPcsPerCarton(object.optString("PcsPerCarton"));
                                 model.setCartonPrice(object.optString("CartonPrice"));
                                 model.setLoosePrice(object.optString("Price"));
@@ -483,77 +485,129 @@ public class OrderDetailsActivity extends AppCompatActivity {
     private void getInvoiceDetails(String invoiceNumber) throws JSONException {
         // Initialize a new RequestQueue instance
         JSONObject jsonObject=new JSONObject();
-        jsonObject.put("CompanyCode",companyId);
         jsonObject.put("InvoiceNo",invoiceNumber);
+        jsonObject.put("LocationCode", locationCode);
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"SalesApi/GetInvoiceByCode?Requestdata="+jsonObject.toString();
+        String url= Utils.getBaseUrl(this) +"InvoiceDetails";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_urlhis:",url+jsonObject);
         orderDetailsList=new ArrayList<>();
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Getting Invoice Details...");
         pDialog.setCancelable(false);
         pDialog.show();
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
                     try {
-                        Log.w("Invoice_Details:",response.toString());
-                        if (response.length()>0){
-                            String customer_code=response.optString("CustomerCode");
-                            String customer_name=response.optString("CustomerName");
-                            String phone_no=response.optString("DelPhoneNo");
-                            dbHelper.removeCustomer();
-                            dbHelper.insertCustomer(
-                                    customer_code,
-                                    customer_name,
-                                    phone_no,
-                                    response.optString("Address1"),
-                                    response.optString("Address2"),
-                                    response.optString("Address3"),
-                                    response.optString("IsActive"),
-                                    response.optString("HaveTax"),
-                                    response.optString("TaxType"),
-                                    response.optString("TaxPerc"),
-                                    response.optString("TaxCode"),
-                                    response.optString("CreditLimit"),
-                                    "Singapore",
-                                    response.optString("CurrencyCode"));
+                        Log.w("Invoice_Details_his:",response.toString());
+                        String statusCode = response.optString("statusCode");
 
-                            dbHelper.removeAllItems();
-                            JSONArray products=response.getJSONArray("InvoiceDetails");
-                            for (int i=0;i<products.length();i++){
-                                JSONObject object=products.getJSONObject(i);
+                        if (response.length()>0) {
+                            if (statusCode.equals("1")) {
+                                JSONArray salesArray = response.optJSONArray("responseData");
+                                if (salesArray.length() > 0) {
+                                    JSONObject salesObject = salesArray.optJSONObject(0);
 
-                                String lqty="0.0";
-                                String cqty="0.0";
-                                if (!object.optString("LQty").equals("null")){
-                                    lqty=object.optString("LQty");
+                                    String customer_code = salesObject.optString("customerCode");
+                                    String customer_name = salesObject.optString("customerName");
+                                    String phone_no = salesObject.optString("DelPhoneNo");
+                                    dbHelper.removeCustomer();
+                                    dbHelper.insertCustomer(
+                                            customer_code,
+                                            customer_name,
+                                            phone_no,
+                                            salesObject.optString("address1"),
+                                            salesObject.optString("Address2"),
+                                            salesObject.optString("Address3"),
+                                            salesObject.optString("IsActive"),
+                                            salesObject.optString("HaveTax"),
+                                            salesObject.optString("taxType"),
+                                            salesObject.optString("taxPerc"),
+                                            salesObject.optString("taxCode"),
+                                            salesObject.optString("CreditLimit"),
+                                            "Singapore",
+                                            salesObject.optString("currencyCode"));
+
+                                    dbHelper.removeAllItems();
+                                    dbHelper.removeCustomerTaxes();
+                                    CustomerDetails model = new CustomerDetails();
+                                    model.setCustomerCode(customer_code);
+                                    model.setCustomerName(customer_name);
+                                    model.setCustomerAddress1(salesObject.optString("address1"));
+                                    model.setTaxPerc(salesObject.optString("taxPercentage"));
+                                    model.setTaxType(salesObject.optString("taxType"));
+                                    model.setTaxCode(salesObject.optString("taxCode"));
+
+                                    ArrayList<CustomerDetails> taxList = new ArrayList<>();
+                                    taxList.add(model);
+                                    dbHelper.insertCustomerTaxValues(taxList);
+
+                                    JSONArray products = salesObject.getJSONArray("invoiceDetails");
+                                    for (int i = 0; i < products.length(); i++) {
+                                        JSONObject object = products.getJSONObject(i);
+
+                                        String lqty = "0.0";
+                                        String cqty = "0.0";
+                                        if (!object.optString("unitQty").equals("null")) {
+                                            lqty = object.optString("unitQty");
+                                        }
+                                        if (!object.optString("quantity").equals("null")) {
+                                            cqty = object.optString("quantity");
+                                        }
+//                                        invoiceListModel.setProductCode(detailObject.optString("productCode"));
+//                                        invoiceListModel.setDescription(detailObject.optString("productName"));
+//                                        invoiceListModel.setLqty(detailObject.optString("unitQty"));
+//                                        invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+//                                        invoiceListModel.setNetQty(detailObject.optString("quantity"));
+//                                        invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+//                                        invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
+//                                        invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+//                                        invoiceListModel.setSaleType("");
+//                                        if (detailObject.optString("itemID") != null) {
+//                                            invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+//                                        }
+//                                        invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+//                                        invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+//                                        invoiceListModel.setUnitPrice(detailObject.optString("price"));
+//                                        double qty = Double.parseDouble(detailObject.optString("quantity"));
+//                                        double price = Double.parseDouble(detailObject.optString("price"));
+//                                        invoiceListModel.setUomCode(detailObject.optString("uomCode"));
+//
+//                                        double nettotal = qty * price;
+//                                        invoiceListModel.setTotal(String.valueOf(nettotal));
+//                                        invoiceListModel.setPricevalue(String.valueOf(price));
+//
+//                                        invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+//                                        invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+//                                        invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+//
+                                        OrderDetailsAdapter.OrderDetailsModel model1 = new OrderDetailsAdapter.OrderDetailsModel();
+                                        model1.setProductId(object.optString("productCode"));
+                                        model1.setProductName(object.optString("productName"));
+                                        model1.setCtnQty(cqty);
+                                      //  model.setPcsQty(lqty);
+                                        model1.setPcsPerCarton(object.optString("pcsPerCarton"));
+                                        model1.setCartonPrice(object.optString("cartonQty"));
+                                        model1.setLoosePrice(object.optString("price"));
+                                        model1.setTax(object.optString("totalTax"));
+                                        model1.setSubTotal(object.optString("subTotal"));
+                                        model1.setNetQty(object.optString("quantity"));
+                                        double qty = Double.parseDouble(object.optString("quantity"));
+                                        double price = Double.parseDouble(object.optString("price"));
+                                        double nettotal = qty * price;
+
+                                        model1.setNetAmount(String.valueOf(nettotal));
+                                        model1.setProductCheck(false);
+
+                                        orderDetailsList.add(model1);
+                                    }
                                 }
-
-                                if (!object.optString("CQty").equals("null")){
-                                    cqty=object.optString("CQty");
-                                }
-
-                                OrderDetailsAdapter.OrderDetailsModel model=new OrderDetailsAdapter.OrderDetailsModel();
-                                model.setProductId(object.optString("ProductCode"));
-                                model.setProductName(object.optString("ProductName"));
-                                model.setCtnQty(cqty);
-                                model.setPcsQty(lqty);
-                                model.setPcsPerCarton(object.optString("PcsPerCarton"));
-                                model.setCartonPrice(object.optString("CartonPrice"));
-                                model.setLoosePrice(object.optString("Price"));
-                                model.setTax(object.optString("Tax"));
-                                model.setSubTotal(object.optString("SubTotal"));
-                                model.setNetQty(object.optString("Qty"));
-                                model.setNetAmount(object.optString("NetTotal"));
-                                model.setProductCheck(false);
-
-                                orderDetailsList.add(model);
+                                setOrdersAdapter(orderDetailsList);
+                                pDialog.dismiss();
                             }
                         }
-                        setOrdersAdapter(orderDetailsList);
-                        pDialog.dismiss();
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -587,7 +641,6 @@ public class OrderDetailsActivity extends AppCompatActivity {
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
-
 
     private void setOrdersAdapter(ArrayList<OrderDetailsAdapter.OrderDetailsModel> ordersList) {
         orderDetailsView.setHasFixedSize(true);

@@ -116,6 +116,8 @@ public class Constants {
     // AADHI LIVE URL
     public static String AADHI_LIVE ="http://18.143.95.61:81/api/";
 
+    //RAYMANG
+    public static String cloudtak ="https://app0027.cloudtaktiks.com:11014/api/";
 
     // SLG LIVE URL
     public static String SLG_LIVE ="http://13.251.236.153:90/api/";
@@ -123,10 +125,13 @@ public class Constants {
     public static String SLG_DEMO ="http://13.251.236.153:90/api/";
 
     public static String TRANS_ORIENT_DEMO ="https://c21326-EasySales-Test.cloudiax.com/api/";
+
+    public static String TEST_URL_JULY="https://app0027.cloudtaktiks.com:11014/api/";
+
     // transOrient live
 
     //http://c21326-easysales-test.cloudiax.com:11014/
-    public static String TRANS_ORIENT_RAYMANG ="http://c21326-easysales-test.cloudiax.com:11014/api/";
+    public static String TRANS_ORIENT_RAYMANG ="https://app0027.cloudtaktiks.com:11014/api/";
 
     public static String foodgle_LIVE ="https://c21202app01p01.cloudiax.com:10093/api/";
 

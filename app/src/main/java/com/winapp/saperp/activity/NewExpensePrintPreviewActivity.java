@@ -370,7 +370,7 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
                //     model.setSalesReturnList(salesReturnList);
                     invoiceHeaderDetails.add(model);
                     if (invoiceList.size() > 0) {
-                        subtotalText.setText(String.valueOf(subTotall));
+                        subtotalText.setText(Utils.twoDecimalPoint(subTotall));
                         setInvoiceAdapter();
                     }
                     pDialog.dismiss();

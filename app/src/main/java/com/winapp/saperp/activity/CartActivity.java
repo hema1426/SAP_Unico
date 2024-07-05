@@ -248,6 +248,7 @@ public class CartActivity extends AppCompatActivity {
 
         percentApi = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_CART_ITEM_DISC,"");
         Log.w("percentApi..",""+percentApi);
+        signatureString="";
 
         companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
         userName=user.get(SessionManager.KEY_USER_NAME);
@@ -1001,6 +1002,8 @@ public class CartActivity extends AppCompatActivity {
         if (locationTrack.canGetLocation()) {
             double longitude = locationTrack.getLongitude();
             double latitude = locationTrack.getLatitude();
+            current_latitude = String.valueOf(latitude);
+            current_longitude = String.valueOf(longitude);
             String currentAddress=Utils.getCompleteAddress(CartActivity.this,latitude,longitude);
             if (currentAddress!=null && !currentAddress.isEmpty()){
                 locationText.setText(currentAddress);
@@ -1786,6 +1789,8 @@ public class CartActivity extends AppCompatActivity {
         JSONObject invoiceImageObject=new JSONObject();
         JSONArray invoiceDetailsArray =new JSONArray();
         JSONObject invoiceObject =new JSONObject();
+        JSONArray returnProductArray = new JSONArray();
+
         // Sales Header Add values
         ArrayList<CartModel> localCart;
         localCart = dbHelper.getAllCartItems();
@@ -1849,7 +1854,8 @@ public class CartActivity extends AppCompatActivity {
             rootJsonObject.put("street", object.get("street"));
             rootJsonObject.put("city", object.get("city"));
             rootJsonObject.put("creditLimit", object.get("creditLimit"));
-            rootJsonObject.put("remark", "");
+            rootJsonObject.put("Remark", "");
+            rootJsonObject.put("customerReferenceNo", "");
             rootJsonObject.put("currencyName", "Singapore Dollar");
 
             rootJsonObject.put("taxTotal", netTaxvalue);
@@ -1858,6 +1864,12 @@ public class CartActivity extends AppCompatActivity {
             rootJsonObject.put("netTotal", netTotalValue);
             rootJsonObject.put("itemDiscount", itemDiscountAmount);
             rootJsonObject.put("billDiscount", billDiscountAmount);
+            if (currentSaveDateTime == null || currentSaveDateTime.isEmpty()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+                String currentDateandTime = sdf.format(new Date());
+                currentSaveDateTime = currentDateandTime;
+            }
+            rootJsonObject.put("currentDateTime", currentSaveDateTime);
 
             rootJsonObject.put("totalDiscount","0");
             rootJsonObject.put("billDiscountPercentage", billDiscountPercentage);
@@ -1886,6 +1898,11 @@ public class CartActivity extends AppCompatActivity {
             rootJsonObject.put("locationCode",locationCode);
             rootJsonObject.put("latitude",current_latitude);
             rootJsonObject.put("longitude",current_longitude);
+            rootJsonObject.put("Paymode", "");
+            rootJsonObject.put("ChequeDateString", "");
+            rootJsonObject.put("BankCode", "");
+            rootJsonObject.put("AccountNo", "");
+            rootJsonObject.put("ChequeNo", "");
 
             // Sales Details Add to the Objects
             localCart=dbHelper.getAllCartItems();
@@ -1920,10 +1937,12 @@ public class CartActivity extends AppCompatActivity {
                 invoiceObject.put("total",model.getCART_TOTAL_VALUE());
                 if (model.getDiscount()!=null && !model.getDiscount().isEmpty()){
                     invoiceObject.put("itemDiscount",model.getDiscount());
+               //     invoiceObject.put("DiscountPercentage",model.getDiscount());
+
                 }else {
                     invoiceObject.put("itemDiscount","0.00");
+                 //   invoiceObject.put("DiscountPercentage","0.00");
                 }
-                invoiceObject.put("DiscountPercentage",percentApi);
                 invoiceObject.put("totalTax",model.getCART_TAX_VALUE());
                 invoiceObject.put("subTotal",model.getSubTotal());
                 invoiceObject.put("netTotal",model.getCART_COLUMN_NET_PRICE());
@@ -1959,6 +1978,7 @@ public class CartActivity extends AppCompatActivity {
 
                 invoiceObject.put("returnSubTotal",return_subtotal+"");
                 invoiceObject.put("returnNetTotal", return_subtotal+"");
+                invoiceObject.put("returnReason", "");
                 invoiceObject.put("taxCode",object.optString("taxCode"));
                 invoiceObject.put("uomCode",model.getUomCode());
                 invoiceObject.put("retailPrice",model.getCART_COLUMN_CTN_PRICE());
@@ -1989,6 +2009,7 @@ public class CartActivity extends AppCompatActivity {
             invoiceImageObject.put("SlNo",0);
             invoiceImageObject.put("TranType","IN");
             invoiceImageObject.put("RefPhoto",imageString);
+            rootJsonObject.put("signature", signatureString);
             invoiceImageObject.put("CustomerCode",object.get("customerCode"));
             invoiceImageObject.put("CustomerName",object.get("customerName"));
             invoiceImageObject.put("DeliveryCode",SettingUtils.getDeliveryAddressCode());
@@ -1999,6 +2020,7 @@ public class CartActivity extends AppCompatActivity {
 
             // rootJsonObject.put("IsSaveSO",false);
             //  rootJsonObject.put("InvoiceHeader", invoiceHeader);
+            rootJsonObject.put("ReturnDetails", returnProductArray);
             rootJsonObject.put("PostingInvoiceDetails", invoiceDetailsArray);
             //  rootJsonObject.put("InvoiceSignature",signatureObject);
             // rootJsonObject.put("InvoicePhoto",invoiceImageObject);
@@ -2161,13 +2183,16 @@ public class CartActivity extends AppCompatActivity {
                 saleObject.put("total",model.getCART_TOTAL_VALUE());
                 if (model.getDiscount()!=null && !model.getDiscount().isEmpty()){
                     saleObject.put("itemDiscount",model.getDiscount());
+                    saleObject.put("DiscountPercentage",model.getDiscount());
+
                 }else {
                     saleObject.put("itemDiscount","0.00");
+                    saleObject.put("DiscountPercentage","0.00");
+
                 }
 //                Log.w("cartPricss",""+Utils.twoDecimalPoint(priceValue)+
 //                        "cart_unit.."+model.getCART_UNIT_PRICE());
 
-                saleObject.put("DiscountPercentage",percentApi);
                 saleObject.put("totalTax",model.getCART_TAX_VALUE());
                 saleObject.put("subTotal",model.getSubTotal());
                 saleObject.put("netTotal",model.getCART_COLUMN_NET_PRICE());
@@ -2389,19 +2414,24 @@ public class CartActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(),"Error in getting printing data",Toast.LENGTH_SHORT).show();
                                     redirectActivity();
                                 }
+                                Log.w("cartSavEntr","");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }else {
+                            Log.w("cartSavEntr1","");
+
                             //updateStockQty();
                             dbHelper.removeAllItems();
-                            if (message.equals("Invoice Created Successfully")){
-                                try {
-                                    redirectActivity();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
+                            redirectActivity();
+
+//                            if (message.equals("Invoice Created Successfully")){
+//                                try {
+//                                    redirectActivity();
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
                         }
                         isPrintEnable=false;
                     }
@@ -2930,6 +2960,7 @@ public class CartActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }else {
+            Log.w("cartSavEntr2","");
             Intent intent=new Intent(CartActivity.this, NewInvoiceListActivity.class);
             startActivity(intent);
             finish();

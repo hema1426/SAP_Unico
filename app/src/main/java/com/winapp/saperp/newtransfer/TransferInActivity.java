@@ -694,7 +694,7 @@ public class TransferInActivity extends AppCompatActivity {
 
             RequestQueue requestQueue = Volley.newRequestQueue(this);
             url= Utils.getBaseUrl(this) +"ProductList";
-            Log.w("pdtlist_url:", url+jsonObj);
+            Log.w("pdtlist_urlTransAdd:", url+jsonObj);
             pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
             pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
             pDialog.setTitleText("Loading...");
@@ -712,7 +712,7 @@ public class TransferInActivity extends AppCompatActivity {
                         try {
                             pDialog.dismiss();
 
-                            Log.w("pdtlist:", response.toString());
+                            Log.w("pdtlistTransAdd:", response.toString());
 
                             //pDialog.dismiss();
                             String statusCode = response.optString("statusCode");
@@ -724,7 +724,6 @@ public class TransferInActivity extends AppCompatActivity {
 
                                 for (int i = 0; i < pdtArray.length(); i++) {
                                     JSONObject jsonObject = pdtArray.getJSONObject(i);
-                                    Log.w("entrTranwww",""+transferType);
 
                                     if (transferType.equals("Transfer In")) {
                                         if (jsonObject.optInt("stockInHand") > 0){
@@ -734,7 +733,6 @@ public class TransferInActivity extends AppCompatActivity {
                                             transferInDetails.setStockInHand((jsonObject.optInt("stockInHand")));
                                             transferInDetails.setQty("");
                                             transferInDetailsl.add(transferInDetails);
-                                            Log.w("entrTransqqq",""+transferInDetailsl.size());
 
                                         }
                                     }else {

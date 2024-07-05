@@ -134,10 +134,12 @@ public class SalesOrderPrintPreview extends AppCompatActivity implements OnPageC
     LinearLayout address1Layout;
     LinearLayout address2Layout;
     LinearLayout address3Layout;
+    LinearLayout address4Layout;
 
     TextView customerAddress1;
     TextView customerAddress2;
     TextView customerAddress3;
+    TextView customerAddress4;
 
     private TextView companyAddress3Text;
     private TextView companyPhoneText;
@@ -191,10 +193,12 @@ public class SalesOrderPrintPreview extends AppCompatActivity implements OnPageC
         address1Layout=findViewById(R.id.address1Layout);
         address2Layout=findViewById(R.id.address2Layout);
         address3Layout=findViewById(R.id.address3Layout);
+        address4Layout=findViewById(R.id.address4Layout);
 
         customerAddress1=findViewById(R.id.cus_address1);
         customerAddress2=findViewById(R.id.cus_address2);
         customerAddress3=findViewById(R.id.cus_address3);
+        customerAddress4=findViewById(R.id.cus_address4);
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType=sharedPreferences.getString("printer_type","");
@@ -358,6 +362,11 @@ public class SalesOrderPrintPreview extends AppCompatActivity implements OnPageC
                             model.setAddress1(object.optString("address1"));
                             model.setAddress2(object.optString("address2"));
                             model.setAddress3(object.optString("address3"));
+                            model.setAddressstate(object.optString("block")+" "+object.optString("street")+" "
+                                    +object.optString("city"));
+                            model.setAddresssZipcode(object.optString("countryName")+" "+object.optString("state")+" "
+                                    +object.optString("zipcode"));
+
                             String signFlag=object.optString("signFlag");
                             if (signFlag.equals("Y")){
                                 String signature=object.optString("signature");
@@ -554,6 +563,34 @@ public class SalesOrderPrintPreview extends AppCompatActivity implements OnPageC
             soDateText.setText(model.getSoDate());
             customerCodetext.setText(model.getCustomerCode());
             customerNameText.setText(model.getCustomerName());
+
+            if (!model.getAddress1().isEmpty()){
+                address1Layout.setVisibility(View.VISIBLE);
+                customerAddress1.setText(model.getAddress1());
+            }
+            if (!model.getAddress2().isEmpty()){
+                address2Layout.setVisibility(View.VISIBLE);
+                customerAddress2.setText(model.getAddress2());
+            }
+            if (!model.getAddress3().isEmpty()){
+                address3Layout.setVisibility(View.VISIBLE);
+                customerAddress3.setText(model.getAddress3());
+            }
+            if (!model.getAddressstate().isEmpty() ) {
+                if (!model.getAddresssZipcode().isEmpty()) {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddressstate() + " " + model.getAddresssZipcode());
+                } else {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddressstate());
+                }
+            }
+            else{
+                if (!model.getAddresssZipcode().isEmpty() ) {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddresssZipcode());
+                }
+            }
 
            /* if (!model.getAddress1().isEmpty()){
                 address1Layout.setVisibility(View.VISIBLE);

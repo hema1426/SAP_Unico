@@ -155,6 +155,7 @@ public class SplashActivity extends AppCompatActivity {
                 );
                 finish();
             }else {
+            //String apiUrl=Constants.TEST_URL_JULY;
              String apiUrl=Constants.TRANS_ORIENT_DEMO;
           // String apiUrl=Constants.SAP_FOODGLE_HUB_NEW;
            // String apiUrl=Constants.SUPER_STAR_DEMO;

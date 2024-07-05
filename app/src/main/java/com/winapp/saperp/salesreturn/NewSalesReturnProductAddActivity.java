@@ -250,6 +250,7 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Sales Return");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        signatureString = "" ;
         session=new SessionManager(this);
         user=session.getUserDetails();
         dbHelper=new DBHelper(this);
@@ -1218,6 +1219,8 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                 focEditText.setEnabled(false);
                 exchangeEditext.setEnabled(false);
                 discountEditext.setEnabled(false);
+                addProduct.setText("Add");
+
                 hideKeyboard();
                 getProducts();
             }else {
@@ -1771,7 +1774,8 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                                 product.setRetailPrice(productObject.optDouble("retailPrice"));
                                 product.setCartonPrice(productObject.optString("cartonPrice"));
                                 product.setPcsPerCarton(productObject.optString("pcsPerCarton"));
-                               // product.setUnitCost(productObject.optString("price"));
+                                product.setBarcode(productObject.optString("barcode"));
+                                // product.setUnitCost(productObject.optString("price"));
                                 product.setUnitCost(productObject.optString("lastSalesPrice"));
                                 product.setMinimumSellingPrice(productObject.optString("minimumSellingPrice"));
                                 if (!productObject.optString("stockInHand").equals("null")){
@@ -3106,8 +3110,14 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                             model.setOverAllTotal(object.optString("overAllTotal"));
                           //  model.setAddress(object.optString("street"));
                             model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
+                            model.setAddress1(object.optString("address1"));
                             model.setAddress2(object.optString("address2"));
                             model.setAddress3(object.optString("address3"));
+                            model.setAddressstate(object.optString("block")+" "+object.optString("street")+" "
+                                    +object.optString("city"));
+                            model.setAddresssZipcode(object.optString("countryName")+" "+object.optString("state")+" "
+                                    +object.optString("zipcode"));
+
                             // model.setDeliveryAddress(model.getAddress());
                             model.setSubTotal(object.optString("subTotal"));
                             model.setNetTax(object.optString("taxTotal"));
@@ -3147,6 +3157,7 @@ public class NewSalesReturnProductAddActivity extends AppCompatActivity {
                                 invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                 invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
                                 invoiceListModel.setUnitPrice(detailObject.optString("price"));
+                                invoiceListModel.setUomCode(detailObject.optString("uomCode"));
 
                                 double qty1 = Double.parseDouble(detailObject.optString("quantity"));
                                 double price1 = Double.parseDouble(detailObject.optString("price"));

@@ -33,11 +33,9 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.TransferAdapter;
 import com.winapp.saperp.db.DBHelper;
-import com.winapp.saperp.model.InvoiceModel;
 import com.winapp.saperp.model.TransferDetailModel;
 import com.winapp.saperp.model.TransferModel;
 import com.winapp.saperp.newtransfer.TransferInActivity;
@@ -51,12 +49,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -143,7 +138,7 @@ public class TransferListProductActivity extends NavigationActivity implements V
         //   addTransfer.setVisibility(View.GONE);
         //    transferInButton.setEnabled(false);
         //    transferInText.setEnabled(false);
-        getTransferInRequest(transferMode, currentDate, currentDate);
+        getTransferInRequest("In", currentDate, currentDate);
 
         if (getIntent() != null) {
             String docNumber = getIntent().getStringExtra("docNum");

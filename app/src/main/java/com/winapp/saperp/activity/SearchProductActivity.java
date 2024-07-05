@@ -38,7 +38,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.JsonArray;
 import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.CustomerNameAdapter;
 import com.winapp.saperp.adapter.SelectProductAdapter;

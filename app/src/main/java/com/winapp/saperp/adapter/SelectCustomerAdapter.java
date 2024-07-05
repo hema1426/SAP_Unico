@@ -1,10 +1,17 @@
 package com.winapp.saperp.adapter;
 
+import static androidx.core.content.ContextCompat.startActivity;
+import static com.winapp.saperp.activity.AddInvoiceActivity.activityFrom;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,17 +19,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cete.dynamicpdf.C;
 import com.winapp.saperp.R;
 import com.winapp.saperp.activity.AddInvoiceActivity;
 import com.winapp.saperp.activity.CustomerListActivity;
 import com.winapp.saperp.activity.InvoiceListActivityCopy;
 import com.winapp.saperp.activity.NewInvoiceListActivity;
+import com.winapp.saperp.activity.OrderHistoryActivity;
 import com.winapp.saperp.activity.SalesOrderListActivity;
 import com.winapp.saperp.model.CustomerModel;
 import com.winapp.saperp.salesreturn.SalesReturnActivity;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.Utils;
 
 import java.util.ArrayList;
@@ -31,6 +42,10 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
     private ArrayList<CustomerModel> customers;
     public CallBack callBack;
     public Context context;
+    private SharedPreferenceUtil sharedPreferenceUtil;
+
+    public  String activityName = "";
+
     public OnMoreButtonClicked onMoreButtonClicked;
     public SelectCustomerAdapter(Context context,ArrayList<CustomerModel> customers, CallBack callBack) {
         this.customers = customers;
@@ -49,6 +64,10 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.select_customer_items, viewGroup, false);
+        sharedPreferenceUtil =new SharedPreferenceUtil(context);
+
+        activityName = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_ACTIVITY,"");
+
         return new ViewHolder(view);
     }
 
@@ -82,6 +101,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
             viewHolder.customerCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     callBack.searchCustomer(model.getCustomerCode(), model.getCustomerName(),i);
                 }
             });
@@ -94,6 +114,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
             viewHolder.customerLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     callBack.searchCustomer(model.getCustomerCode(),model.getCustomerName(),i);
                 }
             });
@@ -112,6 +133,21 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
                 }
             });
         }
+        Log.w("custContex",""+activityName);
+        if (activityName.equals("SalesOrder") || activityName.equals("Invoice")){
+            viewHolder.three_dot_custl.setVisibility(View.VISIBLE);
+            if (activityName.equals("SalesOrder")){
+                activityName = "SalesOrder" ;
+            }
+            else{
+                activityName = "Invoice" ;
+            }
+        }
+        else{
+            viewHolder.three_dot_custl.setVisibility(View.GONE);
+
+        }
+
 
         viewHolder.moreIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,6 +156,14 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
                 ,model.getAllowFOC());
             }
         });
+        viewHolder.three_dot_custl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopupMenu(view,i,model);
+
+            }
+        });
+
 
         if (i % 2==0){
             viewHolder.customerLayout.setBackgroundColor(Color.parseColor("#F8F9F9"));
@@ -142,6 +186,8 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
         private ImageView moreIcon;
         private ImageView locationIcon;
         private TextView outstandingAmount;
+        private ImageView three_dot_custl;
+
         public ViewHolder(View view) {
             super(view);
             customerName = view.findViewById(R.id.name);
@@ -152,6 +198,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
             moreIcon=view.findViewById(R.id.more_icon);
             locationIcon=view.findViewById(R.id.location_icon);
             outstandingAmount=view.findViewById(R.id.outstanding_amount);
+            three_dot_custl=view.findViewById(R.id.three_dot_cust);
         }
     }
 
@@ -164,7 +211,65 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
         void createInvoice(String customerCode,String customerName,String taxcode,String taxperc,String taxtype,
                            String BillDisc,String isFOC);
     }
+    /**
+     * Showing popup menu when tapping on 3 dots
+     */
+    private void showPopupMenu(View view, int position,CustomerModel model) {
+        PopupMenu popup = new PopupMenu(context, view, Gravity.END);
+        MenuInflater inflater = popup.getMenuInflater();
 
+        inflater.inflate(R.menu.three_dot_menu, popup.getMenu());
+
+        //set menu item click listener here
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener(position));
+        popup.show();
+    }
+
+    /**
+     * Click listener for popup menu items
+     */
+    class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
+        int position;
+
+        /**
+         * @param position
+         */
+        MyMenuItemClickListener(int position) {
+
+            this.position = position;
+        }
+
+        /**
+         * Click listener for popup menu items
+         */
+
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.order_history_cust:
+
+                    Intent intent=new Intent(context, OrderHistoryActivity.class);
+                    intent.putExtra("custNameHistory",customers.get(position).getCustomerName());
+                    intent.putExtra("custCodeHistory",customers.get(position).getCustomerCode());
+                    intent.putExtra("activityHistory", activityName);
+
+                    context.startActivity(intent);
+                    Log.w("ordrHistorMenu",""+activityName);
+                    return true;
+//                case R.id.edit:
+//                    // ...
+//                    return true;
+//                case R.id.delete:
+//                    // ...
+//                    return true;
+//                case R.id.favourite:
+//                    // ...
+//                    return true;
+                default:
+            }
+            return false;
+        }
+    }
     public void filterList(ArrayList<CustomerModel> filterdNames) {
         this.customers = filterdNames;
         notifyDataSetChanged();

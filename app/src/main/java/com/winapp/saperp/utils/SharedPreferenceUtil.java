@@ -11,6 +11,7 @@ import android.text.TextUtils;
 public class SharedPreferenceUtil {
 
     public  String KEY_CART_ITEM_DISC = "CartItemDisc";
+    public  String KEY_ACTIVITY = "ACTIVITY";
 
     private static SharedPreferences sharedPreferences;
     public static final boolean DEFAULT_BOOLEAN = false;

@@ -66,8 +66,6 @@ public class AddInvoiceActivity extends NavigationActivity {
     public static String invoice_delivery_date="";
     public static String order_no="";
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

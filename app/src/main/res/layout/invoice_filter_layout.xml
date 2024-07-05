@@ -150,6 +150,7 @@
                     android:layout_width="match_parent"
                     android:padding="10dp"
                     android:layout_weight="1"
+                    android:id="@+id/fromdateLay"
                     android:orientation="vertical"
                     android:layout_height="wrap_content">
 

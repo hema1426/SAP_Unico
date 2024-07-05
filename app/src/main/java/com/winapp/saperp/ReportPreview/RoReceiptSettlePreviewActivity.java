@@ -395,11 +395,11 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
         }
         Log.w("currtotlExp",""+currencytotal +expenseArrayList.get(0).getExpenseTotal());
         if(expensetotal > 0) {
-            expens_total_layl.setVisibility(View.VISIBLE);
+            expenselay.setVisibility(View.VISIBLE);
             expense_total.setText(twoDecimalPoint(expensetotal));
         }
         else{
-            expens_total_layl.setVisibility(View.GONE);
+            expenselay.setVisibility(View.GONE);
         }
     }
 

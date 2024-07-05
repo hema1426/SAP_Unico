@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -31,6 +32,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.tscdll.TSCActivity;
 import com.winapp.saperp.R;
 import com.winapp.saperp.utils.Constants;
+import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
@@ -81,6 +83,15 @@ public class SalesReturnPrintPreview extends AppCompatActivity {
     private String company_address3;
     private RelativeLayout rootLayout;
     private LinearLayout addressLayout;
+    LinearLayout address1Layout;
+    LinearLayout address2Layout;
+    LinearLayout address3Layout;
+    LinearLayout address4Layout;
+
+    TextView customerAddress1;
+    TextView customerAddress2;
+    TextView customerAddress3;
+    TextView customerAddress4;
     SharedPreferences sharedPreferences;
     String printerMacId;
     String printerType;
@@ -88,6 +99,7 @@ public class SalesReturnPrintPreview extends AppCompatActivity {
     AlertDialog alert11;
     DialogInterface alertInterface;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +130,16 @@ public class SalesReturnPrintPreview extends AppCompatActivity {
         companyAddress1Text=findViewById(R.id.address1);
         companyAddress2Text=findViewById(R.id.address2);
         addressLayout=findViewById(R.id.adressLayout);
+        address1Layout=findViewById(R.id.address1Layout);
+        address2Layout=findViewById(R.id.address2Layout);
+        address3Layout=findViewById(R.id.address3Layout);
+        address4Layout=findViewById(R.id.address4Layout);
+
+        customerAddress1=findViewById(R.id.cus_address1);
+        customerAddress2=findViewById(R.id.cus_address2);
+        customerAddress3=findViewById(R.id.cus_address3);
+        customerAddress4=findViewById(R.id.cus_address4);
+
         rootLayout=findViewById(R.id.rootLayout);
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType=sharedPreferences.getString("printer_type","");
@@ -177,9 +199,23 @@ public class SalesReturnPrintPreview extends AppCompatActivity {
                                 model.setItemDisc(object.optString("iTotalDiscount"));
                                 model.setTaxType(object.optString("taxType"));
                                 model.setTaxValue(object.optString("taxPerc"));
+                                model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
+                                model.setAddress1(object.optString("address1"));
+                                model.setAddress2(object.optString("address2"));
+                                model.setAddress3(object.optString("address3"));
+                                model.setAddressstate(object.optString("block")+" "+object.optString("street")+" "
+                                        +object.optString("city"));
+                                model.setAddresssZipcode(object.optString("countryName")+" "+object.optString("state")+" "
+                                        +object.optString("zipcode"));
                                 model.setSignFlag(object.optString("signFlag"));
-                                if (model.getSubTotal().equals("Y")){
-                                    Utils.setSignature(object.optString("signature"));
+                             //   String signFlag=object.optString("signFlag");
+                                if (object.optString("signature")!=null &&
+                                        !object.optString("signature").equals("null") && !object.optString("signature").isEmpty()){
+                                    String signature = object.optString("signature");
+                                    Utils.setSignature(signature);
+                                    createSignature();
+                                } else {
+                                    Utils.setSignature("");
                                 }
 
                                 JSONArray salesReturnDetails=object.optJSONArray("salesReturnDetails");
@@ -282,13 +318,49 @@ public class SalesReturnPrintPreview extends AppCompatActivity {
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
-
+    private void createSignature() {
+        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
+            try {
+                ImageUtil.saveStamp(this, Utils.getSignature(), "Signature");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public void setInvoiceAdapter(){
         for (SalesReturnPrintPreviewModel model: salesReturnHeader){
             srNumberText.setText(model.getSrNo());
             srDateText.setText(model.getSrDate());
             customerCodetext.setText(model.getCustomerCode());
             customerNameText.setText(model.getCustomerName());
+
+            if (!model.getAddress1().isEmpty()){
+                address1Layout.setVisibility(View.VISIBLE);
+                customerAddress1.setText(model.getAddress1());
+            }
+            if (!model.getAddress2().isEmpty()){
+                address2Layout.setVisibility(View.VISIBLE);
+                customerAddress2.setText(model.getAddress2());
+            }
+            if (!model.getAddress3().isEmpty()){
+                address3Layout.setVisibility(View.VISIBLE);
+                customerAddress3.setText(model.getAddress3());
+            }
+            if (!model.getAddressstate().isEmpty() ) {
+                if (!model.getAddresssZipcode().isEmpty()) {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddressstate() + " " + model.getAddresssZipcode());
+                } else {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddressstate());
+                }
+            }
+            else{
+                if (!model.getAddresssZipcode().isEmpty() ) {
+                    address4Layout.setVisibility(View.VISIBLE);
+                    customerAddress4.setText(model.getAddresssZipcode());
+                }
+            }
 
             billDiscountText.setText(model.getBillDisc());
             subtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));

@@ -99,6 +99,8 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
     EditText customerNameEdittext;
     DBHelper dbHelper;
     TextView netTotalText;
+    private SharedPreferences sharedPref_billdisc;
+    private SharedPreferences.Editor myEdit;
     private ArrayList<CustomerDetails> customerDetails;
     LinearLayout transLayout;
     View customerLayout;
@@ -160,6 +162,9 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         companyId=user.get(SessionManager.KEY_COMPANY_CODE);
         userName=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get((SessionManager.KEY_LOCATION_CODE));
+
+        sharedPref_billdisc = getSharedPreferences("BillDiscPref", MODE_PRIVATE);
+        myEdit = sharedPref_billdisc.edit();
         customerView=findViewById(R.id.customerList);
         netTotalText=findViewById(R.id.net_total);
         customerNameEdittext=findViewById(R.id.customer_search);
@@ -1032,7 +1037,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url= Utils.getBaseUrl(this) +"DeliveryOrderDetails";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_urlDO_detail:",url+jsonObject);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Getting DeliveryOrder Details...");
@@ -1065,6 +1070,8 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                 String company_code=salesObject.optString("CompanyCode");
                                 String customer_code=salesObject.optString("customerCode");
                                 String customer_name=salesObject.optString("customerName");
+                                String customerBill_Disc=salesObject.optString("customerDiscountPercentage");
+
                                 String total=salesObject.optString("total");
                                 String sub_total=salesObject.optString("subTotal");
                                 String bill_discount=salesObject.optString("billDiscount");
@@ -1227,12 +1234,13 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                     //double total1=(net_qty * Double.parseDouble(price_value));
                                     //double sub_total1=total1-return_amt;
 
+
                                     dbHelper.insertCreateInvoiceCartEdit(
                                             object.optString("productCode"),
                                             object.optString("productName"),
                                             object.optString("uomCode"),
                                             cqty.toString(),
-                                            return_qty,
+                                            "0",
                                             String.valueOf(net_qty),
                                             "0",
                                             price_value,
@@ -1248,10 +1256,15 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                             "0"
                                     );
 
+                                    myEdit.putString("billDisc_amt", salesObject.optString("billDiscount"));
+                                    myEdit.putString("billDisc_percent", salesObject.optString("discountPercentage"));
+                                    myEdit.apply();
+
                                     Log.w("ProductsLength:",products.length()+"");
                                     Log.w("ActualPrintProducts:",dbHelper.numberOfRowsInInvoice()+"");
                                     if (products.length()==dbHelper.numberOfRowsInInvoice()){
-                                        redirectActivity(action,customer_code,customer_name,do_code);
+
+                                        redirectActivity(action,customer_code,customer_name,do_code,customerBill_Disc);
                                         break;
                                     }
                                 }
@@ -1296,14 +1309,16 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void redirectActivity(String action,String customer_code,String customer_name,String do_code){
+    public void redirectActivity(String action,String customer_code,String customer_name,String do_code,String customerBill_Disc){
         //  if (products.length()==dbHelper.numberOfRowsInInvoice()){
+        Log.w("acttionDO",""+action);
         Utils.setCustomerSession(DeliveryOrderListActivity.this,customer_code);
         if (action.equals("Edit")){
             Intent intent=new Intent(getApplicationContext(),CreateNewInvoiceActivity.class);
             intent.putExtra("customerName",customer_name);
             intent.putExtra("customerCode",customer_code);
             intent.putExtra("editDoNumber", do_code);
+           // intent.putExtra("customerBillDisc", customerBill_Disc);
             intent.putExtra("from","DoEdit");
             startActivity(intent);
             finish();
@@ -1312,7 +1327,12 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
             intent.putExtra("customerName",customer_name);
             intent.putExtra("customerCode",customer_code);
             intent.putExtra("editDoNumber", do_code);
+            intent.putExtra("editDOInvDate", do_code);
+
+            //intent.putExtra("customerBillDisc", customerBill_Disc);
             intent.putExtra("from","ConvertInvoiceFromDO");
+            Log.w("acttionDODisc",""+customerBill_Disc);
+
             startActivity(intent);
             finish();
         }
@@ -1493,7 +1513,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Initialize a new JsonArrayRequest instance
         String url = Utils.getBaseUrl(this) + "DeliveryOrderList";
-        Log.w("Given_url:",url);
+        Log.w("Given_urlDoList:",url);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Getting Delivery Orders...");

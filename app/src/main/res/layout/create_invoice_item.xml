@@ -144,6 +144,24 @@
             android:text="FOC"
             android:textSize="12sp"
             />
+        <View
+            android:layout_width="1dip"
+            android:background="#f2f2f2"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:id="@+id/exchItem"
+            android:textColor="#212121"
+            android:background="@drawable/table_content_cell_bg"
+            android:text="FOC"
+            android:textSize="12sp"
+            />
 
         <View
             android:layout_width="1dip"

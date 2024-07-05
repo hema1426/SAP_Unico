@@ -65,6 +65,7 @@ public class NewProductSummaryAdapter extends RecyclerView.Adapter<NewProductSum
             viewHolder.subTotalValue.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
             viewHolder.gstValue.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getGstAmount())));
             viewHolder.netTotalValue.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
+            viewHolder.exchValue.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getExchangeQty())));
 
             viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -128,7 +129,7 @@ public class NewProductSummaryAdapter extends RecyclerView.Adapter<NewProductSum
         private TextView priceValue;
         private TextView totalValue;
         private TextView subTotalValue;
-        private TextView gstValue;
+        private TextView gstValue,exchValue;
         private TextView netTotalValue;
         private ImageView removeItem;
         private ImageView editProduct;
@@ -144,6 +145,7 @@ public class NewProductSummaryAdapter extends RecyclerView.Adapter<NewProductSum
             subTotalValue=view.findViewById(R.id.sub_total);
             gstValue=view.findViewById(R.id.tax);
             netTotalValue=view.findViewById(R.id.net_total);
+            exchValue=view.findViewById(R.id.exchItem);
            // removeItem=view.findViewById(R.id.remove_item);
            // editProduct=view.findViewById(R.id.edit_product);
         }
@@ -154,6 +156,9 @@ public class NewProductSummaryAdapter extends RecyclerView.Adapter<NewProductSum
         void searchCustomer(String letter, int pos);
         void removeItem(String pid);
         void editItem(CreateInvoiceModel model);
+    }
+    public ArrayList<CreateInvoiceModel> getList(){
+        return summaryList;
     }
 
     public void filterList(ArrayList<CreateInvoiceModel> filterdNames) {

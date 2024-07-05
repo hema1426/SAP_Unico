@@ -10,6 +10,14 @@ public class SalesReturnPrintPreviewModel {
     private String itemDisc;
     private String billDisc;
     private String signFlag;
+    private String address1;
+    private String address;
+
+    private String address2;
+    private String address3;
+
+    private String addressstate;
+    private String addresssZipcode;
     private String subTotal;
     private String tax;
     private String netTotal;
@@ -23,6 +31,54 @@ public class SalesReturnPrintPreviewModel {
 
     public void setSignFlag(String signFlag) {
         this.signFlag = signFlag;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getAddress1() {
+        return address1;
+    }
+
+    public void setAddress1(String address1) {
+        this.address1 = address1;
+    }
+
+    public String getAddress2() {
+        return address2;
+    }
+
+    public void setAddress2(String address2) {
+        this.address2 = address2;
+    }
+
+    public String getAddress3() {
+        return address3;
+    }
+
+    public void setAddress3(String address3) {
+        this.address3 = address3;
+    }
+
+    public String getAddressstate() {
+        return addressstate;
+    }
+
+    public void setAddressstate(String addressstate) {
+        this.addressstate = addressstate;
+    }
+
+    public String getAddresssZipcode() {
+        return addresssZipcode;
+    }
+
+    public void setAddresssZipcode(String addresssZipcode) {
+        this.addresssZipcode = addresssZipcode;
     }
 
     public String getTaxType() {

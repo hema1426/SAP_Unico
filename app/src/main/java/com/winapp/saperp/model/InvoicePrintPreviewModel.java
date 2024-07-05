@@ -10,6 +10,9 @@ public class InvoicePrintPreviewModel {
     private String customerCode;
     private String customerName;
     private String address;
+    private String addressCust1;
+    private String addressCust2;
+    private String addressCust3;
     private String deliveryAddress;
     private String billDiscount;
     private String itemDiscount;
@@ -23,12 +26,15 @@ public class InvoicePrintPreviewModel {
     private String address1;
     private String address2;
     private String address3;
+    private String addressstate;
+    private String addresssZipcode;
     private String soNumber;
     private String doNumber;
     private String soDate;
     private String doDate;
     private String overAllTotal;
     private String paymentTerm;
+    private String excQty;
 
     public String getPaymentTerm() {
         return paymentTerm;
@@ -83,6 +89,22 @@ public class InvoicePrintPreviewModel {
 
     public String getAddress1() {
         return address1;
+    }
+
+    public String getAddressstate() {
+        return addressstate;
+    }
+
+    public void setAddressstate(String addressstate) {
+        this.addressstate = addressstate;
+    }
+
+    public String getAddresssZipcode() {
+        return addresssZipcode;
+    }
+
+    public void setAddresssZipcode(String addresssZipcode) {
+        this.addresssZipcode = addresssZipcode;
     }
 
     public void setAddress1(String address1) {
@@ -159,6 +181,30 @@ public class InvoicePrintPreviewModel {
 
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
+    }
+
+    public String getAddressCust1() {
+        return addressCust1;
+    }
+
+    public void setAddressCust1(String addressCust1) {
+        this.addressCust1 = addressCust1;
+    }
+
+    public String getAddressCust2() {
+        return addressCust2;
+    }
+
+    public void setAddressCust2(String addressCust2) {
+        this.addressCust2 = addressCust2;
+    }
+
+    public String getAddressCust3() {
+        return addressCust3;
+    }
+
+    public void setAddressCust3(String addressCust3) {
+        this.addressCust3 = addressCust3;
     }
 
     public String getAddress() {
@@ -262,6 +308,7 @@ public class InvoicePrintPreviewModel {
         private String uomCode;
         private String pricevalue;
         private String customerItemCode;
+        private String saleType;
 
         private String accountName;
         private String excQty;
@@ -287,6 +334,14 @@ public class InvoicePrintPreviewModel {
         }
         public void setCustomerItemCode(String customerItemCode) {
             this.customerItemCode = customerItemCode;
+        }
+
+        public String getSaleType() {
+            return saleType;
+        }
+
+        public void setSaleType(String saleType) {
+            this.saleType = saleType;
         }
 
         public String getTransTotal() {

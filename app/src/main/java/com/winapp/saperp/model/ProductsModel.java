@@ -29,6 +29,15 @@ public class ProductsModel {
     private String lastPrice;
     private String uomText;
     private String defaultUom;
+    private String barcode;
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
 
     private ArrayList<UomModel> productUOMList;
 

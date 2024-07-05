@@ -43,10 +43,10 @@ import com.winapp.saperp.activity.NavigationActivity;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.model.CartModel;
 import com.winapp.saperp.model.CustomerDetails;
-import com.winapp.saperp.model.CustomerGroupModel;
 import com.winapp.saperp.model.CustomerModel;
 import com.winapp.saperp.model.NewLocationModel;
 import com.winapp.saperp.utils.Constants;
+import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
@@ -66,8 +66,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class SalesReturnActivity extends NavigationActivity implements View.OnClickListener,AdapterView.OnItemSelectedListener {
 
@@ -657,9 +655,15 @@ public class SalesReturnActivity extends NavigationActivity implements View.OnCl
                                 model.setItemDisc(object.optString("iTotalDiscount"));
                                 model.setTaxType(object.optString("taxType"));
                                 model.setTaxValue(object.optString("taxPerc"));
-                                model.setSignFlag(object.optString("signFlag"));
-                                if (model.getSubTotal().equals("Y")){
-                                    Utils.setSignature(object.optString("signature"));
+                                 model.setSignFlag(object.optString("signFlag"));
+                                String signFlag=object.optString("signFlag");
+                                if (object.optString("signature")!=null &&
+                                        !object.optString("signature").equals("null") && !object.optString("signature").isEmpty()){
+                                    String signature = object.optString("signature");
+                                    Utils.setSignature(signature);
+                                    createSignature();
+                                } else {
+                                    Utils.setSignature("");
                                 }
 
                                 JSONArray salesReturnDetails=object.optJSONArray("salesReturnDetails");
@@ -760,6 +764,15 @@ public class SalesReturnActivity extends NavigationActivity implements View.OnCl
         });
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
+    }
+    private void createSignature() {
+        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
+            try {
+                ImageUtil.saveStamp(this, Utils.getSignature(), "Signature");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 

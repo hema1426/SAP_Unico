@@ -57,6 +57,7 @@ import com.winapp.saperp.model.CashCollectionInvoiceModel;
 import com.winapp.saperp.model.SalesReturnModel;
 import com.winapp.saperp.receipts.ReceiptsModel;
 import com.winapp.saperp.utils.Constants;
+import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
@@ -1865,6 +1866,14 @@ public class CashInvoiceFragment extends Fragment {
                             model.setChequeNo(responseObject.optString("checkNumber"));
                             model.setBankTransferDate(responseObject.optString("bankTransferDate"));
                             model.setCreditAmount(responseObject.optString("totalDiscount"));
+                            if (responseObject.optString("signature")!=null && !responseObject.optString("signature").equals("null") && !responseObject.optString("signature").isEmpty()){
+                                String signature = responseObject.optString("signature");
+                                Utils.setSignature(signature);
+                                createSignature();
+                                Log.w("signReturn",""+signature) ;
+                            } else {
+                                Utils.setSignature("");
+                            }
                             JSONArray detailsArray=responseObject.optJSONArray("receiptDetails");
                             for (int i=0;i<detailsArray.length();i++){
                                 JSONObject object=detailsArray.getJSONObject(i);
@@ -1943,7 +1952,15 @@ public class CashInvoiceFragment extends Fragment {
             }
         }
     }
-
+    private static void createSignature() {
+        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
+            try {
+                ImageUtil.saveStamp(myContext, Utils.getSignature(), "Signature");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {

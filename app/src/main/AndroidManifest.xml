@@ -100,7 +100,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.SapRoCustomerOutstandPreviewActivity"
+            android:name=".ReportPreview.CustomerLisrOutstandPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -108,7 +108,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.RoCustomerPreviewActivity"
+            android:name=".ReportPreview.RoCustomerOutstandPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
