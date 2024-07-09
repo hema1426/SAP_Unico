@@ -1385,8 +1385,237 @@ public class TSCPrinter {
     }
 */
 
-
     public void printReceipts(int copy, ArrayList<ReceiptPrintPreviewModel> receiptHeaderDetails, ArrayList<ReceiptPrintPreviewModel.ReceiptsDetails> receiptList) {
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                TscDll.openport(macAddress);
+                list_height = 15;
+                int y = 0;
+                height = 65;
+                finalHeight = height + (receiptList.size() * 11) + invoiveSubTotalHeight + invoiceBottomLine;
+                ;
+
+//                finalHeight = height + 10 + (receiptList.size() * list_height);
+                //finalHeight = getPrintSize(finalHeight, "false", "false", "false", "false", "false", "false");
+
+                //  finalHeight=height+(receiptList.size() * list_height)+20;
+                TscDll.sendcommand("SIZE 80 mm, " + finalHeight + " mm\n");
+                TscDll.sendcommand("GAP 0 mm, 0 mm\r\n");//Gap media
+                TscDll.clearbuffer();
+                TscDll.sendcommand("SPEED 4\r\n");
+                TscDll.sendcommand("DENSITY 12\r\n");
+                TscDll.sendcommand("CODEPAGE UTF-8\r\n");
+                TscDll.sendcommand("SET TEAR ON\r\n");
+                TscDll.sendcommand("SET COUNTER @1 1\r\n");
+                TscDll.sendcommand("@1 = \"0001\"\r\n");
+
+                StringBuilder temp = new StringBuilder();
+                if (company_name.length() > 38) {
+                    temp.append((company_name.length() > 38) ? company_name.substring(0, 37) : company_name);
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + company_name + "\"\n\n");
+                    String companyname = company_name.substring(37);
+                    temp.append((companyname.length() > 37) ? companyname.substring(0, 36) : companyname);
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + temp.toString() + "\"\n\n");
+                } else {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + company_name + "\"\n\n");
+                }
+
+                if (company_address1 != null && !company_address1.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address1 + "\"\n");
+                }
+
+                if (company_address2 != null && !company_address2.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address2 + "\"\n\n");
+                }
+
+                if (company_address3 != null && !company_address3.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address3 + "\"\n");
+                }
+
+                if (company_phone != null && !company_phone.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\" TEL : " + company_phone + "\"\n");
+                }
+
+                if (company_gst != null && !company_gst.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\" GST REG NO : " + company_gst + "\"\n");
+                }
+
+                y += LINE_SPACING + 10;
+                TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,10,10,\"" + "Receipt" + "\"\n");
+
+
+                y += LINE_SPACING + 10;
+                // Define the Box
+                //TscDll.sendcommand("BOX 0,"+y+",570,0,2\n");
+                TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,9,9,\"" + "Receipt No: " + receiptHeaderDetails.get(0).getReceiptNumber() + "\"\n");
+                TscDll.sendcommand("TEXT 360," + y + ",\"Bold.TTF\",0,7,7,\"" + receiptHeaderDetails.get(0).getReceiptDate() + "\"\n");
+                y += 30;
+                if (receiptHeaderDetails.get(0).getCustomerName().length() <= 38) {
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + "CUST: " + receiptHeaderDetails.get(0).getCustomerName() + "\"\n\n");
+                } else {
+                    String firstname = receiptHeaderDetails.get(0).getCustomerName().substring(0, 35);
+                    String secondname = receiptHeaderDetails.get(0).getCustomerName().substring(35);
+
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + "CUST: " + firstname + "\"\n\n");
+                    y += 30;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + secondname + "\"\n\n");
+                }
+                y += 30;
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "CODE: " + receiptHeaderDetails.get(0).getCustomerCode() + "\"\n");
+                TscDll.sendcommand("TEXT 360," + y + ",\"Poppins.TTF\",0,7,7,\"" + "Pay Mode: " + receiptHeaderDetails.get(0).getPayMode() + "\"\n");
+
+                if (showUserName.equals("true")) {
+                    y += 30;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "User: " + username + "\"\n");
+                }
+
+                if (receiptHeaderDetails.get(0).getAddress1() != null &&
+                        !receiptHeaderDetails.get(0).getAddress1().isEmpty()) {
+                    y += 30;
+                    Log.w("Address1_Value:", receiptHeaderDetails.get(0).getAddress1());
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" +  "ADDR: " +receiptHeaderDetails.get(0).getAddress1() + "\"\n");
+                }
+
+                if (receiptHeaderDetails.get(0).getAddress2() != null &&
+                        !receiptHeaderDetails.get(0).getAddress2().isEmpty()) {
+                    y += 30;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + receiptHeaderDetails.get(0).getAddress2() + "\"\n\n");
+                }
+
+                if (receiptHeaderDetails.get(0).getAddress3() != null &&
+                        !receiptHeaderDetails.get(0).getAddress3().isEmpty()) {
+                    y += 30;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + receiptHeaderDetails.get(0).getAddress3() + "\"\n");
+                }
+                if (receiptHeaderDetails.get(0).getAddressstate() != null &&
+                        !receiptHeaderDetails.get(0).getAddressstate().isEmpty()) {
+                    y += 30;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + receiptHeaderDetails.get(0).getAddressstate() + "\"\n");
+                }
+                if (receiptHeaderDetails.get(0).getAddresssZipcode() != null &&
+                        !receiptHeaderDetails.get(0).getAddresssZipcode().isEmpty()) {
+                    y += 30;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + receiptHeaderDetails.get(0).getAddresssZipcode() + "\"\n");
+                }
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                y += 20;
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "SNo" + "\"\n");
+                TscDll.sendcommand("TEXT 50," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Inv No" + "\"\n");
+                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Inv Date" + "\"\n");
+                TscDll.sendcommand("TEXT 370," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Amt" + "\"\n");
+                TscDll.sendcommand("TEXT 460," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Disc" + "\"\n");
+
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                int index = 1;
+                double netBal = 0.0 ;
+                double netTotal = 0.0 ;
+                for (ReceiptPrintPreviewModel.ReceiptsDetails receiptsDetails : receiptList) {
+                    y += 30;
+                    TscDll.sendcommand("TEXT 5," + y + ",\"Poppins.TTF\",0,8,8,\"" + index + "\"\n");
+
+                    TscDll.sendcommand("TEXT 50," + y + ",\"Poppins.TTF\",0,8,8,\"" + receiptsDetails.getInvoiceNumber() + "\"\n");
+                    TscDll.sendcommand("TEXT 210," + y + ",\"Poppins.TTF\",0,8,8,\"" + receiptsDetails.getInvoiceDate() + "\"\n");
+                    TscDll.sendcommand("TEXT 380," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(receiptsDetails.getAmount())) + "\"\n");
+                    TscDll.sendcommand("TEXT 460," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(receiptsDetails.getDiscountAmount())) + "\"\n");
+
+                    y += 30;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "Paid Amt: " + receiptsDetails.getAmount() + "\"\n");
+                    TscDll.sendcommand("TEXT 370," + y + ",\"Poppins.TTF\",0,7,7,\"" + "Balance Amt: " + receiptsDetails.getBalanceAmount() + "\"\n");
+                    y += 30;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "Credit Amt: " + receiptsDetails.getCreditAmount() + "\"\n");
+
+                    netBal += Double.parseDouble(receiptsDetails.getBalanceAmount());
+                    netTotal += Double.parseDouble(receiptsDetails.getAmount());
+
+                    index++;
+                }
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                if (receiptHeaderDetails.get(0).getPayMode().equalsIgnoreCase("Cheque")) {
+                    y += 20;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Bank Name" + "\"\n");
+                    TscDll.sendcommand("TEXT 230," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Cheque No" + "\"\n");
+                    TscDll.sendcommand("TEXT 380," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Cheque Date" + "\"\n");
+
+                    y += 40;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + receiptHeaderDetails.get(0).getBankName() + "\"\n");
+                    TscDll.sendcommand("TEXT 230," + y + ",\"Bold.TTF\",0,8,8,\"" + receiptHeaderDetails.get(0).getChequeNo() + "\"\n");
+                    TscDll.sendcommand("TEXT 380," + y + ",\"Bold.TTF\",0,8,8,\"" + receiptHeaderDetails.get(0).getChequeDate() + "\"\n");
+
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+                }
+                y += 20;
+//        TscDll.sendcommand("TEXT 200,"+y+",\"Bold.TTF\",0,9,9,\""+"GRAND TOTAL:$"+"\"\n");
+//        TscDll.sendcommand("TEXT 450,"+y+",\"Bold.TTF\",0,9,9,\""+twoDecimalPoint(Double.parseDouble(receiptHeaderDetails.get(0).getTotalAmount()))+"\"\n");
+                TscDll.sendcommand("TEXT 180," + y + ",\"Bold.TTF\",0,9,9,\"" + "NET PAID AMT :$" + "\"\n");
+                TscDll.sendcommand("TEXT 410," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(netTotal) + "\"\n");
+                y += LINE_SPACING;
+                TscDll.sendcommand("TEXT 180," + y + ",\"Bold.TTF\",0,9,9,\"" + "NET BALANCE :$" + "\"\n");
+                TscDll.sendcommand("TEXT 410," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(netBal)+ "\"\n");
+//                TscDll.sendcommand("TEXT 450," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(receiptHeaderDetails.get(0).getBalanceAmount() != null ?
+//                        receiptHeaderDetails.get(0).getBalanceAmount() : "0.0")) + "\"\n");
+
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                y += 20;
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Customer Signature & Company Stamp" + "\"\n");
+
+                if (showSignature.equals("true")) {
+
+                    Log.d("cg_signature", "show_sign");
+                    try {
+                        if (Utils.getSignature() != null && !Utils.getSignature().isEmpty()) {
+                            y += LINE_SPACING;
+                            String filePath = Constants.getSignatureFolderPath(context);
+                            String fileName = "Signature.jpg";
+                            File mFile = new File(filePath, fileName);
+                            if (mFile.exists()) {
+                                TscDll.sendpicture_resize(0, y, mFile.getAbsolutePath(),
+                                        400, 80);
+                            }
+                            Log.d("cg_signature_data", Utils.getSignature());
+//                            TscDll.sendbitmap_resize(0,y, ImageUtil.convertBase64toBitmap(Utils.getSignature()),
+//                                    400,80);
+                        }
+                    } catch (Exception e) {
+                        Log.d("cg_signature_err", e.getLocalizedMessage());
+                    }
+                }
+
+
+                y += 150;
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "----------------------------------------------------" + "\"\n");
+
+                y += 30;
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "RECEIVED ABOVE GOODS IN GOOD ORDER AND CONDITION" + "\"\n");
+
+                y += 30;
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "----------------------------------------------------" + "\"\n");
+
+                TscDll.printlabel(1, copy);
+                TscDll.closeport(5000);
+
+            }
+        }, 100);
+    }
+
+    public void printReceiptsCopy_8_7(int copy, ArrayList<ReceiptPrintPreviewModel> receiptHeaderDetails, ArrayList<ReceiptPrintPreviewModel.ReceiptsDetails> receiptList) {
 
         new Handler().postDelayed(new Runnable() {
             @Override
