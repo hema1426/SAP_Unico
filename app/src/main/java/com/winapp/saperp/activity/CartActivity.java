@@ -141,9 +141,9 @@ public class CartActivity extends AppCompatActivity {
     private TextView taxTypeText;
 
     private SweetAlertDialog pDialog;
-    private JSONObject customerResponse=new JSONObject();
+    private JSONObject customerResponse = new JSONObject();
     private String companyCode;
-    String percentApi ="";
+    String percentApi = "";
 
     private String subTotalValue;
     private String netTotalvalue;
@@ -158,23 +158,23 @@ public class CartActivity extends AppCompatActivity {
     private ArrayList<SalesOrderPrintPreviewModel.SalesList> salesOrderList;
     AlertDialog alert11;
     DialogInterface alertInterface;
-    boolean isPrintCheck=false;
+    boolean isPrintCheck = false;
     public static View invoicePrintOption;
-    public static boolean isShowMore=false;
+    public static boolean isShowMore = false;
     public static LinearLayout transLayout;
     public static CheckBox cashCollected;
     public static CheckBox invoicePrint;
     public static CheckBox deliveryPrint;
     public static CheckBox emailInvoice;
     public static LinearLayout copyLayout;
-    public static boolean isPrintEnable=false;
+    public static boolean isPrintEnable = false;
     public ImageView copyMinus;
     public ImageView copyPlus;
     public Button yesButton;
     public Button noButton;
     public TextView copyText;
-    public static String  saveAction="SalesOrder";
-    public static int noofCopyPrint=0;
+    public static String saveAction = "SalesOrder";
+    public static int noofCopyPrint = 0;
     static BottomSheetBehavior behavior;
     public static ProgressDialog printAlertDialog;
     private static ArrayList<InvoicePrintPreviewModel> invoiceHeaderDetails;
@@ -188,13 +188,13 @@ public class CartActivity extends AppCompatActivity {
     public EditText billDiscPercentage;
     public TextWatcher billDiscAmountTextWatcher;
     public TextWatcher billDiscPercentageTextWatcher;
-    public static String itemDiscountAmount="0.00";
+    public static String itemDiscountAmount = "0.00";
     public static String billDiscountPercentage;
-    public static String billDiscountAmount="0.00";
+    public static String billDiscountAmount = "0.00";
     public ImageView signatureCapture;
     public CaptureSignatureView captureSignatureView;
     public AlertDialog alert;
-    public Double totalVal =0.00;
+    public Double totalVal = 0.00;
     public TextView signatureTitle;
     // These are the variables for the Getting locations
     private ArrayList permissionsToRequest;
@@ -208,14 +208,14 @@ public class CartActivity extends AppCompatActivity {
     File mPhotoFile;
     FileCompressor mCompressor;
     TextView selectImage;
-    boolean isAllowLowStock=false;
-    double currentLocationLatitude=0.0;
-    double currentLocationLongitude=0.0;
-    public static String signatureString="";
-    public static String imageString="";
-    public static HashMap<String ,String> user;
+    boolean isAllowLowStock = false;
+    double currentLocationLatitude = 0.0;
+    double currentLocationLongitude = 0.0;
+    public static String signatureString = "";
+    public static String imageString = "";
+    public static HashMap<String, String> user;
     String selectCustomerId;
-    public boolean isBillDiscountTouch=false;
+    public boolean isBillDiscountTouch = false;
     public static String netSubtottalValue;
     public static String netTotalValue;
     public static String totalValue;
@@ -223,16 +223,16 @@ public class CartActivity extends AppCompatActivity {
     private LinearLayout signatureLayout;
     private LinearLayout attachmentLayout;
     private TextView taxTitle;
-    public static String  currentDateStringSO;
+    public static String currentDateStringSO;
     private String currentSaveDateTime = "";
 
     public static String currentDateSO;
     public static String companyName;
-    public static boolean isDeliveryPrint=false;
-    public static boolean isInvoicePrint=false;
+    public static boolean isDeliveryPrint = false;
+    public static boolean isInvoicePrint = false;
     private JSONObject customerObject;
-    public static String current_latitude="0.00";
-    public static String current_longitude="0.00";
+    public static String current_latitude = "0.00";
+    public static String current_longitude = "0.00";
     public String currentDateString;
     private SharedPreferenceUtil sharedPreferenceUtil;
 
@@ -240,80 +240,80 @@ public class CartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
-        dbHelper=new DBHelper(this);
-        session=new SessionManager(this);
+        dbHelper = new DBHelper(this);
+        session = new SessionManager(this);
         mCompressor = new FileCompressor(this);
-        user=session.getUserDetails();
-        sharedPreferenceUtil =new SharedPreferenceUtil(this);
+        user = session.getUserDetails();
+        sharedPreferenceUtil = new SharedPreferenceUtil(this);
 
-        percentApi = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_CART_ITEM_DISC,"");
-        Log.w("percentApi..",""+percentApi);
-        signatureString="";
+        percentApi = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_CART_ITEM_DISC, "");
+        Log.w("percentApi..", "" + percentApi);
+        signatureString = "";
 
-        companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
-        userName=user.get(SessionManager.KEY_USER_NAME);
-        companyName=user.get(SessionManager.KEY_COMPANY_NAME);
-        locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
+        companyCode = user.get(SessionManager.KEY_COMPANY_CODE);
+        userName = user.get(SessionManager.KEY_USER_NAME);
+        companyName = user.get(SessionManager.KEY_COMPANY_NAME);
+        locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
         // recyclerview
-        subTotalTextValue=findViewById(R.id.sub_total_text);
-        itemDiscountText=findViewById(R.id.item_disc);
-        billDiscAmount=findViewById(R.id.bill_disc_amount);
-        billDiscPercentage=findViewById(R.id.bill_disc_percentage);
-        cartView=findViewById(R.id.cartView);
-        emptyLayout=findViewById(R.id.empty_layout);
-        cartLayout=findViewById(R.id.cart_layout);
-        shopNow=findViewById(R.id.shop_now);
-        checkOut=findViewById(R.id.check_out);
-        checkoutLayout=findViewById(R.id.check_out_layout);
-        netAmount=findViewById(R.id.net_amount);
-        subTotalText =findViewById(R.id.balance_value);
-        netTotalText=findViewById(R.id.net_total);
-        taxText=findViewById(R.id.tax);
-        removeAll=findViewById(R.id.remove_all);
-        totalItems=findViewById(R.id.total_items);
-        taxTypeText=findViewById(R.id.tax_type);
-        invoicePrintOption=findViewById(R.id.invoice_save_option);
-        transLayout=findViewById(R.id.trans_layout);
-        cashCollected=findViewById(R.id.cash_collected);
-        invoicePrint=findViewById(R.id.invoice_print);
-        deliveryPrint=findViewById(R.id.delivery_print);
-        copyLayout=findViewById(R.id.copy_layout);
-        copyMinus=findViewById(R.id.copy_minus);
-        copyPlus=findViewById(R.id.copy_plus);
-        yesButton=findViewById(R.id.buttonYes);
-        noButton=findViewById(R.id.buttonNo);
-        copyText=findViewById(R.id.copy);
-        emailInvoice=findViewById(R.id.email_invoice);
-        summaryLayout=findViewById(R.id.summary_layout);
-        showMore=findViewById(R.id.show_more);
-        closeShowmore=findViewById(R.id.close);
-        signatureCapture=findViewById(R.id.signature_capture);
-        captureSignatureView=findViewById(R.id.signature);
-        signatureTitle=findViewById(R.id.signature_title);
-        locationText=findViewById(R.id.locationText);
-        selectImage=findViewById(R.id.select_image);
-        signatureLayout=findViewById(R.id.signature_layout);
-        attachmentLayout=findViewById(R.id.attachement_layout);
-        taxTitle=findViewById(R.id.tax_title);
+        subTotalTextValue = findViewById(R.id.sub_total_text);
+        itemDiscountText = findViewById(R.id.item_disc);
+        billDiscAmount = findViewById(R.id.bill_disc_amount);
+        billDiscPercentage = findViewById(R.id.bill_disc_percentage);
+        cartView = findViewById(R.id.cartView);
+        emptyLayout = findViewById(R.id.empty_layout);
+        cartLayout = findViewById(R.id.cart_layout);
+        shopNow = findViewById(R.id.shop_now);
+        checkOut = findViewById(R.id.check_out);
+        checkoutLayout = findViewById(R.id.check_out_layout);
+        netAmount = findViewById(R.id.net_amount);
+        subTotalText = findViewById(R.id.balance_value);
+        netTotalText = findViewById(R.id.net_total);
+        taxText = findViewById(R.id.tax);
+        removeAll = findViewById(R.id.remove_all);
+        totalItems = findViewById(R.id.total_items);
+        taxTypeText = findViewById(R.id.tax_type);
+        invoicePrintOption = findViewById(R.id.invoice_save_option);
+        transLayout = findViewById(R.id.trans_layout);
+        cashCollected = findViewById(R.id.cash_collected);
+        invoicePrint = findViewById(R.id.invoice_print);
+        deliveryPrint = findViewById(R.id.delivery_print);
+        copyLayout = findViewById(R.id.copy_layout);
+        copyMinus = findViewById(R.id.copy_minus);
+        copyPlus = findViewById(R.id.copy_plus);
+        yesButton = findViewById(R.id.buttonYes);
+        noButton = findViewById(R.id.buttonNo);
+        copyText = findViewById(R.id.copy);
+        emailInvoice = findViewById(R.id.email_invoice);
+        summaryLayout = findViewById(R.id.summary_layout);
+        showMore = findViewById(R.id.show_more);
+        closeShowmore = findViewById(R.id.close);
+        signatureCapture = findViewById(R.id.signature_capture);
+        captureSignatureView = findViewById(R.id.signature);
+        signatureTitle = findViewById(R.id.signature_title);
+        locationText = findViewById(R.id.locationText);
+        selectImage = findViewById(R.id.select_image);
+        signatureLayout = findViewById(R.id.signature_layout);
+        attachmentLayout = findViewById(R.id.attachement_layout);
+        taxTitle = findViewById(R.id.tax_title);
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
-        printerType=sharedPreferences.getString("printer_type","");
-        printerMacId=sharedPreferences.getString("mac_address","");
+        printerType = sharedPreferences.getString("printer_type", "");
+        printerMacId = sharedPreferences.getString("mac_address", "");
 
-        sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE);
         selectCustomerId = sharedPreferences.getString("customerId", "");
-        if (selectCustomerId!=null && !selectCustomerId.isEmpty()){
-          //  customerDetails=dbHelper.getCustomer(selectCustomerId);
+        if (selectCustomerId != null && !selectCustomerId.isEmpty()) {
+            //  customerDetails=dbHelper.getCustomer(selectCustomerId);
             try {
-                getCustomerDetails(selectCustomerId,false);
+                getCustomerDetails(selectCustomerId, false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-       // getPermission();
+        // getPermission();
 
-        Log.w("Printer_Mac_Id:",printerMacId);
-        Log.w("Printer_Type:",printerType);
+        Log.w("Printer_Mac_Id:", printerMacId);
+        Log.w("Printer_Type:", printerType);
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Cart");
@@ -344,8 +344,8 @@ public class CartActivity extends AppCompatActivity {
             }
         }
 */
-        ArrayList<SettingsModel> settings=dbHelper.getSettings();
-        if (settings!=null) {
+        ArrayList<SettingsModel> settings = dbHelper.getSettings();
+        if (settings != null) {
             if (settings.size() > 0) {
                 for (SettingsModel model : settings) {
                     if (model.getSettingName().equals("invoice_switch")) {
@@ -354,7 +354,7 @@ public class CartActivity extends AppCompatActivity {
                         if (model.getSettingValue().equals("1")) {
                             signatureLayout.setVisibility(View.VISIBLE);
                             attachmentLayout.setVisibility(View.VISIBLE);
-                        }else {
+                        } else {
                             signatureLayout.setVisibility(View.GONE);
                             attachmentLayout.setVisibility(View.GONE);
                         }
@@ -363,18 +363,18 @@ public class CartActivity extends AppCompatActivity {
             }
         }
 
-        if (mPhotoFile!=null && mPhotoFile.length()>0){
+        if (mPhotoFile != null && mPhotoFile.length() > 0) {
             selectImage.setText("View Image");
             selectImage.setTag("view_image");
-        }else {
+        } else {
             selectImage.setText("Select Image");
             selectImage.setTag("select_image");
         }
 
         if (InternetConnectivity.isConnected(this)) {
             getLocalData();
-        }else {
-            Toast.makeText(getApplicationContext(),"No Internet found",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "No Internet found", Toast.LENGTH_SHORT).show();
         }
 
         checkOut.setOnClickListener(new View.OnClickListener() {
@@ -419,7 +419,7 @@ public class CartActivity extends AppCompatActivity {
                         showSaveOption(saveAction);
                     }
                 } else {
-                    Toast.makeText(getApplicationContext()," Nettotal should not be negative",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), " Nettotal should not be negative", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -449,16 +449,16 @@ public class CartActivity extends AppCompatActivity {
             }
         });*/
 
-      //  if (action.equals("Invoice")){
-          //  createInvoiceJson(Integer.parseInt(noofCopy.getText().toString()));
-       // }else {
-           // createAndValidateJsonObject(Integer.parseInt(noofCopy.getText().toString()));
-      //  }
+        //  if (action.equals("Invoice")){
+        //  createInvoiceJson(Integer.parseInt(noofCopy.getText().toString()));
+        // }else {
+        // createAndValidateJsonObject(Integer.parseInt(noofCopy.getText().toString()));
+        //  }
 
         shopNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(getApplicationContext(),CategoriesActivity.class);
+                Intent intent = new Intent(getApplicationContext(), CategoriesActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -496,6 +496,7 @@ public class CartActivity extends AppCompatActivity {
                         break;
                 }
             }
+
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 Log.i("BottomSheetCallback", "slideOffset: " + slideOffset);
@@ -506,28 +507,28 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 try {
-                    if (validatePrinterConfiguration()){
-                        if (b){
-                            isPrintEnable=true;
-                            isInvoicePrint=true;
+                    if (validatePrinterConfiguration()) {
+                        if (b) {
+                            isPrintEnable = true;
+                            isInvoicePrint = true;
                             copyLayout.setVisibility(View.VISIBLE);
-                            if (saveAction.equals("SalesOrder") || saveAction.equals("SalesEdit")){
+                            if (saveAction.equals("SalesOrder") || saveAction.equals("SalesEdit")) {
                                 emailInvoice.setVisibility(View.GONE);
-                            }else {
+                            } else {
                                 emailInvoice.setVisibility(View.VISIBLE);
                             }
-                        }else {
-                            isPrintEnable=false;
-                            isInvoicePrint=false;
+                        } else {
+                            isPrintEnable = false;
+                            isInvoicePrint = false;
                             copyText.setText("1");
                             copyLayout.setVisibility(View.GONE);
                             emailInvoice.setVisibility(View.GONE);
                         }
-                    }else {
+                    } else {
                         invoicePrint.setChecked(false);
                         copyLayout.setVisibility(View.GONE);
-                        isPrintEnable=false;
-                        isInvoicePrint=false;
+                        isPrintEnable = false;
+                        isInvoicePrint = false;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -540,28 +541,28 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 try {
-                    if (validatePrinterConfiguration()){
-                        if (b){
-                            isPrintEnable=true;
-                            isDeliveryPrint=true;
+                    if (validatePrinterConfiguration()) {
+                        if (b) {
+                            isPrintEnable = true;
+                            isDeliveryPrint = true;
                             copyLayout.setVisibility(View.VISIBLE);
-                            if (saveAction.equals("SalesOrder") || saveAction.equals("SalesEdit")){
+                            if (saveAction.equals("SalesOrder") || saveAction.equals("SalesEdit")) {
                                 emailInvoice.setVisibility(View.GONE);
-                            }else {
+                            } else {
                                 emailInvoice.setVisibility(View.VISIBLE);
                             }
-                        }else {
-                            isPrintEnable=false;
-                            isDeliveryPrint=false;
+                        } else {
+                            isPrintEnable = false;
+                            isDeliveryPrint = false;
                             copyText.setText("1");
                             copyLayout.setVisibility(View.GONE);
                             emailInvoice.setVisibility(View.GONE);
                         }
-                    }else {
+                    } else {
                         deliveryPrint.setChecked(false);
                         copyLayout.setVisibility(View.GONE);
-                        isPrintEnable=false;
-                        isDeliveryPrint=false;
+                        isPrintEnable = false;
+                        isDeliveryPrint = false;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -572,7 +573,7 @@ public class CartActivity extends AppCompatActivity {
         copyPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int value=Integer.parseInt(copyText.getText().toString());
+                int value = Integer.parseInt(copyText.getText().toString());
                 value++;
                 copyText.setText(String.valueOf(value));
             }
@@ -581,8 +582,8 @@ public class CartActivity extends AppCompatActivity {
         copyMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int value=Integer.parseInt(copyText.getText().toString());
-                if (value!=1){
+                int value = Integer.parseInt(copyText.getText().toString());
+                if (value != 1) {
                     value--;
                     copyText.setText(String.valueOf(value));
                 }
@@ -599,10 +600,10 @@ public class CartActivity extends AppCompatActivity {
         yesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                noofCopyPrint=Integer.parseInt(copyText.getText().toString());
-                if (saveAction.equals("SalesOrder") || saveAction.equals("SalesEdit")){
+                noofCopyPrint = Integer.parseInt(copyText.getText().toString());
+                if (saveAction.equals("SalesOrder") || saveAction.equals("SalesEdit")) {
                     createAndValidateJsonObject(noofCopyPrint);
-                }else {
+                } else {
                     createInvoiceJson(noofCopyPrint);
                 }
                 closeSheet();
@@ -629,7 +630,7 @@ public class CartActivity extends AppCompatActivity {
         billDiscAmount.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                isBillDiscountTouch=true;
+                isBillDiscountTouch = true;
                 return false;
             }
         });
@@ -638,12 +639,12 @@ public class CartActivity extends AppCompatActivity {
         billDiscPercentage.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                isBillDiscountTouch=true;
+                isBillDiscountTouch = true;
                 return false;
             }
         });
 
-        billDiscAmountTextWatcher =new TextWatcher() {
+        billDiscAmountTextWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -656,21 +657,21 @@ public class CartActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                double subtotal=getSubtotal();
-                if (isBillDiscountTouch){
-                    if (!editable.toString().isEmpty()){
-                        if (editable.toString().equals(".")){
+                double subtotal = getSubtotal();
+                if (isBillDiscountTouch) {
+                    if (!editable.toString().isEmpty()) {
+                        if (editable.toString().equals(".")) {
                             billDiscAmount.setText("0.");
                             billDiscAmount.setSelection(billDiscAmount.getText().length());
                             setPercentageAmount(Double.parseDouble("0"));
-                            double net_subtotal= subtotal-0;
+                            double net_subtotal = subtotal - 0;
                             netTotalCalculation(net_subtotal);
-                        }else {
+                        } else {
                             setPercentageAmount(Double.parseDouble(editable.toString()));
-                            double net_subtotal=subtotal-Double.parseDouble(editable.toString());
+                            double net_subtotal = subtotal - Double.parseDouble(editable.toString());
                             netTotalCalculation(net_subtotal);
                         }
-                    }else {
+                    } else {
                         setPercentageAmount(0);
                         netTotalCalculation(subtotal);
                     }
@@ -679,7 +680,7 @@ public class CartActivity extends AppCompatActivity {
         };
         billDiscAmount.addTextChangedListener(billDiscAmountTextWatcher);
 
-        billDiscPercentageTextWatcher=new TextWatcher() {
+        billDiscPercentageTextWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -692,28 +693,28 @@ public class CartActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                double subtotal=getSubtotal();
-                if (isBillDiscountTouch){
-                    if (!editable.toString().isEmpty()){
-                        if (editable.toString().equals(".")){
+                double subtotal = getSubtotal();
+                if (isBillDiscountTouch) {
+                    if (!editable.toString().isEmpty()) {
+                        if (editable.toString().equals(".")) {
                             billDiscPercentage.setText("0.");
                             billDiscPercentage.setSelection(billDiscPercentage.getText().length());
-                            double amount=percentageToAmount(Double.parseDouble("0"));
+                            double amount = percentageToAmount(Double.parseDouble("0"));
                             billDiscAmount.removeTextChangedListener(billDiscAmountTextWatcher);
-                            billDiscAmount.setText(twoDecimalPoint(amount)+"");
+                            billDiscAmount.setText(twoDecimalPoint(amount) + "");
                             billDiscAmount.addTextChangedListener(billDiscAmountTextWatcher);
-                            double net_subtotal=subtotal-Double.parseDouble(billDiscAmount.getText().toString());
+                            double net_subtotal = subtotal - Double.parseDouble(billDiscAmount.getText().toString());
                             netTotalCalculation(net_subtotal);
-                        }else {
-                            double amount=percentageToAmount(Double.parseDouble(editable.toString()));
-                            Log.w("PercentageAmount:",amount+"");
+                        } else {
+                            double amount = percentageToAmount(Double.parseDouble(editable.toString()));
+                            Log.w("PercentageAmount:", amount + "");
                             billDiscAmount.removeTextChangedListener(billDiscAmountTextWatcher);
-                            billDiscAmount.setText(twoDecimalPoint(amount)+"");
+                            billDiscAmount.setText(twoDecimalPoint(amount) + "");
                             billDiscAmount.addTextChangedListener(billDiscAmountTextWatcher);
-                            double net_subtotal=subtotal-Double.parseDouble(billDiscAmount.getText().toString());
+                            double net_subtotal = subtotal - Double.parseDouble(billDiscAmount.getText().toString());
                             netTotalCalculation(net_subtotal);
                         }
-                    }else {
+                    } else {
                         billDiscAmount.removeTextChangedListener(billDiscAmountTextWatcher);
                         billDiscAmount.setText("");
                         billDiscAmount.addTextChangedListener(billDiscAmountTextWatcher);
@@ -740,9 +741,9 @@ public class CartActivity extends AppCompatActivity {
         selectImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (selectImage.getTag().equals("view_image")){
+                if (selectImage.getTag().equals("view_image")) {
                     showImage();
-                }else {
+                } else {
                     selectImage();
                 }
             }
@@ -755,7 +756,7 @@ public class CartActivity extends AppCompatActivity {
     private void selectImage() {
         final CharSequence[] items = {
                 "Take Photo",
-               /* "Choose from Library",*/
+                /* "Choose from Library",*/
                 "Cancel"
         };
         AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
@@ -763,8 +764,8 @@ public class CartActivity extends AppCompatActivity {
             if (items[item].equals("Take Photo")) {
                 requestStoragePermission(true);
             } //else if (items[item].equals("Choose from Library")) {
-               // requestStoragePermission(false);
-           // }
+            // requestStoragePermission(false);
+            // }
             else if (items[item].equals("Cancel")) {
                 dialog.dismiss();
             }
@@ -804,6 +805,7 @@ public class CartActivity extends AppCompatActivity {
         pickPhoto.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(pickPhoto, REQUEST_GALLERY_PHOTO);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -812,9 +814,9 @@ public class CartActivity extends AppCompatActivity {
                 try {
                     mPhotoFile = mCompressor.compressToFile(mPhotoFile);
 
-                    imageString=ImageUtil.getBase64StringImage(mPhotoFile);
-                  //  Log.w("GivenImage1:",imageString);
-                    Utils.w("GivenImage1",imageString);
+                    imageString = ImageUtil.getBase64StringImage(mPhotoFile);
+                    //  Log.w("GivenImage1:",imageString);
+                    Utils.w("GivenImage1", imageString);
                     showImage();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -834,9 +836,9 @@ public class CartActivity extends AppCompatActivity {
                     mPhotoFile = mCompressor.compressToFile(new File(getRealPathFromUri(selectedImage)));
                     selectImage.setText(selectedImage.toString());
 
-                    imageString=ImageUtil.getBase64StringImage(mPhotoFile);
-                   // Log.w("GivenImage2:",imageString);
-                    Utils.w("GivenImage2",imageString);
+                    imageString = ImageUtil.getBase64StringImage(mPhotoFile);
+                    // Log.w("GivenImage2:",imageString);
+                    Utils.w("GivenImage2", imageString);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -853,11 +855,11 @@ public class CartActivity extends AppCompatActivity {
     }
 
 
-    public void showImage(){
+    public void showImage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(CartActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.image_view_layout, null);
-        ImageView imageView=dialogView.findViewById(R.id.invoice_image);
+        ImageView imageView = dialogView.findViewById(R.id.invoice_image);
         Glide.with(this)
                 .load(mPhotoFile)
                 .error(R.drawable.no_image_found)
@@ -866,6 +868,7 @@ public class CartActivity extends AppCompatActivity {
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         return false;
                     }
+
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                         return false;
@@ -897,9 +900,17 @@ public class CartActivity extends AppCompatActivity {
      * On permanent denial opens settings dialog
      */
     private void requestStoragePermission(boolean isCamera) {
-        Dexter.withActivity(this)
-                .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+        String[] permission = new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permission = new String[]{
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.CAMERA};
+        }
+
+        Dexter.withContext(this)
+                .withPermissions(permission)
                 .withListener(new MultiplePermissionsListener() {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
@@ -911,12 +922,18 @@ public class CartActivity extends AppCompatActivity {
                                 dispatchGalleryIntent();
                             }
                         }
+
+                        for(int i = 0 ; i < report.getDeniedPermissionResponses().size();i++){
+                            Log.d("cg_perm",report.getDeniedPermissionResponses()
+                                    .get(i).getPermissionName());
+                        }
                         // check for permanent denial of any permission
                         if (report.isAnyPermissionPermanentlyDenied()) {
                             // show alert dialog navigating to Settings
                             showSettingsDialog();
                         }
                     }
+
                     @Override
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions,
                                                                    PermissionToken token) {
@@ -928,7 +945,10 @@ public class CartActivity extends AppCompatActivity {
                                 .show())
                 .onSameThread()
                 .check();
-    }
+
+
+}
+
     /**
      * Showing Alert Dialog with Settings option
      * Navigates user to app settings
@@ -946,6 +966,7 @@ public class CartActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
+
     // navigating user to app settings
     private void openSettings() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -953,6 +974,7 @@ public class CartActivity extends AppCompatActivity {
         intent.setData(uri);
         startActivityForResult(intent, 101);
     }
+
     /**
      * Create file with current timestamp name
      *
@@ -966,13 +988,14 @@ public class CartActivity extends AppCompatActivity {
         File mFile = File.createTempFile(mFileName, ".jpg", storageDir);
         return mFile;
     }
+
     /**
      * Get real file path from URI
      */
     public String getRealPathFromUri(Uri contentUri) {
         Cursor cursor = null;
         try {
-            String[] proj = { MediaStore.Images.Media.DATA };
+            String[] proj = {MediaStore.Images.Media.DATA};
             cursor = getContentResolver().query(contentUri, proj, null, null, null);
             assert cursor != null;
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -985,7 +1008,7 @@ public class CartActivity extends AppCompatActivity {
         }
     }
 
-    public void getPermission(){
+    public void getPermission() {
         permissions.add(ACCESS_FINE_LOCATION);
         permissions.add(ACCESS_COARSE_LOCATION);
         permissionsToRequest = findUnAskedPermissions(permissions);
@@ -997,27 +1020,27 @@ public class CartActivity extends AppCompatActivity {
         }
     }
 
-    public void getCurrentLocation(){
+    public void getCurrentLocation() {
         locationTrack = new LocationTrack(CartActivity.this);
         if (locationTrack.canGetLocation()) {
             double longitude = locationTrack.getLongitude();
             double latitude = locationTrack.getLatitude();
             current_latitude = String.valueOf(latitude);
             current_longitude = String.valueOf(longitude);
-            String currentAddress=Utils.getCompleteAddress(CartActivity.this,latitude,longitude);
-            if (currentAddress!=null && !currentAddress.isEmpty()){
+            String currentAddress = Utils.getCompleteAddress(CartActivity.this, latitude, longitude);
+            if (currentAddress != null && !currentAddress.isEmpty()) {
                 locationText.setText(currentAddress);
             }
         } else {
-           // locationTrack.showSettingsAlert();
+            // locationTrack.showSettingsAlert();
         }
     }
 
-    public void setCurrentLocation(double latitude,double longitude){
-        this.currentLocationLatitude=latitude;
-        this.currentLocationLongitude=longitude;
-        String currentAddress=Utils.getCompleteAddress(CartActivity.this,latitude,longitude);
-        if (currentAddress!=null && !currentAddress.isEmpty()){
+    public void setCurrentLocation(double latitude, double longitude) {
+        this.currentLocationLatitude = latitude;
+        this.currentLocationLongitude = longitude;
+        String currentAddress = Utils.getCompleteAddress(CartActivity.this, latitude, longitude);
+        if (currentAddress != null && !currentAddress.isEmpty()) {
             locationText.setText(currentAddress);
         }
     }
@@ -1025,16 +1048,16 @@ public class CartActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-      //  getCurrentLocation();
+        //  getCurrentLocation();
     }
 
-    public void showSignatureAlert(){
+    public void showSignatureAlert() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(CartActivity.this);
         final View customLayout = getLayoutInflater().inflate(R.layout.signature_layout, null);
         alertDialog.setView(customLayout);
-        final Button acceptButton=customLayout.findViewById(R.id.buttonYes);
-        final Button cancelButton=customLayout.findViewById(R.id.buttonNo);
-        final Button clearButton=customLayout.findViewById(R.id.buttonClear);
+        final Button acceptButton = customLayout.findViewById(R.id.buttonYes);
+        final Button cancelButton = customLayout.findViewById(R.id.buttonNo);
+        final Button clearButton = customLayout.findViewById(R.id.buttonClear);
         LinearLayout mContent = customLayout.findViewById(R.id.signature_layout);
         acceptButton.setEnabled(false);
         acceptButton.setAlpha(0.4f);
@@ -1052,8 +1075,8 @@ public class CartActivity extends AppCompatActivity {
                 // byte[] signature = captureSignatureView.getBytes();
                 Bitmap signature = mSig.getBitmap();
                 signatureCapture.setImageBitmap(signature);
-                signatureString= ImageUtil.convertBimaptoBase64(signature);
-                Log.w("ImageSignature:",signatureString);
+                signatureString = ImageUtil.convertBimaptoBase64(signature);
+                Log.w("ImageSignature:", signatureString);
                 alert.dismiss();
             }
         });
@@ -1076,13 +1099,10 @@ public class CartActivity extends AppCompatActivity {
 
 
     /**
-     *
-     *
      * @param percentage to amount
-     * send the net percentage to calculate the exact amount
-     *
+     *                   send the net percentage to calculate the exact amount
      */
-    public double percentageToAmount(double percentage){
+    public double percentageToAmount(double percentage) {
         return (getSubtotal() / 100.0f) * percentage;
     }
 
@@ -1090,56 +1110,56 @@ public class CartActivity extends AppCompatActivity {
         return obtained * 100 / total;
     }
 
-    public void setPercentageAmount(double value){
-        double per=calculatePercentage(value,getSubtotal());
-        Log.w("PercentageTxt:",per+"");
+    public void setPercentageAmount(double value) {
+        double per = calculatePercentage(value, getSubtotal());
+        Log.w("PercentageTxt:", per + "");
         //billDiscAmount.removeTextChangedListener(billDiscAmountTextWatcher);
-        if (per==0.0){
+        if (per == 0.0) {
             billDiscPercentage.removeTextChangedListener(billDiscPercentageTextWatcher);
             billDiscPercentage.setText("");
             billDiscPercentage.addTextChangedListener(billDiscPercentageTextWatcher);
-        }else {
+        } else {
             billDiscPercentage.removeTextChangedListener(billDiscPercentageTextWatcher);
-            billDiscPercentage.setText(twoDecimalPoint(per)+"");
+            billDiscPercentage.setText(twoDecimalPoint(per) + "");
             billDiscPercentage.addTextChangedListener(billDiscPercentageTextWatcher);
         }
     }
 
 
-
     private void hideKeybaord(View v) {
-        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(v.getApplicationWindowToken(),0);
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
     }
-    public double getSubtotal(){
-        double subtotal =0;
-        double tax=0;
-        double net_total_value=0;
-        double net_total=0;
-        localCart=dbHelper.getAllCartItems();
-        for (int j = 0;j<localCart.size();j++){
+
+    public double getSubtotal() {
+        double subtotal = 0;
+        double tax = 0;
+        double net_total_value = 0;
+        double net_total = 0;
+        localCart = dbHelper.getAllCartItems();
+        for (int j = 0; j < localCart.size(); j++) {
             // if (localCart.get(j).getCART_TOTAL_VALUE()!=null && !localCart.get(j).getCART_TOTAL_VALUE().equals("null")){
             //   subtotal += Double.parseDouble(localCart.get(j).getCART_TOTAL_VALUE());
             // }
-            if (localCart.get(j).getCART_TAX_VALUE()!=null && !localCart.get(j).getCART_TAX_VALUE().equals("null")){
-                tax+=Double.parseDouble(localCart.get(j).getCART_TAX_VALUE());
+            if (localCart.get(j).getCART_TAX_VALUE() != null && !localCart.get(j).getCART_TAX_VALUE().equals("null")) {
+                tax += Double.parseDouble(localCart.get(j).getCART_TAX_VALUE());
             }
-            if (localCart.get(j).getCART_COLUMN_NET_PRICE()!=null && !localCart.get(j).getCART_COLUMN_NET_PRICE().equals("null")){
-                net_total+=Double.parseDouble(localCart.get(j).getCART_COLUMN_NET_PRICE());
+            if (localCart.get(j).getCART_COLUMN_NET_PRICE() != null && !localCart.get(j).getCART_COLUMN_NET_PRICE().equals("null")) {
+                net_total += Double.parseDouble(localCart.get(j).getCART_COLUMN_NET_PRICE());
             }
 
-            if (localCart.get(j).getSubTotal()!=null && !localCart.get(j).getSubTotal().equals("null")){
+            if (localCart.get(j).getSubTotal() != null && !localCart.get(j).getSubTotal().equals("null")) {
                 subtotal += Double.parseDouble(localCart.get(j).getSubTotal());
             }
         }
 
-        SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE);
         selectCustomerId = sharedPreferences.getString("customerId", "");
-        customerDetails=dbHelper.getCustomer(selectCustomerId);
-        if (customerDetails.get(0).getTaxType().equals("I")){
-            net_total_value=net_total;
-        }else {
-            net_total_value=subtotal;
+        customerDetails = dbHelper.getCustomer(selectCustomerId);
+        if (customerDetails.get(0).getTaxType().equals("I")) {
+            net_total_value = net_total;
+        } else {
+            net_total_value = subtotal;
         }
 
         return net_total_value;
@@ -1149,27 +1169,27 @@ public class CartActivity extends AppCompatActivity {
         try {
             double taxAmount = 0.0, netTotal = 0.0;
             double taxAmount1 = 0.0, netTotal1 = 0.0;
-            double return_qty=0.0;
-            double pcspercarton=0.0;
-            customerDetails=dbHelper.getCustomer(selectCustomerId);
-            String taxVal =customerDetails.get(0).getTaxPerc();
-            String taxType=customerDetails.get(0).getTaxType();
-            Log.w("TaxType:",taxType);
+            double return_qty = 0.0;
+            double pcspercarton = 0.0;
+            customerDetails = dbHelper.getCustomer(selectCustomerId);
+            String taxVal = customerDetails.get(0).getTaxPerc();
+            String taxType = customerDetails.get(0).getTaxType();
+            Log.w("TaxType:", taxType);
             Log.w("TaxValue:", taxVal);
 
-            if (!billDiscPercentage.getText().toString().isEmpty()){
-                billDiscountPercentage=billDiscPercentage.getText().toString();
-            }else {
-                billDiscountPercentage="0";
+            if (!billDiscPercentage.getText().toString().isEmpty()) {
+                billDiscountPercentage = billDiscPercentage.getText().toString();
+            } else {
+                billDiscountPercentage = "0";
             }
 
-            if (billDiscAmount.getText()!=null && !billDiscAmount.getText().toString().isEmpty()){
-                billDiscountAmount=billDiscAmount.getText().toString();
-            }else {
-                billDiscountAmount="0.00";
+            if (billDiscAmount.getText() != null && !billDiscAmount.getText().toString().isEmpty()) {
+                billDiscountAmount = billDiscAmount.getText().toString();
+            } else {
+                billDiscountAmount = "0.00";
             }
 
-            double tt=total;
+            double tt = total;
             String Prodtotal = twoDecimalPoint(tt);
 
             double subtotalValue = 0.0;
@@ -1184,11 +1204,11 @@ public class CartActivity extends AppCompatActivity {
 
 
             String sbTtl = twoDecimalPoint(subtotalValue);
-            subTotalTextValue.setText("$ "+Utils.twoDecimalPoint(subtotalValue));
+            subTotalTextValue.setText("$ " + Utils.twoDecimalPoint(subtotalValue));
             subTotalText.setText(Utils.twoDecimalPoint(subtotalValue));
-            subTotalValue=Utils.twoDecimalPoint(subtotalValue);
+            subTotalValue = Utils.twoDecimalPoint(subtotalValue);
             // sl_total_inclusive.setText("" + sbTtl);
-            tt=subtotalValue;
+            tt = subtotalValue;
 
             if (!taxType.matches("") && !taxVal.matches("")) {
 
@@ -1206,8 +1226,8 @@ public class CartActivity extends AppCompatActivity {
                         netTotalText.setText("" + ProdNetTotal);
                         totalVal = Double.valueOf((ProdNetTotal));
 
-                        netTax=prodTax;
-                        netTotalvalue=ProdNetTotal;
+                        netTax = prodTax;
+                        netTotalvalue = ProdNetTotal;
                     } else {
 
                         taxAmount = (tt * taxValueCalc) / 100;
@@ -1219,8 +1239,8 @@ public class CartActivity extends AppCompatActivity {
                         netTotalText.setText("" + ProdNetTotal);
                         totalVal = Double.valueOf((ProdNetTotal));
 
-                        netTax=prodTax;
-                        netTotalvalue=ProdNetTotal;
+                        netTax = prodTax;
+                        netTotalvalue = ProdNetTotal;
                     }
 
                 } else if (taxType.matches("I")) {
@@ -1241,8 +1261,8 @@ public class CartActivity extends AppCompatActivity {
                         Log.d("totalIncl", "" + totalIncl);
                         //  sl_total_inclusive.setText(totalIncl);
 
-                        netTax=prodTax;
-                        netTotalvalue=ProdNetTotal;
+                        netTax = prodTax;
+                        netTotalvalue = ProdNetTotal;
                     } else {
                         taxAmount = (tt * taxValueCalc) / (100 + taxValueCalc);
                         String prodTax = fourDecimalPoint(taxAmount);
@@ -1259,8 +1279,8 @@ public class CartActivity extends AppCompatActivity {
                         Log.d("totalIncl", "" + totalIncl);
                         //  sl_total_inclusive.setText(totalIncl);
 
-                        netTax=prodTax;
-                        netTotalvalue=ProdNetTotal;
+                        netTax = prodTax;
+                        netTotalvalue = ProdNetTotal;
                     }
 
                 } else if (taxType.matches("Z")) {
@@ -1273,8 +1293,8 @@ public class CartActivity extends AppCompatActivity {
                         netTotalText.setText("" + ProdNetTotal);
                         totalVal = Double.valueOf((ProdNetTotal));
 
-                        netTax="0.0";
-                        netTotalvalue=ProdNetTotal;
+                        netTax = "0.0";
+                        netTotalvalue = ProdNetTotal;
                     } else {
                         // netTotal = tt + taxAmount;
                         netTotal = tt;
@@ -1282,58 +1302,58 @@ public class CartActivity extends AppCompatActivity {
                         netTotalText.setText("" + ProdNetTotal);
                         totalVal = Double.valueOf((ProdNetTotal));
 
-                        netTax="0.0";
-                        netTotalvalue=ProdNetTotal;
+                        netTax = "0.0";
+                        netTotalvalue = ProdNetTotal;
                     }
 
                 } else {
                     taxText.setText("0.0");
                     netTotalText.setText("" + Prodtotal);
                     totalVal = Double.valueOf((Prodtotal));
-                    netTax="0.0";
-                    netTotalvalue=Prodtotal;
+                    netTax = "0.0";
+                    netTotalvalue = Prodtotal;
                 }
 
             } else if (taxVal.matches("")) {
                 taxText.setText("0.0");
                 netTotalText.setText("" + Prodtotal);
                 totalVal = Double.valueOf((Prodtotal));
-                netTax="0.0";
-                netTotalvalue=Prodtotal;
+                netTax = "0.0";
+                netTotalvalue = Prodtotal;
             } else {
                 taxText.setText("0.0");
                 netTotalText.setText("" + Prodtotal);
                 totalVal = Double.valueOf((Prodtotal));
-                netTax="0.0";
-                netTotalvalue=Prodtotal;
+                netTax = "0.0";
+                netTotalvalue = Prodtotal;
             }
 
-            if (subtotalValue<0){
+            if (subtotalValue < 0) {
                 billDiscAmount.setText("");
                 billDiscPercentage.setText("");
                 billDiscPercentage.clearFocus();
                 billDiscAmount.clearFocus();
-            }else {
+            } else {
                 Utils.refreshActionBarMenu(this);
             }
         } catch (Exception e) {
 
-       }
+        }
     }
 
-    public void closeSheet(){
+    public void closeSheet() {
         if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
     }
 
-    public static void showSaveOption(String action){
-        if (action.equals("SalesOrder")){
+    public static void showSaveOption(String action) {
+        if (action.equals("SalesOrder")) {
             cashCollected.setVisibility(View.GONE);
             deliveryPrint.setVisibility(View.GONE);
             invoicePrint.setVisibility(View.VISIBLE);
             invoicePrint.setText("Sales Order Print");
-        }else {
+        } else {
             cashCollected.setVisibility(View.VISIBLE);
             deliveryPrint.setVisibility(View.VISIBLE);
             invoicePrint.setVisibility(View.VISIBLE);
@@ -1342,42 +1362,42 @@ public class CartActivity extends AppCompatActivity {
         invoicePrintOption.setVisibility(View.VISIBLE);
         summaryLayout.setVisibility(View.GONE);
         viewCloseBottomSheet();
-        saveAction=action;
+        saveAction = action;
     }
 
-    public static void viewCloseBottomSheet(){
+    public static void viewCloseBottomSheet() {
         if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
     }
 
-    public void showAlert(String action){
+    public void showAlert(String action) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialoglayout = inflater.inflate(R.layout.save_option_dialog, null);
         builder.setCancelable(false);
-        final CheckBox checkPrint=dialoglayout.findViewById(R.id.save_print);
-        final TextView titleText=dialoglayout.findViewById(R.id.title);
-        final LinearLayout copyLayout=dialoglayout.findViewById(R.id.copy_layout);
-        final TextView noofCopy=dialoglayout.findViewById(R.id.copy);
-        final ImageView copyMinus=dialoglayout.findViewById(R.id.copy_minus);
-        final ImageView copyPlus=dialoglayout.findViewById(R.id.copy_plus);
-        if (action.equals("Invoice")){
+        final CheckBox checkPrint = dialoglayout.findViewById(R.id.save_print);
+        final TextView titleText = dialoglayout.findViewById(R.id.title);
+        final LinearLayout copyLayout = dialoglayout.findViewById(R.id.copy_layout);
+        final TextView noofCopy = dialoglayout.findViewById(R.id.copy);
+        final ImageView copyMinus = dialoglayout.findViewById(R.id.copy_minus);
+        final ImageView copyPlus = dialoglayout.findViewById(R.id.copy_plus);
+        if (action.equals("Invoice")) {
             titleText.setText("Save and Print Invoice");
             builder.setTitle("Save Invoice Option");
-        }else {
+        } else {
             titleText.setText("Save and Print Sales Order");
             builder.setTitle("Save Sales Order Option");
         }
-       // checkPrint.setEnabled(false);
+        // checkPrint.setEnabled(false);
         checkPrint.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
+                if (b) {
                     copyLayout.setVisibility(View.VISIBLE);
-                    isPrintCheck=true;
-                }else {
-                    isPrintCheck=false;
+                    isPrintCheck = true;
+                } else {
+                    isPrintCheck = false;
                     noofCopy.setText("1");
                     copyLayout.setVisibility(View.GONE);
                 }
@@ -1387,8 +1407,8 @@ public class CartActivity extends AppCompatActivity {
         copyMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int val=Integer.parseInt(noofCopy.getText().toString());
-                if (!noofCopy.getText().toString().equals("1")){
+                int val = Integer.parseInt(noofCopy.getText().toString());
+                if (!noofCopy.getText().toString().equals("1")) {
                     val--;
                     noofCopy.setText(String.valueOf(val));
                 }
@@ -1398,9 +1418,9 @@ public class CartActivity extends AppCompatActivity {
         copyPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int val=Integer.parseInt(noofCopy.getText().toString());
-                 val++;
-                 noofCopy.setText(String.valueOf(val));
+                int val = Integer.parseInt(noofCopy.getText().toString());
+                val++;
+                noofCopy.setText(String.valueOf(val));
             }
         });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -1413,9 +1433,9 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
-                if (action.equals("Invoice")){
+                if (action.equals("Invoice")) {
                     createInvoiceJson(Integer.parseInt(noofCopy.getText().toString()));
-                }else {
+                } else {
                     createAndValidateJsonObject(Integer.parseInt(noofCopy.getText().toString()));
                 }
             }
@@ -1426,24 +1446,24 @@ public class CartActivity extends AppCompatActivity {
 
     private void getLocalData() {
 
-        int count =dbHelper.numberOfRows();
-        if (count>0){
+        int count = dbHelper.numberOfRows();
+        if (count > 0) {
             cartLayout.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
             localCart = new ArrayList<>();
             localCart = dbHelper.getAllCartItems();
-            if (localCart.size()==0){
-              //  menu1.findItem(R.id.action_remove).setVisible(false);
-                totalItems.setText("( "+0+" )");
-            }else {
-                totalItems.setText("( "+localCart.size()+" )");
+            if (localCart.size() == 0) {
+                //  menu1.findItem(R.id.action_remove).setVisible(false);
+                totalItems.setText("( " + 0 + " )");
+            } else {
+                totalItems.setText("( " + localCart.size() + " )");
             }
             cartAdapter = new CartAdapterNew(this, localCart, new CartAdapterNew.CallBack() {
                 @Override
                 public void updateNetAmount(String action) {
-                    if (action.equals("net_amount_update")){
+                    if (action.equals("net_amount_update")) {
                         totalProductPrice();
-                    }else {
+                    } else {
                         getLocalData();
                     }
                 }
@@ -1456,7 +1476,7 @@ public class CartActivity extends AppCompatActivity {
             totalProductPrice();
             invalidateOptionsMenu();
             getCurrentLocation();
-        }else {
+        } else {
             checkoutLayout.setVisibility(View.GONE);
             cartLayout.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
@@ -1466,96 +1486,96 @@ public class CartActivity extends AppCompatActivity {
     public void totalProductPrice() {
         try {
             localCart = dbHelper.getAllCartItems();
-            double sub_total=0.0;
-            double net_tax=0.0;
-            double total_value=0.0;
-            double net_total=0.0;
-            double net_item_discount=0.0;
-            for (int j = 0;j<localCart.size();j++){
-                if (localCart.get(j).getCART_TOTAL_VALUE()!=null && !localCart.get(j).getCART_TOTAL_VALUE().equals("null")){
-                    total_value+= Double.parseDouble(localCart.get(j).getCART_TOTAL_VALUE());
+            double sub_total = 0.0;
+            double net_tax = 0.0;
+            double total_value = 0.0;
+            double net_total = 0.0;
+            double net_item_discount = 0.0;
+            for (int j = 0; j < localCart.size(); j++) {
+                if (localCart.get(j).getCART_TOTAL_VALUE() != null && !localCart.get(j).getCART_TOTAL_VALUE().equals("null")) {
+                    total_value += Double.parseDouble(localCart.get(j).getCART_TOTAL_VALUE());
                 }
 
-                if (localCart.get(j).getSubTotal()!=null && !localCart.get(j).getSubTotal().equals("null")){
-                    sub_total+= Double.parseDouble(localCart.get(j).getSubTotal());
+                if (localCart.get(j).getSubTotal() != null && !localCart.get(j).getSubTotal().equals("null")) {
+                    sub_total += Double.parseDouble(localCart.get(j).getSubTotal());
                 }
-                if (localCart.get(j).getCART_TAX_VALUE()!=null && !localCart.get(j).getCART_TAX_VALUE().equals("null")){
-                    net_tax+= Double.parseDouble(localCart.get(j).getCART_TAX_VALUE());
-                }
-
-                if (localCart.get(j).getCART_COLUMN_NET_PRICE()!=null && !localCart.get(j).getCART_COLUMN_NET_PRICE().equals("null")){
-                    net_total+= Double.parseDouble(localCart.get(j).getCART_COLUMN_NET_PRICE());
+                if (localCart.get(j).getCART_TAX_VALUE() != null && !localCart.get(j).getCART_TAX_VALUE().equals("null")) {
+                    net_tax += Double.parseDouble(localCart.get(j).getCART_TAX_VALUE());
                 }
 
-                if (localCart.get(j).getDiscount()!=null && !localCart.get(j).getDiscount().equals("null") && !localCart.get(j).getDiscount().isEmpty()){
-                    net_item_discount+= Double.parseDouble(localCart.get(j).getDiscount());
+                if (localCart.get(j).getCART_COLUMN_NET_PRICE() != null && !localCart.get(j).getCART_COLUMN_NET_PRICE().equals("null")) {
+                    net_total += Double.parseDouble(localCart.get(j).getCART_COLUMN_NET_PRICE());
+                }
+
+                if (localCart.get(j).getDiscount() != null && !localCart.get(j).getDiscount().equals("null") && !localCart.get(j).getDiscount().isEmpty()) {
+                    net_item_discount += Double.parseDouble(localCart.get(j).getDiscount());
                 }
             }
 
-            SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE);
             selectCustomerId = sharedPreferences.getString("customerId", "");
-            customerDetails=dbHelper.getCustomer(selectCustomerId);
+            customerDetails = dbHelper.getCustomer(selectCustomerId);
 
-            if (customerDetails.get(0).getTaxType().equals("I")){
+            if (customerDetails.get(0).getTaxType().equals("I")) {
                 taxTitle.setText("GST ( Inc )");
-            }else if (customerDetails.get(0).getTaxType().equals("E")){
+            } else if (customerDetails.get(0).getTaxType().equals("E")) {
                 taxTitle.setText("GST ( Exc )");
-            }else {
+            } else {
                 taxTitle.setText("GST ( Zero )");
             }
 
-            if (customerDetails.get(0).getTaxType().equals("I")){
+            if (customerDetails.get(0).getTaxType().equals("I")) {
 
                 taxText.setText(fourDecimalPoint(net_tax));
-                netTotalText.setText("$ "+ twoDecimalPoint(net_total));
+                netTotalText.setText("$ " + twoDecimalPoint(net_total));
                 totalVal = Double.valueOf(twoDecimalPoint(net_total));
 
-                subTotalTextValue.setText("$ "+twoDecimalPoint(sub_total));
+                subTotalTextValue.setText("$ " + twoDecimalPoint(sub_total));
                 itemDiscountText.setText(twoDecimalPoint(net_item_discount));
 
-                double sub_total1=net_total - net_tax;
+                double sub_total1 = net_total - net_tax;
                 subTotalTextValue.setText(Utils.twoDecimalPoint(sub_total));
-                subTotalText.setText("$ "+twoDecimalPoint(sub_total1));
-                double sub_total12=sub_total1 + net_tax;
+                subTotalText.setText("$ " + twoDecimalPoint(sub_total1));
+                double sub_total12 = sub_total1 + net_tax;
 
-                subTotalValue= String.valueOf(sub_total12);
-                netTax=fourDecimalPoint(net_tax);
-                itemDiscountAmount=twoDecimalPoint(net_item_discount);
-                totalValue=Utils.twoDecimalPoint(total_value);
-                netTotalvalue=twoDecimalPoint(net_total);
+                subTotalValue = String.valueOf(sub_total12);
+                netTax = fourDecimalPoint(net_tax);
+                itemDiscountAmount = twoDecimalPoint(net_item_discount);
+                totalValue = Utils.twoDecimalPoint(total_value);
+                netTotalvalue = twoDecimalPoint(net_total);
 
-            }else {
+            } else {
 
-                subTotalText.setText("$ "+twoDecimalPoint(sub_total));
+                subTotalText.setText("$ " + twoDecimalPoint(sub_total));
                 taxText.setText(fourDecimalPoint(net_tax));
-                netTotalText.setText("$ "+ twoDecimalPoint(net_total));
+                netTotalText.setText("$ " + twoDecimalPoint(net_total));
                 totalVal = Double.valueOf(twoDecimalPoint(net_total));
-                totalVal = net_total ;
-                subTotalTextValue.setText("$ "+twoDecimalPoint(sub_total));
+                totalVal = net_total;
+                subTotalTextValue.setText("$ " + twoDecimalPoint(sub_total));
                 itemDiscountText.setText(twoDecimalPoint(net_item_discount));
 
-                totalValue=Utils.twoDecimalPoint(total_value);
-                subTotalValue= String.valueOf(sub_total);
-                netTax=fourDecimalPoint(net_tax);
-                netTotalvalue=twoDecimalPoint(net_total);
-                itemDiscountAmount=twoDecimalPoint(net_item_discount);
+                totalValue = Utils.twoDecimalPoint(total_value);
+                subTotalValue = String.valueOf(sub_total);
+                netTax = fourDecimalPoint(net_tax);
+                netTotalvalue = twoDecimalPoint(net_total);
+                itemDiscountAmount = twoDecimalPoint(net_item_discount);
 
             }
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             Log.e("Exp:UpdatingTotal", Objects.requireNonNull(ex.getMessage()));
         }
     }
 
-    public void taxCaluclation(double subTotal){
+    public void taxCaluclation(double subTotal) {
         try {
-            String taxValue=customerDetails.get(0).getTaxPerc();
-            String taxType=customerDetails.get(0).getTaxType();
-            String itemDisc="";
-            double taxAmount=0.0;
-            double netTotal=0.0;
-            Log.w("TaxType:",taxType);
-            Log.w("TaxValue:",taxValue);
+            String taxValue = customerDetails.get(0).getTaxPerc();
+            String taxType = customerDetails.get(0).getTaxType();
+            String itemDisc = "";
+            double taxAmount = 0.0;
+            double netTotal = 0.0;
+            Log.w("TaxType:", taxType);
+            Log.w("TaxValue:", taxValue);
             if (!taxType.matches("") && !taxValue.matches("")) {
 
                 double taxValueCalc = Double.parseDouble(taxValue);
@@ -1569,14 +1589,14 @@ public class CartActivity extends AppCompatActivity {
                         netTotal = subTotal + taxAmount;
                         String ProdNetTotal = twoDecimalPoint(netTotal);
 
-                        taxText.setText("$ "+ prodTax);
-                        netTotalText.setText("$ "+ ProdNetTotal);
+                        taxText.setText("$ " + prodTax);
+                        netTotalText.setText("$ " + ProdNetTotal);
                         totalVal = Double.valueOf(ProdNetTotal);
-                        netAmount.setText("$ "+ ProdNetTotal);
+                        netAmount.setText("$ " + ProdNetTotal);
                         taxTypeText.setText("( Exclusive )");
 
-                        netTax=prodTax;
-                        netTotalvalue=ProdNetTotal;
+                        netTax = prodTax;
+                        netTotalvalue = ProdNetTotal;
 
                     } else {
 
@@ -1586,14 +1606,14 @@ public class CartActivity extends AppCompatActivity {
                         netTotal = subTotal + taxAmount;
                         String ProdNetTotal = twoDecimalPoint(netTotal);
 
-                        taxText.setText("$ "+ prodTax);
-                        netTotalText.setText("$ "+ ProdNetTotal);
+                        taxText.setText("$ " + prodTax);
+                        netTotalText.setText("$ " + ProdNetTotal);
                         totalVal = Double.valueOf(ProdNetTotal);
 
-                        netAmount.setText("$ "+ ProdNetTotal);
+                        netAmount.setText("$ " + ProdNetTotal);
                         taxTypeText.setText("( Exclusive )");
-                        netTax=prodTax;
-                        netTotalvalue=ProdNetTotal;
+                        netTax = prodTax;
+                        netTotalvalue = ProdNetTotal;
                     }
 
                 } else if (taxType.matches("I")) {
@@ -1609,13 +1629,13 @@ public class CartActivity extends AppCompatActivity {
                         String totalIncl = twoDecimalPoint(dTotalIncl);
 
                         taxText.setText(prodTax);
-                        subTotalText.setText("$ "+totalIncl);
-                        netTotalText.setText("$ "+ ProdNetTotal);
+                        subTotalText.setText("$ " + totalIncl);
+                        netTotalText.setText("$ " + ProdNetTotal);
                         totalVal = Double.valueOf(ProdNetTotal);
-                        netAmount.setText("$ "+ ProdNetTotal);
+                        netAmount.setText("$ " + ProdNetTotal);
                         taxTypeText.setText("( Inclusive )");
-                        netTax=prodTax;
-                        netTotalvalue=ProdNetTotal;
+                        netTax = prodTax;
+                        netTotalvalue = ProdNetTotal;
                     } else {
                         taxAmount = (subTotal * taxValueCalc) / (100 + taxValueCalc);
                         String prodTax = fourDecimalPoint(taxAmount);
@@ -1627,15 +1647,15 @@ public class CartActivity extends AppCompatActivity {
                         double dTotalIncl = netTotal - taxAmount;
                         String totalIncl = twoDecimalPoint(dTotalIncl);
 
-                        subTotalText.setText("$ "+totalIncl);
-                        taxText.setText("$ "+ prodTax);
-                        netTotalText.setText("$ "+ ProdNetTotal);
+                        subTotalText.setText("$ " + totalIncl);
+                        taxText.setText("$ " + prodTax);
+                        netTotalText.setText("$ " + ProdNetTotal);
                         totalVal = Double.valueOf(ProdNetTotal);
                         totalVal = Double.valueOf(ProdNetTotal);
-                        netAmount.setText("$ "+ ProdNetTotal);
+                        netAmount.setText("$ " + ProdNetTotal);
                         taxTypeText.setText("( Inclusive )");
-                        netTax=prodTax;
-                        netTotalvalue=ProdNetTotal;
+                        netTax = prodTax;
+                        netTotalvalue = ProdNetTotal;
                     }
 
                 } else if (taxType.matches("Z")) {
@@ -1645,50 +1665,50 @@ public class CartActivity extends AppCompatActivity {
                         String ProdNetTotal = twoDecimalPoint(netTotal);
 
                         taxText.setText("0.0");
-                        netTotalText.setText("$ "+ ProdNetTotal);
+                        netTotalText.setText("$ " + ProdNetTotal);
                         totalVal = Double.valueOf(ProdNetTotal);
-                        netAmount.setText("$ "+ ProdNetTotal);
-                        netTax="0.0";
-                        netTotalvalue=ProdNetTotal;
+                        netAmount.setText("$ " + ProdNetTotal);
+                        netTax = "0.0";
+                        netTotalvalue = ProdNetTotal;
                     } else {
                         netTotal = subTotal + taxAmount;
                         netTotal = subTotal;
                         String ProdNetTotal = twoDecimalPoint(netTotal);
 
                         taxText.setText("0.0");
-                        netTotalText.setText("$ "+ ProdNetTotal);
+                        netTotalText.setText("$ " + ProdNetTotal);
                         totalVal = Double.valueOf(ProdNetTotal);
-                        netAmount.setText("$ "+ ProdNetTotal);
-                        netTax="0.0";
-                        netTotalvalue=ProdNetTotal;
+                        netAmount.setText("$ " + ProdNetTotal);
+                        netTax = "0.0";
+                        netTotalvalue = ProdNetTotal;
                     }
 
                 } else {
                     taxText.setText("0.0");
-                    netTotalText.setText("$ "+ subTotal);
-                    totalVal = subTotal ;
-                    netAmount.setText("$ "+ subTotal);
-                    netTax="0.0";
-                    netTotalvalue= String.valueOf(subTotal);
+                    netTotalText.setText("$ " + subTotal);
+                    totalVal = subTotal;
+                    netAmount.setText("$ " + subTotal);
+                    netTax = "0.0";
+                    netTotalvalue = String.valueOf(subTotal);
                 }
 
             } else if (taxValue.matches("")) {
                 taxText.setText("0.0");
-                netTotalText.setText("$ "+ subTotal);
-                totalVal = subTotal ;
-                netAmount.setText("$ "+ subTotal);
-                netTax="0.0";
-                netTotalvalue= String.valueOf(subTotal);
+                netTotalText.setText("$ " + subTotal);
+                totalVal = subTotal;
+                netAmount.setText("$ " + subTotal);
+                netTax = "0.0";
+                netTotalvalue = String.valueOf(subTotal);
             } else {
                 taxText.setText("0.0");
-                netTotalText.setText("$ "+ subTotal);
-                totalVal = subTotal ;
-                netAmount.setText("$ "+ subTotal);
-                netTax="0.0";
-                netTotalvalue= String.valueOf(subTotal);
+                netTotalText.setText("$ " + subTotal);
+                totalVal = subTotal;
+                netAmount.setText("$ " + subTotal);
+                netTax = "0.0";
+                netTotalvalue = String.valueOf(subTotal);
             }
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             Log.e("Exp:updating_total", Objects.requireNonNull(ex.getMessage()));
         }
     }
@@ -1708,7 +1728,7 @@ public class CartActivity extends AppCompatActivity {
     }
 
 
-    public void showRemoveAlert(String action){
+    public void showRemoveAlert(String action) {
        /* String title;
         if (action.equals("RemoveAll")){
             title="Are you sure want to remove all products ?";
@@ -1781,25 +1801,25 @@ public class CartActivity extends AppCompatActivity {
         finish();
     }
 
-    public  void createInvoiceJson(int copy) {
+    public void createInvoiceJson(int copy) {
 
         JSONObject rootJsonObject = new JSONObject();
         JSONObject invoiceHeader = new JSONObject();
-        JSONObject signatureObject=new JSONObject();
-        JSONObject invoiceImageObject=new JSONObject();
-        JSONArray invoiceDetailsArray =new JSONArray();
-        JSONObject invoiceObject =new JSONObject();
+        JSONObject signatureObject = new JSONObject();
+        JSONObject invoiceImageObject = new JSONObject();
+        JSONArray invoiceDetailsArray = new JSONArray();
+        JSONObject invoiceObject = new JSONObject();
         JSONArray returnProductArray = new JSONArray();
 
         // Sales Header Add values
         ArrayList<CartModel> localCart;
         localCart = dbHelper.getAllCartItems();
-        double net_sub_total=0.0;
-        double net_tax=0.0;
-        double net_total=0.0;
-        double net_discount=0;
-        double total_value=0;
-        if (localCart.size()>0) {
+        double net_sub_total = 0.0;
+        double net_tax = 0.0;
+        double net_total = 0.0;
+        double net_discount = 0;
+        double total_value = 0;
+        if (localCart.size() > 0) {
             for (CartModel model : localCart) {
                 if (model.getSubTotal() != null && !model.getSubTotal().isEmpty()) {
                     net_sub_total += Double.parseDouble(model.getSubTotal());
@@ -1819,34 +1839,34 @@ public class CartActivity extends AppCompatActivity {
             }
         }
 
-        if (customerResponse.optString("TaxType").equals("I")){
+        if (customerResponse.optString("TaxType").equals("I")) {
 
-            double sub_total=net_total - net_tax;
-            double sub_total1=sub_total + net_tax;
+            double sub_total = net_total - net_tax;
+            double sub_total1 = sub_total + net_tax;
 
-            netSubtottalValue=Utils.twoDecimalPoint(sub_total1);
-            netTaxvalue=Utils.twoDecimalPoint(net_tax);
-            netTotalValue=Utils.twoDecimalPoint(sub_total1);
-            itemDiscountAmount=Utils.twoDecimalPoint(net_discount);
-            totalValue=Utils.twoDecimalPoint(total_value);
+            netSubtottalValue = Utils.twoDecimalPoint(sub_total1);
+            netTaxvalue = Utils.twoDecimalPoint(net_tax);
+            netTotalValue = Utils.twoDecimalPoint(sub_total1);
+            itemDiscountAmount = Utils.twoDecimalPoint(net_discount);
+            totalValue = Utils.twoDecimalPoint(total_value);
 
-        }else {
-            netSubtottalValue=Utils.twoDecimalPoint(net_sub_total);
-            netTaxvalue=Utils.twoDecimalPoint(net_tax);
-            netTotalValue=Utils.twoDecimalPoint(net_total);
-            itemDiscountAmount=Utils.twoDecimalPoint(net_discount);
-            totalValue=Utils.twoDecimalPoint(total_value);
+        } else {
+            netSubtottalValue = Utils.twoDecimalPoint(net_sub_total);
+            netTaxvalue = Utils.twoDecimalPoint(net_tax);
+            netTotalValue = Utils.twoDecimalPoint(net_total);
+            itemDiscountAmount = Utils.twoDecimalPoint(net_discount);
+            totalValue = Utils.twoDecimalPoint(total_value);
         }
-        JSONArray detailsArray=customerResponse.optJSONArray("responseData");
-        JSONObject object=detailsArray.optJSONObject(0);
+        JSONArray detailsArray = customerResponse.optJSONArray("responseData");
+        JSONObject object = detailsArray.optJSONObject(0);
 
         try {
             // Sales Header Add values
 
             rootJsonObject.put("invoiceNumber", "");
             rootJsonObject.put("mode", "I");
-            rootJsonObject.put("soNo","");
-            rootJsonObject.put("doNo","");
+            rootJsonObject.put("soNo", "");
+            rootJsonObject.put("doNo", "");
             rootJsonObject.put("invoiceDate", currentDate);
             rootJsonObject.put("customerCode", object.get("customerCode"));
             rootJsonObject.put("customerName", object.get("customerName"));
@@ -1871,7 +1891,7 @@ public class CartActivity extends AppCompatActivity {
             }
             rootJsonObject.put("currentDateTime", currentSaveDateTime);
 
-            rootJsonObject.put("totalDiscount","0");
+            rootJsonObject.put("totalDiscount", "0");
             rootJsonObject.put("billDiscountPercentage", billDiscountPercentage);
             rootJsonObject.put("deliveryCode", SettingUtils.getDeliveryAddressCode());
             rootJsonObject.put("delCustomerName", "");
@@ -1885,19 +1905,19 @@ public class CartActivity extends AppCompatActivity {
             rootJsonObject.put("taxPerc", object.optString("taxPercentage"));
             rootJsonObject.put("taxCode", object.optString("taxCode"));
             rootJsonObject.put("currencyCode", object.optString("currencyCode"));
-            rootJsonObject.put("currencyValue","");
+            rootJsonObject.put("currencyValue", "");
             rootJsonObject.put("CurrencyRate", "1");
             rootJsonObject.put("status", "0");
             rootJsonObject.put("postalCode", object.optString("postalCode"));
-            rootJsonObject.put("createUser",userName);
-            rootJsonObject.put("modifyUser",userName);
-            rootJsonObject.put("companyName",companyName);
-            rootJsonObject.put("stockUpdated","1");
-            rootJsonObject.put("invoiceType","M");
-            rootJsonObject.put("companyCode",companyCode);
-            rootJsonObject.put("locationCode",locationCode);
-            rootJsonObject.put("latitude",current_latitude);
-            rootJsonObject.put("longitude",current_longitude);
+            rootJsonObject.put("createUser", userName);
+            rootJsonObject.put("modifyUser", userName);
+            rootJsonObject.put("companyName", companyName);
+            rootJsonObject.put("stockUpdated", "1");
+            rootJsonObject.put("invoiceType", "M");
+            rootJsonObject.put("companyCode", companyCode);
+            rootJsonObject.put("locationCode", locationCode);
+            rootJsonObject.put("latitude", current_latitude);
+            rootJsonObject.put("longitude", current_longitude);
             rootJsonObject.put("Paymode", "");
             rootJsonObject.put("ChequeDateString", "");
             rootJsonObject.put("BankCode", "");
@@ -1905,117 +1925,117 @@ public class CartActivity extends AppCompatActivity {
             rootJsonObject.put("ChequeNo", "");
 
             // Sales Details Add to the Objects
-            localCart=dbHelper.getAllCartItems();
+            localCart = dbHelper.getAllCartItems();
 
-            int index=1;
-            for (CartModel model:localCart){
-                invoiceObject=new JSONObject();
+            int index = 1;
+            for (CartModel model : localCart) {
+                invoiceObject = new JSONObject();
                 rootJsonObject.put("invoiceNumber", "");
-                invoiceObject.put("companyCode",companyCode);
+                invoiceObject.put("companyCode", companyCode);
                 invoiceObject.put("invoiceDate", currentDateString);
-                invoiceObject.put("slNo",index);
-                invoiceObject.put("productCode",model.getCART_COLUMN_PID());
-                invoiceObject.put("productName",model.getCART_COLUMN_PNAME());
-                invoiceObject.put("cartonQty",model.getCART_COLUMN_CTN_QTY());
-                invoiceObject.put("unitQty",model.getCART_COLUMN_QTY());
+                invoiceObject.put("slNo", index);
+                invoiceObject.put("productCode", model.getCART_COLUMN_PID());
+                invoiceObject.put("productName", model.getCART_COLUMN_PNAME());
+                invoiceObject.put("cartonQty", model.getCART_COLUMN_CTN_QTY());
+                invoiceObject.put("unitQty", model.getCART_COLUMN_QTY());
                 double data = Double.parseDouble(model.getCART_PCS_PER_CARTON());
-                double cn_qty=Double.parseDouble(model.getCART_COLUMN_CTN_QTY());
-                double lqty=Double.parseDouble(model.getCART_COLUMN_QTY());
-                double net_qty=(cn_qty*data)+lqty;
-                invoiceObject.put("qty",String.valueOf(net_qty));
+                double cn_qty = Double.parseDouble(model.getCART_COLUMN_CTN_QTY());
+                double lqty = Double.parseDouble(model.getCART_COLUMN_QTY());
+                double net_qty = (cn_qty * data) + lqty;
+                invoiceObject.put("qty", String.valueOf(net_qty));
                 // convert into int
-                int value = (int)data;
-                invoiceObject.put("pcsPerCarton",String.valueOf(value));
-            //    double priceValue=Double.parseDouble(model.getCART_UNIT_PRICE()) / net_qty;
+                int value = (int) data;
+                invoiceObject.put("pcsPerCarton", String.valueOf(value));
+                //    double priceValue=Double.parseDouble(model.getCART_UNIT_PRICE()) / net_qty;
 //                if (object.optString("taxType").equals("I")){
 //                    invoiceObject.put("price",Utils.twoDecimalPoint(priceValue));
 //                }else {
 //                    invoiceObject.put("price",Utils.twoDecimalPoint(priceValue));
 //                }
-                invoiceObject.put("price",model.getCART_COLUMN_CTN_PRICE());
-              //  invoiceObject.put("cartonPrice",model.getCART_COLUMN_CTN_PRICE());
-                invoiceObject.put("total",model.getCART_TOTAL_VALUE());
-                if (model.getDiscount()!=null && !model.getDiscount().isEmpty()){
-                    invoiceObject.put("itemDiscount",model.getDiscount());
-               //     invoiceObject.put("DiscountPercentage",model.getDiscount());
+                invoiceObject.put("price", model.getCART_COLUMN_CTN_PRICE());
+                //  invoiceObject.put("cartonPrice",model.getCART_COLUMN_CTN_PRICE());
+                invoiceObject.put("total", model.getCART_TOTAL_VALUE());
+                if (model.getDiscount() != null && !model.getDiscount().isEmpty()) {
+                    invoiceObject.put("itemDiscount", model.getDiscount());
+                    //     invoiceObject.put("DiscountPercentage",model.getDiscount());
 
-                }else {
-                    invoiceObject.put("itemDiscount","0.00");
-                 //   invoiceObject.put("DiscountPercentage","0.00");
+                } else {
+                    invoiceObject.put("itemDiscount", "0.00");
+                    //   invoiceObject.put("DiscountPercentage","0.00");
                 }
-                invoiceObject.put("totalTax",model.getCART_TAX_VALUE());
-                invoiceObject.put("subTotal",model.getSubTotal());
-                invoiceObject.put("netTotal",model.getCART_COLUMN_NET_PRICE());
-                invoiceObject.put("taxType",object.optString("taxType"));
-                invoiceObject.put("taxPerc",object.optString("taxPercentage"));
+                invoiceObject.put("totalTax", model.getCART_TAX_VALUE());
+                invoiceObject.put("subTotal", model.getSubTotal());
+                invoiceObject.put("netTotal", model.getCART_COLUMN_NET_PRICE());
+                invoiceObject.put("taxType", object.optString("taxType"));
+                invoiceObject.put("taxPerc", object.optString("taxPercentage"));
 
-                double return_subtotal=0;
-                if (model.getReturn_qty()!=null && !model.getReturn_qty().isEmpty()  && !model.getReturn_qty().equals("null")){
-                    return_subtotal=Double.parseDouble(model.getReturn_qty()) * Double.parseDouble(model.getCART_UNIT_PRICE());
+                double return_subtotal = 0;
+                if (model.getReturn_qty() != null && !model.getReturn_qty().isEmpty() && !model.getReturn_qty().equals("null")) {
+                    return_subtotal = Double.parseDouble(model.getReturn_qty()) * Double.parseDouble(model.getCART_UNIT_PRICE());
                 }
 
                 assert model.getReturn_qty() != null;
-                if (!model.getReturn_qty().isEmpty() && !model.getReturn_qty().toString().equals("null")){
+                if (!model.getReturn_qty().isEmpty() && !model.getReturn_qty().toString().equals("null")) {
                     invoiceObject.put("returnLQty", model.getReturn_qty());
                     invoiceObject.put("returnQty", model.getReturn_qty());
-                }else {
+                } else {
                     invoiceObject.put("returnLQty", "0");
                     invoiceObject.put("returnQty", "0");
                 }
 
-                if (!model.getFoc_qty().toString().isEmpty() &&!model.getFoc_qty().equals("null")){
+                if (!model.getFoc_qty().toString().isEmpty() && !model.getFoc_qty().equals("null")) {
                     invoiceObject.put("focQty", model.getFoc_qty());
-                }else {
+                } else {
                     invoiceObject.put("focQty", "0");
                 }
 
-                if (!model.getExchange_qty().isEmpty() && !model.getExchange_qty().equals("null")){
+                if (!model.getExchange_qty().isEmpty() && !model.getExchange_qty().equals("null")) {
                     invoiceObject.put("exchangeQty", model.getExchange_qty());
-                }else {
+                } else {
                     invoiceObject.put("exchangeQty", "0");
 
                 }
 
-                invoiceObject.put("returnSubTotal",return_subtotal+"");
-                invoiceObject.put("returnNetTotal", return_subtotal+"");
+                invoiceObject.put("returnSubTotal", return_subtotal + "");
+                invoiceObject.put("returnNetTotal", return_subtotal + "");
                 invoiceObject.put("returnReason", "");
-                invoiceObject.put("taxCode",object.optString("taxCode"));
-                invoiceObject.put("uomCode",model.getUomCode());
-                invoiceObject.put("retailPrice",model.getCART_COLUMN_CTN_PRICE());
-                invoiceObject.put("itemRemarks","");
-                invoiceObject.put("locationCode",locationCode);
-                invoiceObject.put("createUser",userName);
-                invoiceObject.put("modifyUser",userName);
+                invoiceObject.put("taxCode", object.optString("taxCode"));
+                invoiceObject.put("uomCode", model.getUomCode());
+                invoiceObject.put("retailPrice", model.getCART_COLUMN_CTN_PRICE());
+                invoiceObject.put("itemRemarks", "");
+                invoiceObject.put("locationCode", locationCode);
+                invoiceObject.put("createUser", userName);
+                invoiceObject.put("modifyUser", userName);
                 invoiceDetailsArray.put(invoiceObject);
                 index++;
             }
 
-            signatureObject.put("InvoiceNo","");
-            signatureObject.put("CompanyCode",companyCode);
-            signatureObject.put("Latitude",currentLocationLatitude);
-            signatureObject.put("Longitude",currentLocationLongitude);
-            signatureObject.put("RefSignature",signatureString);
-            signatureObject.put("ModifyUser",userName);
-            signatureObject.put("Modifydate","");
-            signatureObject.put("TranType","IN");
-            signatureObject.put("Address1","");
-            signatureObject.put("Address2","");
-            signatureObject.put("SlNo",0);
-            signatureObject.put("RefSignaturestring",null);
+            signatureObject.put("InvoiceNo", "");
+            signatureObject.put("CompanyCode", companyCode);
+            signatureObject.put("Latitude", currentLocationLatitude);
+            signatureObject.put("Longitude", currentLocationLongitude);
+            signatureObject.put("RefSignature", signatureString);
+            signatureObject.put("ModifyUser", userName);
+            signatureObject.put("Modifydate", "");
+            signatureObject.put("TranType", "IN");
+            signatureObject.put("Address1", "");
+            signatureObject.put("Address2", "");
+            signatureObject.put("SlNo", 0);
+            signatureObject.put("RefSignaturestring", null);
 
 
-            invoiceImageObject.put("InvoiceNo","");
-            invoiceImageObject.put("CompanyCode",companyCode);
-            invoiceImageObject.put("SlNo",0);
-            invoiceImageObject.put("TranType","IN");
-            invoiceImageObject.put("RefPhoto",imageString);
+            invoiceImageObject.put("InvoiceNo", "");
+            invoiceImageObject.put("CompanyCode", companyCode);
+            invoiceImageObject.put("SlNo", 0);
+            invoiceImageObject.put("TranType", "IN");
+            invoiceImageObject.put("RefPhoto", imageString);
             rootJsonObject.put("signature", signatureString);
-            invoiceImageObject.put("CustomerCode",object.get("customerCode"));
-            invoiceImageObject.put("CustomerName",object.get("customerName"));
-            invoiceImageObject.put("DeliveryCode",SettingUtils.getDeliveryAddressCode());
-            invoiceImageObject.put("CompanyName",user.get(SessionManager.KEY_COMPANY_NAME));
-            invoiceImageObject.put("ModifyUser",userName);
-            invoiceImageObject.put("RefPhotostring",null);
+            invoiceImageObject.put("CustomerCode", object.get("customerCode"));
+            invoiceImageObject.put("CustomerName", object.get("customerName"));
+            invoiceImageObject.put("DeliveryCode", SettingUtils.getDeliveryAddressCode());
+            invoiceImageObject.put("CompanyName", user.get(SessionManager.KEY_COMPANY_NAME));
+            invoiceImageObject.put("ModifyUser", userName);
+            invoiceImageObject.put("RefPhotostring", null);
 
 
             // rootJsonObject.put("IsSaveSO",false);
@@ -2025,10 +2045,10 @@ public class CartActivity extends AppCompatActivity {
             //  rootJsonObject.put("InvoiceSignature",signatureObject);
             // rootJsonObject.put("InvoicePhoto",invoiceImageObject);
 
-            Log.w("RootJsonForSave:",rootJsonObject.toString());
+            Log.w("RootJsonForSave:", rootJsonObject.toString());
 
 
-            saveSalesOrder(rootJsonObject,"Invoice",copy);
+            saveSalesOrder(rootJsonObject, "Invoice", copy);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2040,18 +2060,18 @@ public class CartActivity extends AppCompatActivity {
     public void createAndValidateJsonObject(int copy) {
         JSONObject rootJsonObject = new JSONObject();
         JSONObject saleHeader = new JSONObject();
-        JSONArray saleDetailsArray=new JSONArray();
-        JSONObject saleObject=new JSONObject();
+        JSONArray saleDetailsArray = new JSONArray();
+        JSONObject saleObject = new JSONObject();
         try {
             // Sales Header Add values
             ArrayList<CartModel> localCart;
             localCart = dbHelper.getAllCartItems();
-            double net_sub_total=0.0;
-            double net_tax=0.0;
-            double net_total=0.0;
-            double net_discount=0;
-            double total_value=0;
-            if (localCart.size()>0) {
+            double net_sub_total = 0.0;
+            double net_tax = 0.0;
+            double net_total = 0.0;
+            double net_discount = 0;
+            double total_value = 0;
+            if (localCart.size() > 0) {
                 for (CartModel model : localCart) {
                     if (model.getSubTotal() != null && !model.getSubTotal().isEmpty()) {
                         net_sub_total += Double.parseDouble(model.getSubTotal());
@@ -2073,27 +2093,27 @@ public class CartActivity extends AppCompatActivity {
                 }
             }
 
-            if (customerResponse.optString("TaxType").equals("I")){
+            if (customerResponse.optString("TaxType").equals("I")) {
 
-                double sub_total=net_total - net_tax;
-                double sub_total1=sub_total + net_tax;
+                double sub_total = net_total - net_tax;
+                double sub_total1 = sub_total + net_tax;
 
-                netSubtottalValue=Utils.twoDecimalPoint(sub_total1);
-                netTaxvalue=Utils.twoDecimalPoint(net_tax);
-                netTotalValue=Utils.twoDecimalPoint(sub_total1);
-                itemDiscountAmount=Utils.twoDecimalPoint(net_discount);
-                totalValue=Utils.twoDecimalPoint(total_value);
+                netSubtottalValue = Utils.twoDecimalPoint(sub_total1);
+                netTaxvalue = Utils.twoDecimalPoint(net_tax);
+                netTotalValue = Utils.twoDecimalPoint(sub_total1);
+                itemDiscountAmount = Utils.twoDecimalPoint(net_discount);
+                totalValue = Utils.twoDecimalPoint(total_value);
 
-            }else {
-                netSubtottalValue=Utils.twoDecimalPoint(net_sub_total);
-                netTaxvalue=Utils.twoDecimalPoint(net_tax);
-                netTotalValue=Utils.twoDecimalPoint(net_total);
-                itemDiscountAmount=Utils.twoDecimalPoint(net_discount);
-                totalValue=Utils.twoDecimalPoint(total_value);
+            } else {
+                netSubtottalValue = Utils.twoDecimalPoint(net_sub_total);
+                netTaxvalue = Utils.twoDecimalPoint(net_tax);
+                netTotalValue = Utils.twoDecimalPoint(net_total);
+                itemDiscountAmount = Utils.twoDecimalPoint(net_discount);
+                totalValue = Utils.twoDecimalPoint(total_value);
             }
 
-            JSONArray detailsArray=customerResponse.optJSONArray("responseData");
-            JSONObject object=detailsArray.optJSONObject(0);
+            JSONArray detailsArray = customerResponse.optJSONArray("responseData");
+            JSONObject object = detailsArray.optJSONObject(0);
 
             if (currentSaveDateTime == null || currentSaveDateTime.isEmpty()) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
@@ -2132,20 +2152,20 @@ public class CartActivity extends AppCompatActivity {
             rootJsonObject.put("taxPerc", object.optString("taxPercentage"));
             rootJsonObject.put("taxCode", object.optString("taxCode"));
             rootJsonObject.put("currencyCode", object.optString("currencyCode"));
-            rootJsonObject.put("currencyValue","");
+            rootJsonObject.put("currencyValue", "");
             rootJsonObject.put("currencyRate", "1");
             rootJsonObject.put("postalCode", object.optString("postalCode"));
-            rootJsonObject.put("createUser",userName);
-            rootJsonObject.put("modifyUser",userName);
-            rootJsonObject.put("stockUpdated","1");
-            rootJsonObject.put("companyCode",companyCode);
-            rootJsonObject.put("locationCode",locationCode);
-            rootJsonObject.put("signature",signatureString);
-            rootJsonObject.put("latitude",current_latitude);
-            rootJsonObject.put("longitude",current_longitude);
+            rootJsonObject.put("createUser", userName);
+            rootJsonObject.put("modifyUser", userName);
+            rootJsonObject.put("stockUpdated", "1");
+            rootJsonObject.put("companyCode", companyCode);
+            rootJsonObject.put("locationCode", locationCode);
+            rootJsonObject.put("signature", signatureString);
+            rootJsonObject.put("latitude", current_latitude);
+            rootJsonObject.put("longitude", current_longitude);
 
             // Sales Details Add to the Objects
-            localCart=dbHelper.getAllCartItems();
+            localCart = dbHelper.getAllCartItems();
 
             Log.w("Given_local_cart_size:", String.valueOf(localCart.size()));
 
@@ -2155,94 +2175,94 @@ public class CartActivity extends AppCompatActivity {
             //  "returnQty":"0","focQty":"0","exchangeQty":"0","returnSubTotal":"0.0","returnNetTotal":"0.0","taxCode":"","uomCode":"Ctn",
             //  "itemRemarks":"","locationCode":"01","createUser":"User1","modifyUser":"User1"}]}
 
-            int index=1;
-            for (CartModel model:localCart){
-                saleObject=new JSONObject();
+            int index = 1;
+            for (CartModel model : localCart) {
+                saleObject = new JSONObject();
 
-                saleObject.put("companyCode",companyCode);
-                saleObject.put("slNo",index);
-                saleObject.put("productCode",model.getCART_COLUMN_PID());
-                saleObject.put("productName",model.getCART_COLUMN_PNAME());
-                saleObject.put("cartonQty",model.getCART_COLUMN_CTN_QTY());
-                saleObject.put("unitQty",model.getCART_COLUMN_QTY());
+                saleObject.put("companyCode", companyCode);
+                saleObject.put("slNo", index);
+                saleObject.put("productCode", model.getCART_COLUMN_PID());
+                saleObject.put("productName", model.getCART_COLUMN_PNAME());
+                saleObject.put("cartonQty", model.getCART_COLUMN_CTN_QTY());
+                saleObject.put("unitQty", model.getCART_COLUMN_QTY());
                 double data = Double.parseDouble(model.getCART_PCS_PER_CARTON());
-                double cn_qty=Double.parseDouble(model.getCART_COLUMN_CTN_QTY());
-                double lqty=Double.parseDouble(model.getCART_COLUMN_QTY());
-                double net_qty=(cn_qty*data)+lqty;
-                saleObject.put("qty",String.valueOf(net_qty));
+                double cn_qty = Double.parseDouble(model.getCART_COLUMN_CTN_QTY());
+                double lqty = Double.parseDouble(model.getCART_COLUMN_QTY());
+                double net_qty = (cn_qty * data) + lqty;
+                saleObject.put("qty", String.valueOf(net_qty));
                 // convert into int
-                int value = (int)data;
-                saleObject.put("pcsPerCarton",String.valueOf(value));
+                int value = (int) data;
+                saleObject.put("pcsPerCarton", String.valueOf(value));
 //                double priceValue=Double.parseDouble(model.getCART_UNIT_PRICE()) / net_qty;
 //                if (object.optString("taxType").equals("I")){
 //                    saleObject.put("price",Utils.twoDecimalPoint(priceValue));
 //                }else {
 //                    saleObject.put("price",Utils.twoDecimalPoint(priceValue));
 //                }
-                saleObject.put("price",model.getCART_COLUMN_CTN_PRICE());
-                saleObject.put("total",model.getCART_TOTAL_VALUE());
-                if (model.getDiscount()!=null && !model.getDiscount().isEmpty()){
-                    saleObject.put("itemDiscount",model.getDiscount());
-                    saleObject.put("DiscountPercentage",model.getDiscount());
+                saleObject.put("price", model.getCART_COLUMN_CTN_PRICE());
+                saleObject.put("total", model.getCART_TOTAL_VALUE());
+                if (model.getDiscount() != null && !model.getDiscount().isEmpty()) {
+                    saleObject.put("itemDiscount", model.getDiscount());
+                    saleObject.put("DiscountPercentage", model.getDiscount());
 
-                }else {
-                    saleObject.put("itemDiscount","0.00");
-                    saleObject.put("DiscountPercentage","0.00");
+                } else {
+                    saleObject.put("itemDiscount", "0.00");
+                    saleObject.put("DiscountPercentage", "0.00");
 
                 }
 //                Log.w("cartPricss",""+Utils.twoDecimalPoint(priceValue)+
 //                        "cart_unit.."+model.getCART_UNIT_PRICE());
 
-                saleObject.put("totalTax",model.getCART_TAX_VALUE());
-                saleObject.put("subTotal",model.getSubTotal());
-                saleObject.put("netTotal",model.getCART_COLUMN_NET_PRICE());
-                saleObject.put("taxType",object.optString("taxType"));
-                saleObject.put("taxPerc",object.optString("taxPercentage"));
-                if (model.getFoc_qty()!=null && !model.getFoc_qty().isEmpty() && !model.getFoc_qty().equals("null")){
+                saleObject.put("totalTax", model.getCART_TAX_VALUE());
+                saleObject.put("subTotal", model.getSubTotal());
+                saleObject.put("netTotal", model.getCART_COLUMN_NET_PRICE());
+                saleObject.put("taxType", object.optString("taxType"));
+                saleObject.put("taxPerc", object.optString("taxPercentage"));
+                if (model.getFoc_qty() != null && !model.getFoc_qty().isEmpty() && !model.getFoc_qty().equals("null")) {
                     saleObject.put("focQty", model.getFoc_qty());
-                }else {
+                } else {
                     saleObject.put("focQty", "0");
                 }
 
-                double return_subtotal=0;
-                if (model.getReturn_qty()!=null && !model.getReturn_qty().isEmpty()  && !model.getReturn_qty().equals("null")){
-                    return_subtotal=Double.parseDouble(model.getReturn_qty()) * Double.parseDouble(model.getCART_UNIT_PRICE());
+                double return_subtotal = 0;
+                if (model.getReturn_qty() != null && !model.getReturn_qty().isEmpty() && !model.getReturn_qty().equals("null")) {
+                    return_subtotal = Double.parseDouble(model.getReturn_qty()) * Double.parseDouble(model.getCART_UNIT_PRICE());
                 }
 
                 assert model.getReturn_qty() != null;
-                if (!model.getReturn_qty().isEmpty() && !model.getReturn_qty().toString().equals("null")){
+                if (!model.getReturn_qty().isEmpty() && !model.getReturn_qty().toString().equals("null")) {
                     saleObject.put("returnLQty", model.getReturn_qty());
                     saleObject.put("returnQty", model.getReturn_qty());
-                }else {
+                } else {
                     saleObject.put("returnLQty", "0");
                     saleObject.put("returnQty", "0");
                 }
 
-                if (!model.getExchange_qty().isEmpty() && !model.getExchange_qty().equals("null")){
+                if (!model.getExchange_qty().isEmpty() && !model.getExchange_qty().equals("null")) {
                     saleObject.put("exchangeQty", model.getExchange_qty());
-                }else {
+                } else {
                     saleObject.put("exchangeQty", "0");
                 }
 
-                saleObject.put("returnSubTotal",return_subtotal+"");
-                saleObject.put("returnNetTotal", return_subtotal+"");
+                saleObject.put("returnSubTotal", return_subtotal + "");
+                saleObject.put("returnNetTotal", return_subtotal + "");
 
-                saleObject.put("taxCode",object.optString("taxCode"));
-                saleObject.put("uomCode",model.getUomCode());
-                saleObject.put("retailPrice",model.getCART_COLUMN_CTN_PRICE());
-                saleObject.put("itemRemarks","");
-                saleObject.put("locationCode",locationCode);
-                saleObject.put("createUser",userName);
-                saleObject.put("modifyUser",userName);
+                saleObject.put("taxCode", object.optString("taxCode"));
+                saleObject.put("uomCode", model.getUomCode());
+                saleObject.put("retailPrice", model.getCART_COLUMN_CTN_PRICE());
+                saleObject.put("itemRemarks", "");
+                saleObject.put("locationCode", locationCode);
+                saleObject.put("createUser", userName);
+                saleObject.put("modifyUser", userName);
 
                 saleDetailsArray.put(saleObject);
                 index++;
             }
 
-            rootJsonObject.put("PostingSalesOrderDetails",saleDetailsArray);
-            Log.w("RootSaveJson:",rootJsonObject.toString());
+            rootJsonObject.put("PostingSalesOrderDetails", saleDetailsArray);
+            Log.w("RootSaveJson:", rootJsonObject.toString());
 
-            saveSalesOrder(rootJsonObject,"SalesOrder",copy);
+            saveSalesOrder(rootJsonObject, "SalesOrder", copy);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2250,23 +2270,23 @@ public class CartActivity extends AppCompatActivity {
         }
     }
 
-    private void getCustomerDetails(String customerCode,boolean isloader) {
+    private void getCustomerDetails(String customerCode, boolean isloader) {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         // Initialize a new JsonArrayRequest instance
-        JSONObject jsonObject=new JSONObject();
+        JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("CustomerCode",customerCode);
+            jsonObject.put("CustomerCode", customerCode);
             // jsonObject.put("CompanyCode",companyCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String url= Utils.getBaseUrl(getApplicationContext()) +"Customer";
-        Log.w("Given_url:",url);
-        ProgressDialog progressDialog=new ProgressDialog(getApplicationContext());
+        String url = Utils.getBaseUrl(getApplicationContext()) + "Customer";
+        Log.w("Given_url:", url);
+        ProgressDialog progressDialog = new ProgressDialog(getApplicationContext());
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Customer Details Loading...");
-        if (isloader){
+        if (isloader) {
             progressDialog.show();
         }
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
@@ -2274,34 +2294,34 @@ public class CartActivity extends AppCompatActivity {
                 url,
                 jsonObject,
                 response -> {
-                    try{
-                        Log.w("SAP-response_customer:",response.toString());
+                    try {
+                        Log.w("SAP-response_customer:", response.toString());
                         //  {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"CUS\/686","customerName":"VH FACTORY",
                         //  "groupCode":"100","contactPerson":"","creditLimit":"150.000000","currencyCode":"SGD","currencyName":"Singapore Dollar",
                         //  "taxType":"","taxCode":"SR","taxName":"Sales Standard Rated Supplier SR","taxPercentage":"7.000000","balance":"21.600000",
                         //  "outstandingAmount":"128.400000","address":"","street":"","city":"","state":"","zipCode":"","country":"",
                         //  "createDate":"13\/07\/2021","updateDate":"30\/07\/2021","active":"N","remark":""}]}
-                        if (response.length()>0) {
-                            if (response.optString("statusCode").equals("1")){
-                                customerObject=response;
-                                customerResponse=response;
+                        if (response.length() > 0) {
+                            if (response.optString("statusCode").equals("1")) {
+                                customerObject = response;
+                                customerResponse = response;
                                 progressDialog.dismiss();
-                            }else {
-                                Toast.makeText(getApplicationContext(),"Error in getting response",Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Error in getting response", Toast.LENGTH_LONG).show();
                             }
                         }
                         // pDialog.dismiss();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             showAlertDialog();
             // Do something when error occurred
             //  pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
+            Log.w("Error_throwing:", error.toString());
             progressDialog.dismiss();
             // Toast.makeText(getActivity(),error.toString(),Toast.LENGTH_LONG).show();
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -2316,10 +2336,12 @@ public class CartActivity extends AppCompatActivity {
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -2329,13 +2351,13 @@ public class CartActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void saveSalesOrder(JSONObject jsonBody,String action,int copy){
+    public void saveSalesOrder(JSONObject jsonBody, String action, int copy) {
         try {
             SweetAlertDialog pDialog = new SweetAlertDialog(CartActivity.this, SweetAlertDialog.PROGRESS_TYPE);
             pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-            if (action.equals("SalesOrder")){
+            if (action.equals("SalesOrder")) {
                 pDialog.setTitleText("Saving Sales Order...");
-            }else if (action.equals("DeliveryOrder")){
+            } else if (action.equals("DeliveryOrder")) {
                 pDialog.setTitleText("Saving Delivery Order...");
             } else {
                 pDialog.setTitleText("Saving Invoice...");
@@ -2343,83 +2365,83 @@ public class CartActivity extends AppCompatActivity {
             pDialog.setCancelable(false);
             pDialog.show();
             RequestQueue requestQueue = Volley.newRequestQueue(CartActivity.this);
-            Log.w("GivenInvoiceReqCart:",jsonBody.toString());
-            String URL="";
-            if (action.equals("SalesOrder")){
-                URL=Utils.getBaseUrl(this)+"PostingSalesOrder";
-            }else if (action.equals("DeliveryOrder")){
-                URL=Utils.getBaseUrl(this)+"PostingDeliveryOrder";
+            Log.w("GivenInvoiceReqCart:", jsonBody.toString());
+            String URL = "";
+            if (action.equals("SalesOrder")) {
+                URL = Utils.getBaseUrl(this) + "PostingSalesOrder";
+            } else if (action.equals("DeliveryOrder")) {
+                URL = Utils.getBaseUrl(this) + "PostingDeliveryOrder";
             } else {
-                URL=Utils.getBaseUrl(this)+"PostingInvoice";
+                URL = Utils.getBaseUrl(this) + "PostingInvoice";
             }
-            Log.w("Given_URL_InvApiCart:",URL);
+            Log.w("Given_URL_InvApiCart:", URL);
             //    {"statusCode":2,"statusMessage":"Failed","responseData":{"docNum":null,"error":"Invoice :One of the base documents has already been closed  [INV1.BaseEntry][line: 1]"}}
-            JsonObjectRequest salesOrderRequest = new JsonObjectRequest(Request.Method.POST, URL,jsonBody, response -> {
-                Log.w("Invoice_Res_cartSap:",response.toString());
+            JsonObjectRequest salesOrderRequest = new JsonObjectRequest(Request.Method.POST, URL, jsonBody, response -> {
+                Log.w("Invoice_Res_cartSap:", response.toString());
                 Utils.clearCustomerSession(this);
                 // dbHelper.removeCustomer();
                 // {"statusCode":1,"statusMessage":"Invoice Created Successfully","responseData":{"docNum":"35","error":null}}
                 pDialog.dismiss();
-                String statusCode=response.optString("statusCode");
-                String message=response.optString("statusMessage");
+                String statusCode = response.optString("statusCode");
+                String message = response.optString("statusMessage");
                 JSONObject responseData = null;
                 try {
-                    responseData=response.getJSONObject("responseData");
+                    responseData = response.getJSONObject("responseData");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if (statusCode.equals("1")){
-                    if (action.equals("SalesOrder") || action.equals("SalesEdit")){
-                        if (isPrintEnable){
+                if (statusCode.equals("1")) {
+                    if (action.equals("SalesOrder") || action.equals("SalesEdit")) {
+                        if (isPrintEnable) {
                             try {
                                 dbHelper.removeAllItems();
-                                JSONObject object=response.optJSONObject("responseData");
-                                String doucmentNo =object.optString("docNum");
+                                JSONObject object = response.optJSONObject("responseData");
+                                String doucmentNo = object.optString("docNum");
                                 //   String result=object.optString("Result");
                                 if (!doucmentNo.isEmpty()) {
                                     // getSalesOrderDetails(doucmentNo, copy);
-                                    Intent intent=new Intent(this,SalesOrderListActivity.class);
-                                    intent.putExtra("printSoNumber",doucmentNo);
-                                    intent.putExtra("noOfCopy",String.valueOf(copy));
+                                    Intent intent = new Intent(this, SalesOrderListActivity.class);
+                                    intent.putExtra("printSoNumber", doucmentNo);
+                                    intent.putExtra("noOfCopy", String.valueOf(copy));
                                     startActivity(intent);
                                     finish();
-                                }else {
-                                    Toast.makeText(getApplicationContext(),"Error in getting printing data",Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Error in getting printing data", Toast.LENGTH_SHORT).show();
                                     redirectActivity();
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        }else {
+                        } else {
                             dbHelper.removeAllItems();
                             redirectActivity();
                         }
-                        isPrintEnable=false;
+                        isPrintEnable = false;
                     } else {
-                        if (isPrintEnable){
+                        if (isPrintEnable) {
                             try {
                                 //updateStockQty();
                                 dbHelper.removeAllItems();
-                                JSONObject object=response.optJSONObject("responseData");
-                                String doucmentNo =object.optString("docNum");
+                                JSONObject object = response.optJSONObject("responseData");
+                                String doucmentNo = object.optString("docNum");
                                 //   String result=object.optString("Result");
                                 if (!doucmentNo.isEmpty()) {
                                     // getInvoicePrintDetails(doucmentNo, copy);
-                                    Intent intent=new Intent(getApplicationContext(),NewInvoiceListActivity.class);
-                                    intent.putExtra("printInvoiceNumber",doucmentNo);
-                                    intent.putExtra("noOfCopy",String.valueOf(copy));
+                                    Intent intent = new Intent(getApplicationContext(), NewInvoiceListActivity.class);
+                                    intent.putExtra("printInvoiceNumber", doucmentNo);
+                                    intent.putExtra("noOfCopy", String.valueOf(copy));
                                     startActivity(intent);
                                     finish();
-                                }else {
-                                    Toast.makeText(getApplicationContext(),"Error in getting printing data",Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Error in getting printing data", Toast.LENGTH_SHORT).show();
                                     redirectActivity();
                                 }
-                                Log.w("cartSavEntr","");
+                                Log.w("cartSavEntr", "");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        }else {
-                            Log.w("cartSavEntr1","");
+                        } else {
+                            Log.w("cartSavEntr1", "");
 
                             //updateStockQty();
                             dbHelper.removeAllItems();
@@ -2433,18 +2455,18 @@ public class CartActivity extends AppCompatActivity {
 //                                }
 //                            }
                         }
-                        isPrintEnable=false;
+                        isPrintEnable = false;
                     }
-                }else {
-                    Log.w("ErrorValues:",responseData.optString("error"));
-                    if (responseData!=null){
-                        Toast.makeText(getApplicationContext(),responseData.optString("error"),Toast.LENGTH_LONG).show();
-                    }else {
-                        Toast.makeText(getApplicationContext(),"Error in Saving Data...",Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.w("ErrorValues:", responseData.optString("error"));
+                    if (responseData != null) {
+                        Toast.makeText(getApplicationContext(), responseData.optString("error"), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Error in Saving Data...", Toast.LENGTH_SHORT).show();
                     }
                 }
             }, error -> {
-                Log.w("SalesOrder_Response:",error.toString());
+                Log.w("SalesOrder_Response:", error.toString());
                 pDialog.dismiss();
             }) {
                 /* @Override
@@ -2455,6 +2477,7 @@ public class CartActivity extends AppCompatActivity {
                 public String getBodyContentType() {
                     return "application/json";
                 }
+
                 @Override
                 public Map<String, String> getHeaders() {
                     HashMap<String, String> params = new HashMap<>();
@@ -2469,10 +2492,12 @@ public class CartActivity extends AppCompatActivity {
                 public int getCurrentTimeout() {
                     return 50000;
                 }
+
                 @Override
                 public int getCurrentRetryCount() {
                     return 50000;
                 }
+
                 @Override
                 public void retry(VolleyError error) throws VolleyError {
                 }
@@ -2483,15 +2508,15 @@ public class CartActivity extends AppCompatActivity {
         }
     }
 
-    public void updateStockQty(){
-        localCart=dbHelper.getAllCartItems();
-        if (localCart.size()>0){
-            for (CartModel model:localCart){
+    public void updateStockQty() {
+        localCart = dbHelper.getAllCartItems();
+        if (localCart.size() > 0) {
+            for (CartModel model : localCart) {
                 double data = Double.parseDouble(model.getCART_PCS_PER_CARTON());
-                double cn_qty=Double.parseDouble(model.getCART_COLUMN_CTN_QTY());
-                double lqty=Double.parseDouble(model.getCART_COLUMN_QTY());
-                double net_qty=(cn_qty*data)+lqty;
-                dbHelper.updateProductStock(model.getCART_COLUMN_PID(),(int)net_qty,"addInvoice");
+                double cn_qty = Double.parseDouble(model.getCART_COLUMN_CTN_QTY());
+                double lqty = Double.parseDouble(model.getCART_COLUMN_QTY());
+                double net_qty = (cn_qty * data) + lqty;
+                dbHelper.updateProductStock(model.getCART_COLUMN_PID(), (int) net_qty, "addInvoice");
             }
             dbHelper.removeAllItems();
         }
@@ -2499,56 +2524,56 @@ public class CartActivity extends AppCompatActivity {
 
 
     public boolean validatePrinterConfiguration() throws JSONException {
-        boolean printetCheck=false;
+        boolean printetCheck = false;
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             // Device does not support Bluetooth
-            Toast.makeText(CartActivity.this,"This device does not support bluetooth",Toast.LENGTH_SHORT).show();
+            Toast.makeText(CartActivity.this, "This device does not support bluetooth", Toast.LENGTH_SHORT).show();
         } else if (!mBluetoothAdapter.isEnabled()) {
             // Bluetooth is not enabled :)
-            Toast.makeText(CartActivity.this,"Enable bluetooth and connect the printer",Toast.LENGTH_SHORT).show();
+            Toast.makeText(CartActivity.this, "Enable bluetooth and connect the printer", Toast.LENGTH_SHORT).show();
         } else {
             // Bluetooth is enabled
-            if (!printerType.isEmpty() && !printerMacId.isEmpty()){
-                printetCheck=true;
-            }else {
-                Toast.makeText(CartActivity.this,"Please configure Printer",Toast.LENGTH_SHORT).show();
+            if (!printerType.isEmpty() && !printerMacId.isEmpty()) {
+                printetCheck = true;
+            } else {
+                Toast.makeText(CartActivity.this, "Please configure Printer", Toast.LENGTH_SHORT).show();
             }
         }
         return printetCheck;
     }
 
-    public void clearData(){
+    public void clearData() {
         dbHelper.removeAllItems();
         //dbHelper.removeCustomer();
         resetCustomerDetails();
     }
 
 
-    public  void getInvoicePrintDetails(String invoiceNumber,int copy) throws JSONException {
+    public void getInvoicePrintDetails(String invoiceNumber, int copy) throws JSONException {
         // Initialize a new RequestQueue instance
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("CompanyCode",companyCode);
-        jsonObject.put("InvoiceNo",invoiceNumber);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("CompanyCode", companyCode);
+        jsonObject.put("InvoiceNo", invoiceNumber);
         RequestQueue requestQueue = Volley.newRequestQueue(CartActivity.this);
-        String url= Utils.getBaseUrl(CartActivity.this) +"SalesApi/GetInvoiceByCode?Requestdata="+jsonObject.toString();
+        String url = Utils.getBaseUrl(CartActivity.this) + "SalesApi/GetInvoiceByCode?Requestdata=" + jsonObject.toString();
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
-        printAlertDialog=new ProgressDialog(CartActivity.this);
+        Log.w("Given_url:", url);
+        printAlertDialog = new ProgressDialog(CartActivity.this);
         printAlertDialog.setCancelable(false);
         printAlertDialog.setMessage("Generating Invoice Printing Data...");
         printAlertDialog.show();
-        invoiceHeaderDetails =new ArrayList<>();
-        invoicePrintList=new ArrayList<>();
+        invoiceHeaderDetails = new ArrayList<>();
+        invoicePrintList = new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
                 null,
                 response -> {
-                    try{
-                        Log.w("Invoice_Details:",response.toString());
-                        if (response.length()>0){
-                            InvoicePrintPreviewModel model=new InvoicePrintPreviewModel();
+                    try {
+                        Log.w("Invoice_Details:", response.toString());
+                        if (response.length() > 0) {
+                            InvoicePrintPreviewModel model = new InvoicePrintPreviewModel();
                             model.setInvoiceNumber(response.optString("InvoiceNo"));
                             model.setInvoiceDate(response.optString("InvoiceDateString"));
                             model.setCustomerCode(response.optString("CustomerCode"));
@@ -2564,7 +2589,7 @@ public class CartActivity extends AppCompatActivity {
                             model.setBillDiscount(response.optString("BillDIscount"));
                             model.setItemDiscount(response.optString("ItemDiscount"));
 
-                            JSONArray products=response.getJSONArray("InvoiceDetails");
+                            JSONArray products = response.getJSONArray("InvoiceDetails");
                             for (int i = 0; i < products.length(); i++) {
                                 JSONObject object = products.getJSONObject(i);
                                 if (Double.parseDouble(object.optString("LQty")) > 0) {
@@ -2588,18 +2613,18 @@ public class CartActivity extends AppCompatActivity {
                                     invoicePrintList.add(invoiceListModel);
 
 
-                                    if (!object.optString("ReturnQty").isEmpty() && !object.optString("ReturnQty").equals("null") && Double.parseDouble(object.optString("ReturnQty")) > 0)  {
+                                    if (!object.optString("ReturnQty").isEmpty() && !object.optString("ReturnQty").equals("null") && Double.parseDouble(object.optString("ReturnQty")) > 0) {
                                         invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
                                         invoiceListModel.setProductCode(object.optString("ProductCode"));
                                         invoiceListModel.setDescription(object.optString("ProductName"));
                                         invoiceListModel.setLqty(object.optString("LQty"));
                                         invoiceListModel.setCqty(object.optString("CQty"));
-                                        invoiceListModel.setNetQty("-"+object.optString("ReturnQty"));
+                                        invoiceListModel.setNetQty("-" + object.optString("ReturnQty"));
 
                                         double qty1 = Double.parseDouble(object.optString("ReturnQty"));
                                         double price1 = Double.parseDouble(object.optString("Price"));
                                         double nettotal1 = qty1 * price1;
-                                        invoiceListModel.setTotal("-"+String.valueOf(nettotal1));
+                                        invoiceListModel.setTotal("-" + String.valueOf(nettotal1));
                                         invoiceListModel.setPricevalue(String.valueOf(price1));
 
                                         invoiceListModel.setUomCode(object.optString("UOMCode"));
@@ -2660,18 +2685,18 @@ public class CartActivity extends AppCompatActivity {
                                         invoicePrintList.add(invoiceListModel);
 
 
-                                        if (!object.optString("ReturnQty").isEmpty() && !object.optString("ReturnQty").equals("null") && Double.parseDouble(object.optString("ReturnQty")) > 0)  {
+                                        if (!object.optString("ReturnQty").isEmpty() && !object.optString("ReturnQty").equals("null") && Double.parseDouble(object.optString("ReturnQty")) > 0) {
                                             invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
                                             invoiceListModel.setProductCode(object.optString("ProductCode"));
                                             invoiceListModel.setDescription(object.optString("ProductName"));
                                             invoiceListModel.setLqty(object.optString("LQty"));
                                             invoiceListModel.setCqty(object.optString("CQty"));
-                                            invoiceListModel.setNetQty("-"+object.optString("ReturnQty"));
+                                            invoiceListModel.setNetQty("-" + object.optString("ReturnQty"));
 
                                             double qty12 = Double.parseDouble(object.optString("ReturnQty"));
                                             double price12 = Double.parseDouble(object.optString("Price"));
                                             double nettotal12 = qty12 * price12;
-                                            invoiceListModel.setTotal("-"+String.valueOf(nettotal12));
+                                            invoiceListModel.setTotal("-" + String.valueOf(nettotal12));
                                             invoiceListModel.setPricevalue(String.valueOf(price12));
 
                                             invoiceListModel.setUomCode(object.optString("UOMCode"));
@@ -2691,16 +2716,16 @@ public class CartActivity extends AppCompatActivity {
                             invoiceHeaderDetails.add(model);
                         }
                         // pDialog.dismiss();
-                        sentPrintData("Invoice",copy);
-                       // validatePrinterConfiguration("Invoice",copy);
-                    }catch (Exception e){
+                        sentPrintData("Invoice", copy);
+                        // validatePrinterConfiguration("Invoice",copy);
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             // Do something when error occurred
             //pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
-        }){
+            Log.w("Error_throwing:", error.toString());
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -2715,10 +2740,12 @@ public class CartActivity extends AppCompatActivity {
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -2729,8 +2756,8 @@ public class CartActivity extends AppCompatActivity {
     }
 
 
-    public void showAlertDialog(){
-        android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(CartActivity.this);
+    public void showAlertDialog() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(CartActivity.this);
         builder.setCancelable(false);
         builder.setTitle("Warning..!");
         builder.setMessage("Customer Information is not valid,Please try again..");
@@ -2743,37 +2770,37 @@ public class CartActivity extends AppCompatActivity {
                 dialogInterface.dismiss();
             }
         });
-        android.app.AlertDialog alertDialog=builder.create();
+        android.app.AlertDialog alertDialog = builder.create();
         alertDialog.show();
         //  getActivity().getWindow().setBackgroundDrawableResource(R.color.primaryDark);
     }
 
 
-    public void getSalesOrderDetails(String soNumber,int copy) throws JSONException {
+    public void getSalesOrderDetails(String soNumber, int copy) throws JSONException {
         // Initialize a new RequestQueue instance
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("CompanyCode",companyCode);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("CompanyCode", companyCode);
         jsonObject.put("SoNo", soNumber);
-        jsonObject.put("LocationCode",locationCode);
+        jsonObject.put("LocationCode", locationCode);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"SalesApi/GetSOByCode?Requestdata="+jsonObject.toString();
+        String url = Utils.getBaseUrl(this) + "SalesApi/GetSOByCode?Requestdata=" + jsonObject.toString();
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_url:", url);
 
-        printAlertDialog=new ProgressDialog(CartActivity.this);
+        printAlertDialog = new ProgressDialog(CartActivity.this);
         printAlertDialog.setMessage("Generating SalesOrder Printing Data...");
         printAlertDialog.show();
-        salesOrderHeaderDetails =new ArrayList<>();
-        salesOrderList =new ArrayList<>();
+        salesOrderHeaderDetails = new ArrayList<>();
+        salesOrderList = new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
                 null,
                 response -> {
-                    try{
-                        Log.w("Sales_Details:",response.toString());
-                        if (response.length()>0){
-                            SalesOrderPrintPreviewModel model=new SalesOrderPrintPreviewModel();
+                    try {
+                        Log.w("Sales_Details:", response.toString());
+                        if (response.length() > 0) {
+                            SalesOrderPrintPreviewModel model = new SalesOrderPrintPreviewModel();
                             model.setSoNumber(response.optString("SoNo"));
                             model.setSoDate(response.optString("SoDateString"));
                             model.setCustomerCode(response.optString("CustomerCode"));
@@ -2788,23 +2815,23 @@ public class CartActivity extends AppCompatActivity {
                             model.setOutStandingAmount(response.optString("BalanceAmount"));
                             model.setBillDiscount(response.optString("BillDIscount"));
                             model.setItemDiscount(response.optString("ItemDiscount"));
-                            JSONArray products=response.getJSONArray("SoDetails");
-                            for (int i=0;i<products.length();i++) {
+                            JSONArray products = response.getJSONArray("SoDetails");
+                            for (int i = 0; i < products.length(); i++) {
                                 JSONObject object = products.getJSONObject(i);
-                                if (Double.parseDouble(object.optString("LQty"))>0){
-                                    SalesOrderPrintPreviewModel.SalesList salesListModel =new SalesOrderPrintPreviewModel.SalesList();
+                                if (Double.parseDouble(object.optString("LQty")) > 0) {
+                                    SalesOrderPrintPreviewModel.SalesList salesListModel = new SalesOrderPrintPreviewModel.SalesList();
 
                                     salesListModel.setProductCode(object.optString("ProductCode"));
-                                    salesListModel.setDescription( object.optString("ProductName"));
+                                    salesListModel.setDescription(object.optString("ProductName"));
                                     salesListModel.setLqty(object.optString("LQty"));
                                     salesListModel.setCqty(object.optString("CQty"));
                                     salesListModel.setNetQty(object.optString("LQty"));
                                     salesListModel.setCartonPrice(object.optString("CartonPrice"));
                                     salesListModel.setUnitPrice(object.optString("Price"));
-                                    double qty=Double.parseDouble(object.optString("LQty"));
-                                    double price=Double.parseDouble(object.optString("Price"));
+                                    double qty = Double.parseDouble(object.optString("LQty"));
+                                    double price = Double.parseDouble(object.optString("Price"));
 
-                                    double nettotal=qty * price;
+                                    double nettotal = qty * price;
                                     salesListModel.setTotal(String.valueOf(nettotal));
                                     salesListModel.setPricevalue(String.valueOf(price));
 
@@ -2837,7 +2864,7 @@ public class CartActivity extends AppCompatActivity {
                                         salesOrderList.add(salesListModel);
                                     }
 
-                                    if (!object.optString("ReturnQty").isEmpty() && !object.optString("ReturnQty").equals("null") && Double.parseDouble(object.optString("ReturnQty")) > 0)  {
+                                    if (!object.optString("ReturnQty").isEmpty() && !object.optString("ReturnQty").equals("null") && Double.parseDouble(object.optString("ReturnQty")) > 0) {
                                         salesListModel = new SalesOrderPrintPreviewModel.SalesList();
                                         salesListModel.setProductCode(object.optString("ProductCode"));
                                         salesListModel.setDescription(object.optString("ProductName"));
@@ -2860,7 +2887,7 @@ public class CartActivity extends AppCompatActivity {
                                         salesOrderList.add(salesListModel);
                                     }
 
-                                }else {
+                                } else {
                                     if (Double.parseDouble(object.optString("CQty")) > 0) {
                                         SalesOrderPrintPreviewModel.SalesList salesListModel = new SalesOrderPrintPreviewModel.SalesList();
                                         salesListModel.setProductCode(object.optString("ProductCode"));
@@ -2884,13 +2911,13 @@ public class CartActivity extends AppCompatActivity {
                                         salesOrderList.add(salesListModel);
 
 
-                                        if (!object.optString("ReturnQty").isEmpty() && !object.optString("ReturnQty").equals("null") && Double.parseDouble(object.optString("ReturnQty")) > 0)  {
+                                        if (!object.optString("ReturnQty").isEmpty() && !object.optString("ReturnQty").equals("null") && Double.parseDouble(object.optString("ReturnQty")) > 0) {
                                             salesListModel = new SalesOrderPrintPreviewModel.SalesList();
                                             salesListModel.setProductCode(object.optString("ProductCode"));
                                             salesListModel.setDescription(object.optString("ProductName"));
                                             salesListModel.setLqty(object.optString("LQty"));
                                             salesListModel.setCqty(object.optString("CQty"));
-                                            salesListModel.setNetQty("-"+object.optString("ReturnQty"));
+                                            salesListModel.setNetQty("-" + object.optString("ReturnQty"));
 
                                             double qty12 = Double.parseDouble(object.optString("ReturnQty"));
                                             double price12 = Double.parseDouble(object.optString("Price"));
@@ -2914,15 +2941,15 @@ public class CartActivity extends AppCompatActivity {
                             model.setSalesList(salesOrderList);
                             salesOrderHeaderDetails.add(model);
                         }
-                       sentPrintData("SalesOrder",copy);
-                       // validatePrinterConfiguration("SalesOrder",copy);
-                    }catch (Exception e){
+                        sentPrintData("SalesOrder", copy);
+                        // validatePrinterConfiguration("SalesOrder",copy);
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }, error -> {
             // Do something when error occurred
-            Log.w("Error_throwing:",error.toString());
-        }){
+            Log.w("Error_throwing:", error.toString());
+        }) {
             @Override
             public Map<String, String> getHeaders() {
                 HashMap<String, String> params = new HashMap<>();
@@ -2937,10 +2964,12 @@ public class CartActivity extends AppCompatActivity {
             public int getCurrentTimeout() {
                 return 50000;
             }
+
             @Override
             public int getCurrentRetryCount() {
                 return 50000;
             }
+
             @Override
             public void retry(VolleyError error) throws VolleyError {
 
@@ -2950,87 +2979,88 @@ public class CartActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
-    public static void closeAlert(){
+    public static void closeAlert() {
         printAlertDialog.dismiss();
     }
 
-    public void redirectActivity(){
-        if (saveAction.equals("SalesOrder") || saveAction.equals("SalesEdit")){
-            Intent intent=new Intent(CartActivity.this, SalesOrderListActivity.class);
+    public void redirectActivity() {
+        if (saveAction.equals("SalesOrder") || saveAction.equals("SalesEdit")) {
+            Intent intent = new Intent(CartActivity.this, SalesOrderListActivity.class);
             startActivity(intent);
             finish();
-        }else {
-            Log.w("cartSavEntr2","");
-            Intent intent=new Intent(CartActivity.this, NewInvoiceListActivity.class);
+        } else {
+            Log.w("cartSavEntr2", "");
+            Intent intent = new Intent(CartActivity.this, NewInvoiceListActivity.class);
             startActivity(intent);
             finish();
         }
     }
 
-    public void resetCustomerDetails(){
-        SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
-        SharedPreferences.Editor customerPredEdit= sharedPreferences.edit();
+    public void resetCustomerDetails() {
+        SharedPreferences sharedPreferences = getSharedPreferences("customerPref", MODE_PRIVATE);
+        SharedPreferences.Editor customerPredEdit = sharedPreferences.edit();
         customerPredEdit.putString("customerId", "");
         customerPredEdit.apply();
     }
+
     private void sentPrintData(String saveAction, int copy) throws IOException {
-        if (saveAction.equals("SalesOrder") || saveAction.equals("SalesEdit")){
-            if (printerType.equals("TSC Printer")){
-                Toast.makeText(getApplicationContext(),"TSC printer in progress",Toast.LENGTH_SHORT).show();
+        if (saveAction.equals("SalesOrder") || saveAction.equals("SalesEdit")) {
+            if (printerType.equals("TSC Printer")) {
+                Toast.makeText(getApplicationContext(), "TSC printer in progress", Toast.LENGTH_SHORT).show();
                 // TSCPrinter tscPrinter=new TSCPrinter(SalesOrderPrintPreview.this,printerMacId);
                 //  tscPrinter.printInvoice(invoiceHeaderDetails,invoiceList);
-                TSCPrinter printer=new TSCPrinter(CartActivity.this,printerMacId,"SalesOrder");
-                printer.printSalesOrder(copy,salesOrderHeaderDetails,salesOrderList);
+                TSCPrinter printer = new TSCPrinter(CartActivity.this, printerMacId, "SalesOrder");
+                printer.printSalesOrder(copy, salesOrderHeaderDetails, salesOrderList);
                 printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
                     @Override
                     public void onCompleted() {
                         Utils.setSignature("");
-                        Toast.makeText(getApplicationContext(),"SalesOrder printed successfully!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "SalesOrder printed successfully!", Toast.LENGTH_SHORT).show();
                     }
                 });
-            }else if (printerType.equals("Zebra Printer")){
-                ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(CartActivity.this,printerMacId);
-                zebraPrinterActivity.printSalesOrder(copy,salesOrderHeaderDetails,salesOrderList);
+            } else if (printerType.equals("Zebra Printer")) {
+                ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(CartActivity.this, printerMacId);
+                zebraPrinterActivity.printSalesOrder(copy, salesOrderHeaderDetails, salesOrderList);
             }
-        }else {
-            if (printerType.equals("TSC Printer")){
+        } else {
+            if (printerType.equals("TSC Printer")) {
                 //Toast.makeText(getApplicationContext(),"TSC printer in progress",Toast.LENGTH_SHORT).show();
                 // TSCPrinter tscPrinter=new TSCPrinter(SalesOrderPrintPreview.this,printerMacId);
                 //  tscPrinter.printInvoice(invoiceHeaderDetails,invoiceList);
-                TSCPrinter printer=new TSCPrinter(CartActivity.this,printerMacId);
-                printer.printInvoice(copy,invoiceHeaderDetails,invoicePrintList,"true");
+                TSCPrinter printer = new TSCPrinter(CartActivity.this, printerMacId);
+                printer.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "true");
                 printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
                     @Override
                     public void onCompleted() {
                         Utils.setSignature("");
-                        Toast.makeText(getApplicationContext(),"Invoice printed successfully!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Invoice printed successfully!", Toast.LENGTH_SHORT).show();
                     }
                 });
-            }else if (printerType.equals("Zebra Printer")){
-                if (isInvoicePrint && isDeliveryPrint){
-                    ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(CartActivity.this,printerMacId);
-                    zebraPrinterActivity.printInvoice(copy,invoiceHeaderDetails,invoicePrintList,"true");
+            } else if (printerType.equals("Zebra Printer")) {
+                if (isInvoicePrint && isDeliveryPrint) {
+                    ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(CartActivity.this, printerMacId);
+                    zebraPrinterActivity.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "true");
                     zebraPrinterActivity.setOnCompletionListener(() -> {
-                        ZebraPrinterActivity zebraPrinterActivity1=new ZebraPrinterActivity(CartActivity.this,printerMacId);
-                        zebraPrinterActivity1.printDeliveryOrder(copy,invoiceHeaderDetails,invoicePrintList);
+                        ZebraPrinterActivity zebraPrinterActivity1 = new ZebraPrinterActivity(CartActivity.this, printerMacId);
+                        zebraPrinterActivity1.printDeliveryOrder(copy, invoiceHeaderDetails, invoicePrintList);
                         zebraPrinterActivity1.setOnCompletionListener(() -> {
-                            Toast.makeText(CartActivity.this,"Printed Successfully",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CartActivity.this, "Printed Successfully", Toast.LENGTH_SHORT).show();
                             redirectActivity();
                         });
                     });
                     // zebraPrinterActivity.printDeliveryOrder(copy,invoiceHeaderDetails,invoicePrintList);
-                }else if (isInvoicePrint){
-                    ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(CartActivity.this,printerMacId);
-                    zebraPrinterActivity.printInvoice(copy,invoiceHeaderDetails,invoicePrintList,"false");
+                } else if (isInvoicePrint) {
+                    ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(CartActivity.this, printerMacId);
+                    zebraPrinterActivity.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
                     zebraPrinterActivity.setOnCompletionListener(() -> {
-                        Toast.makeText(CartActivity.this,"Printed Successfully",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CartActivity.this, "Printed Successfully", Toast.LENGTH_SHORT).show();
                         redirectActivity();
                     });
-                }else if (isDeliveryPrint){
-                    ZebraPrinterActivity zebraPrinterActivity=new ZebraPrinterActivity(CartActivity.this,printerMacId);
-                    zebraPrinterActivity.printDeliveryOrder(copy,invoiceHeaderDetails,invoicePrintList);
+                } else if (isDeliveryPrint) {
+                    ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(CartActivity.this, printerMacId);
+                    zebraPrinterActivity.printDeliveryOrder(copy, invoiceHeaderDetails, invoicePrintList);
                     zebraPrinterActivity.setOnCompletionListener(() -> {
-                        Toast.makeText(CartActivity.this,"Printed Successfully",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CartActivity.this, "Printed Successfully", Toast.LENGTH_SHORT).show();
                         redirectActivity();
                     });
                 }
@@ -3111,7 +3141,7 @@ public class CartActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (locationTrack!=null){
+        if (locationTrack != null) {
             locationTrack.stopListener();
         }
     }

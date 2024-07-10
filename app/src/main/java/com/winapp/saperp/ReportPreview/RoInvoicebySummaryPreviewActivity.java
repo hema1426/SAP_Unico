@@ -110,6 +110,8 @@ public class RoInvoicebySummaryPreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ro_invoicebysummary_preview);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Invoice By Summary");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);
         companyAddress2Text =findViewById (R.id.company_addr2);

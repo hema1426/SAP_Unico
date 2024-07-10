@@ -96,6 +96,7 @@ public class TransferPreviewPrintActivity extends AppCompatActivity {
         company_address3 = user.get(SessionManager.KEY_ADDRESS3);
         company_phone=user.get(SessionManager.KEY_PHONE_NO);
         company_gst=user.get(SessionManager.KEY_COMPANY_REG_NO);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType = sharedPreferences.getString("printer_type", "");

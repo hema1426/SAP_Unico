@@ -464,7 +464,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             setStatusList(status.get());
 
             if (title.equals("Receipt Details") || title.equals("Receipt Summary") || title.equals("Stock Summary")
-                    || title.equals("Bad Stock Report") || title.equals("Customer Outstanding Period")){
+                    || title.equals("Bad Stock Report") ){
                 stattusLayout.setVisibility(View.GONE);
             }else {
                 stattusLayout.setVisibility(View.VISIBLE);
@@ -484,6 +484,10 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
 
             if (title.equals("Customer Outstanding Statement (as on Date)")){
                 fromDate.setVisibility(View.GONE);
+                stattusLayout.setVisibility(View.GONE);
+                userListLayout.setVisibility(View.GONE);
+            }
+            if (title.equals("Customer Outstanding Period")){
                 stattusLayout.setVisibility(View.GONE);
                 userListLayout.setVisibility(View.GONE);
             }
@@ -638,7 +642,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                     progressDialog.setMessage("Printing in Progress...!");
                                     progressDialog.show();
                                     if (isPrintEnable){
-                                        try {
+                                       try {
                                             getCustomerStatementDate(customer_id, customername[0].toString(),
                                                     "", toDateString, "O",
                                                     Integer.parseInt(noOfCopyText.getText().toString()));

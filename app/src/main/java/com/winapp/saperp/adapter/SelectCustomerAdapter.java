@@ -27,6 +27,7 @@ import com.cete.dynamicpdf.C;
 import com.winapp.saperp.R;
 import com.winapp.saperp.activity.AddInvoiceActivity;
 import com.winapp.saperp.activity.CustomerListActivity;
+import com.winapp.saperp.activity.DeliveryOrderListActivity;
 import com.winapp.saperp.activity.InvoiceListActivityCopy;
 import com.winapp.saperp.activity.NewInvoiceListActivity;
 import com.winapp.saperp.activity.OrderHistoryActivity;
@@ -96,6 +97,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
         if (context instanceof SalesOrderListActivity
                 || context instanceof InvoiceListActivityCopy
                 || context instanceof NewInvoiceListActivity
+                || context instanceof DeliveryOrderListActivity
                 || context instanceof SalesReturnActivity
                 || context instanceof AddInvoiceActivity) {
             viewHolder.customerCard.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +111,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
         if (context instanceof SalesOrderListActivity
                 || context instanceof InvoiceListActivityCopy
                 || context instanceof NewInvoiceListActivity
+                || context instanceof DeliveryOrderListActivity
                 || context instanceof AddInvoiceActivity
                 || context instanceof SalesReturnActivity){
             viewHolder.customerLayout.setOnClickListener(new View.OnClickListener() {

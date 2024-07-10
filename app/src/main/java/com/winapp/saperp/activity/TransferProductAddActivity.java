@@ -233,6 +233,7 @@ public class TransferProductAddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transfer_product_add);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         signatureString="";
 

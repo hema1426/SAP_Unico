@@ -102,6 +102,8 @@ public class StockRequestListActivity extends NavigationActivity implements View
         //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_stock_request_list, contentFrameLayout);
         getSupportActionBar().setTitle("Stock Request List");
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         dbHelper=new DBHelper(this);
         stockRequestList =findViewById(R.id.transferProductList);
         transferInButton=findViewById(R.id.transfer_in);

@@ -63,6 +63,8 @@ public class RoProductStockPreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ro_product_stock);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Products Stock");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);
         companyAddress2Text =findViewById (R.id.company_addr2);

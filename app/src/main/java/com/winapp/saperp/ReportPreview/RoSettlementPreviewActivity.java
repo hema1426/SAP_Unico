@@ -112,6 +112,7 @@ public class RoSettlementPreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ro_settlement_preview);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Settlement Report");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         setle_fromdatel = findViewById(R.id.setle_fromdate);
         setle_todatel = findViewById(R.id.setle_todate);

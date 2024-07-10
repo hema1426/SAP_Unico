@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,8 +47,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -77,6 +82,10 @@ public class SettlementListActivity extends NavigationActivity implements View.O
     private boolean isMove=false;
     private LinearLayout emptyLayout;
     private String username;
+    private String savePrint = "false";
+    String saveSettlemtNo = "" ;
+    private int REQUEST_SETTLEMENT= 33;
+
     private SessionManager session;
     private HashMap<String ,String> user;
     private ArrayList<CurrencyModel> currencyList;
@@ -87,6 +96,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
     private ArrayList<ExpenseModel> expenseList;
     private SharedPreferences sharedPreferences;
     private String locationCode;
+    private static String currentDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +126,10 @@ public class SettlementListActivity extends NavigationActivity implements View.O
         user=session.getUserDetails();
         username=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
+
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
+        currentDate = df.format(c);
 
         editLayout.setOnClickListener(this);
         printPreviewButton.setOnClickListener(this);
@@ -393,6 +407,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
                 String requiredValue = data.getStringExtra("key");
                 assert requiredValue != null;
                 if (requiredValue.equals("Refresh")){
+                    savePrint = "true" ;
                     try {
                         JSONObject jsonObject=new JSONObject();
                         jsonObject.put("User",username);
@@ -401,7 +416,10 @@ public class SettlementListActivity extends NavigationActivity implements View.O
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    saveSettlemtNo = data.getStringExtra("settlemt_PrintNo");
+                    getSettlementDetails(saveSettlemtNo);
                 }
+
             }
         } catch (Exception ex) {
             //Toast.makeText(Activity.this, ex.toString(), oast.LENGTH_SHORT).show();
@@ -421,6 +439,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
         jsonObject.put("SettlementNo",editSettlementNumber);
         jsonObject.put("LocationCode",locationCode);
         String url= Utils.getBaseUrl(this) +"SettlementDetails";
+
         // Initialize a new JsonArrayRequest instance
         ProgressDialog dialog=new ProgressDialog(this);
         dialog.setMessage("Getting Settlement Details...");
@@ -470,7 +489,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
                         }
                         if (currencyList.size()>0){
                             hideOption();
-                            printSettlement();
+                            printSettlement(savePrint);
                         }else {
                             Toast.makeText(getApplicationContext(),"No Data Found...",Toast.LENGTH_SHORT).show();
                         }
@@ -509,7 +528,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void printSettlement(){
+    public void printSettlement(String savePrint){
         if (Utils.validatePrinterConfiguration(this,printerType,printerMacId)) {
 
         if (printerType.equals("Zebra Printer")) {
@@ -523,16 +542,33 @@ public class SettlementListActivity extends NavigationActivity implements View.O
             );
         }else if (printerType.equals("TSC Printer")){
             TSCPrinter printer=new TSCPrinter(this,printerMacId,"Settlement");
-            try {
-                printer.setSettlementPrintSave(1,
-                        editSettlementNumber.toString(),
-                        editSettlementDate,
-                        editLocationCode,
-                        editSettlementUser,
-                        currencyList,
-                        expenseList);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (savePrint.equals("true")){
+                try {
+                    printer.setSettlementPrintSave(1,
+                            saveSettlemtNo,
+                            currentDate,
+                            locationCode,
+                            username,
+                            currencyList,
+                            expenseList);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            else{
+                try {
+                    printer.setSettlementPrintSave(1,
+                            editSettlementNumber.toString(),
+                            editSettlementDate,
+                            editLocationCode,
+                            editSettlementUser,
+                            currencyList,
+                            expenseList);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
 

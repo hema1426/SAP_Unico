@@ -91,6 +91,8 @@ public class ReceiptDetailPreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_receipt_detail_preview);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Receipt Details Report");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);
         companyAddress2Text =findViewById (R.id.company_addr2);

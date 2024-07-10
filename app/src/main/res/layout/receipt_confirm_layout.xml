@@ -33,6 +33,37 @@
         android:text="Are you Sure want to Save Receipt ?"
         android:layout_height="wrap_content"/>
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:id="@+id/attachement_layoutInv"
+        android:layout_weight="1"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="10dp"
+            android:padding="5dp"
+            android:textColor="#212121"
+            android:text="Attachment File"
+            android:textSize="12sp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_marginRight="10dp"
+            android:padding="10dp"
+            android:drawablePadding="10dp"
+            android:text="Select Image"
+            android:id="@+id/select_imagea"
+            android:drawableLeft="@drawable/ic_baseline_camera_enhance_24"
+            android:layout_height="40dp"
+            android:background="#F3f3f3" />
+
+    </LinearLayout>
     <CheckBox
         android:layout_width="match_parent"
         android:text="Receipt Print"

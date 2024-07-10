@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Process
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +37,8 @@ open class NavigationActivity : AppCompatActivity() {
     var isCheckedInvoice1 = false
     var isCheckedCustomer1 = false
     var isCheckedSalesReturn1 = false
+    var locationCode: String? = null
+
     @JvmField
     var user: HashMap<String, String>? = null
     private var lastBackPressTime: Long = 0
@@ -58,6 +61,7 @@ open class NavigationActivity : AppCompatActivity() {
         helper = DBHelper(this)
         session = SessionManager(this)
         user = session!!.userDetails
+
         actionBarDrawerToggle = ActionBarDrawerToggle(
             this,
             drawerLayout,
@@ -75,6 +79,8 @@ open class NavigationActivity : AppCompatActivity() {
             // set user name and email
             userName.text = user!!.get(SessionManager.KEY_USER_NAME)
             companyName.text = user!!.get(SessionManager.KEY_COMPANY_NAME)
+            locationCode = user!![SessionManager.KEY_LOCATION_CODE]
+
         } catch (ex: Exception) {
         }
         val userRolls = helper!!.userPermissions
@@ -210,10 +216,13 @@ open class NavigationActivity : AppCompatActivity() {
                 drawerLayout!!.closeDrawers()
                 return@OnNavigationItemSelectedListener true
             } else if (itemId == R.id.navigation_item_invoice) {
-                if (isCheckedInvoice1) {
+                if (isCheckedInvoice1 && (locationCode != null && !locationCode!!.isEmpty()) ) {
                     val intent: Intent //setFragment(new TableListFragment());
                     intent = Intent(this@NavigationActivity, NewInvoiceListActivity::class.java)
                     startActivity(intent)
+                }
+                else{
+                    Toast.makeText(this, "Check Location and Permission", Toast.LENGTH_SHORT).show()
                 }
                 // mCurrentSelectedPosition = 3;
                 drawerLayout!!.closeDrawers()
@@ -226,10 +235,13 @@ open class NavigationActivity : AppCompatActivity() {
                 drawerLayout!!.closeDrawers()
                 return@OnNavigationItemSelectedListener true
             } else if (itemId == R.id.navigation_item_salesorder) {
-                if (isCheckedSO1) {
+                if (isCheckedSO1 && (locationCode != null && !locationCode!!.isEmpty())) {
                     val intent: Intent
                     intent = Intent(this@NavigationActivity, SalesOrderListActivity::class.java)
                     startActivity(intent)
+                }
+                else{
+                    Toast.makeText(this, "Check Location and Permission", Toast.LENGTH_SHORT).show()
                 }
                 // mCurrentSelectedPosition = 5;
                 drawerLayout!!.closeDrawers()
@@ -242,11 +254,13 @@ open class NavigationActivity : AppCompatActivity() {
                 drawerLayout!!.closeDrawers()
                 return@OnNavigationItemSelectedListener true
             } else if (itemId == R.id.navigation_item_customer) {
-                if (isCheckedCustomer1) {
+                if (isCheckedCustomer1 && (locationCode != null && !locationCode!!.isEmpty())) {
                     val intent1 = Intent(this@NavigationActivity, CustomerListActivity::class.java)
                     intent1.putExtra("from", "cus")
                     intent1.putExtra("Message", "Open")
                     startActivity(intent1)
+                }  else{
+                    Toast.makeText(this, "Check Location and Permission", Toast.LENGTH_SHORT).show()
                 }
                 //mCurrentSelectedPosition = 7;
                 drawerLayout!!.closeDrawers()
@@ -267,12 +281,14 @@ open class NavigationActivity : AppCompatActivity() {
                 drawerLayout!!.closeDrawers()
                 return@OnNavigationItemSelectedListener true
             } else if (itemId == R.id.navigation_item_sales_return) {
-                if (isCheckedSalesReturn1) {
+                if (isCheckedSalesReturn1 && (locationCode != null && !locationCode!!.isEmpty())) {
                     val intent: Intent /*  intent=new Intent(NavigationActivity.this, SalesReturnActivity.class);
                         startActivity(intent);
                         drawerLayout.closeDrawers();*/
                     intent = Intent(this@NavigationActivity, NewSalesReturnListActivity::class.java)
                     startActivity(intent)
+                }   else{
+                    Toast.makeText(this, "Check Location and Permission", Toast.LENGTH_SHORT).show()
                 }
                 drawerLayout!!.closeDrawers()
                 return@OnNavigationItemSelectedListener true

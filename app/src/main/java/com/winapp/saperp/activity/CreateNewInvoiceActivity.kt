@@ -1,15 +1,23 @@
 package com.winapp.saperp.activity
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
+import android.database.Cursor
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
@@ -39,6 +47,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
@@ -48,10 +57,22 @@ import com.android.volley.RetryPolicy
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.DexterError
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.winapp.saperp.BuildConfig
 import com.winapp.saperp.R
 import com.winapp.saperp.adapter.DuplicateInvoiceAdapter
 import com.winapp.saperp.adapter.NewProductSummaryAdapter
@@ -78,6 +99,7 @@ import com.winapp.saperp.thermalprinter.PrinterUtils
 import com.winapp.saperp.utils.BarCodeScanner
 import com.winapp.saperp.utils.CaptureSignatureView
 import com.winapp.saperp.utils.Constants
+import com.winapp.saperp.utils.FileCompressor
 import com.winapp.saperp.utils.ImageUtil
 import com.winapp.saperp.utils.LocationTrack
 import com.winapp.saperp.utils.SessionManager
@@ -90,6 +112,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
+import java.io.File
 import java.io.IOException
 import java.text.DateFormat
 import java.text.ParseException
@@ -193,6 +216,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var locationCode: String? = null
     private var stockQtyValue: TextView? = null
     private var stockLayout: LinearLayout? = null
+    private var attachmentLayInv: LinearLayout? = null
+    var selectImageInv: TextView? = null
+
     private val cqtyTW: TextWatcher? = null
     private val lqtyTW: TextWatcher? = null
     private var qtyTW: TextWatcher? = null
@@ -201,7 +227,10 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     var isAllowLowStock = false
     var isCheckedCreditLimit = false
     private var pdtStockVal: String? = "0.00"
-
+    val REQUEST_TAKE_PHOTO = 1
+    val REQUEST_GALLERY_PHOTO = 2
+    var mPhotoFile: File? = null
+    var mCompressor: FileCompressor? = null
     private var focLayout: LinearLayout? = null
     private var sortButton: FloatingActionButton? = null
     private var emptyLayout: LinearLayout? = null
@@ -271,6 +300,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
     private var salesPrintList: ArrayList<SalesList>? = null
     private val signatureLayout: LinearLayout? = null
+
     var signatureCapture: ImageView? = null
     private var creditLimitAmount = "0.00"
     private var outstandingAmount = "0.00"
@@ -328,6 +358,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         user = session!!.userDetails
         dbHelper = DBHelper(this)
         progressDialog = ProgressDialog(this)
+        mCompressor = FileCompressor(this)
 
         companyCode = user!!.get(SessionManager.KEY_COMPANY_CODE)
         companyName = user!!.get(SessionManager.KEY_COMPANY_NAME)
@@ -335,6 +366,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         locationCode = user!!.get(SessionManager.KEY_LOCATION_CODE)
 
         signatureString = ""
+
         returnLayout = findViewById(R.id.return_layout)
         showHideButton = findViewById(R.id.show_hide)
         productSummaryView = findViewById(R.id.product_summary)
@@ -378,7 +410,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         salesReturn = findViewById(R.id.sales_return)
         salesReturnText = findViewById(R.id.sales_return_text)
         minimumSellingPriceText = findViewById(R.id.minimum_selling_price)
-        barcodeText = findViewById(R.id.barcode_text)
+        barcodeText = findViewById(R.id.barcode_textInv)
+        barCodeLayl = findViewById(R.id.barCodeLay)
+
         returnQtyText = findViewById(R.id.return_qty)
         customerNameText = findViewById(R.id.customer_name_text)
         remarkText = findViewById(R.id.remarks)
@@ -426,7 +460,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
         products = ArrayList()
         productAutoComplete!!.clearFocus()
-        barcodeText!!.requestFocus()
+      //  barcodeText!!.requestFocus()
         getCurrentLocation()
 
         sharedPref_billdisc = getSharedPreferences("BillDiscPref", MODE_PRIVATE)
@@ -1184,6 +1218,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             }
         }
         damageReturnQty!!.addTextChangedListener(damageQtyTextWatcher)
+
 
         /*        damageReturnQty.addTextChangedListener(new TextWatcher() {
             @Override
@@ -2236,8 +2271,216 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         } catch (ex: Exception) {
         }
     }
+    private fun dispatchTakePictureIntent() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(packageManager) != null) {
+            // Create the File where the photo should go
+            var photoFile: File? = null
+            try {
+                photoFile = createImageFile()
+            } catch (ex: IOException) {
+                ex.printStackTrace()
+                // Error occurred while creating the File
+            }
+            if (photoFile != null) {
+                val photoURI = FileProvider.getUriForFile(
+                    this,
+                    BuildConfig.APPLICATION_ID + ".provider",
+                    photoFile
+                )
+                mPhotoFile = photoFile
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+            }
+        }
+    }
 
+    /**
+     * Select image fro gallery
+     */
+    private fun dispatchGalleryIntent() {
+        val pickPhoto = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+        pickPhoto.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivityForResult(pickPhoto, REQUEST_GALLERY_PHOTO)
+    }
+    fun showImage() {
+        val builder = AlertDialog.Builder(this@CreateNewInvoiceActivity)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.image_view_layout, null)
+        val imageView = dialogView.findViewById<ImageView>(R.id.invoice_image)
+        Glide.with(this)
+            .load(mPhotoFile)
+            .error(R.drawable.no_image_found)
+            .listener(object : RequestListener<Drawable?> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
 
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any,
+                    target: Target<Drawable?>,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
+            }).into(imageView)
+        builder.setCancelable(false)
+        builder.setTitle("Invoice Image")
+        builder.setView(dialogView)
+        builder.setNeutralButton(
+            "NEW IMAGE"
+        ) { dialogInterface, i -> selectImage() }
+        builder.setPositiveButton(
+            "OK"
+        ) { dialog, which ->
+            selectImageInv!!.setTag("view_image")
+            selectImageInv!!.setText("View Image")
+            dialog.dismiss()
+        }.create().show()
+    }
+
+    fun selectImage() {
+        val items = arrayOf<CharSequence>(
+            "Take Photo",  /* "Choose from Library",*/
+            "Cancel"
+        )
+        val builder = AlertDialog.Builder(this@CreateNewInvoiceActivity)
+        builder.setItems(
+            items
+        ) { dialog: DialogInterface, item: Int ->
+            if (items[item] == "Take Photo") {
+                requestStoragePermission(true)
+            } //else if (items[item].equals("Choose from Library")) {
+            else if (items[item] == "Cancel") {
+                dialog.dismiss()
+            }
+        }
+        builder.show()
+    }
+
+    /**
+     * Requesting multiple permissions (storage and camera) at once
+     * This uses multiple permission model from dexter
+     * On permanent denial opens settings dialog
+     */
+    private fun requestStoragePermission(isCamera: Boolean) {
+        var permission = listOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permission = listOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.CAMERA
+            )
+        }
+        Dexter.withContext(this)
+            .withPermissions(
+                permission
+            )
+            .withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                    // check if all permissions are granted
+                    if (report.areAllPermissionsGranted()) {
+                        if (isCamera) {
+                            dispatchTakePictureIntent()
+                        } else {
+                            dispatchGalleryIntent()
+                        }
+                    }
+                    // check for permanent denial of any permission
+                    if (report.isAnyPermissionPermanentlyDenied) {
+                        // show alert dialog navigating to Settings
+                        showSettingsDialog()
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: List<PermissionRequest>,
+                    token: PermissionToken
+                ) {
+                    token.continuePermissionRequest()
+                }
+            })
+            .withErrorListener { error: DexterError? ->
+                Toast.makeText(applicationContext, "Error occurred! ", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            .onSameThread()
+            .check()
+    }
+
+    /**
+     * Showing Alert Dialog with Settings option
+     * Navigates user to app settings
+     * NOTE: Keep proper title and message depending on your app
+     */
+    private fun showSettingsDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Need Permissions")
+        builder.setMessage(
+            "This app needs permission to use this feature. You can grant them in app settings."
+        )
+        builder.setPositiveButton("GOTO SETTINGS") { dialog: DialogInterface, which: Int ->
+            dialog.cancel()
+            openSettings()
+        }
+        builder.setNegativeButton(
+            "Cancel"
+        ) { dialog: DialogInterface, which: Int -> dialog.cancel() }
+        builder.show()
+    }
+
+    // navigating user to app settings
+    private fun openSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri = Uri.fromParts("package", packageName, null)
+        intent.setData(uri)
+        startActivityForResult(intent, 101)
+    }
+
+    /**
+     * Create file with current timestamp name
+     *
+     * @throws IOException
+     */
+    @Throws(IOException::class)
+    private fun createImageFile(): File? {
+        // Create an image file name
+        val timeStamp =
+            SimpleDateFormat("yyyyMMddHHmmss").format(Date())
+        val mFileName = "JPEG_" + timeStamp + "_"
+        val storageDir =
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(mFileName, ".jpg", storageDir)
+    }
+
+    /**
+     * Get real file path from URI
+     */
+    fun getRealPathFromUri(contentUri: Uri?): String? {
+        var cursor: Cursor? = null
+        return try {
+            val proj = arrayOf(MediaStore.Images.Media.DATA)
+            cursor = contentResolver.query(contentUri!!, proj, null, null, null)
+            assert(cursor != null)
+            val column_index = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            cursor.moveToFirst()
+            cursor.getString(column_index)
+        } finally {
+            cursor?.close()
+        }
+    }
     fun clearFields() {
         subTotalValue!!.text = "0.0"
         taxValueText!!.text = "0.00"
@@ -2768,7 +3011,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     fun getSettlementDateApi() {
         // Initialize a new RequestQueue instance
         val requestQueue = Volley.newRequestQueue(this)
-        val url = Utils.getBaseUrl(this) + "ItemUOMDetails"
+        val url = Utils.getBaseUrl(this) + "settlementByDate"
         // Initialize a new JsonArrayRequest instance
         val jsonObject = JSONObject()
         try {
@@ -3316,9 +3559,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             rootJsonObject.put("invoiceType", "M")
             rootJsonObject.put("companyCode", companyCode)
             rootJsonObject.put("locationCode", locationCode)
-            rootJsonObject.put("signature", signatureString)
             rootJsonObject.put("latitude", current_latitude)
             rootJsonObject.put("longitude", current_longitude)
+            rootJsonObject.put("CurrentAddress", currentAddressl)
+            rootJsonObject.put("image", imageString)
+            rootJsonObject.put("signature", signatureString)
 
             // Sales Details Add to the Objects
             val localCart = dbHelper!!.allInvoiceProducts
@@ -3426,6 +3671,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         setSummaryTotal()
 
         productName_bottomEd!!.setText("")
+        productName_bottomEd!!.requestFocus()
+        openKeyborard(productName_bottomEd!!)
+
         selectProductAdapter!!.notifyDataSetChanged()
         if (behavior!!.state == BottomSheetBehavior.STATE_COLLAPSED) {
             behavior!!.setState(BottomSheetBehavior.STATE_EXPANDED)
@@ -3658,12 +3906,44 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             if (requestCode == RESULT_CODE) {
-                val barcodeText = data!!.extras!!.getString("Contents")
-                Log.w("BarcodeTextInv:", barcodeText!!)
+                barCodeLayl!!.visibility = View.VISIBLE
+                val barcodeTxt = data!!.extras!!.getString("Contents")
+                barcodeText!!.setText(barcodeTxt)
+                Log.w("BarcodeTextInv:", barcodeTxt!!)
                 val mp = MediaPlayer.create(this, R.raw.beep) // sound is inside res/raw/mysound
                 mp.start()
-                scannedBarcode = barcodeText
-                searchAndSendActivity(barcodeText)
+                scannedBarcode = barcodeTxt
+                searchAndSendActivity(barcodeTxt)
+            } else if (requestCode == REQUEST_TAKE_PHOTO) {
+                try {
+                    mPhotoFile = mCompressor!!.compressToFile(mPhotoFile)
+                    imageString = ImageUtil.getBase64StringImage(mPhotoFile)
+                    //  Log.w("GivenImage1:",imageString);
+                    Utils.w("GivenImage1Inv", imageString)
+                    showImage()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+
+
+                /* Glide.with(MainActivity.this)
+                        .load(mPhotoFile)
+                        .apply(new RequestOptions().centerCrop()
+                                .circleCrop()
+                                .placeholder(R.drawable.profile_pic_place_holder))
+                        .into(imageViewProfilePic);*/
+            } else if (requestCode == REQUEST_GALLERY_PHOTO) {
+                val selectedImage = data!!.data
+                try {
+                    mPhotoFile =
+                        mCompressor!!.compressToFile(File(getRealPathFromUri(selectedImage)))
+                    selectImageInv!!.setText(selectedImage.toString())
+                    imageString = ImageUtil.getBase64StringImage(mPhotoFile)
+                    // Log.w("GivenImage2:",imageString);
+                    Utils.w("GivenImage2Inv", imageString)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
             }
         }
     }
@@ -4144,7 +4424,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     }
 
     fun showSaveAlert() {
-        try {
+       // try {
             // create an alert builder
             val builder = AlertDialog.Builder(this@CreateNewInvoiceActivity)
             // set the custom layout
@@ -4156,6 +4436,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             cancelButton = customLayout.findViewById(R.id.btn_cancel)
             invoicePrintCheck = customLayout.findViewById(R.id.invoice_print_check)
             invoiceprintDOcheck =  customLayout.findViewById(R.id.invoice_print_DO_check)
+            attachmentLayInv = customLayout.findViewById(R.id.attachement_layoutInv)
+            selectImageInv = customLayout.findViewById(R.id.select_imageInv)
+
             saveMessage = customLayout.findViewById(R.id.save_message)
             saveTitle = customLayout.findViewById(R.id.save_title)
             signatureCapture = customLayout.findViewById(R.id.signature_capture)
@@ -4164,12 +4447,27 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             val copyMinus = customLayout.findViewById<Button>(R.id.decrease)
             val signatureButton = customLayout.findViewById<Button>(R.id.btn_signature)
             val copyLayout = customLayout.findViewById<LinearLayout>(R.id.print_layout)
+
+            selectImageInv!!.setOnClickListener {
+                if (selectImageInv!!.getTag() == "view_image") {
+                    showImage()
+                } else {
+                    selectImage()
+                }
+            }
+
+            if (mPhotoFile != null && mPhotoFile!!.length() > 0) {
+                selectImageInv!!.setText("View Image")
+                selectImageInv!!.setTag("view_image")
+            } else {
+                selectImageInv!!.setText("Select Image")
+                selectImageInv!!.setTag("select_image")
+            }
             //invoicePrintCheck.setVisibility(View.GONE);
             if (activityFrom == "iv" || activityFrom == "ConvertInvoice" ||
                 activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
             ) {
 //                        showSaveAlert()
-                Log.w("saa","")
                 invoicePrintCheck!!.visibility = View.VISIBLE
             }
                 if (activityFrom == "so" || activityFrom == "SalesEdit") {
@@ -4310,8 +4608,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 save_btn!!.setEnabled(true)
                 alert!!.cancel()
             })
-        } catch (exception: Exception) {
-        }
+//        } catch (exception: Exception) {
+//        }
     }
 
     fun saveSalesOrder(jsonBody: JSONObject, action: String, copy: Int) {
@@ -4765,9 +5063,15 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             current_latitude = latitude.toString()
             current_longitude = longitude.toString()
             Log.w("longInv",""+longitude)
-            val currentAddress = Utils.getCompleteAddress(this@CreateNewInvoiceActivity, latitude, longitude)
-            if (currentAddress != null && !currentAddress.isEmpty()) {
-               // locationText.setText(currentAddress)
+            if(current_latitude != null && current_latitude.isNotEmpty()) {
+                val currentAddress =
+                    Utils.getCompleteAddress(this@CreateNewInvoiceActivity, latitude, longitude)
+                if (currentAddress != null && !currentAddress.isEmpty()) {
+                    currentAddressl = currentAddress
+                    Log.w("longAddrInv", "" + currentAddressl)
+
+                    // locationText.setText(currentAddress)
+                }
             }
         } else {
             // locationTrack.showSettingsAlert();
@@ -5463,9 +5767,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             rootJsonObject.put("invoiceType", "M")
             rootJsonObject.put("companyCode", companyCode)
             rootJsonObject.put("locationCode", locationCode)
-            rootJsonObject.put("signature", signatureString)
           rootJsonObject.put("latitude", current_latitude)
           rootJsonObject.put("longitude", current_longitude)
+          rootJsonObject.put("CurrentAddress", currentAddressl)
+          rootJsonObject.put("image", imageString)
+          rootJsonObject.put("signature", signatureString)
+
 
             // Sales Details Add to the Objects
             val localCart = dbHelper!!.allInvoiceProducts
@@ -5620,9 +5927,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             rootJsonObject.put("modifyUser", username)
             rootJsonObject.put("companyCode", companyCode)
             rootJsonObject.put("locationCode", locationCode)
-            rootJsonObject.put("signature", signatureString)
             rootJsonObject.put("latitude", current_latitude)
             rootJsonObject.put("longitude", current_longitude)
+            rootJsonObject.put("CurrentAddress", currentAddressl)
+            rootJsonObject.put("image", imageString)
+            rootJsonObject.put("signature", signatureString)
 
             // Sales Details Add to the Objects
             val localCart = dbHelper!!.allInvoiceProducts
@@ -5728,7 +6037,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         var exchangeTextWatcher: TextWatcher? = null
         var progressDialog: ProgressDialog? = null
         var stockProductView = "2"
-        var barcodeText: EditText? = null
+        var barcodeText: TextView? = null
+        var barCodeLayl: LinearLayout? = null
         var customerCode: String? = null
         var isPrintEnable = false
         var selectedBank: TextView? = null
@@ -5736,9 +6046,10 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         var currentLocationLatitude = 0.0
         var currentLocationLongitude = 0.0
         var signatureString: String? = ""
-        var imageString: String? = null
+        var imageString: String? = ""
         var current_latitude = "0.00"
         var current_longitude = "0.00"
+        var currentAddressl = " "
         var currentDate: String? = null
         var customerResponse = JSONObject()
         var locationTrack: LocationTrack? = null
@@ -5789,6 +6100,56 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             }
         }
     }
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+//        Log.i("TAGView", "" + keyCode);
+//        return true
+//    }
+    var barcode = ""
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        try {
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                val pressedKey = event.unicodeChar.toChar()
+                barcode += pressedKey
+            }
+            if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER) {
+                Toast.makeText(this, barcode.toString(), Toast.LENGTH_SHORT).show()
+                barcodeText!!.text = barcode
+                barCodeLayl!!.visibility = View.VISIBLE
+                searchAndSendActivity(barcode)
+                barcode = ""
+            }
+
+//            if (event.keyCode === KeyEvent.KEYCODE_ENTER) {
+//                if (event.action === KeyEvent.ACTION_UP) {
+//                   // setEnter()
+//                   // searchAndSendActivity(barcodeText)
+//
+//                    return true
+//                }
+//            }
+//            if (event.keyCode == KeyEvent.KEYCODE_BACK) {
+//                false
+//            }
+//            val keyaction: Int = event.getAction()
+//            if (keyaction == KeyEvent.ACTION_DOWN) {
+//                val keycode: Int = event.getKeyCode()
+//                val keyunicode: Int = event.getUnicodeChar(event.getMetaState())
+//                val character = keyunicode.toChar()
+//                if (keycode==66){
+//                    keyEnterFunction()
+//                }
+//                if (keycode==4){
+//                    hideKeyboard()
+//                }
+//                println("DEBUG MESSAGE KEY=$character KEYCODE=$keycode")
+//            }
+        }catch (ex:Exception){
+            Log.w("DispatchKeyEventError:",ex.localizedMessage.toString())
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         if (locationTrack != null) {

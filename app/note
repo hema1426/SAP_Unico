@@ -21,6 +21,16 @@ Pasword : b123456
 
 AAdhi live
 AADHIVAN 3
+
+new july
+ "Username" : "AADHIVAN 1",
+    "Password" : "b123456"
+
+    //raymang
+    username - ctc230003.1
+    Pwd - 12345
+
+
 c12345
             case R.id.action_save:  -- CreateNewInvoiceActivity  common credt limit condtion
             createInvoiceValidation() method hide

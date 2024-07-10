@@ -129,6 +129,7 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sap_ro_salessummary_preview_print);
         getSupportActionBar().setTitle("Sales Summary Report");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);

@@ -195,6 +195,8 @@ public class ShowCatagoryActivity extends AppCompatActivity implements ProductAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_catagory);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         session=new SessionManager(this);
         dbHelper=new DBHelper(this);
         user=session.getUserDetails();

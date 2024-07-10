@@ -235,7 +235,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
     private val FILTER_CUSTOMER_CODE = 134
     private var selectedUser: String? = ""
     private var usersList: ArrayList<UserListModel>? = null
-    var locationCode: String? = null
+    var locationCodeL: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val builder = VmPolicy.Builder()
@@ -268,7 +268,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         session1 = SessionManager(this)
         dbHelper = DBHelper(this)
         companyCode = user1!![SessionManager.KEY_COMPANY_CODE]
-        locationCode = user1!![SessionManager.KEY_LOCATION_CODE]
+        locationCodeL = user1!![SessionManager.KEY_LOCATION_CODE]
         customerView = findViewById(R.id.customerList)
         totalCustomers = findViewById(R.id.total_customers)
         cancelSheet = findViewById(R.id.cancel_sheet)
@@ -556,7 +556,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
                         invoice_status,
                         fromDateString,
                         toDateString,
-                        locationCode
+                        locationCodeL
                     )
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -1596,7 +1596,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         val jsonObject = JSONObject()
         // jsonObject.put("CompanyCode", companyId);
         jsonObject.put("InvoiceNo", invoiceNumber)
-        jsonObject.put("LocationCode", locationCode)
+        jsonObject.put("LocationCode", locationCodeL)
         val requestQueue = Volley.newRequestQueue(this)
         val url = Utils.getBaseUrl(this) + "APInvoiceDetails"
         // Initialize a new JsonArrayRequest instance

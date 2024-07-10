@@ -1,27 +1,38 @@
 package com.winapp.saperp.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,7 +58,18 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.winapp.saperp.BuildConfig;
 import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.PaymodeAdapter;
 import com.winapp.saperp.adapter.SalesReturnAdapter;
@@ -60,6 +82,7 @@ import com.winapp.saperp.model.DeliveryAddressModel;
 import com.winapp.saperp.model.PaymentTypeModel;
 import com.winapp.saperp.utils.CaptureSignatureView;
 import com.winapp.saperp.utils.Constants;
+import com.winapp.saperp.utils.FileCompressor;
 import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
@@ -68,9 +91,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -107,6 +134,11 @@ public class CashCollectionActivity extends AppCompatActivity {
     public static TextView selectedBank;
     private Button cancelButton;
     private CheckBox printCheckBox;
+    File mPhotoFile;
+    FileCompressor mCompressor;
+    public static String imageString = "";
+    static final int REQUEST_TAKE_PHOTO = 1;
+    static final int REQUEST_GALLERY_PHOTO = 2;
     private Button okButton;
     public static EditText amountText;
     public static EditText selectedAmount;
@@ -142,6 +174,7 @@ public class CashCollectionActivity extends AppCompatActivity {
     public Button decreaseButton;
     public Button increaseButton;
     public TextView noOfCopyText;
+    public TextView selectImagel;
     public boolean isReceiptPrint=false;
     public RecyclerView paymodeView;
     public static EditText paymentDate;
@@ -166,6 +199,7 @@ public class CashCollectionActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Receipt");
         signatureString = "";
+        imageString = "";
 
         Log.w("activity_cg",getClass().getSimpleName().toString());
 
@@ -213,6 +247,7 @@ public class CashCollectionActivity extends AppCompatActivity {
         editCheque=findViewById(R.id.edit_cheque);
         btnClear=findViewById(R.id.btn_clr);
 
+        mCompressor = new FileCompressor(this);
 
         // Remove all invoice Details to be removed before load the new data
         dbHelper.removeAllInvoices();
@@ -898,7 +933,194 @@ public class CashCollectionActivity extends AppCompatActivity {
                 }).show();
     }
 
+    private void requestStoragePermission(boolean isCamera) {
+        String[] permission = new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permission = new String[]{
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.CAMERA};
+        }
 
+        Dexter.withContext(this)
+                .withPermissions(permission)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        // check if all permissions are granted
+                        if (report.areAllPermissionsGranted()) {
+                            if (isCamera) {
+                                dispatchTakePictureIntent();
+                            } else {
+                                dispatchGalleryIntent();
+                            }
+                        }
+
+                        for(int i = 0 ; i < report.getDeniedPermissionResponses().size();i++){
+                            Log.d("cg_perm",report.getDeniedPermissionResponses()
+                                    .get(i).getPermissionName());
+                        }
+                        // check for permanent denial of any permission
+                        if (report.isAnyPermissionPermanentlyDenied()) {
+                            // show alert dialog navigating to Settings
+                            showSettingsDialog();
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions,
+                                                                   PermissionToken token) {
+                        token.continuePermissionRequest();
+                    }
+                })
+                .withErrorListener(
+                        error -> Toast.makeText(getApplicationContext(), "Error occurred! ", Toast.LENGTH_SHORT)
+                                .show())
+                .onSameThread()
+                .check();
+
+
+    }
+    /**
+     * Showing Alert Dialog with Settings option
+     * Navigates user to app settings
+     * NOTE: Keep proper title and message depending on your app
+     */
+    private void showSettingsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Need Permissions");
+        builder.setMessage(
+                "This app needs permission to use this feature. You can grant them in app settings.");
+        builder.setPositiveButton("GOTO SETTINGS", (dialog, which) -> {
+            dialog.cancel();
+            openSettings();
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    // navigating user to app settings
+    private void openSettings() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivityForResult(intent, 101);
+    }
+
+    /**
+     * Create file with current timestamp name
+     *
+     * @throws IOException
+     */
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        String mFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File mFile = File.createTempFile(mFileName, ".jpg", storageDir);
+        return mFile;
+    }
+
+    /**
+     * Get real file path from URI
+     */
+    public String getRealPathFromUri(Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = getContentResolver().query(contentUri, proj, null, null, null);
+            assert cursor != null;
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                // Error occurred while creating the File
+            }
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", photoFile);
+                mPhotoFile = photoFile;
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    /**
+     * Select image fro gallery
+     */
+    private void dispatchGalleryIntent() {
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        pickPhoto.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivityForResult(pickPhoto, REQUEST_GALLERY_PHOTO);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_TAKE_PHOTO) {
+                try {
+                    mPhotoFile = mCompressor.compressToFile(mPhotoFile);
+
+                    imageString = ImageUtil.getBase64StringImage(mPhotoFile);
+                    Utils.setSelectImage(imageString);
+
+                    //  Log.w("GivenImage1:",imageString);
+                    Utils.w("GivenImage1", imageString);
+                    showImage();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+               /* Glide.with(MainActivity.this)
+                        .load(mPhotoFile)
+                        .apply(new RequestOptions().centerCrop()
+                                .circleCrop()
+                                .placeholder(R.drawable.profile_pic_place_holder))
+                        .into(imageViewProfilePic);*/
+
+            } else if (requestCode == REQUEST_GALLERY_PHOTO) {
+                Uri selectedImage = data.getData();
+                try {
+                    mPhotoFile = mCompressor.compressToFile(new File(getRealPathFromUri(selectedImage)));
+                    selectImagel.setText(selectedImage.toString());
+
+                    imageString = ImageUtil.getBase64StringImage(mPhotoFile);
+                    Utils.setSelectImage(imageString);
+
+                    // Log.w("GivenImage2:",imageString);
+                    Utils.w("GivenImage2", imageString);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+              /*
+                Glide.with(MainActivity.this)
+                        .load(mPhotoFile)
+                        .apply(new RequestOptions().centerCrop()
+                                .circleCrop()
+                                .placeholder(R.drawable.profile_pic_place_holder))
+                        .into(imageViewProfilePic);*/
+            }
+        }
+    }
 
     public void showSaveAlert(){
         try {
@@ -917,7 +1139,29 @@ public class CashCollectionActivity extends AppCompatActivity {
             LinearLayout printLayout=customLayout.findViewById(R.id.print_layout);
             decreaseButton=customLayout.findViewById(R.id.decrease);
             increaseButton=customLayout.findViewById(R.id.increase);
+            selectImagel = customLayout.findViewById(R.id.select_imagea);
+
             noOfCopyText=customLayout.findViewById(R.id.no_of_copy);
+
+            if (mPhotoFile != null && mPhotoFile.length() > 0) {
+                selectImagel.setText("View Image");
+                selectImagel.setTag("view_image");
+            } else {
+                selectImagel.setText("Select Image");
+                selectImagel.setTag("select_image");
+            }
+            selectImagel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (selectImagel.getTag().equals("view_image")) {
+                        showImage();
+                    } else {
+                        selectImage();
+                    }
+                }
+            });
+
+
             okButton.setOnClickListener(view1 -> {
                 try {
                     dialog.dismiss();
@@ -953,6 +1197,63 @@ public class CashCollectionActivity extends AppCompatActivity {
             dialog = builder.create();
             dialog.show();
         }catch (Exception exception){}
+    }
+    public void showImage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(CashCollectionActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.image_view_layout, null);
+        ImageView imageView = dialogView.findViewById(R.id.invoice_image);
+        Glide.with(this)
+                .load(mPhotoFile)
+                .error(R.drawable.no_image_found)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                }).into(imageView);
+        builder.setCancelable(false);
+        builder.setTitle("Receipt Image");
+        builder.setView(dialogView);
+        builder.setNeutralButton("NEW IMAGE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                selectImage();
+            }
+        });
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                selectImagel.setTag("view_image");
+                selectImagel.setText("View Image");
+                dialog.dismiss();
+            }
+        }).create().show();
+
+    }
+    private void selectImage() {
+        final CharSequence[] items = {
+                "Take Photo",
+                /* "Choose from Library",*/
+                "Cancel"
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(CashCollectionActivity.this);
+        builder.setItems(items, (dialog, item) -> {
+            if (items[item].equals("Take Photo")) {
+                requestStoragePermission(true);
+            } //else if (items[item].equals("Choose from Library")) {
+            // requestStoragePermission(false);
+            // }
+            else if (items[item].equals("Cancel")) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     public void showSignatureAlert(){

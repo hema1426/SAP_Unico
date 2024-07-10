@@ -596,7 +596,7 @@ public class CustomerListActivity extends NavigationActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_url_cust:", url+jsonObject);
+        Log.w("Given_url_custGroup:", url+jsonObject);
         dialog = new ProgressDialog(CustomerListActivity.this);
         dialog.setMessage("Loading Customers Groups...");
         dialog.setCancelable(false);

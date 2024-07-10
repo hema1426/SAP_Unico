@@ -131,8 +131,8 @@ public class NewInvoicePrintPreviewAdapter extends RecyclerView.Adapter<NewInvoi
 //        }
 
         Log.w("cpmadpta",""+companyName);
-
-        if(companyName.equalsIgnoreCase("Trans Orient Singapore Pte Ltd")){
+        if (companyName.equalsIgnoreCase("Trans Orient Singapore Pte Ltd") ||
+                companyName.equalsIgnoreCase("RAYMANG EGGS & POULTRY SUPPLIER")) {
             viewHolder.rtn.setVisibility(View.INVISIBLE);
             viewHolder.iss.setVisibility(View.INVISIBLE);
         }

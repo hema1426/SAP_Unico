@@ -575,7 +575,7 @@ public class ReceiptsListActivity extends NavigationActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_url:",url);
+        Log.w("Given_urlcustGroup:",url+jsonObject);
         dialog=new ProgressDialog(ReceiptsListActivity.this);
         dialog.setMessage("Loading Customers Groups...");
         dialog.setCancelable(false);

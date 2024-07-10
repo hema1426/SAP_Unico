@@ -90,6 +90,7 @@ public class CustomerLisrOutstandPreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sap_ro_customer_outstand_preview);
         getSupportActionBar().setTitle("Customer Outstanding Report");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         fromdat =findViewById (R.id.fromdate_txt);
         todat =findViewById (R.id.todate_txt);

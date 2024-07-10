@@ -51,6 +51,7 @@ public class Utils {
     public static String invoiceOutstandingAmount = "0.00";
     public static DBHelper dbHelper;
     public static String signature = "";
+    public static String selectImage = "";
     public static String invoiceMode = "";
     public static String receiptMode = "";
     public static String currentDateTime = "";
@@ -168,6 +169,18 @@ public class Utils {
         if (signature.isEmpty()) {
             Utils.setReceiptMode("");
         }
+    }
+
+    public static String getSelectImage() {
+        return selectImage;
+    }
+
+    public static void setSelectImage(String selectImage) {
+        Log.d("cg_setImg",""+selectImage);
+        Utils.selectImage = selectImage;
+//        if (selectImage.isEmpty()) {
+//            Utils.setReceiptMode("");
+//        }
     }
     public static String getNextInvoiceDate(String date) throws ParseException {
         String dt = date;  // Start date

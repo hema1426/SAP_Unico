@@ -442,7 +442,7 @@ public class SalesReturnList extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_url:",url);
+        Log.w("Given_urlcustGroup:",url+jsonObject);
         dialog=new ProgressDialog(getActivity());
         dialog.setMessage("Loading Customers Groups...");
         dialog.setCancelable(false);

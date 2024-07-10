@@ -36,8 +36,10 @@ import com.android.volley.toolbox.Volley;
 import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.CurrencyDenominationAdapter;
 import com.winapp.saperp.adapter.ExpenseAdapter;
+import com.winapp.saperp.model.BankListModel;
 import com.winapp.saperp.model.CurrencyModel;
 import com.winapp.saperp.model.ExpenseModel;
+import com.winapp.saperp.model.InvoicePrintPreviewModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.MyKeyboard;
 import com.winapp.saperp.utils.SessionManager;
@@ -66,6 +68,8 @@ public class SettlementActivity extends AppCompatActivity {
     private RecyclerView denominationView;
     private RecyclerView expenseView;
     private String companyCode;
+    private String username;
+    private String companyCode1;
     private SessionManager session;
     private HashMap<String ,String > user;
     private TextView settlementNo;
@@ -85,6 +89,7 @@ public class SettlementActivity extends AppCompatActivity {
     private String net_total_value = "0.00";
     private String expense_net_total = "0.00";
     private String action="";
+    private int REQUEST_SETTLEMENT= 33;
     private String editSettlementNumber;
     private String editSettlementDate;
     private String editSettlementUser;
@@ -101,6 +106,8 @@ public class SettlementActivity extends AppCompatActivity {
         );
         setContentView(R.layout.activity_settlement);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         denominationView=findViewById(R.id.denomination_view);
         expenseView=findViewById(R.id.expense_view);
         settlementDate=findViewById(R.id.date);
@@ -117,9 +124,13 @@ public class SettlementActivity extends AppCompatActivity {
         expenseTotal=findViewById(R.id.expense_total);
         saveSettlement=findViewById(R.id.save_settlement);
         rootLayout=findViewById(R.id.rootLayout);
+
         session=new SessionManager(this);
         user=session.getUserDetails();
+
         companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
+        username=user.get(SessionManager.KEY_USER_NAME);
+        companyCode1=user.get(SessionManager.KEY_LOCATION_CODE);
 
         if (getIntent()!=null){
             action=getIntent().getStringExtra("action");
@@ -363,11 +374,23 @@ public class SettlementActivity extends AppCompatActivity {
             JsonObjectRequest salesOrderRequest = new JsonObjectRequest(Request.Method.POST, URL,jsonBody, response -> {
                 Log.w("SettlementResponse:",response.toString());
                 progressDialog.dismiss();
+                String settlementNol = "" ;
                 String statusCode=response.optString("statusCode");
-                if (statusCode.equals("1")){
-                    Toast.makeText(getApplicationContext(),"Settlement Saved Successfully",Toast.LENGTH_SHORT).show();
+
+                    if (statusCode.equals("1")){
+                        JSONObject jsonObject=response.optJSONObject("responseData");
+
+                        settlementNol = jsonObject.optString("docNum");
+
+                         Toast.makeText(getApplicationContext(),"Settlement Saved Successfully",Toast.LENGTH_SHORT).show();
                     Intent intent = getIntent();
+//                    JSONObject SRoblect = SRArray.optJSONObject(0);
+//                    settlementNol = SRoblect.optString("salesReturnNumber") ;
+
                     intent.putExtra("key", "Refresh");
+                    intent.putExtra("settlemt_PrintNo", settlementNol);
+                    //startActivityForResult(intent, REQUEST_SETTLEMENT);
+
                     setResult(RESULT_OK, intent);
                     finish();
                 }else {

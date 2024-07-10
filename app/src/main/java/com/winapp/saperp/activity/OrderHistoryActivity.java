@@ -79,6 +79,8 @@ public class OrderHistoryActivity extends AppCompatActivity {
         username=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
 
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         if (getIntent()!=null){
             companyCode=getIntent().getStringExtra("companyCode");
             customerCode=getIntent().getStringExtra("custCodeHistory");

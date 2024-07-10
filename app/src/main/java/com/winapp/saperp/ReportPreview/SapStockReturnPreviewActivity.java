@@ -91,6 +91,7 @@ public class SapStockReturnPreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sap_ro_stockreturn_preview_print);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Bad Stock Return");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);

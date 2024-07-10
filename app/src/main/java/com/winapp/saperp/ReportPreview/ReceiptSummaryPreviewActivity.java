@@ -99,6 +99,8 @@ public class ReceiptSummaryPreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_receipt_summary_preview);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Receipt Summary Report");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);
         companyAddress2Text =findViewById (R.id.company_addr2);

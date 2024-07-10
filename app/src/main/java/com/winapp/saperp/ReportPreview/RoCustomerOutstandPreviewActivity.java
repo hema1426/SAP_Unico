@@ -100,6 +100,8 @@ public class RoCustomerOutstandPreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ro_customer_preview);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Customer Outstanding Period");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);
         companyAddress2Text =findViewById (R.id.company_addr2);
@@ -244,8 +246,8 @@ public class RoCustomerOutstandPreviewActivity extends AppCompatActivity {
 
                             if (custInvoiceDetailsList.size() > 0) {
                                 setCustomerAdapter(customerStateList);
-                                nettotal.setText(String.valueOf(nettotal1));
-                                balance.setText(String.valueOf(balance1));
+                                nettotal.setText(String.valueOf(mNettotal));
+                                balance.setText(String.valueOf(mBalance));
                             }
                             if (custInvoiceDetailsARList.size() > 0) {
                                 setCustomerAdapterAR(customerStateList);

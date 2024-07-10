@@ -153,6 +153,9 @@ public class NewSalesReturnProductAdapter extends RecyclerView.Adapter<NewSalesR
         void removeItem(String pid);
         void editItem(CreateInvoiceModel model);
     }
+    public ArrayList<CreateInvoiceModel> getList(){
+        return summaryList;
+    }
 
     public void filterList(ArrayList<CreateInvoiceModel> filterdNames) {
         this.summaryList = filterdNames;

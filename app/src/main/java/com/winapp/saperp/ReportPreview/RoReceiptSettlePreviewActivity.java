@@ -121,6 +121,7 @@ public class RoReceiptSettlePreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ro_receipt_settle_preview);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Settlement With Receipt");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         setle_fromdatel = findViewById(R.id.setle_fromdate);
         setle_todatel = findViewById(R.id.setle_todate);

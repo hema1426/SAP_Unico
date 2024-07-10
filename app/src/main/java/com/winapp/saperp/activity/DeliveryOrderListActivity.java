@@ -40,6 +40,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -122,11 +123,15 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
     LinearLayout printPreviewLayout;
     boolean isSearchCustomerNameClicked;
     boolean addnewCustomer;
+    private int FILTER_CUSTOMER_CODE=134;
+
     View searchFilterView;
     EditText customerNameText;
     private int mYear, mMonth, mDay, mHour, mMinute;
     EditText fromDate;
     EditText toDate;
+    String oldToDatel = "";
+    Date fromDatel ;
     Button searchButton;
     Button cancelSearch;
     Spinner salesOrderStatusSpinner;
@@ -141,7 +146,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
     private SharedPreferences sharedPreferences;
     View progressLayout;
     boolean redirectInvoice;
-    public static String selectedCustomerId;
+    public static String selectedCustomerId = "";
     String isFound="true";
     private Button createSalesOrder;
     private int customerSelectCode=24;
@@ -183,14 +188,14 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         convertLayout=findViewById(R.id.convert_layout);
         printPreview=findViewById(R.id.print_preview);
         printPreviewLayout=findViewById(R.id.print_preview_layout);
-        searchFilterView=findViewById(R.id.search_filter);
+        searchFilterView=findViewById(R.id.search_filterDO);
         customerNameText=findViewById(R.id.customer_name_value);
-        fromDate=findViewById(R.id.from_date);
-        toDate =findViewById(R.id.to_date);
-        salesOrderStatusSpinner =findViewById(R.id.invoice_status);
+        fromDate=findViewById(R.id.from_datedo);
+        toDate =findViewById(R.id.to_datedo);
+        salesOrderStatusSpinner =findViewById(R.id.invoice_statusdo);
         emptyLayout=findViewById(R.id.empty_layout);
-        cancelSearch=findViewById(R.id.btn_cancel);
-        searchButton=findViewById(R.id.btn_search);
+        cancelSearch=findViewById(R.id.btn_canceldo);
+        searchButton=findViewById(R.id.btn_searchdo);
         outstandingLayout=findViewById(R.id.outstanding_layout);
         progressLayout=findViewById(R.id.progress_layout);
         createSalesOrder=findViewById(R.id.create_sales);
@@ -201,6 +206,14 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         String formattedDate = df.format(c);
         fromDate.setText(formattedDate);
         toDate.setText(formattedDate);
+        oldToDatel=toDate.getText().toString();
+
+        try {
+            fromDatel = new SimpleDateFormat("dd/MM/yyyy").parse(oldToDatel);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        String toDateString = new SimpleDateFormat("yyyyMMdd").format(fromDatel);
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType=sharedPreferences.getString("printer_type","");
@@ -232,7 +245,8 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         }*/
 
         deliveryOrderList =new ArrayList<>();
-        getDeliveryOrderList(companyId,"1");
+
+        getDeliveryOrderList("1","","",toDateString,toDateString);
 
         doListView.setHasFixedSize(true);
         doListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -445,7 +459,9 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
             @Override
             public void onClick(View view) {
                 isSearchCustomerNameClicked=true;
-                viewCloseBottomSheet();
+                // viewCloseBottomSheet();
+                Intent intent=new Intent(getApplicationContext(),FilterCustomerListActivity.class);
+                startActivityForResult(intent,FILTER_CUSTOMER_CODE);
             }
         });
 
@@ -504,8 +520,25 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                     searchFilterView.setVisibility(View.GONE);
                     isSearchCustomerNameClicked=true;
                     try {
-                       // setFilterSearch(DeliveryOrderListActivity.this,companyId,"",salesOrderStatusSpinner.getSelectedItem().toString(),fromDate.getText().toString(),toDate.getText().toString());
-                    } catch (Exception e) {
+                        String oldFromDate = fromDate.getText().toString();
+                        String oldToDate=toDate.getText().toString();
+                        Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(oldFromDate);
+                        Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(oldToDate);
+                        // Use SimpleDateFormat#format() to format a Date into a String in a certain pattern.
+
+                        String fromDateString = new SimpleDateFormat("yyyyMMdd").format(fromDate);
+                        String toDateString = new SimpleDateFormat("yyyyMMdd").format(toDate);
+                        System.out.println(fromDateString+"-"+toDateString); // 2011-01-18
+                        String invoice_status="";
+                        if (salesOrderStatusSpinner.getSelectedItem().equals("ALL")){
+                            invoice_status="";
+                        }else if (salesOrderStatusSpinner.getSelectedItem().equals("CLOSED")){
+                            invoice_status="C";
+                        }else if (salesOrderStatusSpinner.getSelectedItem().equals("OPEN")){
+                            invoice_status="O";
+                        }
+                        setFilterSearch(selectedCustomerId,invoice_status,fromDateString,toDateString);
+                    } catch (JSONException | ParseException e) {
                         e.printStackTrace();
                     }
                     ///filterSearch(customer_name, salesOrderStatusSpinner.getSelectedItem().toString(),fromDate.getText().toString(),toDate.getText().toString());
@@ -1507,13 +1540,25 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         requestQueue.add(jsonArrayRequest);
     }*/
 
+        public void getDeliveryOrderList(String pageNo,String customerCode, String status, String fromdate, String todate) {
 
-    public void getDeliveryOrderList(String companyCode, String pageNo){
-        // Initialize a new RequestQueue instance
+            // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
+        JSONObject jsonObject=new JSONObject();
+
+            try {
+                jsonObject.put("User",userName);
+                jsonObject.put("CustomerCode",customerCode);
+                jsonObject.put("FromDate",fromdate);
+                jsonObject.put("ToDate", todate);
+                jsonObject.put("DOStatus",status);
+
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
         // Initialize a new JsonArrayRequest instance
         String url = Utils.getBaseUrl(this) + "DeliveryOrderList";
-        Log.w("Given_urlDoList:",url);
+        Log.w("Given_urlDoList:",url+jsonObject);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Getting Delivery Orders...");
@@ -1522,9 +1567,9 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
             pDialog.show();
         }
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.GET,
+                Request.Method.POST,
                 url,
-                null,
+                jsonObject,
                 response -> {
                     try{
                         Log.w("DeliveryOdersResponse:",response.toString());
@@ -1586,6 +1631,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                 return params;
             }
         };
+
         jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
             @Override
             public int getCurrentTimeout() {
@@ -1615,6 +1661,96 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         }
     }
 
+    public void setFilterSearch(String customerCode, String status, String fromdate, String todate) throws JSONException {
+        // Initialize a new RequestQueue instance
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        // {"CustomerCode":"","ReceiptNo":"","StartDate":"","EndDate":,"CompanyCode":"1"}
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("User",userName);
+        jsonObject.put("CustomerCode",customerCode);
+        jsonObject.put("FromDate",fromdate);
+        jsonObject.put("ToDate", todate);
+        jsonObject.put("DOStatus",status);
+
+        // Initialize a new JsonArrayRequest instance
+        String url = Utils.getBaseUrl(this) + "DeliveryOrderList";
+        Log.w("Given_url_Do_Filter:",url+"-"+jsonObject.toString());
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Getting Delivery Orders...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        deliveryOrderList = new ArrayList<>();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    try{
+                        Log.w("DoRes_filter:",response.toString());
+
+                        pDialog.dismiss();
+                        String statusCode=response.optString("statusCode");
+                        if (statusCode.equals("1")){
+                            JSONArray salesOrderArray=response.optJSONArray("responseData");
+                            for (int i=0;i<salesOrderArray.length();i++){
+                                JSONObject object=salesOrderArray.optJSONObject(i);
+                                DeliveryOrderModel model=new DeliveryOrderModel();
+                                model.setCustomerName(object.optString("customerName"));
+                                model.setCustomerCode(object.optString("customerCode"));
+                                model.setDate(object.optString("doDate"));
+                                model.setSubTotal(object.optString("balance"));
+                                model.setDoNumber(object.optString("doNumber"));
+                                model.setNetTotal(object.optString("netTotal"));
+                                model.setDoStatus(object.optString("doStatus"));
+                                model.setDoSign(object.optString("signFlag"));
+                                model.setDoCode(object.optString("code"));
+                                deliveryOrderList.add(model);
+                            }
+                            deliveryOrderAdapter.notifyDataSetChanged();
+                            deliveryOrderAdapter.setLoaded();
+                            setShowHide();
+                        }else {
+                            setShowHide();
+                            // Toast.makeText(getApplicationContext(),"Error in getting SalesOrder Data",Toast.LENGTH_LONG).show();
+                        }
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }, error -> {
+            pDialog.dismiss();
+            // Do something when error occurred
+            Log.w("Error_throwing:",error.toString());
+            Toast.makeText(getApplicationContext(),"Server Error,Please try again..",Toast.LENGTH_LONG).show();
+        }){
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
 
 
     public void setFilterAdapeter(){
@@ -1658,8 +1794,8 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.sorting_menu, menu);
-         MenuItem action_save = menu.findItem(R.id.action_filter);
-         action_save.setVisible(false);
+        // MenuItem action_save = menu.findItem(R.id.action_filter);
+        // action_save.setVisible(false);
 
         MenuItem action_barcode = menu.findItem(R.id.action_barcode);
         action_barcode.setVisible(false);
@@ -1675,6 +1811,24 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
             Intent intent=new Intent(getApplicationContext(),CustomerListActivity.class);
             intent.putExtra("from","do");
             startActivityForResult(intent,customerSelectCode);
+        }else if (item.getItemId()==R.id.action_filter){
+            if (searchFilterView.getVisibility()==View.VISIBLE){
+                searchFilterView.setVisibility(View.GONE);
+                customerNameText.setText("");
+                isSearchCustomerNameClicked=false;
+                if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+                //slideUp(searchFilterView);
+            }else {
+                customerNameText.setText("");
+                isSearchCustomerNameClicked=false;
+                searchFilterView.setVisibility(View.VISIBLE);
+                if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+                // slideDown(searchFilterView);
+            }
         }
         return true;
     }
@@ -1693,8 +1847,13 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                 startActivity(intent);
               //  finish();
             }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                // Write your code if there's no result
+//            if (resultCode == Activity.RESULT_CANCELED) {
+//                // Write your code if there's no result
+//            }
+            else if (requestCode == FILTER_CUSTOMER_CODE && resultCode==Activity.RESULT_OK){
+                selectedCustomerId=data.getStringExtra("customerCode");
+                String selectCustomerName=data.getStringExtra("customerName");
+                customerNameText.setText(selectCustomerName);
             }
         }
     } //onActivityResult
@@ -1734,7 +1893,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                 dbHelper.removeAllItems();
                 AddInvoiceActivity.customerId=customer_code;
                 setCustomerDetails(customer_code);
-                selectedCustomerId=customer_code;
+              //  selectedCustomerId=customer_code;
                 redirectInvoice=true;
                 Intent intent=new Intent(DeliveryOrderListActivity.this,AddInvoiceActivity.class);
                 intent.putExtra("customerId",customer_code);
@@ -2086,7 +2245,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        dateEditext.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                        dateEditext.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
                     }
                 }, mYear, mMonth, mDay);
         datePickerDialog.show();

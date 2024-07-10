@@ -100,6 +100,8 @@ public class RoCustomerOutstandDatePreviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ro_customer_outstand_date_preview);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Customer Outstanding Statement (as on Date)");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);
         companyAddress2Text =findViewById (R.id.company_addr2);
@@ -150,7 +152,7 @@ public class RoCustomerOutstandDatePreviewActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String fromDateString = new SimpleDateFormat("yyyyMMdd").format(fromDate);
+//        String fromDateString = new SimpleDateFormat("yyyyMMdd").format(fromDate);
         String toDateString = new SimpleDateFormat("yyyyMMdd").format(toDate);
 
         try {
@@ -181,7 +183,7 @@ public class RoCustomerOutstandDatePreviewActivity extends AppCompatActivity {
 
         customerStateList =new ArrayList<>();
         custInvoiceDetailsList =new ArrayList<>();
-
+        custInvoiceDetailsARList =new ArrayList<>();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
             try{
                 Log.w("CustStat_rodate:",response.toString());
@@ -243,12 +245,13 @@ public class RoCustomerOutstandDatePreviewActivity extends AppCompatActivity {
 
                             if (custInvoiceDetailsList.size() > 0) {
                                 setCustomerAdapter(customerStateList);
-                                nettotal.setText(String.valueOf(nettotal1));
-                                balance.setText(String.valueOf(balance1));
+                                nettotal.setText(String.valueOf(mNettotal));
+                                balance.setText(String.valueOf(mBalance));
                             }
                             if (custInvoiceDetailsARList.size() > 0) {
-                                setCustomerAdapterAR(customerStateList);
                                 ArCustlistLayl.setVisibility(View.VISIBLE);
+
+                                setCustomerAdapterAR(customerStateList);
 
                                 nettotalAr1.setText(String.valueOf(mNettotal1));
                                 balanceAr1.setText(String.valueOf(mBalance1));

@@ -126,12 +126,15 @@ public class Constants {
 
     public static String TRANS_ORIENT_DEMO ="https://c21326-EasySales-Test.cloudiax.com/api/";
 
-    public static String TEST_URL_JULY="https://app0027.cloudtaktiks.com:11014/api/";
+   //RAYMANG
+    public static String RAYMANG_URL_JULY="https://app0027.cloudtaktiks.com:11014/api/";
 
+   // Aadhi demo july
+    public static String aadhi_URL_JULY="http://18.143.95.61:99/api/";
     // transOrient live
 
     //http://c21326-easysales-test.cloudiax.com:11014/
-    public static String TRANS_ORIENT_RAYMANG ="https://app0027.cloudtaktiks.com:11014/api/";
+   //public static String TRANS_ORIENT_RAYMANG ="https://app0027.cloudtaktiks.com:11014/api/";
 
     public static String foodgle_LIVE ="https://c21202app01p01.cloudiax.com:10093/api/";
 

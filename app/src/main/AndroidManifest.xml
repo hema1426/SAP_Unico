@@ -45,7 +45,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+<!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />-->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.mount_unmount_filesystems" />
@@ -111,6 +112,11 @@
             android:name=".ReportPreview.RoCustomerOutstandPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ReportPreview.RoCustomerOutstandDatePreviewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".ReportPreview.SapStockSummaryPreviewActivity"
             android:exported="false"

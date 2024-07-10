@@ -35,7 +35,6 @@
             android:layout_gravity="top"
             android:gravity="center"
             android:layout_weight="1"
-
             android:textStyle="bold"
             android:id="@+id/product"
             android:textColor="#212121"

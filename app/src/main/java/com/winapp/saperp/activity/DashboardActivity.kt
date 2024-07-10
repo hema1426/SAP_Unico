@@ -87,7 +87,7 @@ class DashboardActivity : NavigationActivity() {
     private var creditLimit_Img: ImageView? = null
     private var sharedPreferenceUtil: SharedPreferenceUtil? = null
 
-    var locationCode: String? = null
+    var locationCodem: String? = null
     private var timeText: TextView? = null
     var dialog: AlertDialog? = null
     var pDialog: SweetAlertDialog? = null
@@ -133,7 +133,7 @@ class DashboardActivity : NavigationActivity() {
         company = session1!!.companyDetails
         companyLogoString = company!!.get(SessionManager.KEY_COMPANY_LOGO)
         companyCode = user1!![SessionManager.KEY_COMPANY_CODE]
-        locationCode = user1!![SessionManager.KEY_LOCATION_CODE]
+        locationCodem = user1!![SessionManager.KEY_LOCATION_CODE]
         catalogLayout = findViewById(R.id.catalog_layout)
         salesOrderLayout = findViewById(R.id.sales_order_layout)
         invoiceLayout = findViewById(R.id.invoice_layout)
@@ -178,12 +178,12 @@ class DashboardActivity : NavigationActivity() {
                 startActivity(intent)
             }
         }
-        if (locationCode != null && !locationCode!!.isEmpty()) {
-            locationCode = user1!![SessionManager.KEY_LOCATION_CODE]
+        if (locationCodem != null && !locationCodem!!.isEmpty()) {
+            locationCodem = user1!![SessionManager.KEY_LOCATION_CODE]
         } else {
             Toast.makeText(this, "Choose Location", Toast.LENGTH_SHORT).show()
         }
-        Log.w("Logged_In_Location:", locationCode.toString())
+        Log.w("Logged_In_Location:", locationCodem.toString())
         dbHelper!!.removeAllReturn()
         dbHelper!!.removeAllInvoiceItems()
         dbHelper!!.removeAllItems()
@@ -270,7 +270,7 @@ class DashboardActivity : NavigationActivity() {
                     }
                 }
             }
-            if (isCheckedSO && (locationCode != null && !locationCode!!.isEmpty()) ) {
+            if (isCheckedSO && (locationCodem != null && !locationCodem!!.isEmpty()) ) {
                 salesOrderLayout!!.setAlpha(0.9f)
                 salesOrderLayout!!.setEnabled(true)
                 salesOrderLayout!!.setClickable(true)
@@ -279,42 +279,42 @@ class DashboardActivity : NavigationActivity() {
                 salesOrderLayout!!.setEnabled(false)
                 salesOrderLayout!!.setClickable(false)
             }
-            if (isCheckedCatalog && (locationCode != null && !locationCode!!.isEmpty()) ) {
+            if (isCheckedCatalog && (locationCodem != null && !locationCodem!!.isEmpty()) ) {
                 catalogCard!!.setAlpha(0.9f)
                 catalogCard!!.setEnabled(true)
             } else {
                 catalogCard!!.setAlpha(0.4f)
                 catalogCard!!.setEnabled(false)
             }
-            if (isCheckedSalesReturn && (locationCode != null && !locationCode!!.isEmpty()) ) {
+            if (isCheckedSalesReturn && (locationCodem != null && !locationCodem!!.isEmpty()) ) {
                 salesReturnLayout!!.setAlpha(0.9f)
                 salesReturnLayout!!.setEnabled(true)
             } else {
                 salesReturnLayout!!.setAlpha(0.4f)
                 salesReturnLayout!!.setEnabled(false)
             }
-            if (isCheckedDO && (locationCode != null && !locationCode!!.isEmpty()) ) {
+            if (isCheckedDO && (locationCodem != null && !locationCodem!!.isEmpty()) ) {
                 deliveryLayout!!.setAlpha(0.9f)
                 deliveryLayout!!.setEnabled(true)
             } else {
                 deliveryLayout!!.setAlpha(0.4f)
                 deliveryLayout!!.setEnabled(false)
             }
-            if (isCheckedCustomer && (locationCode != null && !locationCode!!.isEmpty()) ) {
+            if (isCheckedCustomer && (locationCodem != null && !locationCodem!!.isEmpty()) ) {
                 customerLayout!!.setAlpha(0.9f)
                 customerLayout!!.setEnabled(true)
             } else {
                 customerLayout!!.setAlpha(0.4f)
                 customerLayout!!.setEnabled(false)
             }
-            if (isCheckedProduct && (locationCode != null && !locationCode!!.isEmpty()) ) {
+            if (isCheckedProduct && (locationCodem != null && !locationCodem!!.isEmpty()) ) {
                 productsLayout!!.setAlpha(0.9f)
                 productsLayout!!.setEnabled(true)
             } else {
                 productsLayout!!.setAlpha(0.4f)
                 productsLayout!!.setEnabled(false)
             }
-            if (isCheckedInvoice && (locationCode != null && !locationCode!!.isEmpty()) ) {
+            if (isCheckedInvoice && (locationCodem != null && !locationCodem!!.isEmpty()) ) {
                 invoiceLayout!!.setAlpha(0.9f)
                 invoiceLayout!!.setEnabled(true)
                 invoiceLayout!!.setClickable(true)
@@ -623,9 +623,9 @@ class DashboardActivity : NavigationActivity() {
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         try {
             user1 = session1!!.userDetails
-            locationCode = user1!![SessionManager.KEY_LOCATION_CODE]
+            locationCodem = user1!![SessionManager.KEY_LOCATION_CODE]
             menu.getItem(0).setVisible(true)
-            menu.getItem(0).setTitle("Location : $locationCode")
+            menu.getItem(0).setTitle("Location : $locationCodem")
         } catch (ex: Exception) {
         }
         return true
@@ -712,11 +712,11 @@ class DashboardActivity : NavigationActivity() {
         for (i in locationDetailsArrayList!!.indices) {
             arrayAdapter.add(locationDetailsArrayList[i].locationName + " - " + locationDetailsArrayList[i].locationCode)
         }
-        val checkedItem = Utils.getLocationCodeIndex(locationDetailsArrayList, locationCode)
+        val checkedItem = Utils.getLocationCodeIndex(locationDetailsArrayList, locationCodem)
         builderSingle.setSingleChoiceItems(arrayAdapter, checkedItem) { dialog, which ->
             fromWarehouseCode = locationDetailsArrayList[which].locationCode
             if (fromWarehouseCode != null && !fromWarehouseCode!!.isEmpty()) {
-                if (locationCode != fromWarehouseCode) {
+                if (locationCodem != fromWarehouseCode) {
                     Log.w("NewLocationSelected:", fromWarehouseCode.toString())
                 } else {
                     Toast.makeText(
@@ -806,7 +806,7 @@ class DashboardActivity : NavigationActivity() {
             val intent = Intent(this@DashboardActivity, NewCompanySwitchActivity::class.java)
             intent.putExtra("from", "Dashboard")
             intent.putExtra("companyCode", MainHomeActivity.newSelectedCompany)
-            intent.putExtra("locationCode", locationCode)
+            intent.putExtra("locationCode", locationCodem)
             intent.putExtra("companyName", MainHomeActivity.newSelectedCompanyName)
             startActivity(intent)
             finish()

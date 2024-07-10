@@ -174,6 +174,7 @@ public class NewExpensePrintPreviewActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType = sharedPreferences.getString("printer_type", "");
         printerMacId = sharedPreferences.getString("mac_address", "");
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);

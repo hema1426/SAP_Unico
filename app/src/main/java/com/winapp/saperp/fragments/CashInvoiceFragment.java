@@ -893,7 +893,7 @@ public class CashInvoiceFragment extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(myContext);
         // Initialize a new JsonArrayRequest instance
         String url=Utils.getBaseUrl(myContext) +"OutstandingInvoiceList";
-        Log.w("Given_url:",url);
+        Log.w("Given_url_cashl:",url+jsonObject);
         pDialog = new SweetAlertDialog(myContext, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Getting Invoice Details...");
@@ -1593,6 +1593,7 @@ public class CashInvoiceFragment extends Fragment {
         receiptHeader.put("WrightOff","0.00");
         receiptHeader.put("Balance",CashCollectionActivity.differenceAmount.getText().toString());
         receiptHeader.put("Signature",Utils.getSignature());
+        receiptHeader.put("RefPhoto",Utils.getSelectImage());
 
        // IsAdvancePaid=0,TotalCustomerPaidAmount=PaidAmount,ExcessPaidAmount=0,WrightOff=0,Balance=0
 

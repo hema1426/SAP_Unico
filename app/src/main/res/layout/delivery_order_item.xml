@@ -54,7 +54,7 @@
                         android:textStyle="bold"
                         android:textSize="13sp"
                         android:ellipsize="end"
-                        android:maxLines="1"
+                        android:maxLines="2"
                         android:maxWidth="250dp"
                         android:id="@+id/name"
                         android:textColor="#212121"
