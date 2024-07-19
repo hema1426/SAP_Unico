@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,8 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
-import com.winapp.saperp.activity.OrderDetailsActivity;
+import com.winapp.saperp.activity.OrderDetailsHistoryActivity;
 import com.winapp.saperp.model.OrderHistoryModel;
 
 import java.util.ArrayList;
@@ -109,7 +107,7 @@ public class OrderHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View view) {
                     // Onclick of the Load the Products details
-                    Intent intent=new Intent(mContext, OrderDetailsActivity.class);
+                    Intent intent=new Intent(mContext, OrderDetailsHistoryActivity.class);
                     intent.putExtra("activityFrom", activityl);
                     intent.putExtra("customerCodeHis",model.getCustomerCode());
                     intent.putExtra("orderNumberHis",model.getOrderId());

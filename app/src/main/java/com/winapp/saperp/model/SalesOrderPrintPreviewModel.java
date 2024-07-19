@@ -27,6 +27,16 @@ public class SalesOrderPrintPreviewModel {
     private String addresssZipcode;
     private ArrayList<SalesList> salesList;
 
+    private String allowDeliveryAddress;
+
+    public String getAllowDeliveryAddress() {
+        return allowDeliveryAddress;
+    }
+
+    public void setAllowDeliveryAddress(String allowDeliveryAddress) {
+        this.allowDeliveryAddress = allowDeliveryAddress;
+    }
+
     public String getAddress1() {
         return address1;
     }

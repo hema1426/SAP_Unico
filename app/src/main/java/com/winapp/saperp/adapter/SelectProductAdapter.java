@@ -27,9 +27,11 @@ import com.winapp.saperp.model.ProductsModel;
 import com.winapp.saperp.model.SettingsModel;
 import com.winapp.saperp.salesreturn.NewSalesReturnProductAddActivity;
 import com.winapp.saperp.salesreturn.SalesReturnActivity;
+import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -39,6 +41,8 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
     public Context context;
     public DBHelper dbHelper;
     public boolean isAllowLowStock=false;
+    private SessionManager session;
+    private String negativeStockStr = "No";
     public String saveAction="0";
     public SelectProductAdapter(Context context,ArrayList<ProductsModel> products, CallBack callBack) {
         this.products = Utils.getProductList(products);
@@ -55,6 +59,11 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         ProductsModel model= products.get(i);
         dbHelper=new DBHelper(context);
+        session=new SessionManager(context);
+
+        HashMap<String ,String > user=session.getUserDetails();
+        negativeStockStr=user.get(SessionManager.KEY_NEGATIVE_STOCK);
+
         viewHolder.productName.setText(model.getProductName());
         viewHolder.productCode.setText(model.getProductCode());
 
@@ -105,7 +114,8 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
                             if (AddInvoiceActivity.activityFrom.equals("ReOrderSales")){
                                 callBack.searchProduct(model);
                             }else {
-                                if (isAllowLowStock){
+//                                if (isAllowLowStock){
+                                if (negativeStockStr.equalsIgnoreCase("Yes")){
                                     callBack.searchProduct(model);
                                 }else {
                                     showAlert();
@@ -125,7 +135,8 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
                                 }
                             }
                             if (saveAction.equals("Invoice")){
-                                if (isAllowLowStock){
+                               // if (isAllowLowStock){
+                                if (negativeStockStr.equalsIgnoreCase("Yes")){
                                     callBack.searchProduct(model);
                                 }else {
                                     showAlert();
@@ -176,7 +187,8 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
                                 if (AddInvoiceActivity.activityFrom.equals("ReOrderSales")){
                                     callBack.searchProduct(model);
                                 }else {
-                                    if (isAllowLowStock){
+//                                    if (isAllowLowStock){
+                                    if (negativeStockStr.equalsIgnoreCase("Yes")){
                                         callBack.searchProduct(model);
                                     }else {
                                         showAlert();
@@ -196,7 +208,8 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
                                     }
                                 }
                                 if (saveAction.equals("Invoice")){
-                                    if (isAllowLowStock){
+                                 //   if (isAllowLowStock){
+                                    if (negativeStockStr.equalsIgnoreCase("Yes")){
                                         callBack.searchProduct(model);
                                     }else {
                                         showAlert();

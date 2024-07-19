@@ -1165,6 +1165,7 @@ public class CategoriesTabFragments extends Fragment implements PopupMenu.OnMenu
                             intent.putExtra("unitPrice",unitPrice);
                             intent.putExtra("pcsPerCarton",pcsPercarton);
                             intent.putExtra("stockQty",stock);
+
                             startActivity(intent);
                             // viewCloseBottomSheet();
                         }

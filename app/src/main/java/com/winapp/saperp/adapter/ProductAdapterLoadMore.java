@@ -306,7 +306,11 @@ public class ProductAdapterLoadMore extends RecyclerView.Adapter {
                                         String object = gson.toJson(products);
                                         Intent intent = new Intent(mContext, DescriptionActivity.class);
                                         intent.putExtra("productDetails", object);
+                                        intent.putExtra("AllowFOC_Catalog","Yes");
+
                                         mContext.startActivity(intent);
+                                        Log.w("allowfocaa","");
+
                                     }
                                 } else {
                                     // code for landscape mode
@@ -314,7 +318,10 @@ public class ProductAdapterLoadMore extends RecyclerView.Adapter {
                                       String object = gson.toJson(products);
                                       Intent intent = new Intent(mContext, DescriptionActivity.class);
                                       intent.putExtra("productDetails", object);
-                                      mContext.startActivity(intent);
+                                    intent.putExtra("AllowFOC_Catalog","Yes");
+                                    mContext.startActivity(intent);
+                                    Log.w("allowfocsss","");
+
                                 }
                            // }else {
                               //  showAlert();

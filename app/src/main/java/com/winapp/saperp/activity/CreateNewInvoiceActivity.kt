@@ -132,6 +132,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var productSummaryView: RecyclerView? = null
     private var companyCode: String? = null
     private var username: String? = null
+    private var negativeStockStr: String? = "No"
     private var user: HashMap<String, String>? = null
     private var session: SessionManager? = null
     private var pDialog: SweetAlertDialog? = null
@@ -363,6 +364,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         companyCode = user!!.get(SessionManager.KEY_COMPANY_CODE)
         companyName = user!!.get(SessionManager.KEY_COMPANY_NAME)
         username = user!!.get(SessionManager.KEY_USER_NAME)
+        negativeStockStr = user!!.get(SessionManager.KEY_NEGATIVE_STOCK)
         locationCode = user!!.get(SessionManager.KEY_LOCATION_CODE)
 
         signatureString = ""
@@ -455,11 +457,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         Log.w("compcode..", "" + companyCode)
         Log.w(
             "salesmann..", "" + user!!.get(SessionManager.KEY_SALESMAN_NAME) + ".." +
-                    user!!.get(SessionManager.KEY_SALESMAN_PHONE)
+                    user!!.get(SessionManager.KEY_NEGATIVE_STOCK)
         );
 
         products = ArrayList()
         productAutoComplete!!.clearFocus()
+        imageString = ""
       //  barcodeText!!.requestFocus()
         getCurrentLocation()
 
@@ -504,7 +507,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         println("Current time => $c")
         val df1 = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
         currentDate = df1.format(c)
-        val df = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        val df = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val formattedDate = df.format(c)
         invoiceDateInv!!.setText(formattedDate)
         if (intent != null) {
@@ -544,6 +547,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             editDoNumber = intent.getStringExtra("editDoNumber")
             orderNo = intent.getStringExtra("orderNo")
             Log.w("GivenActivityFrom::", activityFrom.toString())
+            Log.w("cust_Code_Name::", customerCode+".."+intent.getStringExtra("customerName"))
 
             if (activityFrom == "iv") {
                 supportActionBar!!.setTitle("Invoice")
@@ -623,9 +627,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             else if (activityFrom == "ReOrderSales") {
                 priceText!!.setEnabled(true)
                // downArrow_inv_img!!.setVisibility(View.VISIBLE)
-                supportActionBar!!.setTitle("SalesOrder ")
-                Objects.requireNonNull(supportActionBar)!!.title = "Re-" + R.string.sales_orders
-
+               supportActionBar!!.setTitle("Re-SalesOrders ")
+                //Objects.requireNonNull(supportActionBar)!!.title = "Re-" + R.string.sales_orders
                 priceText!!.setEnabled(true)
                 returnQtyText!!.setVisibility(View.GONE)
                 exchange_inv!!.visibility = View.VISIBLE
@@ -633,11 +636,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             else if (activityFrom == "ReOrderInvoice") {
                 priceText!!.setEnabled(true)
                 downArrow_inv_img!!.setVisibility(View.VISIBLE)
-                Objects.requireNonNull(supportActionBar)!!.title = "Re-" + R.string.invoices
+                supportActionBar!!.setTitle("Re-Invoices ")
+                //Objects.requireNonNull(supportActionBar)!!.title = "Re-" + R.string.invoices
 
                 bill_disc_amt_ed!!.setText(pref_bill_disc_amt)
                 bill_disc_percent_ed!!.setText(pref_bill_disc_percent)
-                Log.w("billDiscDupli",""+pref_bill_disc_amt)
+                Log.w("billDiscDupliz",""+pref_bill_disc_amt)
                 bill_disclayInvl!!.visibility = View.VISIBLE
 
                 exchange_inv!!.visibility = View.VISIBLE
@@ -645,7 +649,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 // orderNoText.setText(orderNo);
 //                returnQtyText.setVisibility(View.GONE);
 //                returnAdj.setVisibility(View.GONE);
-                supportActionBar!!.setTitle("Invoice - $duplicateInvNo")
             }
 
             Log.w("isFOCStrvv",""+isFOCStr)
@@ -736,7 +739,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
         Log.w("settingVal", "$isDiscountSetting  .. $isSignatureSetting")
         if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-            || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO") {
+            || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+            || activityFrom == "ReOrderInvoice" ) {
             downArrow_inv_img!!.setVisibility(View.VISIBLE)
             if (isDiscountSetting) {
                 discount_layInv!!.setVisibility(View.VISIBLE)
@@ -1290,21 +1294,28 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 if (companyCode == "SUPERSTAR TRADERS PTE LTD") {
                     if (activityFrom == "iv" || activityFrom == "so" || activityFrom == "SalesEdit" ||
                         activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                        || activityFrom == "ReOrderInvoice" || activityFrom == "ReOrderSales"
                     ) {
                         //  if (!isAllowLowStock){
+                        //negativeStock no only stock check
+                        if (negativeStockStr.equals("No",ignoreCase = true)){
                         checkLowStock()
-                        // }
+                        }
                     }
                 } else {
                     if (companyCode == "AADHI INTERNATIONAL PTE LTD") {
-                        if (activityFrom == "iv" || activityFrom == "so" || activityFrom == "SalesEdit") {
-                            if (!isAllowLowStock) {
+                        if (activityFrom == "iv" || activityFrom == "so"
+                            || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
+                          //  if (!isAllowLowStock) {
+                            if (negativeStockStr.equals("No",ignoreCase = true)){
                                 checkLowStock()
                             }
                         }
                     } else {
-                        if (activityFrom == "iv" || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO") {
-                            if (!isAllowLowStock) {
+                        if (activityFrom == "iv" || activityFrom == "Duplicate"
+                            || activityFrom == "ConvertInvoiceFromDO" || activityFrom == "ReOrderInvoice") {
+                          //  if (!isAllowLowStock) {
+                            if (negativeStockStr.equals("No",ignoreCase = true)){
                                 checkLowStock()
                             }
                         }
@@ -1671,7 +1682,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         val datePickerDialog = DatePickerDialog(
             this@CreateNewInvoiceActivity,
             { view, year, monthOfYear, dayOfMonth ->
-                dateEditext!!.text = dayOfMonth.toString() + "-" + (monthOfYear + 1) + "-" + year
+                dateEditext!!.text = dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year
                 currentDate = convertDate(
                     dateEditext.text.toString()
                 )
@@ -1700,7 +1711,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     }
                     // stockLayout.setVisibility(View.VISIBLE);
                     if (model.stockQty.toDouble() == 0.0 || model.stockQty.toDouble() < 0) {
-                        if (isAllowLowStock) {
+//                        if (isAllowLowStock) {
+                        if (negativeStockStr.equals("No",ignoreCase = true)){
+
                             productAutoComplete!!.clearFocus()
                             cartonPrice!!.setText(model.unitCost)
                             if (model.lastPrice != null && !model.lastPrice.isEmpty() &&
@@ -2013,7 +2026,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     @SuppressLint("SetTextI18n")
     private fun getProducts() {
         val products = dbHelper!!.allInvoiceProducts
-       // Log.w("pdtArraylis",""+products.get(0).netTotal)
+//        Log.w("pdtArraylis",""+products.get(0).netTotal)
         if (products.size > 0) {
             itemCount!!.text = "Products ( " + products.size + " )"
             productSummaryView!!.layoutManager =
@@ -3670,13 +3683,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
         setSummaryTotal()
 
-        productName_bottomEd!!.setText("")
-        productName_bottomEd!!.requestFocus()
-        openKeyborard(productName_bottomEd!!)
-
-        selectProductAdapter!!.notifyDataSetChanged()
+        if(selectProductAdapter != null){
+        selectProductAdapter!!.notifyDataSetChanged()}
         if (behavior!!.state == BottomSheetBehavior.STATE_COLLAPSED) {
             behavior!!.setState(BottomSheetBehavior.STATE_EXPANDED)
+
+            productName_bottomEd!!.setText("")
+            productName_bottomEd!!.requestFocus()
+            openKeyborard(productName_bottomEd!!)
         } else {
             behavior!!.setState(BottomSheetBehavior.STATE_COLLAPSED)
         }
@@ -4312,6 +4326,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         save_btn!!.setEnabled(true)
                         if (activityFrom == "iv" || activityFrom == "ConvertInvoice" ||
                             activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                            || activityFrom == "ReOrderInvoice"
                         ) {
 //                        showSaveAlert()
                             if (billDiscApiStr.isNotEmpty() && billDiscApiStr.toDouble() > 0.0) {
@@ -4465,12 +4480,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             }
             //invoicePrintCheck.setVisibility(View.GONE);
             if (activityFrom == "iv" || activityFrom == "ConvertInvoice" ||
-                activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO" || activityFrom == "ReOrderInvoice"
             ) {
 //                        showSaveAlert()
                 invoicePrintCheck!!.visibility = View.VISIBLE
             }
-                if (activityFrom == "so" || activityFrom == "SalesEdit") {
+                if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
                 saveTitle!!.setText("Save SalesOrder")
                 saveMessage!!.setText("Are you sure want to save SalesOrder?")
                 invoicePrintCheck!!.setText("SalesOrder Print")
@@ -4543,14 +4558,16 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     if (companyCode == "AADHI INTERNATIONAL PTE LTD") {
                         if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
                             || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                            || activityFrom == "ReOrderInvoice"
                         ) {
                             if (signatureString != null && !signatureString!!.isEmpty()) {
                                 alert!!.dismiss()
                                 if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
                                     || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                                    || activityFrom == "ReOrderInvoice"
                                 ) {
                                     createInvoiceJson(noOfCopy.text.toString().toInt())
-                                } else if (activityFrom == "so" || activityFrom == "SalesEdit") {
+                                } else if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
                                     createSalesOrderJson(noOfCopy.text.toString().toInt())
                                 } else if (activityFrom == "do" || activityFrom == "doEdit") {
                                     createDOJson(noOfCopy.text.toString().toInt())
@@ -4566,10 +4583,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             alert!!.dismiss()
                             if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
                                 || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                                || activityFrom == "ReOrderInvoice"
                             ) {
                                 Log.w("convet","")
                                 createInvoiceJson(noOfCopy.text.toString().toInt())
-                            } else if (activityFrom == "so" || activityFrom == "SalesEdit") {
+                            } else if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
                                 createSalesOrderJson(noOfCopy.text.toString().toInt())
                             } else if (activityFrom == "do" || activityFrom == "doEdit") {
                                 createDOJson(noOfCopy.text.toString().toInt())
@@ -4579,6 +4597,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         alert!!.dismiss()
                         if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
                             || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+                            || activityFrom == "ReOrderInvoice"
                         ) {
                             Log.w("signavail", "" + isSignatureSetting + ".." + signatureString)
 
@@ -4595,7 +4614,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             } else {
                                 createInvoiceJson(noOfCopy.text.toString().toInt())
                             }
-                        } else if (activityFrom == "so" || activityFrom == "SalesEdit") {
+                        } else if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
                             createSalesOrderJson(noOfCopy.text.toString().toInt())
                         } else if (activityFrom == "do" || activityFrom == "doEdit") {
                             createDOJson(noOfCopy.text.toString().toInt())
@@ -4879,7 +4898,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 model.creditLimitAmount = `object`.optString("creditLimit")
                                 creditLimitAmount = `object`.optString("creditLimit")
                                 outstandingAmount = `object`.optString("outstandingAmount")
-                                if(`object`.optString("allowFOC").equals("Yes")){
+                                if(`object`.optString("allowFOC").equals("Yes",true)){
                                     focEditText!!.isEnabled = true
                                 }
                                 else{
@@ -5047,7 +5066,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         orderNoText!!.setText("")
         val intent: Intent
         intent = if (activityFrom == "iv" || activityFrom == "Duplicate"
-            || activityFrom == "ConvertInvoiceFromDO") {
+            || activityFrom == "ConvertInvoiceFromDO" || activityFrom == "ReOrderInvoice") {
             Intent(this@CreateNewInvoiceActivity, NewInvoiceListActivity::class.java)
         } else {
             Intent(this@CreateNewInvoiceActivity, SalesOrderListActivity::class.java)
@@ -5110,7 +5129,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         save_btn = menu.findItem(R.id.action_save)
         down_menu = menu.findItem(R.id.action_down)
         if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-            || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO") {
+            || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO" || activityFrom == "ReOrderInvoice") {
             down_menu!!.isVisible = true
         }
         return true
@@ -5166,6 +5185,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         model.customerCode = `object`.optString("customerCode")
                         model.customerName = `object`.optString("customerName")
                         model.overAllTotal = `object`.optString("overAllTotal")
+                        response
                         model.address =
                             `object`.optString("address1") + `object`.optString("address2") + `object`.optString(
                                 "address3"
@@ -5174,8 +5194,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         model.address2 = `object`.optString("address2")
                         model.address3 = `object`.optString("address3")
                         model.addressstate =
-                            (`object`.optString("block") + " " + `object`.optString("street") + " "
-                                    + `object`.optString("city"))
+                            (`object`.optString("street") + " "
+                                    + `object`.optString("block") + " " +`object`.optString("city"))
                         model.addresssZipcode =
                             (`object`.optString("countryName") + " " + `object`.optString("state") + " "
                                     + `object`.optString("zipcode"))
@@ -5197,6 +5217,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         model.soDate = `object`.optString("soDate")
                         model.doDate = `object`.optString("doDate")
                         model.doNumber = `object`.optString("doNumber")
+                        model.deliveryAddress =
+                            `object`.optString("shipAddress2") + `object`.optString("shipAddress3") + `object`.optString(
+                                "shipStreet"
+                            )
+
+                        model.allowDeliveryAddress = `object`.optString("showShippingAddress")
                         val signFlag = `object`.optString("signFlag")
                         if (signFlag == "Y") {
                             val signature = `object`.optString("signature")
@@ -5654,15 +5680,25 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 rootJsonObject.put("mode", "I");
             }*/
           val inputFormat: DateFormat = SimpleDateFormat("dd/MM/yyyy")
-          val df1 = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+          val df1 = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
           var inDate: String? = null
           var invDate: String? = null
           val deldate: String? = null
           val orderdate: String? = null
+          var fromDatel: Date? = null
+          var oldToDatel: String? = ""
 
           if (Utils.getInvoiceDate() != null && !Utils.getInvoiceDate().isEmpty()) {
-              inDate = df1.format(inputFormat.parse(Utils.getInvoiceDate()))
-            //  invDate = Utils.getInvoiceDate()
+              oldToDatel = invoiceDateInv!!.getText().toString()
+
+//              try {
+//                  fromDatel = SimpleDateFormat("dd/MM/yyyy").parse(oldToDatel)
+//              } catch (e: ParseException) {
+//                  throw java.lang.RuntimeException(e)
+//              }
+              // inDate = SimpleDateFormat("yyyyMMdd").format(oldToDatel)
+             inDate = df1.format(inputFormat.parse(Utils.getInvoiceDate()))
+             invDate = Utils.getInvoiceDate()
           } else {
               inDate = currentDate
 //              invDate = currentDate
@@ -5750,7 +5786,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             rootJsonObject.put("delAddress2 ", `object`.optString("delAddress2"))
             rootJsonObject.put("delAddress3 ", `object`.optString("delAddress3"))
             rootJsonObject.put("delPhoneNo", `object`.optString("contactNo"))
-            rootJsonObject.put("remark", `object`.optString("remark"))
+          rootJsonObject.put("remark", `object`.optString("remark"))
             rootJsonObject.put("haveTax", `object`.optString("haveTax"))
             rootJsonObject.put("taxType", `object`.optString("taxType"))
             rootJsonObject.put("taxPerc", `object`.optString("taxPercentage"))
@@ -6076,7 +6112,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
             if (netTotalValue!!.text.toString().toDouble() > 0) {
                 if (activityFrom == "iv" || activityFrom == "ConvertInvoice" || activityFrom == "ConvertInvoiceFromDO"
-                ) {
+                    || activityFrom == "ReOrderInvoice" ) {
 //                        showSaveAlert()
                     if (isCheckedCreditLimit) {
                         if (createInvoiceValidation()) {

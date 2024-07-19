@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -123,7 +124,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
     LinearLayout printPreviewLayout;
     boolean isSearchCustomerNameClicked;
     boolean addnewCustomer;
-    private int FILTER_CUSTOMER_CODE=134;
+    private int request_cust_code=81;
 
     View searchFilterView;
     EditText customerNameText;
@@ -244,14 +245,9 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
             // new GetCustomersTask().execute();
         }*/
 
-        deliveryOrderList =new ArrayList<>();
 
         getDeliveryOrderList("1","","",toDateString,toDateString);
-
-        doListView.setHasFixedSize(true);
-        doListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        deliveryOrderAdapter =new DeliveryOrderAdapter(this, doListView, deliveryOrderList,this);
-        doListView.setAdapter(deliveryOrderAdapter);
+        //setDOAdapter();
 
       /*  deliveryOrderAdapter.setOnLoadMoreListener(new DeliveryOrderAdapter.OnLoadMoreListener() {
             @Override
@@ -461,7 +457,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                 isSearchCustomerNameClicked=true;
                 // viewCloseBottomSheet();
                 Intent intent=new Intent(getApplicationContext(),FilterCustomerListActivity.class);
-                startActivityForResult(intent,FILTER_CUSTOMER_CODE);
+                startActivityForResult(intent,request_cust_code);
             }
         });
 
@@ -537,8 +533,8 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                         }else if (salesOrderStatusSpinner.getSelectedItem().equals("OPEN")){
                             invoice_status="O";
                         }
-                        setFilterSearch(selectedCustomerId,invoice_status,fromDateString,toDateString);
-                    } catch (JSONException | ParseException e) {
+                        getDeliveryOrderList("",selectedCustomerId,invoice_status,fromDateString,toDateString);
+                    } catch (ParseException e) {
                         e.printStackTrace();
                     }
                     ///filterSearch(customer_name, salesOrderStatusSpinner.getSelectedItem().toString(),fromDate.getText().toString(),toDate.getText().toString());
@@ -1341,6 +1337,13 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
+    public void setDOAdapter() {
+
+        doListView.setHasFixedSize(true);
+        doListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        deliveryOrderAdapter = new DeliveryOrderAdapter(this, doListView, deliveryOrderList, this);
+        doListView.setAdapter(deliveryOrderAdapter);
+    }
 
     public void redirectActivity(String action,String customer_code,String customer_name,String do_code,String customerBill_Disc){
         //  if (products.length()==dbHelper.numberOfRowsInInvoice()){
@@ -1556,7 +1559,9 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-        // Initialize a new JsonArrayRequest instance
+            deliveryOrderList =new ArrayList<>();
+
+            // Initialize a new JsonArrayRequest instance
         String url = Utils.getBaseUrl(this) + "DeliveryOrderList";
         Log.w("Given_urlDoList:",url+jsonObject);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
@@ -1566,7 +1571,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         if (pageNo.equals("1")){
             pDialog.show();
         }
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+        @SuppressLint("NotifyDataSetChanged") JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
                 jsonObject,
@@ -1605,12 +1610,28 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                 model.setDoCode(object.optString("code"));
                                 deliveryOrderList.add(model);
                             }
-                            deliveryOrderAdapter.notifyDataSetChanged();
-                            deliveryOrderAdapter.setLoaded();
-                            setShowHide();
+//                            deliveryOrderAdapter.notifyDataSetChanged();
+                        //    deliveryOrderAdapter.setLoaded();
+                            //setShowHide();
+                            if (deliveryOrderList.size()>0){
+                                if(deliveryOrderAdapter!=null) {
+                                    deliveryOrderAdapter.notifyDataSetChanged();
+                                }
+                                doListView.setVisibility(View.VISIBLE);
+                                emptyLayout.setVisibility(View.GONE);
+                                setDOAdapter();
+
+                                //outstandingLayout.setVisibility(View.VISIBLE);
+                            }else {
+                                doListView.setVisibility(View.GONE);
+                                emptyLayout.setVisibility(View.VISIBLE);
+                                //outstandingLayout.setVisibility(View.GONE);
+                            }
                         }else {
-                            setShowHide();
-                           // Toast.makeText(getApplicationContext(),"Error in getting SalesOrder Data",Toast.LENGTH_LONG).show();
+                            doListView.setVisibility(View.GONE);
+                            emptyLayout.setVisibility(View.VISIBLE);
+
+                         // Toast.makeText(getApplicationContext(),"Error in getting SalesOrder Data",Toast.LENGTH_LONG).show();
                         }
 
                     }catch (Exception e){
@@ -1659,97 +1680,6 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
             emptyLayout.setVisibility(View.VISIBLE);
             //outstandingLayout.setVisibility(View.GONE);
         }
-    }
-
-    public void setFilterSearch(String customerCode, String status, String fromdate, String todate) throws JSONException {
-        // Initialize a new RequestQueue instance
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        // {"CustomerCode":"","ReceiptNo":"","StartDate":"","EndDate":,"CompanyCode":"1"}
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("User",userName);
-        jsonObject.put("CustomerCode",customerCode);
-        jsonObject.put("FromDate",fromdate);
-        jsonObject.put("ToDate", todate);
-        jsonObject.put("DOStatus",status);
-
-        // Initialize a new JsonArrayRequest instance
-        String url = Utils.getBaseUrl(this) + "DeliveryOrderList";
-        Log.w("Given_url_Do_Filter:",url+"-"+jsonObject.toString());
-        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("Getting Delivery Orders...");
-        pDialog.setCancelable(false);
-        pDialog.show();
-
-        deliveryOrderList = new ArrayList<>();
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    try{
-                        Log.w("DoRes_filter:",response.toString());
-
-                        pDialog.dismiss();
-                        String statusCode=response.optString("statusCode");
-                        if (statusCode.equals("1")){
-                            JSONArray salesOrderArray=response.optJSONArray("responseData");
-                            for (int i=0;i<salesOrderArray.length();i++){
-                                JSONObject object=salesOrderArray.optJSONObject(i);
-                                DeliveryOrderModel model=new DeliveryOrderModel();
-                                model.setCustomerName(object.optString("customerName"));
-                                model.setCustomerCode(object.optString("customerCode"));
-                                model.setDate(object.optString("doDate"));
-                                model.setSubTotal(object.optString("balance"));
-                                model.setDoNumber(object.optString("doNumber"));
-                                model.setNetTotal(object.optString("netTotal"));
-                                model.setDoStatus(object.optString("doStatus"));
-                                model.setDoSign(object.optString("signFlag"));
-                                model.setDoCode(object.optString("code"));
-                                deliveryOrderList.add(model);
-                            }
-                            deliveryOrderAdapter.notifyDataSetChanged();
-                            deliveryOrderAdapter.setLoaded();
-                            setShowHide();
-                        }else {
-                            setShowHide();
-                            // Toast.makeText(getApplicationContext(),"Error in getting SalesOrder Data",Toast.LENGTH_LONG).show();
-                        }
-
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }, error -> {
-            pDialog.dismiss();
-            // Do something when error occurred
-            Log.w("Error_throwing:",error.toString());
-            Toast.makeText(getApplicationContext(),"Server Error,Please try again..",Toast.LENGTH_LONG).show();
-        }){
-            @Override
-            public Map<String, String> getHeaders() {
-                HashMap<String, String> params = new HashMap<>();
-                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
-                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
-                params.put("Authorization", auth);
-                return params;
-            }
-        };
-        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-
-            }
-        });
-        // Add JsonArrayRequest to the RequestQueue
-        requestQueue.add(jsonObjectRequest);
     }
 
 
@@ -1837,25 +1767,28 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == customerSelectCode) {
-            if(resultCode == Activity.RESULT_OK){
-                String result=data.getStringExtra("customerCode");
-                Utils.setCustomerSession(this,result);
-                Intent intent=new Intent(DeliveryOrderListActivity.this,AddInvoiceActivity.class);
-                intent.putExtra("customerId",result);
-                intent.putExtra("activityFrom","DeliveryOrder");
+            if (resultCode == Activity.RESULT_OK) {
+                String result = data.getStringExtra("customerCode");
+                Utils.setCustomerSession(this, result);
+                Intent intent = new Intent(DeliveryOrderListActivity.this, AddInvoiceActivity.class);
+                intent.putExtra("customerId", result);
+                intent.putExtra("activityFrom", "DeliveryOrder");
                 startActivity(intent);
-              //  finish();
+                //  finish();
             }
-//            if (resultCode == Activity.RESULT_CANCELED) {
-//                // Write your code if there's no result
-//            }
-            else if (requestCode == FILTER_CUSTOMER_CODE && resultCode==Activity.RESULT_OK){
-                selectedCustomerId=data.getStringExtra("customerCode");
-                String selectCustomerName=data.getStringExtra("customerName");
-                customerNameText.setText(selectCustomerName);
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Write your code if there's no result
             }
         }
+        else if (requestCode == request_cust_code && resultCode == Activity.RESULT_OK) {
+                    selectedCustomerId = data.getStringExtra("customerCode");
+                    String selectCustomerName = data.getStringExtra("customerName");
+                    Log.w("custCodfiltaa", "" + selectedCustomerId);
+                    customerNameText.setText(selectCustomerName);
+                }
+
     } //onActivityResult
 
     private void showCustomerDialog(Activity activity, String customer_name, String customer_code, String desc) {

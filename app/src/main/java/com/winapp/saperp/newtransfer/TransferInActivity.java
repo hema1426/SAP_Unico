@@ -108,6 +108,7 @@ public class TransferInActivity extends AppCompatActivity {
     public CheckBox invoicePrintCheck;
     public TextView saveTitle;
     public ImageView signatureCapture;
+    public LinearLayout attachement_layoutInvl ;
     public static String signatureString="";
     public static String imageString;
     private AlertDialog signatureAlert;
@@ -120,6 +121,8 @@ public class TransferInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transfer_in);
+
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         session=new SessionManager(this);
         user=session.getUserDetails();
@@ -342,6 +345,7 @@ public class TransferInActivity extends AppCompatActivity {
             // set the custom layout
             builder.setCancelable(false);
             final View customLayout = getLayoutInflater().inflate(R.layout.invoice_save_option, null);
+
             builder.setView(customLayout);
             // add a button
 
@@ -351,6 +355,8 @@ public class TransferInActivity extends AppCompatActivity {
             saveMessage=customLayout.findViewById(R.id.save_message);
             saveTitle=customLayout.findViewById(R.id.save_title);
             signatureCapture = customLayout.findViewById(R.id.signature_capture);
+            attachement_layoutInvl = customLayout.findViewById(R.id.attachement_layoutInv);
+            attachement_layoutInvl.setVisibility(View.GONE);
 
             TextView noOfCopy = customLayout.findViewById(R.id.no_of_copy);
             Button copyPlus = customLayout.findViewById(R.id.increase);

@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +16,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,6 +51,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -97,6 +102,18 @@ public class SettlementListActivity extends NavigationActivity implements View.O
     private SharedPreferences sharedPreferences;
     private String locationCode;
     private static String currentDate;
+     View searchFilterView;
+    public EditText fromDate;
+    public EditText toDate;
+    public Button searchButton;
+    public Button cancelSearch;
+    String toDateStringl = "" ;
+    String oldToDatel = "" ;
+
+    Date fromDatel ;
+
+    private int mYear, mMonth, mDay, mHour, mMinute;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,10 +143,27 @@ public class SettlementListActivity extends NavigationActivity implements View.O
         user=session.getUserDetails();
         username=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
+        searchFilterView=findViewById(R.id.search_filter_settlement);
+        fromDate=findViewById(R.id.from_date);
+        toDate =findViewById(R.id.to_date);
+        cancelSearch=findViewById(R.id.btn_cancel);
+        searchButton=findViewById(R.id.btn_searchSettle);
 
         Date c = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
-        currentDate = df.format(c);
+        System.out.println("Current time => " + c);
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String formattedDate = df.format(c);
+        fromDate.setText(formattedDate);
+        toDate.setText(formattedDate);
+        oldToDatel=toDate.getText().toString();
+
+        try {
+            fromDatel = new SimpleDateFormat("dd/MM/yyyy").parse(oldToDatel);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+         toDateStringl = new SimpleDateFormat("yyyyMMdd").format(fromDatel);
+
 
         editLayout.setOnClickListener(this);
         printPreviewButton.setOnClickListener(this);
@@ -139,14 +173,22 @@ public class SettlementListActivity extends NavigationActivity implements View.O
         printButton.setOnClickListener(this);
         cancelSheet.setOnClickListener(this);
 
-        try {
-            JSONObject jsonObject=new JSONObject();
-            jsonObject.put("User",username);
-            jsonObject.put("LocationCode",locationCode);
-            getAllSettlement(jsonObject);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        getAllSettlement(toDateStringl,toDateStringl);
+
+        fromDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getDate(fromDate);
+            }
+        });
+
+        toDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getDate(toDate);
+            }
+        });
+
 
         View bottomSheet = findViewById(R.id.design_bottom_sheet);
         behavior = BottomSheetBehavior.from(bottomSheet);
@@ -201,6 +243,42 @@ public class SettlementListActivity extends NavigationActivity implements View.O
             }
         });
 
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SimpleDateFormat sdformat = new SimpleDateFormat("dd/MM/yyyy");
+                Date d1 = null;
+                Date d2=null;
+                try {
+                    d1 = sdformat.parse(fromDate.getText().toString());
+                    d2 = sdformat.parse(toDate.getText().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if(d1.compareTo(d2) > 0) {
+                    Toast.makeText(getApplicationContext(),"From date should not be greater than to date",Toast.LENGTH_SHORT).show();
+                } else{
+                    searchFilterView.setVisibility(View.GONE);
+                    try {
+                        String oldFromDate = fromDate.getText().toString();
+                        String oldToDate=toDate.getText().toString();
+                        Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(oldFromDate);
+                        Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(oldToDate);
+                        // Use SimpleDateFormat#format() to format a Date into a String in a certain pattern.
+
+                        String fromDateString = new SimpleDateFormat("yyyyMMdd").format(fromDate);
+                        String toDateString = new SimpleDateFormat("yyyyMMdd").format(toDate);
+                        System.out.println(fromDateString+"-"+toDateString); // 2011-01-18
+
+                        getAllSettlement(fromDateString,toDateString);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+
     }
 
     public void showSettlementOption(){
@@ -215,9 +293,23 @@ public class SettlementListActivity extends NavigationActivity implements View.O
         }
     }
 
-    public void getAllSettlement(JSONObject jsonObject){
-        // Initialize a new RequestQueue instance
+
+
+        public void getAllSettlement(String fromdate, String todate) {
+
+            // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
+        JSONObject jsonObject=new JSONObject();
+
+        try {
+            jsonObject.put("User",username);
+            jsonObject.put("LocationCode",locationCode);
+            jsonObject.put("FromDate",fromdate);
+            jsonObject.put("ToDate", todate);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
         String url= Utils.getBaseUrl(this) +"SettlementList";
         // Initialize a new JsonArrayRequest instance
         Log.w("Given_Settlement_URL:",url+".."+jsonObject);
@@ -305,6 +397,21 @@ public class SettlementListActivity extends NavigationActivity implements View.O
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonArrayRequest);
     }
+    public void getDate(EditText dateEditext){
+        // Get Current Date
+        final Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(SettlementListActivity.this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        dateEditext.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                    }
+                }, mYear, mMonth, mDay);
+        datePickerDialog.show();
+    }
 
     private void setAdapter(ArrayList<SettlementListModel> settlementList) {
         settlementListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -326,11 +433,12 @@ public class SettlementListActivity extends NavigationActivity implements View.O
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.add_menu, menu);
-        MenuItem menuItem1=menu.findItem(R.id.action_total);
-        MenuItem menuItem2=menu.findItem(R.id.action_cart);
-        menuItem1.setVisible(false);
-        menuItem2.setVisible(false);
+        getMenuInflater().inflate(R.menu.sorting_menu, menu);
+//        getMenuInflater().inflate(R.menu.add_menu, menu);
+//        MenuItem menuItem1=menu.findItem(R.id.action_total);
+//        MenuItem menuItem2=menu.findItem(R.id.action_cart);
+//        menuItem1.setVisible(false);
+//        menuItem2.setVisible(false);
         return true;
     }
 
@@ -343,6 +451,21 @@ public class SettlementListActivity extends NavigationActivity implements View.O
             Intent intent=new Intent(getApplicationContext(),SettlementActivity.class);
             intent.putExtra("action","Add");
             startActivityForResult(intent,REQUEST_CODE);
+        }
+        else if (item.getItemId()==R.id.action_filter){
+            if (searchFilterView.getVisibility()==View.VISIBLE){
+                searchFilterView.setVisibility(View.GONE);
+
+                if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+                //slideUp(searchFilterView);
+            }else {
+                searchFilterView.setVisibility(View.VISIBLE);
+                if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
         }
         return true;
     }
@@ -408,14 +531,9 @@ public class SettlementListActivity extends NavigationActivity implements View.O
                 assert requiredValue != null;
                 if (requiredValue.equals("Refresh")){
                     savePrint = "true" ;
-                    try {
-                        JSONObject jsonObject=new JSONObject();
-                        jsonObject.put("User",username);
-                        jsonObject.put("LocationCode",locationCode);
-                        getAllSettlement(jsonObject);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+
+                    getAllSettlement(toDateStringl,toDateStringl);
+
                     saveSettlemtNo = data.getStringExtra("settlemt_PrintNo");
                     getSettlementDetails(saveSettlemtNo);
                 }

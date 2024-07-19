@@ -28,7 +28,6 @@
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/orderListView"
-        android:layout_below="@+id/top_layout"
         tools:listitem="@layout/order_history_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

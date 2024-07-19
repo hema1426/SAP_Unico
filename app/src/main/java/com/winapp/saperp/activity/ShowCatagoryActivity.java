@@ -154,6 +154,8 @@ public class ShowCatagoryActivity extends AppCompatActivity implements ProductAd
     EditText returnEditext;
     LinearLayout pcsQtyLayout;
     ProductsModel model;
+    private String negativeStockStr = "No";
+
     LinearLayout transLayout;
     ImageView cancelSheet;
     View portraitLayout;
@@ -204,6 +206,8 @@ public class ShowCatagoryActivity extends AppCompatActivity implements ProductAd
         companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
         userName=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
+        negativeStockStr=user.get(SessionManager.KEY_NEGATIVE_STOCK);
+
         progressBarLayout = findViewById(R.id.progress_layout);
         productsView =findViewById(R.id.categoriesView);
         progressBarLayout.setVisibility(View.GONE);
@@ -632,7 +636,9 @@ public class ShowCatagoryActivity extends AppCompatActivity implements ProductAd
                 double stock=Double.parseDouble(availability.getText().toString());
                 double net_qty=Double.parseDouble(qtyTextView.getText().toString());
                 if (net_qty + 2  > stock){
-                    showLowStock();
+                    if (negativeStockStr.equalsIgnoreCase("No")) {
+                        showLowStock();
+                    }
                 }else {
                     if (!ctnQtyValue.getText().toString().isEmpty()) {
                         int count = Integer.parseInt(ctnQtyValue.getText().toString());
@@ -673,7 +679,9 @@ public class ShowCatagoryActivity extends AppCompatActivity implements ProductAd
                 double stock=Double.parseDouble(availability.getText().toString());
                 double net_qty=Double.parseDouble(qtyTextView.getText().toString());
                 if (net_qty + 1  > stock){
-                    showLowStock();
+                    if (negativeStockStr.equalsIgnoreCase("No")) {
+                        showLowStock();
+                    }
                 }else {
                     if (!pcsQtyValue.getText().toString().isEmpty()){
                         int count=Integer.parseInt(pcsQtyValue.getText().toString());
@@ -1419,6 +1427,7 @@ public class ShowCatagoryActivity extends AppCompatActivity implements ProductAd
                             intent.putExtra("unitPrice",unitPrice);
                             intent.putExtra("pcsPerCarton",pcsPercarton);
                             intent.putExtra("stockQty",stock);
+
                             startActivity(intent);
                             // viewCloseBottomSheet();
                         }

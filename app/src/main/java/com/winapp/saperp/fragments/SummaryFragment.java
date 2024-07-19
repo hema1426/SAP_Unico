@@ -1630,7 +1630,7 @@ public class SummaryFragment extends Fragment {
                                 model.setCustomerCode(object.optString("customerCode"));
                                 model.setCustomerName(object.optString("customerName"));
                                 model.setAddress(object.optString("address1"));
-                                model.setDeliveryAddress(object.optString("address1"));
+                                model.setDeliveryAddress(object.optString("shippingAddress"));
                                 model.setSubTotal(object.optString("subTotal"));
                                 model.setNetTax(object.optString("totalTax"));
                                 model.setNetTotal(object.optString("netTotal"));
@@ -2254,7 +2254,7 @@ public class SummaryFragment extends Fragment {
             invoiceImageObject.put("CompanyCode",companyCode);
             invoiceImageObject.put("SlNo",0);
             invoiceImageObject.put("TranType","IN");
-            invoiceImageObject.put("RefPhoto",imageString);
+            invoiceImageObject.put("image",imageString);
             invoiceImageObject.put("CustomerCode",object.get("customerCode"));
             invoiceImageObject.put("CustomerName",object.get("customerName"));
             invoiceImageObject.put("DeliveryCode",SettingUtils.getDeliveryAddressCode());

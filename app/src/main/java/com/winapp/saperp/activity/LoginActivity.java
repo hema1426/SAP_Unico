@@ -288,12 +288,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 String salesManPhone=object.optString("salesPersonMobile");
                                 String salesManMail=object.optString("salesPersonEmail");
                                 String salesManOffice=object.optString("salesPersonOfficeNo");
+                                String negativeStock =object.optString("allowNegativeStock");
 
                                 session.createLoginSession(
                                         username,password,rollname,locationCode,"1",ispermission,
                                         companycode,companyname,address1,address2,address3,country,postalcode,
                                         phone,gstNo,logo,qrcode,paid,unpaid,paynow,bank,cheque,
-                                        salesManName,salesManPhone,salesManMail,salesManOffice);
+                                        salesManName,salesManPhone,salesManMail,salesManOffice,negativeStock);
                                 // Adding the Preference values to the Session to remember the values
                                 if (rememberMe.isChecked()) {
                                     loginPrefsEditor.putBoolean("saveLogin", true);

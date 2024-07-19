@@ -71,8 +71,6 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.winapp.saperp.BuildConfig
 import com.winapp.saperp.R
-import com.winapp.saperp.activity.CashCollectionActivity
-import com.winapp.saperp.activity.CreateNewInvoiceActivity
 import com.winapp.saperp.activity.NewInvoiceListActivity
 import com.winapp.saperp.activity.SalesOrderListActivity
 import com.winapp.saperp.adapter.NewSalesReturnProductAdapter
@@ -3056,8 +3054,8 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                             model.address2 = `object`.optString("address2")
                             model.address3 = `object`.optString("address3")
                             model.addressstate =
-                                (`object`.optString("block") + " " + `object`.optString("street") + " "
-                                        + `object`.optString("city"))
+                                ( `object`.optString("street") + " "+
+                                        `object`.optString("block") + " " + `object`.optString("city"))
                             model.addresssZipcode =
                                 (`object`.optString("countryName") + " " + `object`.optString("state") + " "
                                         + `object`.optString("zipcode"))
@@ -3079,6 +3077,12 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                             model.soDate = `object`.optString("soDate")
                             model.doDate = `object`.optString("doDate")
                             model.doNumber = `object`.optString("doNumber")
+                            model.allowDeliveryAddress = response.optString("showShippingAddress")
+                            model.deliveryAddress =
+                                `object`.optString("shipAddress2") + `object`.optString("shipAddress3") + `object`.optString(
+                                    "shipStreet"
+                                )
+
                             val signFlag = `object`.optString("signFlag")
                             if (signFlag == "Y") {
                                 val signature = `object`.optString("signature")

@@ -23,9 +23,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.OrderHistoryAdapter;
-import com.winapp.saperp.model.CustomerStateModel;
-import com.winapp.saperp.model.InvoiceModel;
-import com.winapp.saperp.model.InvoicePrintPreviewModel;
 import com.winapp.saperp.model.OrderHistoryModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
@@ -87,9 +84,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
             activityFrom=getIntent().getStringExtra("activityHistory");
             customername=getIntent().getStringExtra("custNameHistory");
             getSupportActionBar().setTitle(customername+" - "+"Order History");
-
-
-
+            Log.w("activityFrom_his",""+activityFrom);
 //            JSONObject jsonObject=new JSONObject();
 //            try {
 ////                jsonObject.put("CompanyCode",companyCode);
@@ -98,10 +93,14 @@ public class OrderHistoryActivity extends AppCompatActivity {
 //                e.printStackTrace();
 //            }
             if (activityFrom.equals("SalesOrder")){
-            //    getAllSalesOrderList(jsonObject);
+                try {
+                    getCustomerSOHistory(customerCode);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
             }else {
                 try {
-                    getCustomerHistory(customerCode);
+                    getCustomerInvoiceHistory(customerCode);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }            }
@@ -109,7 +108,102 @@ public class OrderHistoryActivity extends AppCompatActivity {
 
     }
 
-    private void getCustomerHistory(String customer_id) throws JSONException {
+    private void getCustomerSOHistory(String customer_id) throws JSONException {
+        // Initialize a new RequestQueue instance
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        // Initialize a new JsonArrayRequest instance
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("CustomerCode",customer_id);
+        jsonObject.put("FromDate","");
+        jsonObject.put("ToDate","");
+        jsonObject.put("LocationCode",locationCode);
+        jsonObject.put("User",username);
+        jsonObject.put("DocStatus","");
+        String url= Utils.getBaseUrl(this) +"salesOrderList" ;
+        Log.w("Given_url_SO_history:",url+jsonObject);
+
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Getting Orders Details...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+        ordersList=new ArrayList<>();
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
+            try{
+                Log.w("OrderHistoryRes_so:",response.toString());
+
+                if (response.length() > 0) {
+                    String statusCode=response.optString("statusCode");
+                    String statusMessage=response.optString("statusMessage");
+
+                    if (statusCode.equals("1")){
+                        JSONArray invoiceArray=response.optJSONArray("responseData");
+                        for (int i=0;i<invoiceArray.length();i++){
+                            JSONObject object=invoiceArray.optJSONObject(i);
+                            OrderHistoryModel model=new OrderHistoryModel();
+
+                            model.setCustomerName(object.optString("customerName"));
+                            model.setOrderDate(object.optString("soDate"));
+                            model.setCustomerCode(object.optString("customerCode"));
+                            model.setOrderId(object.optString("code"));
+                            model.setOrderNumber("SalesOrder No# : "+object.optString("soNumber"));
+                            model.setPaidAmount("Paid Amt : $ "+object.optString("paidAmount"));
+                            model.setDueAmount("$ "+object.optString("balance"));
+                            //   model.setOrderStatus(object.optString("invoiceStatus"));
+                            model.setDueDelayDays("");
+
+                            model.setOrderTime("");
+
+                            ordersList.add(model);
+                        }
+                        if (ordersList.size() > 0) {
+                            setOrdersAdapter(ordersList);
+                            orderListView.setVisibility(View.VISIBLE);
+                            emptyLayout.setVisibility(View.GONE);
+                        }
+                        else{
+                            orderListView.setVisibility(View.GONE);
+                            emptyLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+                pDialog.dismiss();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }, error -> {
+            pDialog.dismiss();
+            // Do something when error occurred
+            Log.w("Error_throwing:",error.toString());
+        }){
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private void getCustomerInvoiceHistory(String customer_id) throws JSONException {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Initialize a new JsonArrayRequest instance
@@ -145,7 +239,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
 
                             model.setCustomerName(object.optString("customerName"));
                             model.setOrderDate(object.optString("invoiceDate"));
-                            model.setCustomerCode(object.optString("CustomerCode"));
+                            model.setCustomerCode(object.optString("customerCode"));
                             model.setOrderId(object.optString("code"));
                             model.setOrderNumber("Invoice No# : "+object.optString("invoiceNumber"));
                             model.setPaidAmount("Paid Amt : $ "+object.optString("paidAmount"));
@@ -159,6 +253,12 @@ public class OrderHistoryActivity extends AppCompatActivity {
                         }
                         if (ordersList.size() > 0) {
                             setOrdersAdapter(ordersList);
+                            orderListView.setVisibility(View.VISIBLE);
+                            emptyLayout.setVisibility(View.GONE);
+                        }
+                        else{
+                            orderListView.setVisibility(View.GONE);
+                            emptyLayout.setVisibility(View.VISIBLE);
                         }
 
                     }

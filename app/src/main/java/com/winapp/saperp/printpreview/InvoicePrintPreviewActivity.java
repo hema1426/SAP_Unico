@@ -105,6 +105,8 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
     private TextView netTotalText;
     private TextView outstandingText;
     private TextView taxTitle;
+    private TextView deliveryAddr_print_txtl ;
+    private LinearLayout deliveryAddr_print_layl;
     private TextView itemDiscount;
     private TextView companyNametext;
     private TextView companyAddress1Text;
@@ -187,6 +189,8 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
         netTotalText = findViewById(R.id.net_total);
         outstandingText = findViewById(R.id.outstanding_amount);
         taxTitle = findViewById(R.id.tax_title);
+        deliveryAddr_print_txtl = findViewById(R.id.deliveryAddr_print_txt);
+        deliveryAddr_print_layl = findViewById(R.id.deliveryAddr_print_lay);
         itemDiscount = findViewById(R.id.item_disc);
         companyNametext = findViewById(R.id.company_name);
         companyAddress1Text = findViewById(R.id.address1);
@@ -302,7 +306,7 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url,
                 jsonObject, response -> {
                     try {
-                        Log.w("DetailsResponse::", response.toString());
+                      //  Log.w("DetailsResponse::", response.toString());
                         String statusCode=response.optString("statusCode");
                         if (statusCode.equals("1")){
                             JSONArray responseData=response.getJSONArray("responseData");
@@ -315,12 +319,16 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
 //
 //                                        if (Double.parseDouble(object.optString("ExchangeQty")) > 0) {
                             InvoicePrintPreviewModel model = new InvoicePrintPreviewModel();
+
                             model.setInvoiceNumber(object.optString("invoiceNumber"));
                             model.setInvoiceDate(object.optString("invoiceDate"));
                             model.setCustomerCode(object.optString("customerCode"));
                             model.setCustomerName(object.optString("customerName"));
                             model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
-                            model.setDeliveryAddress("");
+                            model.setDeliveryAddress(object.optString("shipAddress2")+object.optString("shipAddress3")+
+                                    object.optString("shipStreet"));
+                            String delieryAddr = object.optString("shipAddress2")+object.optString("shipAddress3")+
+                                    object.optString("shipStreet");
                             model.setSubTotal(object.optString("subTotal"));
                             model.setNetTax(object.optString("taxTotal"));
                             model.setNetTotal(object.optString("netTotal"));
@@ -336,9 +344,17 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                             model.setAddress1(object.optString("address1"));
                             model.setAddress2(object.optString("address2"));
                             model.setAddress3(object.optString("address3"));
+                            model.setAllowDeliveryAddress(object.optString("showShippingAddress"));
 
-                            model.setAddressstate(object.optString("block")+" "+object.optString("street")+" "
-                                    +object.optString("city"));
+                            if(object.optString("showShippingAddress").equalsIgnoreCase("Yes")){
+                                deliveryAddr_print_layl.setVisibility(View.VISIBLE);
+                                deliveryAddr_print_txtl.setText(object.optString("shipAddress2"));
+                            }
+                            else{
+                                deliveryAddr_print_layl.setVisibility(View.GONE);
+                            }
+                            model.setAddressstate(object.optString("street")+" "+
+                                    object.optString("block")+" "+object.optString("city"));
                             model.setAddresssZipcode(object.optString("countryName")+" "+object.optString("state")+" "
                                     +object.optString("zipcode"));
 

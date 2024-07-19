@@ -127,7 +127,7 @@ public class Constants {
     public static String TRANS_ORIENT_DEMO ="https://c21326-EasySales-Test.cloudiax.com/api/";
 
    //RAYMANG
-    public static String RAYMANG_URL_JULY="https://app0027.cloudtaktiks.com:11014/api/";
+    //public static String RAYMANG_URL_JULY="https://app0027.cloudtaktiks.com:11014/api/";
 
    // Aadhi demo july
     public static String aadhi_URL_JULY="http://18.143.95.61:99/api/";

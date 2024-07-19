@@ -271,7 +271,7 @@
             android:name=".activity.ReOrderCartActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.OrderDetailsActivity"
+            android:name=".activity.OrderDetailsHistoryActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.OrderHistoryActivity"

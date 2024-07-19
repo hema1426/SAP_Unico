@@ -125,6 +125,9 @@ public class CategoriesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_categories);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Catalog");
+
+        Log.w("activity_cg",getClass().getSimpleName().toString()+"ProductAdapterLoadMore");
+
         session = new SessionManager(this);
         dbHelper = new DBHelper(this);
         user = session.getUserDetails();
@@ -572,6 +575,8 @@ public class CategoriesActivity extends AppCompatActivity {
             model.setTaxPerc(customerObject.optString("taxPercentage"));
             model.setTaxType(customerObject.optString("taxType"));
             model.setTaxCode(customerObject.optString("taxCode"));
+            model.setAllowFOC(customerObject.optString("allowFOC"));
+
             ArrayList<CustomerDetails> taxList = new ArrayList<>();
             taxList.add(model);
             dbHelper.insertCustomerTaxValues(taxList);

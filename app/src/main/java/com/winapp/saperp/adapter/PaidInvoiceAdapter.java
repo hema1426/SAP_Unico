@@ -353,7 +353,7 @@ public class PaidInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             model.setTaxValue(object.optString("TaxPerc"));
                             model.setOutStandingAmount(object.optString("balanceAmount"));
                             model.setBillDiscount(object.optString("BillDIscount"));
-                            model.setItemDiscount(object.optString("ItemDiscount"));
+                            model.setAllowDeliveryAddress(object.optString("showShippingAddress"));
 
                             JSONArray products=object.getJSONArray("invoiceDetails");
                             for (int i=0;i<products.length();i++) {

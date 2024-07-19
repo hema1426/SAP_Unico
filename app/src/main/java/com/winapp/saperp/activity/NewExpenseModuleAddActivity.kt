@@ -104,6 +104,7 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
     private var selectAccountcode: String? = ""
     private var add_pdt_btnl: Button? = null
     var save_btn: MenuItem? = null
+    var action_scan_menul: MenuItem? = null
     var isback = false
 
     var expenseAddlist: ArrayList<ExpenseModuleAddModel> = ArrayList()
@@ -1240,6 +1241,9 @@ class NewExpenseModuleAddActivity : AppCompatActivity() , ExpenseModuleAddAdapte
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.save_menu, menu)
+
+        action_scan_menul = menu.findItem(R.id.action_scan_menu)
+        action_scan_menul!!.isVisible = false
         save_btn = menu.findItem(R.id.action_save)
         return true
     }

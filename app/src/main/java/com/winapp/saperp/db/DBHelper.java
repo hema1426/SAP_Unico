@@ -1063,7 +1063,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(EXCHANGE_QTY, exchangeQty);
 
         db.insert(CREATE_INVOICE_TABLE, null, contentValues);
-        Log.w("InsertProductValues:", contentValues.toString());
+        Log.w("InsertProductValuesC:", contentValues.toString());
 
         return true;
     }
@@ -1112,7 +1112,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     db.update(CREATE_INVOICE_TABLE, contentValues, "product_code = ?", new String[]{productCode});
                     Log.w("Cart_updated", "Success");
                     Toast.makeText(context, "Product Updated Successfully", Toast.LENGTH_LONG).show();
-                    Log.w("InsertProductValuesIn:", contentValues.toString());
+                    Log.w("InsertProductValuesIn1:", contentValues.toString());
                 } else {
 
                     ContentValues contentValues = new ContentValues();
@@ -1136,7 +1136,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     contentValues.put(DAMAGED, damaged);
                     contentValues.put(EXCHANGE_QTY, exchangeQty);
                     db.insert(CREATE_INVOICE_TABLE, null, contentValues);
-                    Log.w("InsertProductValuesIn:", contentValues.toString());
+                    Log.w("InsertProductValuesIn2:", contentValues.toString());
                 }
             } else {
                 ContentValues contentValues = new ContentValues();
@@ -1160,7 +1160,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 contentValues.put(DAMAGED, damaged);
                 contentValues.put(EXCHANGE_QTY, exchangeQty);
                 db.insert(CREATE_INVOICE_TABLE, null, contentValues);
-                Log.w("InsertProductValuesIn:", contentValues.toString());
+                Log.w("InsertProductValuesIn3:", contentValues.toString());
             }
         } catch (Exception ex) {
         } finally {
@@ -1225,7 +1225,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 db.update(TABLE_CART, contentValues, "pid = ?", new String[]{pid});
                 Log.w("Cart_updated", "Success");
                 Toast.makeText(context, "Product Updated2 Successfully", Toast.LENGTH_LONG).show();
-                Log.w("InsertProductValues:", contentValues.toString());
+                Log.w("InsertProductValues1:", contentValues.toString());
             } else {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put("pid", pid);

@@ -389,7 +389,7 @@ public class RoCustomerOutstandDatePreviewActivity extends AppCompatActivity {
         if (validatePrinterConfiguration()){
             if (printerType.equals("TSC Printer")){
                 TSCPrinter printer=new TSCPrinter(this,printerMacId,"CustomerStatement");
-                printer.printCustomerStatement(copy,customerStateList,from_date,to_date);
+                printer.printCustomerStatementDate(copy,customerStateList,from_date,to_date);
             } else {
                 Toast.makeText(getApplicationContext(),"This Printer not Support...!",Toast.LENGTH_SHORT).show();
             }

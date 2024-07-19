@@ -233,6 +233,7 @@ public class CartActivity extends AppCompatActivity {
     private JSONObject customerObject;
     public static String current_latitude = "0.00";
     public static String current_longitude = "0.00";
+    public static String current_addr = "";
     public String currentDateString;
     private SharedPreferenceUtil sharedPreferenceUtil;
 
@@ -1030,6 +1031,7 @@ public class CartActivity extends AppCompatActivity {
             String currentAddress = Utils.getCompleteAddress(CartActivity.this, latitude, longitude);
             if (currentAddress != null && !currentAddress.isEmpty()) {
                 locationText.setText(currentAddress);
+                current_addr = currentAddress ;
             }
         } else {
             // locationTrack.showSettingsAlert();
@@ -1918,12 +1920,14 @@ public class CartActivity extends AppCompatActivity {
             rootJsonObject.put("locationCode", locationCode);
             rootJsonObject.put("latitude", current_latitude);
             rootJsonObject.put("longitude", current_longitude);
+            rootJsonObject.put("CurrentAddress", current_addr);
             rootJsonObject.put("Paymode", "");
             rootJsonObject.put("ChequeDateString", "");
             rootJsonObject.put("BankCode", "");
             rootJsonObject.put("AccountNo", "");
             rootJsonObject.put("ChequeNo", "");
-
+            rootJsonObject.put("image", imageString);
+            rootJsonObject.put("signature", signatureString);
             // Sales Details Add to the Objects
             localCart = dbHelper.getAllCartItems();
 
@@ -2024,18 +2028,16 @@ public class CartActivity extends AppCompatActivity {
             signatureObject.put("RefSignaturestring", null);
 
 
-            invoiceImageObject.put("InvoiceNo", "");
-            invoiceImageObject.put("CompanyCode", companyCode);
-            invoiceImageObject.put("SlNo", 0);
-            invoiceImageObject.put("TranType", "IN");
-            invoiceImageObject.put("RefPhoto", imageString);
-            rootJsonObject.put("signature", signatureString);
-            invoiceImageObject.put("CustomerCode", object.get("customerCode"));
-            invoiceImageObject.put("CustomerName", object.get("customerName"));
-            invoiceImageObject.put("DeliveryCode", SettingUtils.getDeliveryAddressCode());
-            invoiceImageObject.put("CompanyName", user.get(SessionManager.KEY_COMPANY_NAME));
-            invoiceImageObject.put("ModifyUser", userName);
-            invoiceImageObject.put("RefPhotostring", null);
+//            invoiceImageObject.put("InvoiceNo", "");
+//            invoiceImageObject.put("CompanyCode", companyCode);
+//            invoiceImageObject.put("SlNo", 0);
+//            invoiceImageObject.put("TranType", "IN");
+//            invoiceImageObject.put("CustomerCode", object.get("customerCode"));
+//            invoiceImageObject.put("CustomerName", object.get("customerName"));
+//            invoiceImageObject.put("DeliveryCode", SettingUtils.getDeliveryAddressCode());
+//            invoiceImageObject.put("CompanyName", user.get(SessionManager.KEY_COMPANY_NAME));
+//            invoiceImageObject.put("ModifyUser", userName);
+//            invoiceImageObject.put("RefPhotostring", null);
 
 
             // rootJsonObject.put("IsSaveSO",false);
@@ -2163,6 +2165,9 @@ public class CartActivity extends AppCompatActivity {
             rootJsonObject.put("signature", signatureString);
             rootJsonObject.put("latitude", current_latitude);
             rootJsonObject.put("longitude", current_longitude);
+            rootJsonObject.put("CurrentAddress", current_addr);
+            rootJsonObject.put("image", imageString);
+            rootJsonObject.put("signature", signatureString);
 
             // Sales Details Add to the Objects
             localCart = dbHelper.getAllCartItems();
@@ -2579,7 +2584,8 @@ public class CartActivity extends AppCompatActivity {
                             model.setCustomerCode(response.optString("CustomerCode"));
                             model.setCustomerName(response.optString("CustomerName"));
                             model.setAddress(response.optString("Address1"));
-                            model.setDeliveryAddress(response.optString("Address1"));
+                            model.setDeliveryAddress(response.optString("shipAddress2")+response.optString("shipAddress3")+
+                                    response.optString("shipStreet"));
                             model.setSubTotal(response.optString("SubTotal"));
                             model.setNetTax(response.optString("Tax"));
                             model.setNetTotal(response.optString("NetTotal"));
@@ -2588,7 +2594,7 @@ public class CartActivity extends AppCompatActivity {
                             model.setOutStandingAmount(response.optString("BalanceAmount"));
                             model.setBillDiscount(response.optString("BillDIscount"));
                             model.setItemDiscount(response.optString("ItemDiscount"));
-
+                            model.setAllowDeliveryAddress(response.optString("showShippingAddress"));
                             JSONArray products = response.getJSONArray("InvoiceDetails");
                             for (int i = 0; i < products.length(); i++) {
                                 JSONObject object = products.getJSONObject(i);
@@ -2806,7 +2812,7 @@ public class CartActivity extends AppCompatActivity {
                             model.setCustomerCode(response.optString("CustomerCode"));
                             model.setCustomerName(response.optString("CustomerName"));
                             model.setAddress(response.optString("Address1"));
-                            model.setDeliveryAddress(response.optString("Address1"));
+                            model.setDeliveryAddress(response.optString("shippingAddress"));
                             model.setSubTotal(response.optString("SubTotal"));
                             model.setNetTax(response.optString("Tax"));
                             model.setNetTotal(response.optString("NetTotal"));

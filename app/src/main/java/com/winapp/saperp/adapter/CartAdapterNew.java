@@ -62,6 +62,7 @@ public class CartAdapterNew extends
     public  CallBack callBack;
     private SessionManager session;
     private String customerId;
+    private String negativeStockStr = "No";
     double net_amount=0.0;
     double carton_amount=0.0;
     double loose_amount=0.0;
@@ -172,7 +173,9 @@ public class CartAdapterNew extends
                 dbHelper=new DBHelper(mContext);
                 HashMap<String ,String > user=session.getUserDetails();
                 customerId=user.get(SessionManager.KEY_CUSTOMER_ID);
-                // display name with Caps letter
+                negativeStockStr=user.get(SessionManager.KEY_NEGATIVE_STOCK);
+
+            // display name with Caps letter
                 holder.productName.setText(products.getCART_COLUMN_PNAME().substring(0, 1).toUpperCase() +products.getCART_COLUMN_PNAME().substring(1).toLowerCase());
              //   holder.itemQty.setText(products.getCART_COLUMN_QTY());
                 holder.productRate.setText("$ "+Utils.twoDecimalPoint(Double.parseDouble(products.getSubTotal())));
@@ -313,7 +316,9 @@ public class CartAdapterNew extends
             Log.w("Net_Qty:", String.valueOf(val));
             Log.w("Allow_cn_qty:",String.valueOf(stock));
             if (val+1 > stock){
-                if (isAllowLowStock){
+//                if (isAllowLowStock){
+                if (negativeStockStr.equalsIgnoreCase("Yes")){
+
                     int count=Integer.parseInt(holder.ctnQtyValue.getText().toString());
                     int ctn=count+1;
                     holder.ctnQtyValue.setText(String.valueOf(ctn));
@@ -375,7 +380,9 @@ public class CartAdapterNew extends
             double net_qty=(Double.parseDouble(holder.ctnQtyValue.getText().toString()) * pcsperctn)+Double.parseDouble(holder.pcsQtyValue.getText().toString());
             int val = (int)net_qty;
             if (val + 1  > stock){
-                if (isAllowLowStock){
+//                if (isAllowLowStock){
+                if (negativeStockStr.equalsIgnoreCase("Yes")){
+
                     int count=Integer.parseInt(holder.pcsQtyValue.getText().toString());
                     int ctn=count+1;
                     holder.pcsQtyValue.setText(String.valueOf(ctn));

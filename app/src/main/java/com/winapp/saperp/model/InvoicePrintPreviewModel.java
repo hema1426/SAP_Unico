@@ -35,6 +35,7 @@ public class InvoicePrintPreviewModel {
     private String overAllTotal;
     private String paymentTerm;
     private String excQty;
+    private String allowDeliveryAddress;
 
     public String getPaymentTerm() {
         return paymentTerm;
@@ -61,6 +62,14 @@ public class InvoicePrintPreviewModel {
 
     public void setSoNumber(String soNumber) {
         this.soNumber = soNumber;
+    }
+
+    public String getAllowDeliveryAddress() {
+        return allowDeliveryAddress;
+    }
+
+    public void setAllowDeliveryAddress(String allowDeliveryAddress) {
+        this.allowDeliveryAddress = allowDeliveryAddress;
     }
 
     public String getDoNumber() {

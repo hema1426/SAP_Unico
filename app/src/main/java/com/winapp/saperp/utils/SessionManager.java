@@ -69,6 +69,7 @@ public class SessionManager {
     public static final String KEY_SALESMAN_PHONE="salesman_phone";
     public static final String KEY_SALESMAN_EMAIL="salesman_email";
     public static final String KEY_SALESMAN_OFFICE="salesman_office";
+    public static final String KEY_NEGATIVE_STOCK="negative_stock";
     private SharedPreferences.Editor registerPrefsEditor;
     private SharedPreferences registerPreferences;
     private SharedPreferences loginPreferences;
@@ -102,7 +103,8 @@ public class SessionManager {
                                    String company_code,String company_name,String address1,String address2,String address3,
                                    String country,String postalcode,String phoneno,String regno,String logo,
                                    String qrcode,String paid,String unpaid,String paynow,String bank,String cheque,
-                                   String salesManName , String salesManPhone , String salesManEmail , String salesManOffice){
+                                   String salesManName , String salesManPhone , String salesManEmail ,
+                                   String salesManOffice ,String negativeStock){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
         editor.putString(KEY_USER_NAME, user_name);
@@ -131,6 +133,7 @@ public class SessionManager {
         editor.putString(KEY_SALESMAN_PHONE,salesManPhone);
         editor.putString(KEY_SALESMAN_EMAIL,salesManEmail);
         editor.putString(KEY_SALESMAN_OFFICE,salesManOffice);
+        editor.putString(KEY_NEGATIVE_STOCK,negativeStock);
 
         editor.commit();
     }
@@ -212,6 +215,7 @@ public class SessionManager {
         user.put(KEY_SALESMAN_PHONE,pref.getString(KEY_SALESMAN_PHONE,null));
         user.put(KEY_SALESMAN_EMAIL,pref.getString(KEY_SALESMAN_EMAIL,null));
         user.put(KEY_SALESMAN_OFFICE,pref.getString(KEY_SALESMAN_OFFICE,null));
+        user.put(KEY_NEGATIVE_STOCK,pref.getString(KEY_NEGATIVE_STOCK,null));
 
         return user;
     }

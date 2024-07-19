@@ -3385,8 +3385,8 @@ public class NewInvoiceListActivity extends NavigationActivity
                             model.setAddress1(object.optString("address1"));
                             model.setAddress2(object.optString("address2"));
                             model.setAddress3(object.optString("address3"));
-                            model.setAddressstate(object.optString("block")+" "+object.optString("street")+" "
-                                    +object.optString("city"));
+                            model.setAddressstate(object.optString("street")+" "
+                                    + object.optString("block") + " " + object.optString("city"));
                             model.setAddresssZipcode(object.optString("countryName")+" "+object.optString("state")+" "
                                     +object.optString("zipcode"));
 
@@ -3407,6 +3407,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                             model.setSoDate(object.optString("soDate"));
                             model.setDoDate(object.optString("doDate"));
                             model.setDoNumber(object.optString("doNumber"));
+                            model.setAllowDeliveryAddress(object.optString("showShippingAddress"));
                             String signFlag = object.optString("signFlag");
                             if (signFlag.equals("Y")) {
                                 String signature = object.optString("signature");

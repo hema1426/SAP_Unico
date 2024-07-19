@@ -179,30 +179,31 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
                     "","",model.getTotal(),model.getStockQty(),model.getUomcode());*/
 
             Log.w("ModelDisplay:",model.toString());
-
-            boolean status= dbHelper.insertCart(
-                    model.productId.toString(),
-                    model.productName.toString(),
-                    model.ctnQty.toString(),
-                    model.pcsQty,
-                    model.subTotal,"",
-                    model.netAmount,"weight",
-                    model.cartonPrice,
-                    model.loosePrice,
-                    model.pcsPerCarton,
-                    model.tax,
-                    model.subTotal,
-                    "",
-                    "0",
-                    "",
-                    "0",
-                    "",
-                    "0.00",
-                    "0",
-                    "","",
-                    model.subTotal,
-                    model.stockQty,
-                    model.uomcode,"0.00");
+            String return_qty = "0";
+            double net_qty = Double.parseDouble(model.getCtnQty()) - Double.parseDouble(return_qty);
+            String price_value = model.getLoosePrice();
+            boolean status=
+                    dbHelper.insertCreateInvoiceCartEdit(
+                            model.getProductId(),
+                            model.getProductName(),
+                            model.getUomcode(),
+                            model.getCtnQty(),
+                            model.getReturnQty(),
+                            String.valueOf(net_qty),
+                            model.getFocQty(),
+                            price_value,
+                            "",
+                            model.getTotal(),
+                            model.getSubTotal(),
+                            model.getPriceWithGST(),
+                            model.getNetAmount(),
+                            model.getItemDiscount(),
+                            model.getBillDisc(),
+                            "",
+                            "",
+                            model.getExchangeQty()
+                    );
+;
 
             /*dbHelper.insertCart(
                     model.getProductId(),
@@ -232,10 +233,10 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
                     "23");*/
 
 
-            Toast.makeText(context,"Product added to your list",Toast.LENGTH_SHORT).show();
+       //     Toast.makeText(context,"Product added to your list",Toast.LENGTH_SHORT).show();
         }else {
-            dbHelper.deleteProduct(model.getProductId());
-            Toast.makeText(context,"Product removed from your list",Toast.LENGTH_SHORT).show();
+            dbHelper.deleteInvoiceProduct(model.getProductId());
+          //  Toast.makeText(context,"Product removed from your list",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -284,6 +285,42 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
         private boolean isProductCheck;
         private String stockQty;
         private String uomcode;
+        private String priceWithGST;
+        private String itemDisc;
+        private String billDisc;
+        private String billDiscPercentage;
+
+        public String getItemDisc() {
+            return itemDisc;
+        }
+
+        public void setItemDisc(String itemDisc) {
+            this.itemDisc = itemDisc;
+        }
+
+        public String getBillDisc() {
+            return billDisc;
+        }
+
+        public void setBillDisc(String billDisc) {
+            this.billDisc = billDisc;
+        }
+
+        public String getBillDiscPercentage() {
+            return billDiscPercentage;
+        }
+
+        public void setBillDiscPercentage(String billDiscPercentage) {
+            this.billDiscPercentage = billDiscPercentage;
+        }
+
+        public String getPriceWithGST() {
+            return priceWithGST;
+        }
+
+        public void setPriceWithGST(String priceWithGST) {
+            this.priceWithGST = priceWithGST;
+        }
 
         public String getUomcode() {
             return uomcode;

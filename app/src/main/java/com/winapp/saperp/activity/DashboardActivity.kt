@@ -713,6 +713,7 @@ class DashboardActivity : NavigationActivity() {
             arrayAdapter.add(locationDetailsArrayList[i].locationName + " - " + locationDetailsArrayList[i].locationCode)
         }
         val checkedItem = Utils.getLocationCodeIndex(locationDetailsArrayList, locationCodem)
+        fromWarehouseCode = locationCodem
         builderSingle.setSingleChoiceItems(arrayAdapter, checkedItem) { dialog, which ->
             fromWarehouseCode = locationDetailsArrayList[which].locationCode
             if (fromWarehouseCode != null && !fromWarehouseCode!!.isEmpty()) {
@@ -732,6 +733,7 @@ class DashboardActivity : NavigationActivity() {
         builderSingle.setPositiveButton("Select") { dialogInterface, i ->
             Utils.setSessionForLocation(applicationContext, fromWarehouseCode)
             val intent = Intent(applicationContext, DashboardActivity::class.java)
+            Log.w("locationCodemvv",""+fromWarehouseCode+locationCodem)
             startActivity(intent)
             finish()
         }

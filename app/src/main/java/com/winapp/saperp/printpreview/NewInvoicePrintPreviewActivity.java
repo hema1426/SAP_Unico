@@ -68,6 +68,8 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
     private String companyId;
     private SweetAlertDialog pDialog;
     private String invoiceNumber;
+    private TextView deliveryAddr_print_txtl ;
+    private LinearLayout deliveryAddr_print_layl;
     private SessionManager session;
     private HashMap<String, String> user;
     private ArrayList<InvoicePrintPreviewModel> invoiceHeaderDetails;
@@ -187,6 +189,8 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
         invoiceNumberText =findViewById (R.id.invoice_no);
         invoiceDateText =findViewById (R.id.invoice_date);
         customerNameText =findViewById (R.id.customer_name);
+        deliveryAddr_print_txtl = findViewById(R.id.deliveryAddr_print_txt);
+        deliveryAddr_print_layl = findViewById(R.id.deliveryAddr_print_lay);
         customerCodetext =findViewById (R.id.customer_code);
         addressText =findViewById (R.id.customer_addr_inv);
         paymentText=findViewById (R.id.payment_terms);
@@ -295,6 +299,9 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                     JSONArray responseData=response.getJSONArray("responseData");
                     JSONObject object=responseData.optJSONObject(0);
 
+                    Log.w("delivertAddrPrevie",""+object.optString("showShippingAddress")+".."+
+                            object.optString("shippingAddress"));
+
                     InvoicePrintPreviewModel model = new InvoicePrintPreviewModel();
                     model.setInvoiceNumber(object.optString("invoiceNumber"));
                     model.setInvoiceDate(object.optString("invoiceDate"));
@@ -312,6 +319,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                     model.setPaymentTerm(object.optString("paymentTerm"));
                     model.setBalanceAmount(object.optString("balanceAmount"));
                     model.setOverAllTotal(object.optString("overAllTotal"));
+
                     //   Utils.setInvoiceOutstandingAmount(object.optString("balanceAmount"));
                     //  Utils.setInvoiceMode("Invoice");
                     model.setBillDiscount(object.optString("billDiscount"));
@@ -319,8 +327,8 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                     model.setAddress1(object.optString("address1"));
                     model.setAddress2(object.optString("address2"));
                     model.setAddress3(object.optString("address3"));
-                    model.setAddressstate(object.optString("block")+" "+object.optString("street")+" "
-                            +object.optString("city"));
+                    model.setAddressstate(object.optString("street")+" "+
+                            object.optString("block")+" "+object.optString("city"));
                     model.setAddresssZipcode(object.optString("countryName")+" "+object.optString("state")+" "
                             +object.optString("zipcode"));
 
@@ -328,6 +336,10 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                     model.setSoDate(object.optString("soDate"));
                     model.setDoDate(object.optString("doDate"));
                     model.setDoNumber(object.optString("doNumber"));
+                    model.setAllowDeliveryAddress(object.optString("showShippingAddress"));
+                    model.setDeliveryAddress(object.optString("shipAddress2")+object.optString("shipAddress3")+
+                            object.optString("shipStreet"));
+
                     String signFlag=object.optString("signFlag");
                     if (signFlag.equals("Y")){
                         String signature=object.optString("signature");
@@ -335,6 +347,14 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                         createSignature();
                     }else {
                         Utils.setSignature("");
+                    }
+                    if(object.optString("showShippingAddress").equalsIgnoreCase("Yes")){
+                        deliveryAddr_print_layl.setVisibility(View.VISIBLE);
+                        deliveryAddr_print_txtl.setText(object.optString("shipAddress2")+object.optString("shipAddress3")+
+                                object.optString("shipStreet"));
+                    }
+                    else{
+                        deliveryAddr_print_layl.setVisibility(View.GONE);
                     }
                     JSONArray detailsArray=object.optJSONArray("invoiceDetails");
                     invoiceList = new ArrayList<>();

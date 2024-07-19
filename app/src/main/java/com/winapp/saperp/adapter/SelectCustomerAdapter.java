@@ -137,7 +137,8 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
             });
         }
         Log.w("custContex",""+activityName);
-        if (activityName.equals("SalesOrder") || activityName.equals("Invoice")){
+     if (activityName.equals("SalesOrder") || activityName.equals("Invoice")){
+       // if ( activityName.equals("Invoice")){
             viewHolder.three_dot_custl.setVisibility(View.VISIBLE);
             if (activityName.equals("SalesOrder")){
                 activityName = "SalesOrder" ;

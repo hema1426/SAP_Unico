@@ -20,6 +20,15 @@ public class CustomerDetails {
     private String haveTax;
     private String country;
     private String taxCode;
+    private String allowFOC;
+
+    public String getAllowFOC() {
+        return allowFOC;
+    }
+
+    public void setAllowFOC(String allowFOC) {
+        this.allowFOC = allowFOC;
+    }
 
     public String getBillDiscPercentage() {
         return billDiscPercentage;

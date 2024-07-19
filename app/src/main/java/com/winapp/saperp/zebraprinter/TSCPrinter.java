@@ -3495,8 +3495,12 @@ public class TSCPrinter {
 
                 int y = 0;
                 height = 70;
+                int totalheight = 0;
+                if(customerStateModels.get(0).getCustInvoiceDetailsARList().size() >0){
+                    totalheight = 30 ;
+                }
                 finalHeight = height + (customerStateModels.get(0).getCustInvoiceDetailList().size() * 5)
-                        +(customerStateModels.get(0).getCustInvoiceDetailsARList().size() * 5)+ 30;
+                        +(customerStateModels.get(0).getCustInvoiceDetailsARList().size() * 5)+totalheight+30;
                 TscDll.sendcommand("SIZE 80 mm, " + finalHeight + " mm\n");
                 TscDll.sendcommand("GAP 0 mm, 0 mm\r\n");//Gap media
                 TscDll.clearbuffer();
@@ -3513,7 +3517,7 @@ public class TSCPrinter {
                     File mFile = new File(filePath, fileName);
                     if (mFile.exists()) {
                         y += LINE_SPACING;
-                        TscDll.sendpicture_resize(180, y, mFile.getAbsolutePath(), 200, 200);
+                        TscDll.sendpicture_resize(180, y, mFile.getAbsolutePath(), 230, 200);
                         y += 170;
                     }
                 } catch (Exception e) {
@@ -3589,7 +3593,8 @@ public class TSCPrinter {
                 double sum_netbalanceFinal = 0.0;
                 double sum_nettotalFinal = 0.0;
 
-                for (CustomerStateModel.CustInvoiceDetails custInvoiceDetails : customerStateModels.get(0).getCustInvoiceDetailList()) {
+                for (CustomerStateModel.CustInvoiceDetails custInvoiceDetails :
+                        customerStateModels.get(0).getCustInvoiceDetailList()) {
                     y += 35;
                     TscDll.sendcommand("TEXT 10," + y + ",\"Poppins.TTF\",0,8,8,\"" + custInvoiceDetails.getInvoiceNumber() + "\"\n");
                     TscDll.sendcommand("TEXT 180," + y + ",\"Poppins.TTF\",0,8,8,\"" + custInvoiceDetails.getInvoiceDate() + "\"\n");
@@ -3614,6 +3619,8 @@ public class TSCPrinter {
                     y += LINE_SPACING;
                     TscDll.sendcommand("BAR 0," + y + ",800,2\n");
                     y += 20;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "AR Credit Statement" + "\"\n");
+
 
                     for (CustomerStateModel.CustInvoiceDetailsAR custInvoiceDetailsAR : customerStateModels.get(0).getCustInvoiceDetailsARList()) {
                         y += 35;
@@ -3644,8 +3651,6 @@ public class TSCPrinter {
                     TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,8,8,\"" + "Net Total :($) " + "\"\n");
                     TscDll.sendcommand("TEXT 330," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(sum_netbalanceFinal) + "\"\n");
                     TscDll.sendcommand("TEXT 440," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(sum_nettotalFinal) + "\"\n");
-
-
                 }
 
                 y += LINE_SPACING;
@@ -3931,7 +3936,7 @@ public class TSCPrinter {
                                 File mFile = new File(filePath, fileName);
                                 if (mFile.exists()) {
                                     y += LINE_SPACING;
-                                    TscDll.sendpicture_resize(180, y, mFile.getAbsolutePath(), 200, 200);
+                                    TscDll.sendpicture_resize(180, y, mFile.getAbsolutePath(), 230, 200);
                                     y += 170;
                                 }
                             } catch (Exception e) {
@@ -4006,6 +4011,27 @@ public class TSCPrinter {
                         }
                         y += 30;
                         TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "CODE: " + salesOrderHeaderDetails.get(0).getCustomerCode() + "\"\n");
+
+//                        if (salesOrderHeaderDetails.get(0).getDeliveryAddress() != null &&
+//                                !salesOrderHeaderDetails.get(0).getDeliveryAddress().isEmpty()) {
+//
+//                            if (salesOrderHeaderDetails.get(0).getAllowDeliveryAddress() != null &&
+//                                    !salesOrderHeaderDetails.get(0).getAllowDeliveryAddress().isEmpty() &&
+//                                    salesOrderHeaderDetails.get(0).getAllowDeliveryAddress().equalsIgnoreCase("Yes")) {
+//
+//                                if (salesOrderHeaderDetails.get(0).getDeliveryAddress().length() <= 38) {
+//                                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + "Delivery Addr: " + salesOrderHeaderDetails.get(0).getDeliveryAddress() + "\"\n\n");
+//                                } else {
+//                                    String firstname = salesOrderHeaderDetails.get(0).getDeliveryAddress().substring(0, 35);
+//                                    String secondname = salesOrderHeaderDetails.get(0).getDeliveryAddress().substring(35);
+//
+//                                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + "Delivery Addr: " + firstname + "\"\n\n");
+//                                    y += 30;
+//                                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + secondname + "\"\n\n");
+//                                }
+//                            }
+//                        }
+
                         if (!salesOrderHeaderDetails.get(0).getAddress().isEmpty()) {
                             y += LINE_SPACING;
                             if (salesOrderHeaderDetails.get(0).getAddress().length() <= 45) {
@@ -4253,7 +4279,7 @@ public class TSCPrinter {
                         File mFile = new File(filePath, fileName);
                         if (mFile.exists()) {
                             y += LINE_SPACING;
-                            TscDll.sendpicture_resize(180, y, mFile.getAbsolutePath(), 200, 200);
+                            TscDll.sendpicture_resize(180, y, mFile.getAbsolutePath(), 230, 200);
                             y += 170;
                         }
                     } catch (Exception e) {
@@ -4318,6 +4344,26 @@ public class TSCPrinter {
                 }
                 y += 30;
                 TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "CODE: " + salesOrderHeaderDetails.get(0).getCustomerCode() + "\"\n");
+
+               // if (salesOrderHeaderDetails.get(0).getDeliveryAddress() != null &&
+//                                !salesOrderHeaderDetails.get(0).getDeliveryAddress().isEmpty()) {
+//
+//                            if (salesOrderHeaderDetails.get(0).getAllowDeliveryAddress() != null &&
+//                                    !salesOrderHeaderDetails.get(0).getAllowDeliveryAddress().isEmpty() &&
+//                                    salesOrderHeaderDetails.get(0).getAllowDeliveryAddress().equalsIgnoreCase("Yes")) {
+//
+//                                if (salesOrderHeaderDetails.get(0).getDeliveryAddress().length() <= 38) {
+//                                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + "Delivery Addr: " + salesOrderHeaderDetails.get(0).getDeliveryAddress() + "\"\n\n");
+//                                } else {
+//                                    String firstname = salesOrderHeaderDetails.get(0).getDeliveryAddress().substring(0, 35);
+//                                    String secondname = salesOrderHeaderDetails.get(0).getDeliveryAddress().substring(35);
+//
+//                                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + "Delivery Addr: " + firstname + "\"\n\n");
+//                                    y += 30;
+//                                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + secondname + "\"\n\n");
+//                                }
+//                            }
+//                        }
                 if (!salesOrderHeaderDetails.get(0).getAddress().isEmpty()) {
                     y += LINE_SPACING;
                     if (salesOrderHeaderDetails.get(0).getAddress().length() <= 45) {
@@ -5339,16 +5385,20 @@ public class TSCPrinter {
             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
-    public void printCustomerStatement(int copy, ArrayList<CustomerStateModel> customerStateModels, String fromDate, String toDate) throws IOException {
+    public void printCustomerStatementDate(int copy, ArrayList<CustomerStateModel> customerStateModels, String fromDate, String toDate) throws IOException {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 TscDll.openport(macAddress);
                 int y = 0;
-                height = 100;
+                height = 70;
+                int totalheight = 0;
+                if(customerStateModels.get(0).getCustInvoiceDetailsARList().size() >0){
+                    totalheight = 30 ;
+                }
                 //finalHeight=height+(customerStateModels.size() * list_height)+20;
-                finalHeight = height + (customerStateModels.get(0).getCustInvoiceDetailList().size() * 5);
+                finalHeight = height + (customerStateModels.get(0).getCustInvoiceDetailList().size() * 5)
+                        +(customerStateModels.get(0).getCustInvoiceDetailsARList().size() * 5)+totalheight+30;
                 TscDll.sendcommand("SIZE 80 mm, " + finalHeight + " mm\n");
                 TscDll.sendcommand("GAP 0 mm, 0 mm\r\n");//Gap media
                 TscDll.clearbuffer();
@@ -5365,7 +5415,7 @@ public class TSCPrinter {
                     File mFile = new File(filePath, fileName);
                     if (mFile.exists()) {
                         y += LINE_SPACING;
-                        TscDll.sendpicture_resize(180, y, mFile.getAbsolutePath(), 200, 200);
+                        TscDll.sendpicture_resize(180, y, mFile.getAbsolutePath(), 230, 200);
                         y += 170;
                     }
                 } catch (Exception e) {
@@ -5400,7 +5450,7 @@ public class TSCPrinter {
                 }
 
                 y += LINE_SPACING + 10;
-                TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + "Customer Outstanding" + "\"\n");
+                TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + "Customer Outstanding (as on Date)" + "\"\n");
 
 
                 y += LINE_SPACING + 10;
@@ -5437,7 +5487,13 @@ public class TSCPrinter {
                 int index = 1;
                 double sum_netbalance = 0.0;
                 double sum_nettotal = 0.0;
-                for (CustomerStateModel.CustInvoiceDetails custInvoiceDetails : customerStateModels.get(0).getCustInvoiceDetailList()) {
+                double sum_netbalance1 = 0.0;
+                double sum_nettotal1 = 0.0;
+                double sum_netbalanceFinal = 0.0;
+                double sum_nettotalFinal = 0.0;
+
+                for (CustomerStateModel.CustInvoiceDetails custInvoiceDetails :
+                        customerStateModels.get(0).getCustInvoiceDetailList()) {
                     y += 35;
                     // TscDll.sendcommand("TEXT 5,"+y+",\"Poppins.TTF\",0,8,8,\""+index+"\"\n");
                     TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + custInvoiceDetails.getInvoiceNumber() + "\"\n");
@@ -5454,11 +5510,50 @@ public class TSCPrinter {
                 TscDll.sendcommand("BAR 0," + y + ",800,2\n");
 
                 y += 20;
-                TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,9,9,\"" + "Net Total : ( $ ) " + "\"\n");
+                TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,9,9,\"" + "Total : ( $ ) " + "\"\n");
                 TscDll.sendcommand("TEXT 420," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(sum_nettotal) + "\"\n");
                 y += LINE_SPACING;
                 TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,9,9,\"" + "Balance : ( $ ) " + "\"\n");
                 TscDll.sendcommand("TEXT 420," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(sum_netbalance) + "\"\n");
+
+                if(customerStateModels.get(0).getCustInvoiceDetailsARList().size() > 0){
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+                    y += 20;
+
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "AR Credit Statement" + "\"\n");
+
+                    for (CustomerStateModel.CustInvoiceDetailsAR custInvoiceDetailsAR : customerStateModels.get(0).getCustInvoiceDetailsARList()) {
+                        y += 35;
+                        TscDll.sendcommand("TEXT 5," + y + ",\"Poppins.TTF\",0,8,8,\"" + custInvoiceDetailsAR.getInvoiceNumber() + "\"\n");
+                        TscDll.sendcommand("TEXT 180," + y + ",\"Poppins.TTF\",0,8,8,\"" + custInvoiceDetailsAR.getInvoiceDate() + "\"\n");
+                        TscDll.sendcommand("TEXT 340," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(custInvoiceDetailsAR.getNetTotal())) + "\"\n");
+                        TscDll.sendcommand("TEXT 450," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(custInvoiceDetailsAR.getBalanceAmount())) + "\"\n");
+
+                        sum_netbalance1 += Double.parseDouble(custInvoiceDetailsAR.getBalanceAmount());
+                        sum_nettotal1 += Double.parseDouble(custInvoiceDetailsAR.getNetTotal());
+
+                        index++;
+                    }
+                    sum_netbalanceFinal = sum_nettotal - sum_nettotal1;
+                    sum_nettotalFinal = sum_netbalance - sum_netbalance1;
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                    y += 20;
+                    TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,8,8,\"" + "Total :($) " + "\"\n");
+                    TscDll.sendcommand("TEXT 330," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(sum_nettotal1) + "\"\n");
+                    TscDll.sendcommand("TEXT 440," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(sum_netbalance1) + "\"\n");
+
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                    y += 20;
+                    TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,8,8,\"" + "Outstanding Balance :($) " + "\"\n");
+                    TscDll.sendcommand("TEXT 330," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(sum_netbalanceFinal) + "\"\n");
+                    TscDll.sendcommand("TEXT 440," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(sum_nettotalFinal) + "\"\n");
+                }
+
 
                 y += LINE_SPACING;
                 TscDll.sendcommand("BAR 0," + y + ",800,2\n");
@@ -5468,6 +5563,186 @@ public class TSCPrinter {
             }
         }, 100);
     }
+
+    public void printCustomerStatement(int copy, ArrayList<CustomerStateModel> customerStateModels, String fromDate, String toDate) throws IOException {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                TscDll.openport(macAddress);
+                int y = 0;
+                height = 70;
+                int totalheight = 0;
+                if(customerStateModels.get(0).getCustInvoiceDetailsARList().size() >0){
+                    totalheight = 30 ;
+                }
+                //finalHeight=height+(customerStateModels.size() * list_height)+20;
+                finalHeight = height + (customerStateModels.get(0).getCustInvoiceDetailList().size() * 5)
+                        +(customerStateModels.get(0).getCustInvoiceDetailsARList().size() * 5)+totalheight+30;
+                TscDll.sendcommand("SIZE 80 mm, " + finalHeight + " mm\n");
+                TscDll.sendcommand("GAP 0 mm, 0 mm\r\n");//Gap media
+                TscDll.clearbuffer();
+                TscDll.sendcommand("SPEED 4\r\n");
+                TscDll.sendcommand("DENSITY 12\r\n");
+                TscDll.sendcommand("CODEPAGE UTF-8\r\n");
+                TscDll.sendcommand("SET TEAR ON\r\n");
+                TscDll.sendcommand("SET COUNTER @1 1\r\n");
+                TscDll.sendcommand("@1 = \"0001\"\r\n");
+
+                try {
+                    String filePath = Constants.getSignatureFolderPath(context);
+                    String fileName = "Logo.jpg";
+                    File mFile = new File(filePath, fileName);
+                    if (mFile.exists()) {
+                        y += LINE_SPACING;
+                        TscDll.sendpicture_resize(180, y, mFile.getAbsolutePath(), 230, 200);
+                        y += 170;
+                    }
+                } catch (Exception e) {
+                }
+
+                y += LINE_SPACING;
+                TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + company_name + "\"\n\n");
+
+                if (company_address1 != null && !company_address1.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address1 + "\"\n");
+                }
+
+                if (company_address2 != null && !company_address2.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address2 + "\"\n\n");
+                }
+
+                if (company_address3 != null && !company_address3.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address3 + "\"\n");
+                }
+
+                if (company_phone != null && !company_phone.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\" TEL : " + company_phone + "\"\n");
+                }
+
+                if (company_gst != null && !company_gst.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"GST REG NO : " + company_gst + "\"\n");
+                }
+
+                y += LINE_SPACING + 10;
+                TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + "Customer Outstanding Period" + "\"\n");
+
+
+                y += LINE_SPACING + 10;
+                // Define the Box
+                //TscDll.sendcommand("BOX 0,"+y+",570,0,2\n");
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "FROM DATE: " + fromDate + "\"\n");
+                TscDll.sendcommand("TEXT 330," + y + ",\"Poppins.TTF\",0,8,8,\"" + "TO DATE: " + toDate + "\"\n");
+
+                y += 40;
+                if (customerStateModels.get(0).getCustomerName().length() <= 45) {
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,9,9,\"" + "CUST :" + customerStateModels.get(0).getCustomerName() + "\"\n\n");
+                } else {
+                    String firstname = customerStateModels.get(0).getCustomerName().substring(0, 42);
+                    String secondname = customerStateModels.get(0).getCustomerName().substring(42);
+
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,9,9,\"" + firstname + "\"\n\n");
+                    y += 30;
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,9,9,\"" + "CUST :" + secondname + "\"\n\n");
+                }
+
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                y += 20;
+                // TscDll.sendcommand("TEXT 0,"+y+",\"Poppins.TTF\",0,8,8,\""+"SNo"+"\"\n");
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Invoice No" + "\"\n");
+                TscDll.sendcommand("TEXT 220," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Invoice Date" + "\"\n");
+                TscDll.sendcommand("TEXT 370," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Net Total" + "\"\n");
+                TscDll.sendcommand("TEXT 470," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Balance" + "\"\n");
+
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                int index = 1;
+                double sum_netbalance = 0.0;
+                double sum_nettotal = 0.0;
+                double sum_netbalance1 = 0.0;
+                double sum_nettotal1 = 0.0;
+                double sum_netbalanceFinal = 0.0;
+                double sum_nettotalFinal = 0.0;
+
+                for (CustomerStateModel.CustInvoiceDetails custInvoiceDetails :
+                        customerStateModels.get(0).getCustInvoiceDetailList()) {
+                    y += 35;
+                    // TscDll.sendcommand("TEXT 5,"+y+",\"Poppins.TTF\",0,8,8,\""+index+"\"\n");
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + custInvoiceDetails.getInvoiceNumber() + "\"\n");
+                    TscDll.sendcommand("TEXT 220," + y + ",\"Poppins.TTF\",0,8,8,\"" + custInvoiceDetails.getInvoiceDate() + "\"\n");
+                    TscDll.sendcommand("TEXT 370," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(custInvoiceDetails.getNetTotal())) + "\"\n");
+                    TscDll.sendcommand("TEXT 470," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(custInvoiceDetails.getBalanceAmount())) + "\"\n");
+
+                    sum_netbalance += Double.parseDouble(custInvoiceDetails.getBalanceAmount());
+                    sum_nettotal += Double.parseDouble(custInvoiceDetails.getNetTotal());
+
+                    index++;
+                }
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                y += 20;
+                TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,9,9,\"" + "Total : ( $ ) " + "\"\n");
+                TscDll.sendcommand("TEXT 420," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(sum_nettotal) + "\"\n");
+                y += LINE_SPACING;
+                TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,9,9,\"" + "Balance : ( $ ) " + "\"\n");
+                TscDll.sendcommand("TEXT 420," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(sum_netbalance) + "\"\n");
+
+                if(customerStateModels.get(0).getCustInvoiceDetailsARList().size() > 0){
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+                    y += 20;
+
+                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "AR Credit Statement" + "\"\n");
+
+                    for (CustomerStateModel.CustInvoiceDetailsAR custInvoiceDetailsAR : customerStateModels.get(0).getCustInvoiceDetailsARList()) {
+                        y += 35;
+                        TscDll.sendcommand("TEXT 5," + y + ",\"Poppins.TTF\",0,8,8,\"" + custInvoiceDetailsAR.getInvoiceNumber() + "\"\n");
+                        TscDll.sendcommand("TEXT 180," + y + ",\"Poppins.TTF\",0,8,8,\"" + custInvoiceDetailsAR.getInvoiceDate() + "\"\n");
+                        TscDll.sendcommand("TEXT 340," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(custInvoiceDetailsAR.getNetTotal())) + "\"\n");
+                        TscDll.sendcommand("TEXT 450," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(custInvoiceDetailsAR.getBalanceAmount())) + "\"\n");
+
+                        sum_netbalance1 += Double.parseDouble(custInvoiceDetailsAR.getBalanceAmount());
+                        sum_nettotal1 += Double.parseDouble(custInvoiceDetailsAR.getNetTotal());
+
+                        index++;
+                    }
+                    sum_netbalanceFinal = sum_nettotal - sum_nettotal1;
+                    sum_nettotalFinal = sum_netbalance - sum_netbalance1;
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                    y += 20;
+                    TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,8,8,\"" + "Total :($) " + "\"\n");
+                    TscDll.sendcommand("TEXT 330," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(sum_nettotal1) + "\"\n");
+                    TscDll.sendcommand("TEXT 440," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(sum_netbalance1) + "\"\n");
+
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                    y += 20;
+                    TscDll.sendcommand("TEXT 100," + y + ",\"Bold.TTF\",0,8,8,\"" + "Outstanding Balance :($) " + "\"\n");
+                    TscDll.sendcommand("TEXT 330," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(sum_netbalanceFinal) + "\"\n");
+                    TscDll.sendcommand("TEXT 440," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(sum_nettotalFinal) + "\"\n");
+                }
+
+
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                TscDll.printlabel(1, copy);
+                TscDll.closeport(5000);
+            }
+        }, 100);
+    }
+
 
 
 /*

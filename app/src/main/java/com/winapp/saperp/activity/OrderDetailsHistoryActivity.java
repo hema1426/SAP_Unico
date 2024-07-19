@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Base64;
@@ -46,7 +47,7 @@ import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class OrderDetailsActivity extends AppCompatActivity {
+public class OrderDetailsHistoryActivity extends AppCompatActivity {
 
     private TextView orderDate;
     private TextView orderTime;
@@ -69,9 +70,13 @@ public class OrderDetailsActivity extends AppCompatActivity {
     private String salesOrderNumber;
     private SessionManager session;
     private HashMap<String,String > user;
+    private SharedPreferences sharedPref_billdisc;
+
     private String companyId;
     private String locationCode;
     private DBHelper dbHelper;
+    private SharedPreferences.Editor myEdit;
+
     private String userName;
     private String order_date;
     private String customer_name;
@@ -95,6 +100,10 @@ public class OrderDetailsActivity extends AppCompatActivity {
         dbHelper=new DBHelper(this);
         session=new SessionManager(this);
         user=session.getUserDetails();
+
+        sharedPref_billdisc = getSharedPreferences("BillDiscPref", MODE_PRIVATE);
+        myEdit = sharedPref_billdisc.edit();
+
         companyId=user.get(SessionManager.KEY_COMPANY_CODE);
         userName=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get((SessionManager.KEY_LOCATION_CODE));
@@ -138,7 +147,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
             if (activityFrom.equals("SalesOrder")){
                 salesOrderNumber=orderNumber;
                 try {
-                    getSalesOrderDetails(salesOrderNumber);
+                    getSODetails(salesOrderNumber);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -167,6 +176,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (checkAllProducts.isChecked()){
+                    Log.w("checkpdt1.","");
                     checkAllProducts.setText("Uncheck All Products");
                     int index=0;
                     showDialog();
@@ -181,6 +191,8 @@ public class OrderDetailsActivity extends AppCompatActivity {
                     orderDetailsAdapter.notifyDataSetChanged();
                     setNetTotal(orderDetailsList);
                 }else {
+                    Log.w("checkpdt2.","");
+
                     checkAllProducts.setText("Check All Products");
                     for (OrderDetailsAdapter.OrderDetailsModel model : orderDetailsList){
                         model.setProductCheck(false);
@@ -215,7 +227,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
     }
 
     public void showDialog(){
-        progressDialog=new ProgressDialog(OrderDetailsActivity.this);
+        progressDialog=new ProgressDialog(OrderDetailsHistoryActivity.this);
         progressDialog.setMessage("Inserting Products..Please wait..");
         progressDialog.setCancelable(false);
         progressDialog.show();
@@ -229,35 +241,62 @@ public class OrderDetailsActivity extends AppCompatActivity {
     public void insertOrderProducts(boolean isCheked, OrderDetailsAdapter.OrderDetailsModel model){
         Log.w("AddModel:",model.toString());
         if (isCheked){
-            dbHelper.insertCart(
+            String return_qty = "0";
+            double net_qty = Double.parseDouble(model.getCtnQty()) - Double.parseDouble(return_qty);
+            String price_value = model.getLoosePrice();
+            dbHelper.insertCreateInvoiceCartEdit(
                     model.getProductId(),
                     model.getProductName(),
+                    model.getUomcode(),
                     model.getCtnQty(),
-                    model.getPcsQty(),
-                    model.getSubTotal(),
-                    "",
-                    model.getNetAmount(),
-                    "weight",
-                    model.getCartonPrice(),
-                    model.getLoosePrice(),
-                    model.getPcsPerCarton(),
-                    model.getTax(),
-                    model.getSubTotal(),
-                    model.getTaxType(),
-                    model.getFocQty(),
-                    "",
-                    model.getExchangeQty(),
-                    "",
-                    model.getItemDiscount(),
                     model.getReturnQty(),
-                    "",
+                    String.valueOf(net_qty),
+                    model.getFocQty(),
+                    price_value,
                     "",
                     model.getTotal(),
-                    model.getStockQty(),
-                    model.getUomcode(),"0.00");
-           // Toast.makeText(getApplicationContext(),"Product added to your list",Toast.LENGTH_SHORT).show();
+                    model.getSubTotal(),
+                    model.getPriceWithGST(),
+                    model.getNetAmount(),
+                    model.getItemDiscount(),
+                    model.getBillDisc(),
+                    "",
+                    "",
+                    model.getExchangeQty()
+            );
+
+            myEdit.putString("billDisc_amt", model.getBillDisc());
+            myEdit.putString("billDisc_percent", model.getBillDiscPercentage());
+            myEdit.apply();
+//            dbHelper.insertCart(
+//                    model.getProductId(),
+//                    model.getProductName(),
+//                    model.getCtnQty(),
+//                    model.getPcsQty(),
+//                    model.getSubTotal(),
+//                    "",
+//                    model.getNetAmount(),
+//                    "weight",
+//                    model.getCartonPrice(),
+//                    model.getLoosePrice(),
+//                    model.getPcsPerCarton(),
+//                    model.getTax(),
+//                    model.getSubTotal(),
+//                    model.getTaxType(),
+//                    model.getFocQty(),
+//                    "",
+//                    model.getExchangeQty(),
+//                    "",
+//                    model.getItemDiscount(),
+//                    model.getReturnQty(),
+//                    "",
+//                    "",
+//                    model.getTotal(),
+//                    model.getStockQty(),
+//                    model.getUomcode(),"0.00");
+       //    // Toast.makeText(getApplicationContext(),"Product added to your list",Toast.LENGTH_SHORT).show();
         }else {
-            dbHelper.deleteProduct(model.getProductId());
+            dbHelper.deleteInvoiceProduct(model.getProductId());
           //  Toast.makeText(getApplicationContext(),"Product removed from your list",Toast.LENGTH_SHORT).show();
         }
     }
@@ -293,24 +332,30 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 alertDialog.dismiss();
                 if (checkQtybox.isChecked()){
                     if (activityFrom.equals("SalesOrder")){
-                        AddInvoiceActivity.customerId=customer_code;
-                        Utils.setCustomerSession(OrderDetailsActivity.this,customer_code);
-                        Intent intent=new Intent(OrderDetailsActivity.this,AddInvoiceActivity.class);
-                        intent.putExtra("customerId",customer_code);
-                        intent.putExtra("activityFrom","ReOrderSales");
+                      //  AddInvoiceActivity.customerId=customer_code;
+                        Log.w("ActualPrintProductsHis:",dbHelper.numberOfRowsInInvoice()+"");
+
+                        Utils.setCustomerSession(OrderDetailsHistoryActivity.this,customer_code);
+                        Intent intent=new Intent(OrderDetailsHistoryActivity.this, CreateNewInvoiceActivity.class);
+                        intent.putExtra("customerCode",customer_code);
+                        intent.putExtra("customerName",customer_name);
+                        intent.putExtra("from","ReOrderSales");
                         startActivity(intent);
                         finish();
                     }else {
-                        AddInvoiceActivity.customerId=customer_code;
-                        Utils.setCustomerSession(OrderDetailsActivity.this,customer_code);
-                        Intent intent=new Intent(OrderDetailsActivity.this,AddInvoiceActivity.class);
-                        intent.putExtra("customerId",customer_code);
-                        intent.putExtra("activityFrom","ReOrderInvoice");
+                        Log.w("ActualPrintProductsHis:",dbHelper.numberOfRowsInInvoice()+"");
+
+                        // AddInvoiceActivity.customerId=customer_code;
+                        Utils.setCustomerSession(OrderDetailsHistoryActivity.this,customer_code);
+                        Intent intent=new Intent(OrderDetailsHistoryActivity.this,CreateNewInvoiceActivity.class);
+                        intent.putExtra("customerCode",customer_code);
+                        intent.putExtra("customerName",customer_name);
+                        intent.putExtra("from","ReOrderInvoice");
                         startActivity(intent);
                         finish();
                     }
                 }else {
-                     Intent intent=new Intent(OrderDetailsActivity.this,ReOrderCartActivity.class);
+                     Intent intent=new Intent(OrderDetailsHistoryActivity.this,ReOrderCartActivity.class);
                      startActivity(intent);
                 }
             }
@@ -325,85 +370,184 @@ public class OrderDetailsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (item.getItemId() == android.R.id.home){
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-    private void getSalesOrderDetails(String soNumber) throws JSONException {
+    @Override
+    public void onBackPressed() {
+        //Execute your code here
+        int count=dbHelper.numberOfRows();
+        if (count>0){
+            showAlert();
+        }else {
+            finish();
+        }
+    }
+
+    private void showAlert() {
+        AlertDialog.Builder builder=new AlertDialog.Builder(OrderDetailsHistoryActivity.this);
+        builder.setTitle("Warning..!");
+        builder.setMessage("All Products in cart will be removed.!");
+        builder.setCancelable(false);
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                dbHelper.removeAllItems();
+                finish();
+            }
+        });
+        AlertDialog alertDialog=builder.create();
+        alertDialog.show();
+    }
+    private void getSODetails(String invoiceNumber) throws JSONException {
         // Initialize a new RequestQueue instance
         JSONObject jsonObject=new JSONObject();
-        jsonObject.put("CompanyCode",companyId);
-        jsonObject.put("SoNo", soNumber);
-        jsonObject.put("LocationCode",locationCode);
+        jsonObject.put("SalesOrderNo",invoiceNumber);
+        jsonObject.put("LocationCode", locationCode);
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"SalesApi/GetSOByCode?Requestdata="+jsonObject.toString();
+        String url= Utils.getBaseUrl(this) +"SalesOrderDetails";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_urlSOhis:",url+jsonObject);
+        orderDetailsList=new ArrayList<>();
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("Getting SalesOrder Details...");
+        pDialog.setTitleText("Getting SO Details...");
         pDialog.setCancelable(false);
         pDialog.show();
-        orderDetailsList=new ArrayList<>();
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.GET,
-                url,
-                null,
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                 response -> {
-                    try{
-                        Log.w("SalesOrder_Details:",response.toString());
-                        if (response.length()>0){
-                            String customer_code=response.optString("CustomerCode");
-                            String customer_name=response.optString("CustomerName");
-                            String phone_no=response.optString("DelPhoneNo");
-                            dbHelper.removeCustomer();
-                            dbHelper.insertCustomer(
-                                    customer_code,
-                                    customer_name,
-                                    phone_no,
-                                    response.optString("Address1"),
-                                    response.optString("Address2"),
-                                    response.optString("Address3"),
-                                    response.optString("IsActive"),
-                                    response.optString("HaveTax"),
-                                    response.optString("TaxType"),
-                                    response.optString("TaxPerc"),
-                                    response.optString("TaxCode"),
-                                    response.optString("CreditLimit"),
-                                    "Singapore",
-                                    response.optString("CurrencyCode"));
+                    try {
+                        Log.w("SO_Details_his:",response.toString());
+                        String statusCode = response.optString("statusCode");
 
-                            dbHelper.removeAllItems();
-                            JSONArray products=response.getJSONArray("SoDetails");
-                            for (int i=0;i<products.length();i++){
-                                JSONObject object=products.getJSONObject(i);
+                        if (response.length()>0) {
+                            if (statusCode.equals("1")) {
+                                JSONArray salesArray = response.optJSONArray("responseData");
+                                if (salesArray.length() > 0) {
+                                    JSONObject salesObject = salesArray.optJSONObject(0);
 
-                                String lqty="0.0";
-                                String cqty="0.0";
-                                if (!object.optString("LQty").equals("null")){
-                                    lqty=object.optString("LQty");
+                                    String customer_code = salesObject.optString("customerCode");
+                                    String customer_name = salesObject.optString("customerName");
+                                    String phone_no = salesObject.optString("DelPhoneNo");
+                                    dbHelper.removeCustomer();
+                                    dbHelper.insertCustomer(
+                                            customer_code,
+                                            customer_name,
+                                            phone_no,
+                                            salesObject.optString("address1"),
+                                            salesObject.optString("Address2"),
+                                            salesObject.optString("Address3"),
+                                            salesObject.optString("IsActive"),
+                                            salesObject.optString("HaveTax"),
+                                            salesObject.optString("taxType"),
+                                            salesObject.optString("taxPerc"),
+                                            salesObject.optString("taxCode"),
+                                            salesObject.optString("CreditLimit"),
+                                            "Singapore",
+                                            salesObject.optString("currencyCode"));
+
+                                    dbHelper.removeAllItems();
+                                    dbHelper.removeCustomerTaxes();
+                                    CustomerDetails model = new CustomerDetails();
+                                    model.setCustomerCode(customer_code);
+                                    model.setCustomerName(customer_name);
+                                    model.setCustomerAddress1(salesObject.optString("address1"));
+                                    model.setTaxPerc(salesObject.optString("taxPercentage"));
+                                    model.setTaxType(salesObject.optString("taxType"));
+                                    model.setTaxCode(salesObject.optString("taxCode"));
+
+                                    ArrayList<CustomerDetails> taxList = new ArrayList<>();
+                                    taxList.add(model);
+                                    dbHelper.insertCustomerTaxValues(taxList);
+
+                                    JSONArray products = salesObject.getJSONArray("salesOrderDetails");
+                                    for (int i = 0; i < products.length(); i++) {
+                                        JSONObject object = products.getJSONObject(i);
+
+                                        String lqty = "0.0";
+                                        String cqty = "0.0";
+                                        if (!object.optString("unitQty").equals("null")) {
+                                            lqty = object.optString("unitQty");
+                                        }
+                                        if (!object.optString("quantity").equals("null")) {
+                                            cqty = object.optString("quantity");
+                                        }
+//                                        invoiceListModel.setProductCode(detailObject.optString("productCode"));
+//                                        invoiceListModel.setDescription(detailObject.optString("productName"));
+//                                        invoiceListModel.setLqty(detailObject.optString("unitQty"));
+//                                        invoiceListModel.setCqty(detailObject.optString("cartonQty"));
+//                                        invoiceListModel.setNetQty(detailObject.optString("quantity"));
+//                                        invoiceListModel.setExcQty(detailObject.optString("exc_Qty"));
+//                                        invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
+//                                        invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
+//                                        invoiceListModel.setSaleType("");
+//                                        if (detailObject.optString("itemID") != null) {
+//                                            invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+//                                        }
+//                                        invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
+//                                        invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+//                                        invoiceListModel.setUnitPrice(detailObject.optString("price"));
+//                                        double qty = Double.parseDouble(detailObject.optString("quantity"));
+//                                        double price = Double.parseDouble(detailObject.optString("price"));
+//                                        invoiceListModel.setUomCode(detailObject.optString("uomCode"));
+//
+//                                        double nettotal = qty * price;
+//                                        invoiceListModel.setTotal(String.valueOf(nettotal));
+//                                        invoiceListModel.setPricevalue(String.valueOf(price));
+//
+//                                        invoiceListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
+//                                        invoiceListModel.setItemtax(detailObject.optString("totalTax"));
+//                                        invoiceListModel.setSubTotal(detailObject.optString("subTotal"));
+//
+                                        OrderDetailsAdapter.OrderDetailsModel model1 = new OrderDetailsAdapter.OrderDetailsModel();
+                                        model1.setProductId(object.optString("productCode"));
+                                        model1.setProductName(object.optString("productName"));
+                                        model1.setUomcode(object.optString("uomCode"));
+                                        model1.setFocQty(object.optString("focQty"));
+                                        model1.setReturnQty("0.00");
+                                        model1.setTotal(object.optString("total"));
+                                        model1.setCtnQty(cqty);
+
+                                        //  model.setPcsQty(lqty);
+                                        model1.setPcsPerCarton(object.optString("pcsPerCarton"));
+                                        model1.setCartonPrice(object.optString("cartonQty"));
+                                        model1.setLoosePrice(object.optString("price"));
+                                        model1.setTax(object.optString("totalTax"));
+                                        model1.setSubTotal(object.optString("subTotal"));
+                                        model1.setExchangeQty("0.00");
+                                        model1.setNetQty(object.optString("quantity"));
+                                        model1.setPriceWithGST(object.optString("taxAmount"));
+                                        model1.setItemDiscount(object.optString("itemDiscount"));
+                                        model1.setBillDisc(salesObject.optString("billDiscount"));
+                                        model1.setBillDiscPercentage("0.00");
+                                        double qty = Double.parseDouble(object.optString("quantity"));
+                                        double price = Double.parseDouble(object.optString("price"));
+                                        double nettotal = qty * price;
+
+                                        model1.setNetAmount(String.valueOf(nettotal));
+                                        model1.setProductCheck(false);
+
+                                        orderDetailsList.add(model1);
+                                    }
                                 }
-
-                                if (!object.optString("CQty").equals("null")){
-                                    cqty=object.optString("CQty");
-                                }
-
-                                OrderDetailsAdapter.OrderDetailsModel model=new OrderDetailsAdapter.OrderDetailsModel();
-                                model.setProductId(object.optString("ProductCode"));
-                                model.setProductName(object.optString("ProductName"));
-                                model.setCtnQty(cqty);
-                                model.setPcsQty(object.optString("PcsPerCarton"));
-                                model.setPcsPerCarton(object.optString("PcsPerCarton"));
-                                model.setCartonPrice(object.optString("CartonPrice"));
-                                model.setLoosePrice(object.optString("Price"));
-                                model.setSubTotal(object.optString("SubTotal"));
-                                model.setTax(object.optString("Tax"));
-                                model.setNetQty(object.optString("Qty"));
-                                model.setNetAmount(object.optString("NetTotal"));
-                                model.setProductCheck(false);
-
-                                orderDetailsList.add(model);
+                                setOrdersAdapter(orderDetailsList);
+                                pDialog.dismiss();
                             }
-                            setOrdersAdapter(orderDetailsList);
                         }
-                        pDialog.dismiss();
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -432,54 +576,10 @@ public class OrderDetailsActivity extends AppCompatActivity {
             }
             @Override
             public void retry(VolleyError error) throws VolleyError {
-
             }
         });
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (item.getItemId() == android.R.id.home){
-            onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        //Execute your code here
-        int count=dbHelper.numberOfRows();
-        if (count>0){
-            showAlert();
-        }else {
-            finish();
-        }
-    }
-
-    private void showAlert() {
-        AlertDialog.Builder builder=new AlertDialog.Builder(OrderDetailsActivity.this);
-        builder.setTitle("Warning..!");
-        builder.setMessage("All Products in cart will be removed.!");
-        builder.setCancelable(false);
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-                dbHelper.removeAllItems();
-                finish();
-            }
-        });
-        AlertDialog alertDialog=builder.create();
-        alertDialog.show();
     }
 
     private void getInvoiceDetails(String invoiceNumber) throws JSONException {
@@ -586,14 +686,24 @@ public class OrderDetailsActivity extends AppCompatActivity {
                                         OrderDetailsAdapter.OrderDetailsModel model1 = new OrderDetailsAdapter.OrderDetailsModel();
                                         model1.setProductId(object.optString("productCode"));
                                         model1.setProductName(object.optString("productName"));
+                                        model1.setUomcode(object.optString("uomCode"));
+                                        model1.setFocQty(object.optString("foc_Qty"));
+                                        model1.setReturnQty(object.optString("returnQty"));
+                                        model1.setTotal(object.optString("total"));
                                         model1.setCtnQty(cqty);
+
                                       //  model.setPcsQty(lqty);
                                         model1.setPcsPerCarton(object.optString("pcsPerCarton"));
                                         model1.setCartonPrice(object.optString("cartonQty"));
                                         model1.setLoosePrice(object.optString("price"));
                                         model1.setTax(object.optString("totalTax"));
                                         model1.setSubTotal(object.optString("subTotal"));
+                                        model1.setExchangeQty(object.optString("exc_Qty"));
                                         model1.setNetQty(object.optString("quantity"));
+                                        model1.setPriceWithGST(object.optString("taxAmount"));
+                                        model1.setItemDiscount(object.optString("itemDiscount"));
+                                        model1.setBillDisc(salesObject.optString("billDiscount"));
+                                        model1.setBillDiscPercentage(salesObject.optString("billDiscountPercentage"));
                                         double qty = Double.parseDouble(object.optString("quantity"));
                                         double price = Double.parseDouble(object.optString("price"));
                                         double nettotal = qty * price;
@@ -644,7 +754,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
 
     private void setOrdersAdapter(ArrayList<OrderDetailsAdapter.OrderDetailsModel> ordersList) {
         orderDetailsView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(OrderDetailsActivity.this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(OrderDetailsHistoryActivity.this);
         orderDetailsView.setLayoutManager(layoutManager);
         orderDetailsAdapter = new OrderDetailsAdapter(this,ordersList, orderList -> {
             double net_order_amount=0.0;

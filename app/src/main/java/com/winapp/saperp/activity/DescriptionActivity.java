@@ -89,7 +89,6 @@ public class DescriptionActivity extends AppCompatActivity {
     private TextView netPrice;
     private TextView ctnQty;
     private SharedPreferenceUtil sharedPreferenceUtil;
-
     double percentApi = 0.0;
     private TextView pcsQty;
     private EditText ctnQtyValue;
@@ -114,6 +113,7 @@ public class DescriptionActivity extends AppCompatActivity {
     public boolean isUomSetting = false;
     private String uomCode = "";
     private String uomName = "";
+    private String allowFOC = "";
     double net_amount=0.0;
     double carton_amount=0.0;
     double loose_amount=0.0;
@@ -140,11 +140,10 @@ public class DescriptionActivity extends AppCompatActivity {
     TextView qtyTextView;
     LinearLayout unitPriceLayout;
     private ArrayList<UomModel> uomList;
-
     TextWatcher cartonQtyWatcher;
     TextWatcher qtyWatcher;
     LinearLayout focLayout;
-    boolean isAllowLowStock=false;
+    boolean isAllowLowStock = false;
     TextView uomCodeText;
     LinearLayout uomSpinnerLay_cart;
     static ProgressDialog dialog;
@@ -153,6 +152,7 @@ public class DescriptionActivity extends AppCompatActivity {
     SessionManager session;
     String companyCode;
     String locationCode;
+    private String negativeStockStr = "No";
 
     boolean isReverseCalculationEnabled=true;
     boolean isCartonPriceEdit=true;
@@ -177,6 +177,8 @@ public class DescriptionActivity extends AppCompatActivity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             setContentView(R.layout.cart_selectpdt_next);
         }
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
         selectCustomerId = sharedPreferences.getString("customerId", "");
@@ -227,6 +229,7 @@ public class DescriptionActivity extends AppCompatActivity {
         user=session.getUserDetails();
         companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
+        negativeStockStr=user.get(SessionManager.KEY_NEGATIVE_STOCK);
 
         pcsQtyValue.setSelectAllOnFocus(true);
         ctnQtyValue.setSelectAllOnFocus(true);
@@ -379,7 +382,9 @@ public class DescriptionActivity extends AppCompatActivity {
                 Log.w("Net_Qty:", String.valueOf(net_qty_allow));
                 Log.w("Allow_cn_qty:",String.valueOf(allow_cn_qty));
                 if (net_qty_allow > allow_cn_qty){
-                    if (isAllowLowStock){
+//                    if (isAllowLowStock){
+                    if (negativeStockStr.equalsIgnoreCase("Yes")){
+
                         if (!ctnQtyValue.getText().toString().isEmpty()) {
                             int count = Integer.parseInt(ctnQtyValue.getText().toString());
                             int ctn = count + 1;
@@ -435,7 +440,9 @@ public class DescriptionActivity extends AppCompatActivity {
                 double stock=Double.parseDouble(availability.getText().toString());
                 double net_qty=Double.parseDouble(qtyTextView.getText().toString());
                 if (net_qty + 1  > stock){
-                    if (isAllowLowStock){
+//                    if (isAllowLowStock){
+                    if (negativeStockStr.equalsIgnoreCase("Yes")){
+
                         if (!pcsQtyValue.getText().toString().isEmpty()){
                             int count=Integer.parseInt(pcsQtyValue.getText().toString());
                             int ctn=count+1;
@@ -611,6 +618,14 @@ public class DescriptionActivity extends AppCompatActivity {
             unitPrice.setText(model.getWholeSalePrice());
             ctnPrice.setText(String.valueOf(model.getRetailPrice()));
             double data = Double.parseDouble(model.getPcsPerCarton());
+            allowFOC=getIntent().getStringExtra("AllowFOC_Catalog");
+            Log.w("allowfoc11",""+allowFOC);
+            if(allowFOC.equalsIgnoreCase("Yes")){
+                focEditText.setEnabled(true);
+            }
+            else{
+                focEditText.setEnabled(false);
+            }
             // convert into int
             int value = (int)data;
             ctnQty.setText(String.valueOf(value));
@@ -908,7 +923,8 @@ public class DescriptionActivity extends AppCompatActivity {
               net_qty=(ctn_qty * pcs_ctn) + pcs_qty;
               double stock=Double.parseDouble(availability.getText().toString());
               if (net_qty  > stock){
-                  if (!isAllowLowStock){
+//                  if (!isAllowLowStock){
+                  if (negativeStockStr.equalsIgnoreCase("No")){
                       showLowStock();
                       ctnQtyValue.removeTextChangedListener(cartonQtyWatcher);
                       ctnQtyValue.setText("0");
@@ -952,7 +968,9 @@ public class DescriptionActivity extends AppCompatActivity {
               net_qty=(ctn_qty * pcs_ctn) + pcs_qty;
               double stock=Double.parseDouble(availability.getText().toString());
               if (net_qty  > stock){
-                  if (!isAllowLowStock){
+//                  if (!isAllowLowStock){
+                  if (negativeStockStr.equalsIgnoreCase("No")){
+
                       showLowStock();
                       pcsQtyValue.removeTextChangedListener(qtyWatcher);
                       pcsQtyValue.setText("0");
