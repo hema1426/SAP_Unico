@@ -2584,7 +2584,7 @@ public class CartActivity extends AppCompatActivity {
                             model.setCustomerCode(response.optString("CustomerCode"));
                             model.setCustomerName(response.optString("CustomerName"));
                             model.setAddress(response.optString("Address1"));
-                            model.setDeliveryAddress(response.optString("shipAddress2")+response.optString("shipAddress3")+
+                            model.setDeliveryAddress(response.optString("shipAddress1")+response.optString("shipAddress2")+response.optString("shipAddress3")+
                                     response.optString("shipStreet"));
                             model.setSubTotal(response.optString("SubTotal"));
                             model.setNetTax(response.optString("Tax"));

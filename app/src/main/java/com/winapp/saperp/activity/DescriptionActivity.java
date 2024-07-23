@@ -113,7 +113,6 @@ public class DescriptionActivity extends AppCompatActivity {
     public boolean isUomSetting = false;
     private String uomCode = "";
     private String uomName = "";
-    private String allowFOC = "";
     double net_amount=0.0;
     double carton_amount=0.0;
     double loose_amount=0.0;
@@ -152,6 +151,8 @@ public class DescriptionActivity extends AppCompatActivity {
     SessionManager session;
     String companyCode;
     String locationCode;
+    private String allowFOCStr = "";
+
     private String negativeStockStr = "No";
 
     boolean isReverseCalculationEnabled=true;
@@ -186,6 +187,8 @@ public class DescriptionActivity extends AppCompatActivity {
         session=new SessionManager(this);
         dbHelper=new DBHelper(this);
         sharedPreferenceUtil =new SharedPreferenceUtil(this);
+
+        allowFOCStr = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_ALLOW_FOC, "");
 
         mainImage=findViewById(R.id.item_image);
         itemName=findViewById(R.id.item_nameDesc);
@@ -594,6 +597,15 @@ public class DescriptionActivity extends AppCompatActivity {
         selectCustomerId = sharedPreferences1.getString("customerId", "");
         if (selectCustomerId != null && !selectCustomerId.isEmpty()) {
             try {
+                customerDetails = dbHelper.getCustomer(selectCustomerId);
+               Log.w("allowfoc11",""+allowFOCStr);
+
+                if(allowFOCStr.equalsIgnoreCase("Yes")){
+                    focEditText.setEnabled(true);
+                }
+                else{
+                    focEditText.setEnabled(false);
+                }
                // getProductPrice(model.getProductCode());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -618,14 +630,8 @@ public class DescriptionActivity extends AppCompatActivity {
             unitPrice.setText(model.getWholeSalePrice());
             ctnPrice.setText(String.valueOf(model.getRetailPrice()));
             double data = Double.parseDouble(model.getPcsPerCarton());
-            allowFOC=getIntent().getStringExtra("AllowFOC_Catalog");
-            Log.w("allowfoc11",""+allowFOC);
-            if(allowFOC.equalsIgnoreCase("Yes")){
-                focEditText.setEnabled(true);
-            }
-            else{
-                focEditText.setEnabled(false);
-            }
+//            allowFOC=getIntent().getStringExtra("AllowFOC_Catalog");
+
             // convert into int
             int value = (int)data;
             ctnQty.setText(String.valueOf(value));

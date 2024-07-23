@@ -28,7 +28,7 @@ public class CaptureSignatureView extends View {
     private float _mX;
     private float _mY;
     private float TouchTolerance = 4;
-    private float LineThickness = 4;
+    private float LineThickness = 7;
 
     private OnSignatureDraw onSignatureDraw;
 

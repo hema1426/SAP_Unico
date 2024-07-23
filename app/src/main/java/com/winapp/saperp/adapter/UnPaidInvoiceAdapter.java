@@ -367,7 +367,7 @@ public class UnPaidInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
                             model.setOutStandingAmount(object.optString("balanceAmount"));
                             model.setBillDiscount(object.optString("BillDIscount"));
                             model.setItemDiscount(object.optString("ItemDiscount"));
-                            model.setDeliveryAddress(object.optString("shipAddress2")+object.optString("shipAddress3")+
+                            model.setDeliveryAddress(object.optString("shipAddress1")+object.optString("shipAddress2")+object.optString("shipAddress3")+
                                     object.optString("shipStreet"));
 
                             JSONArray products=object.getJSONArray("invoiceDetails");

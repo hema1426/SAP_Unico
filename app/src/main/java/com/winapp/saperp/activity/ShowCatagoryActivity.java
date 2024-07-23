@@ -1409,7 +1409,8 @@ public class ShowCatagoryActivity extends AppCompatActivity implements ProductAd
     private void populateCategoriesData() {
         try {
             if (productList.size()>0){
-                productsAdapterNew = new ProductAdapterLoadMore(ShowCatagoryActivity.this, productList, new ProductAdapterLoadMore.CallBack() {
+                productsAdapterNew = new ProductAdapterLoadMore(ShowCatagoryActivity.this,
+                        productList, new ProductAdapterLoadMore.CallBack() {
                     @Override
                     public void callDescription(String productId,String productName,String price,String imageString,String weight,
                                                 String cartonPrice,String unitPrice,String pcsPercarton,String stock) {

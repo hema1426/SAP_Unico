@@ -325,7 +325,7 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                             model.setCustomerCode(object.optString("customerCode"));
                             model.setCustomerName(object.optString("customerName"));
                             model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
-                            model.setDeliveryAddress(object.optString("shipAddress2")+object.optString("shipAddress3")+
+                            model.setDeliveryAddress(object.optString("shipAddress1")+object.optString("shipAddress2")+object.optString("shipAddress3")+
                                     object.optString("shipStreet"));
                             String delieryAddr = object.optString("shipAddress2")+object.optString("shipAddress3")+
                                     object.optString("shipStreet");
@@ -348,7 +348,8 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
 
                             if(object.optString("showShippingAddress").equalsIgnoreCase("Yes")){
                                 deliveryAddr_print_layl.setVisibility(View.VISIBLE);
-                                deliveryAddr_print_txtl.setText(object.optString("shipAddress2"));
+                                deliveryAddr_print_txtl.setText(object.optString("shipAddress1")+object.optString("shipAddress2")+object.optString("shipAddress3")+
+                                        object.optString("shipStreet"));
                             }
                             else{
                                 deliveryAddr_print_layl.setVisibility(View.GONE);

@@ -229,7 +229,7 @@
                                 android:selectAllOnFocus="true"
                                 android:textStyle="bold"
                                 android:textColor="@color/black"
-                                android:textSize="@dimen/_10sdp"
+                                android:textSize="12sp"
                                 android:layout_marginTop="5dp"
                                 android:background="@drawable/create_invoice_background"
                                 android:layout_below="@+id/code_title"
@@ -277,7 +277,7 @@
                                 <EditText
                                     android:layout_width="match_parent"
                                     android:padding="5dp"
-                                    android:textSize="@dimen/_10sdp"
+                                    android:textSize="12sp"
                                     android:maxLines="1"
                                     android:id="@+id/amount_add"
                                     android:hint="$ Amount"

@@ -337,7 +337,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                     model.setDoDate(object.optString("doDate"));
                     model.setDoNumber(object.optString("doNumber"));
                     model.setAllowDeliveryAddress(object.optString("showShippingAddress"));
-                    model.setDeliveryAddress(object.optString("shipAddress2")+object.optString("shipAddress3")+
+                    model.setDeliveryAddress(object.optString("shipAddress1")+object.optString("shipAddress2")+object.optString("shipAddress3")+
                             object.optString("shipStreet"));
 
                     String signFlag=object.optString("signFlag");
@@ -350,7 +350,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                     }
                     if(object.optString("showShippingAddress").equalsIgnoreCase("Yes")){
                         deliveryAddr_print_layl.setVisibility(View.VISIBLE);
-                        deliveryAddr_print_txtl.setText(object.optString("shipAddress2")+object.optString("shipAddress3")+
+                        deliveryAddr_print_txtl.setText(object.optString("shipAddress1")+object.optString("shipAddress2")+object.optString("shipAddress3")+
                                 object.optString("shipStreet"));
                     }
                     else{

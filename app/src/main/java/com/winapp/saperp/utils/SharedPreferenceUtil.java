@@ -12,6 +12,7 @@ public class SharedPreferenceUtil {
 
     public  String KEY_CART_ITEM_DISC = "CartItemDisc";
     public  String KEY_ACTIVITY = "ACTIVITY";
+    public  String KEY_ALLOW_FOC = "Allow_FOC";
 
     private static SharedPreferences sharedPreferences;
     public static final boolean DEFAULT_BOOLEAN = false;

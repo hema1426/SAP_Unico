@@ -402,8 +402,13 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             model.setOutStandingAmount(object.optString("balanceAmount"));
                             model.setBillDiscount(object.optString("BillDIscount"));
                             model.setItemDiscount(object.optString("ItemDiscount"));
+                            model.setAddress1(object.optString("address1"));
+                            model.setAddress2(object.optString("address2"));
+                            model.setAddress3(object.optString("address3"));
+                            model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
                             model.setAllowDeliveryAddress(object.optString("showShippingAddress"));
-
+                            model.setDeliveryAddress(object.optString("shipAddress1")+object.optString("shipAddress2")+object.optString("shipAddress3")+
+                                    object.optString("shipStreet"));
                             JSONArray products=object.getJSONArray("invoiceDetails");
 //                            for (int i=0;i<products.length();i++) {
 //                                JSONObject detailObject = products.getJSONObject(i);

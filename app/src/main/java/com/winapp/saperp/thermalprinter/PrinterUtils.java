@@ -1088,34 +1088,8 @@ public class PrinterUtils extends AppCompatActivity {
                     Log.w("delivertAddr",""+invoiceHeaderDetails.get(0).getDeliveryAddress()+".."+
                             invoiceHeaderDetails.get(0).getAllowDeliveryAddress());
 
-                    if (invoiceHeaderDetails.get(0).getDeliveryAddress() != null &&
-                            !invoiceHeaderDetails.get(0).getDeliveryAddress().isEmpty()) {
-
-                        if (invoiceHeaderDetails.get(0).getAllowDeliveryAddress() != null &&
-                                !invoiceHeaderDetails.get(0).getAllowDeliveryAddress().isEmpty() &&
-                                invoiceHeaderDetails.get(0).getAllowDeliveryAddress().equalsIgnoreCase("Yes")) {
-
-                            if (invoiceHeaderDetails.get(0).getDeliveryAddress().length() <= 38) {
-                                Log.w("delivertAddraa",""+invoiceHeaderDetails.get(0).getDeliveryAddress());
-
-                                y += 30;
-                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "Delivery Addr: " + invoiceHeaderDetails.get(0).getDeliveryAddress() + "\"\n\n");
-                               // TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + invoiceHeaderDetails.get(0).getDeliveryAddress() + "\"\n");
-
-                            } else {
-                                Log.w("delivertAddraal",""+invoiceHeaderDetails.get(0).getDeliveryAddress());
-
-                                String firstname = invoiceHeaderDetails.get(0).getDeliveryAddress().substring(0, 35);
-                                String secondname = invoiceHeaderDetails.get(0).getDeliveryAddress().substring(35);
-                                y += 30;
-                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "Delivery Addr: " + firstname + "\"\n\n");
-                                y += 30;
-                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + secondname + "\"\n\n");
-                            }
-                        }
-                    }
-
-                    if (invoiceHeaderDetails.get(0).getAddress1() != null) {
+                    if (invoiceHeaderDetails.get(0).getAddress1() != null &&
+                            !invoiceHeaderDetails.get(0).getAddress1().isEmpty()) {
                         y += 30;
                         Log.w("Address1_Value:", invoiceHeaderDetails.get(0).getAddress1());
                         TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" +  "ADDR: " +invoiceHeaderDetails.get(0).getAddress1() + "\"\n");
@@ -1142,6 +1116,29 @@ public class PrinterUtils extends AppCompatActivity {
                         y += 30;
                         TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + invoiceHeaderDetails.get(0).getAddresssZipcode() + "\"\n");
                     }
+                    if (invoiceHeaderDetails.get(0).getDeliveryAddress() != null &&
+                            !invoiceHeaderDetails.get(0).getDeliveryAddress().isEmpty()) {
+
+                        if (invoiceHeaderDetails.get(0).getAllowDeliveryAddress() != null &&
+                                !invoiceHeaderDetails.get(0).getAllowDeliveryAddress().isEmpty() &&
+                                invoiceHeaderDetails.get(0).getAllowDeliveryAddress().equalsIgnoreCase("Yes")) {
+
+                            if (invoiceHeaderDetails.get(0).getDeliveryAddress().length() <= 38) {
+                                y += 30;
+                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "Delivery Addr: " + invoiceHeaderDetails.get(0).getDeliveryAddress() + "\"\n\n");
+                                // TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + invoiceHeaderDetails.get(0).getDeliveryAddress() + "\"\n");
+
+                            } else {
+                                String firstname = invoiceHeaderDetails.get(0).getDeliveryAddress().substring(0, 35);
+                                String secondname = invoiceHeaderDetails.get(0).getDeliveryAddress().substring(35);
+                                y += 30;
+                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "Delivery Addr: " + firstname + "\"\n\n");
+                                y += 30;
+                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + secondname + "\"\n\n");
+                            }
+                        }
+                    }
+
 
 //                        if (!invoiceHeaderDetails.get(0).getAddress().isEmpty()) {
 //                            Log.w("GivenPrintAddress:", invoiceHeaderDetails.get(0).getAddress().toString());
@@ -1691,38 +1688,6 @@ public class PrinterUtils extends AppCompatActivity {
                     y += 30;
                     TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + "CODE: " + invoiceHeaderDetails.get(0).getCustomerCode() + "\"\n");
 
-                    if (invoiceHeaderDetails.get(0).getDeliveryAddress() != null &&
-                            !invoiceHeaderDetails.get(0).getDeliveryAddress().isEmpty()) {
-
-                        if (invoiceHeaderDetails.get(0).getAllowDeliveryAddress() != null &&
-                                !invoiceHeaderDetails.get(0).getAllowDeliveryAddress().isEmpty() &&
-                                invoiceHeaderDetails.get(0).getAllowDeliveryAddress().equalsIgnoreCase("Yes")) {
-
-                            if (invoiceHeaderDetails.get(0).getDeliveryAddress().length() <= 38) {
-                                TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + "Delivery Addr: " + invoiceHeaderDetails.get(0).getDeliveryAddress() + "\"\n\n");
-                            } else {
-                                String firstname = invoiceHeaderDetails.get(0).getDeliveryAddress().substring(0, 35);
-                                String secondname = invoiceHeaderDetails.get(0).getDeliveryAddress().substring(35);
-
-                                TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + "Delivery Addr: " + firstname + "\"\n\n");
-                                y += 30;
-                                TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,8,8,\"" + secondname + "\"\n\n");
-                            }
-                        }
-                    }
-
-      /*  if (!invoiceHeaderDetails.get(0).getAddress().isEmpty()){
-            y += 30;
-            String a = invoiceHeaderDetails.get(0).getAddress();
-            String[] b = a.split(",");
-            TscDll.sendcommand("TEXT 0,"+y+",\"Poppins.TTF\",0,7,7,\""+"ADD: "+b[0]+","+b[1]+"\"\n");
-            if (b.length>=3){
-                if (b[2]!=null){
-                    y += 20;
-                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,7,7,\"" + b[2] + "\"\n");
-                }
-            }
-        }*/
                     if (invoiceHeaderDetails.get(0).getAddress1() != null &&
                             !invoiceHeaderDetails.get(0).getAddress1().isEmpty()) {
                         y += 30;
@@ -1751,7 +1716,25 @@ public class PrinterUtils extends AppCompatActivity {
                         y += 30;
                         TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + invoiceHeaderDetails.get(0).getAddresssZipcode() + "\"\n");
                     }
+                    if (invoiceHeaderDetails.get(0).getDeliveryAddress() != null &&
+                            !invoiceHeaderDetails.get(0).getDeliveryAddress().isEmpty()) {
 
+                        if (invoiceHeaderDetails.get(0).getAllowDeliveryAddress() != null &&
+                                !invoiceHeaderDetails.get(0).getAllowDeliveryAddress().isEmpty() &&
+                                invoiceHeaderDetails.get(0).getAllowDeliveryAddress().equalsIgnoreCase("Yes")) {
+
+                            if (invoiceHeaderDetails.get(0).getDeliveryAddress().length() <= 38) {
+                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Delivery Addr: " + invoiceHeaderDetails.get(0).getDeliveryAddress() + "\"\n\n");
+                            } else {
+                                String firstname = invoiceHeaderDetails.get(0).getDeliveryAddress().substring(0, 35);
+                                String secondname = invoiceHeaderDetails.get(0).getDeliveryAddress().substring(35);
+
+                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Delivery Addr: " + firstname + "\"\n\n");
+                                y += 30;
+                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + secondname + "\"\n\n");
+                            }
+                        }
+                    }
 //                        if (!invoiceHeaderDetails.get(0).getAddress().isEmpty()) {
 //                            Log.w("GivenPrintAddress:", invoiceHeaderDetails.get(0).getAddress().toString());
 //                            y += LINE_SPACING;

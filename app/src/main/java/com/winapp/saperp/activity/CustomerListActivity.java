@@ -802,6 +802,7 @@ public class CustomerListActivity extends NavigationActivity {
                     model.setTaxType(taxtype);
                     model.setTaxCode(taxcode);
                     model.setBillDiscPercentage(billDisc);
+                    model.setAllowFOC(isFOCApi);
                     ArrayList<CustomerDetails> taxList = new ArrayList<>();
                     taxList.add(model);
 

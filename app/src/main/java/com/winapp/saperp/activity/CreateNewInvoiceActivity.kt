@@ -3473,8 +3473,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     (v as TextView).textSize = 14f
                     /*    Typeface Type = getFont () ;  // custom method to get a font from "assets" folder
                 ((TextView) v).setTypeface(Type);
-                ((TextView) v).setTextColor(YourColor);*/v.gravity =
-                        Gravity.LEFT or Gravity.CENTER_VERTICAL
+                ((TextView) v).setTextColor(YourColor);*/
+                    v.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL
                     return v
                 }
             }

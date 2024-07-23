@@ -56,6 +56,7 @@ import com.winapp.saperp.model.CustomerModel;
 import com.winapp.saperp.model.HomePageModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.Utils;
 
 import org.json.JSONArray;
@@ -96,6 +97,8 @@ public class CategoriesActivity extends AppCompatActivity {
     SharedPreferences.Editor customerPredEdit;
     public ArrayList<CustomerDetails> customerDetails;
     private DBHelper dbHelper;
+    private SharedPreferenceUtil sharedPreferenceUtil;
+
     public static TextView selectCustomer;
     public ArrayList<CustomerModel> customerList;
     public TextView dateText;
@@ -114,6 +117,7 @@ public class CategoriesActivity extends AppCompatActivity {
     private Spinner customerGroupSpinner;
     private ArrayList<CustomerGroupModel> customersGroupList;
     private String username;
+    private String allowFOCStr;
     public static JSONObject customerResponse = new JSONObject();
     private String creditLimitAmount = "0.00";
     private String outstandingAmount = "0.00";
@@ -130,10 +134,14 @@ public class CategoriesActivity extends AppCompatActivity {
 
         session = new SessionManager(this);
         dbHelper = new DBHelper(this);
+        sharedPreferenceUtil = new SharedPreferenceUtil(this);
+        sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_ALLOW_FOC, "");
+
         user = session.getUserDetails();
         username = user.get(SessionManager.KEY_USER_NAME);
         locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
         companyCode = user.get(SessionManager.KEY_COMPANY_CODE);
+
         tabLayout = findViewById(R.id.tabs);
         viewPager = findViewById(R.id.viewpager_Categor);
         userName = findViewById(R.id.user_name);
@@ -427,6 +435,7 @@ public class CategoriesActivity extends AppCompatActivity {
                                         model.setTaxType(object.optString("taxType"));
                                         model.setTaxPerc(object.optString("taxPercentage"));
                                         model.setTaxCode(object.optString("taxCode"));
+                                        model.setAllowFOC(object.optString("allowFOC"));
                                         model.setBillDiscPercentage(object.optString("discountPercentage"));
 
 
@@ -501,7 +510,7 @@ public class CategoriesActivity extends AppCompatActivity {
         }
         Log.w("JsonValueForCustomer:", jsonObject.toString());
         String url = Utils.getBaseUrl(getApplicationContext()) + "Customer";
-        Log.w("Given_url:", url);
+        Log.w("Given_url_cart:", url);
         ProgressDialog progressDialog = new ProgressDialog(CategoriesActivity.this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Customer Details Loading...");
@@ -512,7 +521,7 @@ public class CategoriesActivity extends AppCompatActivity {
                 response -> {
                     try {
                         progressDialog.dismiss();
-                        Log.w("SAP-response_customer:", response.toString());
+                        Log.w("SAP-res_cart_cust:", response.toString());
                         ArrayList<CustomerModel> customerList = new ArrayList<>();
                         String statusCode = response.optString("statusCode");
                         if (statusCode.equals("1")) {
@@ -576,6 +585,8 @@ public class CategoriesActivity extends AppCompatActivity {
             model.setTaxType(customerObject.optString("taxType"));
             model.setTaxCode(customerObject.optString("taxCode"));
             model.setAllowFOC(customerObject.optString("allowFOC"));
+            String allowFOCL = customerObject.optString("allowFOC");
+            sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_ALLOW_FOC, allowFOCL);
 
             ArrayList<CustomerDetails> taxList = new ArrayList<>();
             taxList.add(model);
