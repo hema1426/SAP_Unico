@@ -132,6 +132,10 @@ public class CategoriesActivity extends AppCompatActivity {
 
         Log.w("activity_cg",getClass().getSimpleName().toString()+"ProductAdapterLoadMore");
 
+        // product loading apis
+//        https://c21326-EasySales-Test.cloudiax.com/api/CategoryDetails {"CategoryCode": "102", "LocationCode": "01"}
+//        https://c21326-EasySales-Test.cloudiax.com/api/CategoryList
+
         session = new SessionManager(this);
         dbHelper = new DBHelper(this);
         sharedPreferenceUtil = new SharedPreferenceUtil(this);
@@ -719,6 +723,8 @@ public class CategoriesActivity extends AppCompatActivity {
         pDialog.setTitleText("Categories Loading...");
         pDialog.setCancelable(false);
         pDialog.show();
+        Log.w("Given_url_catal:",url);
+
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 response -> {
                     try {

@@ -1456,9 +1456,9 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                            "",
                                            "",
                                            "",
-                                           object.optString("focQty")
+                                           object.optString("focQty"),
+                                           object.optString("minimumSellingPrice")
                                     );
-
                                     Log.w("ProductsLength:",products.length()+"");
                                     Log.w("ActualPrintProducts:",dbHelper.numberOfRowsInInvoice()+"");
                                     if (products.length()==dbHelper.numberOfRowsInInvoice()){

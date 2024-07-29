@@ -262,7 +262,8 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                     model.getBillDisc(),
                     "",
                     "",
-                    model.getExchangeQty()
+                    model.getExchangeQty(),
+                    model.getMinimumSellingPrice()
             );
 
             myEdit.putString("billDisc_amt", model.getBillDisc());
@@ -533,6 +534,7 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                                         model1.setPriceWithGST(object.optString("taxAmount"));
                                         model1.setItemDiscount(object.optString("itemDiscount"));
                                         model1.setBillDisc(salesObject.optString("billDiscount"));
+                                        model1.setMinimumSellingPrice(salesObject.optString("minimumSellingPrice"));
                                         model1.setBillDiscPercentage("0.00");
                                         double qty = Double.parseDouble(object.optString("quantity"));
                                         double price = Double.parseDouble(object.optString("price"));
@@ -703,6 +705,7 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                                         model1.setPriceWithGST(object.optString("taxAmount"));
                                         model1.setItemDiscount(object.optString("itemDiscount"));
                                         model1.setBillDisc(salesObject.optString("billDiscount"));
+                                        model1.setMinimumSellingPrice(salesObject.optString("minimumSellingPrice"));
                                         model1.setBillDiscPercentage(salesObject.optString("billDiscountPercentage"));
                                         double qty = Double.parseDouble(object.optString("quantity"));
                                         double price = Double.parseDouble(object.optString("price"));

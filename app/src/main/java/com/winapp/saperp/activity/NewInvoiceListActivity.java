@@ -1676,7 +1676,8 @@ public class NewInvoiceListActivity extends NavigationActivity
                                                 salesObject.optString("billDiscount"),
                                                 "",
                                                 "",
-                                                object.optString("foc_Qty")
+                                                object.optString("foc_Qty"),
+                                                salesObject.optString("minimumSellingPrice")
                                         );
 
                                         myEdit.putString("billDisc_amt", salesObject.optString("billDiscount"));

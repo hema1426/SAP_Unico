@@ -1282,7 +1282,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                             "",
                                             "",
                                             "",
-                                            "0"
+                                            "0","0"
                                     );
 
                                     myEdit.putString("billDisc_amt", salesObject.optString("billDiscount"));

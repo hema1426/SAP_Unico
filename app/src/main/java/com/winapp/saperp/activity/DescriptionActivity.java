@@ -1311,7 +1311,8 @@ public class DescriptionActivity extends AppCompatActivity {
                         return false;
                     }
                 }).into(imageView);
-        builder.addContentView(imageView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        builder.addContentView(imageView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
         builder.show();
     }
 

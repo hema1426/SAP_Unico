@@ -1552,6 +1552,7 @@ class CreateNewInvoiceActivityBillDisc : AppCompatActivity() {
                 "",
                 "",
                 "",
+                "",
                 ""
             )
 

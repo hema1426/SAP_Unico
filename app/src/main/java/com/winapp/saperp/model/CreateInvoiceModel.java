@@ -20,6 +20,15 @@ public class CreateInvoiceModel {
     private String damagedQty;
     private String exchangeQty;
     private String productBarCode;
+    private String minimumSellingPrice;
+
+    public String getMinimumSellingPrice() {
+        return minimumSellingPrice;
+    }
+
+    public void setMinimumSellingPrice(String minimumSellingPrice) {
+        this.minimumSellingPrice = minimumSellingPrice;
+    }
 
     public String getProductBarCode() {
         return productBarCode;

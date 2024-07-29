@@ -201,7 +201,8 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
                             model.getBillDisc(),
                             "",
                             "",
-                            model.getExchangeQty()
+                            model.getExchangeQty(),
+                            model.getMinimumSellingPrice()
                     );
 ;
 
@@ -289,6 +290,15 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
         private String itemDisc;
         private String billDisc;
         private String billDiscPercentage;
+        private String minimumSellingPrice;
+
+        public String getMinimumSellingPrice() {
+            return minimumSellingPrice;
+        }
+
+        public void setMinimumSellingPrice(String minimumSellingPrice) {
+            this.minimumSellingPrice = minimumSellingPrice;
+        }
 
         public String getItemDisc() {
             return itemDisc;

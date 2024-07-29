@@ -156,9 +156,9 @@ public class SplashActivity extends AppCompatActivity {
                 finish();
             }else {
          //  String apiUrl=Constants.RAYMANG_URL_JULY;
-          //String apiUrl=Constants.aadhi_URL_JULY;
+          String apiUrl=Constants.aadhi_URL_JULY;
            // String apiUrl=Constants.SUPER_STAR_DEMO;
-              String apiUrl=Constants.TRANS_ORIENT_DEMO;
+            //  String apiUrl=Constants.TRANS_ORIENT_DEMO;
 
                 dbHelper.insertUrl(apiUrl);
                 startActivity(

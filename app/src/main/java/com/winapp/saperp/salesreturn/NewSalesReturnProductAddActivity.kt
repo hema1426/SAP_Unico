@@ -1043,6 +1043,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                 "",
                 "",
                 "",
+                "",
                 ""
             )
 

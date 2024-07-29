@@ -219,6 +219,7 @@
 //                    intent1.putExtra("Message", "Open");
 //                    startActivity(intent1);
 //                    //mCurrentSelectedPosition = 7;
+//
 //                    drawerLayout.closeDrawers();
 //                    return true;
 //                } else if (itemId == R.id.navigation_item_receipts) {

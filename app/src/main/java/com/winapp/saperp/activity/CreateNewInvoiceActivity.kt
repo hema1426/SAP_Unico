@@ -1190,7 +1190,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             override fun afterTextChanged(s: Editable) {
                 if (!returnQtyText!!.getText().toString().isEmpty()) {
                     val netreturnqty = returnQtyText!!.getText().toString()
-                    val net_qty = netreturnqty.toInt()
+                    val net_qty = netreturnqty.toDouble()
                     if (!s.toString().isEmpty()) {
                         val damageqty = s.toString().toDouble()
                         if (net_qty > damageqty) {
@@ -1357,11 +1357,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 .isEmpty()
                         ) {
                             if (priceText!!.getText().toString().toDouble() > 0) {
+                                Log.w("mmimnimPrice","");
                                 val minimumsellingprice =
                                     minimumSellingPriceText!!.getText().toString().toDouble()
                                 if (minimumsellingprice <= priceText!!.getText().toString()
                                         .toDouble()
                                 ) {
+                                    Log.w("mmimnimPriceVal",""+minimumsellingprice);
+
                                     insertProducts()
 
                                     qtyValue!!.setEnabled(true)
@@ -1390,11 +1393,15 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 .toString().isEmpty()
                         ) {
                             if (priceText!!.getText().toString().toDouble() > 0) {
+                                Log.w("mmimnimPrice1","");
+
                                 val minimumsellingprice =
                                     minimumSellingPriceText!!.getText().toString().toDouble()
                                 if (minimumsellingprice <= priceText!!.getText().toString()
                                         .toDouble()
                                 ) {
+                                    Log.w("mmimnimPriceVal1",""+minimumsellingprice);
+
                                     addProduct("Add")
                                     qtyValue!!.setEnabled(true)
                                     priceText!!.setEnabled(true)
@@ -1404,6 +1411,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                     )
                                 }
                             } else {
+                                Log.w("mmimnimPrice2","");
+
                                 if ((focEditText!!.getText() != null && !focEditText!!.getText()
                                         .toString().isEmpty() && focEditText!!.getText()
                                         .toString() != "0") || (returnQtyText!!.getText() != null && !returnQtyText!!.getText()
@@ -1866,6 +1875,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             val lPriceCalc = "0"
             var itemdiscc = "0"
             var billdiscc = "0"
+            var minimumSellingPricel = "0"
             var foc = "0"
             var uom = "PCS"
             var saleable = "0"
@@ -1927,6 +1937,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             if (!bill_disc_amt_ed!!.text.toString().isEmpty()) {
                 billdiscc = bill_disc_amt_ed!!.text.toString()
             }
+            if (!minimumSellingPriceText!!.text.toString().isEmpty()) {
+                minimumSellingPricel = bill_disc_amt_ed!!.text.toString()
+            }
             val priceValue = 0.0
             val net_qty = qty_value.toDouble() - return_qty.toDouble()
             val return_amt = return_qty.toDouble() * price_value.toDouble()
@@ -1949,7 +1962,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 "",
                 saleable,
                 damaged,
-                exchange
+                exchange,
+                minimumSellingPricel
             )
             Log.w("itemds_inv",""+exchange+".. "+
                     sharedPref_billdisc!!.getString("billDisc_amt", ""))
@@ -2064,7 +2078,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
                         val jsonObject = JSONObject()
                         Log.w("pdtuomentryy", "" + model.productCode);
-                        Log.w("sal_damag_txt:", model.saleableQty+model.damagedQty)
+                        Log.w("sal_damag_txt:", model.saleableQty)
+                        Log.w("miniSell_txt:",model.minimumSellingPrice)
 
 //                        if (isUomSetting) {
 //                            val jsonObject = JSONObject()
@@ -2083,13 +2098,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         uomTextView!!.text = model.uomText
                         qtyValue!!.setText("")
                         val netqty = model.netQty.toDouble()
+                        if (model.minimumSellingPrice != null && !model.minimumSellingPrice.isEmpty()) {
+                            minimumSellingPriceText!!.text = model.minimumSellingPrice
+                        } else {
+                            minimumSellingPriceText!!.text = "0.00"
+                        }
 
-
-                        /*  if (model.getMinimumSellingPrice()!=null && !model.getMinimumSellingPrice().isEmpty()){
-                        minimumSellingPriceText.setText(model.getMinimumSellingPrice());
-                    }else {
-                        minimumSellingPriceText.setText("0.00");
-                    }*/qtyValue!!.removeTextChangedListener(qtyTW)
+                        qtyValue!!.removeTextChangedListener(qtyTW)
                         qtyValue!!.setText(Utils.getQtyValue(netqty.toString()))
                         qtyValue!!.addTextChangedListener(qtyTW)
                         productAutoComplete!!.setText(model.productName + "-" + model.productCode)
@@ -4014,7 +4029,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     getProductPrice(productId);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }*/if (model.minimumSellingPrice != null && !model.minimumSellingPrice.isEmpty()) {
+                }*/
+        if (model.minimumSellingPrice != null && !model.minimumSellingPrice.isEmpty()) {
             minimumSellingPriceText!!.text = model.minimumSellingPrice
         } else {
             minimumSellingPriceText!!.text = "0.00"

@@ -7,7 +7,7 @@
     android:layout_gravity="center_horizontal"
     android:layout_centerHorizontal="true"
     android:layout_width="match_parent"
-    android:maxWidth="@dimen/_180sdp"
+    android:maxWidth="220dp"
     android:layout_height="45dp"
     android:text="rr"
     android:ellipsize="marquee"/>

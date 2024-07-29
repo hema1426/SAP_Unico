@@ -1503,7 +1503,7 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
                             "",
                             "",
                             "",
-                            ""
+                            "",""
                     );
 
             // Adding Return Qty Table values
