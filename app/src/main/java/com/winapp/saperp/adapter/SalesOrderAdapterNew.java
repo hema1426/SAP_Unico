@@ -381,27 +381,23 @@ public class SalesOrderAdapterNew extends RecyclerView.Adapter<RecyclerView.View
                             //    deliveryAddressText.setText(model.getAddress());
 
                             JSONArray detailsArray = object.optJSONArray("salesOrderDetails");
-                            for (int i = 0; i < detailsArray.length(); i++) {
-                                JSONObject detailObject = detailsArray.optJSONObject(i);
-                                if (Double.parseDouble(detailObject.optString("quantity")) > 0) {
-                                    SalesOrderPrintPreviewModel.SalesList salesListModel = new SalesOrderPrintPreviewModel.SalesList();
+
+
+                            for (int i=0;i<detailsArray.length();i++){
+                                JSONObject detailObject=detailsArray.optJSONObject(i);
+                                if (Double.parseDouble(detailObject.optString("quantity"))>0){
+                                    SalesOrderPrintPreviewModel.SalesList salesListModel =new SalesOrderPrintPreviewModel.SalesList();
                                     salesListModel.setProductCode(detailObject.optString("productCode"));
-                                    salesListModel.setDescription(detailObject.optString("productName"));
+                                    salesListModel.setDescription( detailObject.optString("productName"));
                                     salesListModel.setLqty(detailObject.optString("unitQty"));
                                     salesListModel.setCqty(detailObject.optString("cartonQty"));
                                     salesListModel.setNetQty(detailObject.optString("quantity"));
                                     salesListModel.setCartonPrice(detailObject.optString("cartonPrice"));
                                     salesListModel.setUnitPrice(detailObject.optString("price"));
-                                    double qty = Double.parseDouble(detailObject.optString("quantity"));
+                                    double qty=Double.parseDouble(detailObject.optString("quantity"));
+                                    double price=Double.parseDouble(detailObject.optString("price"));
 
-                                    double price=0.00;
-                                    if (company_code.equals("SUPERSTAR TRADERS PTE LTD")){
-                                        price = Double.parseDouble(detailObject.optString("grossPrice"));
-                                    }else {
-                                        price = Double.parseDouble(detailObject.optString("price"));
-                                    }
-
-                                    double nettotal = qty * price;
+                                    double nettotal=qty * price;
                                     salesListModel.setTotal(String.valueOf(nettotal));
                                     salesListModel.setPricevalue(String.valueOf(price));
 
@@ -507,8 +503,9 @@ public class SalesOrderAdapterNew extends RecyclerView.Adapter<RecyclerView.View
 
                                     }
                                 }*/
+
                                 model.setSalesList(salesOrdernewList);
-                               // salesOrderHeaderDetails.add(model);
+                          //      salesOrderHeaderDetails.add(model);
                             }
                         }
 

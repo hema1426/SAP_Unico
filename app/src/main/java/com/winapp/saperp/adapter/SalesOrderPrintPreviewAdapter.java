@@ -2,6 +2,7 @@ package com.winapp.saperp.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,7 @@ public class SalesOrderPrintPreviewAdapter extends RecyclerView.Adapter<SalesOrd
         }else {
             viewHolder.qtyValue.setText((int)Double.parseDouble(salesList.getNetQty())+"");
         }
+        Log.w("so_total",""+salesList.getTotal());
       //  viewHolder.price.setText(Utils.twoDecimalPoint(Double.parseDouble(salesList.getPricevalue())));
         viewHolder.price.setText(salesList.getPricevalue());
 

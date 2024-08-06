@@ -12,17 +12,18 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_gravity="center"
-        android:visibility="gone"
         android:id="@+id/empty_layout"
         android:gravity="center"
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/emptytxt_his"
             android:layout_width="wrap_content"
             android:text="No Order History found !"
             android:layout_marginTop="10dp"
             android:textColor="#212121"
             android:textSize="14sp"
+            android:visibility="gone"
             android:layout_height="35dp"/>
 
     </LinearLayout>
@@ -31,6 +32,7 @@
         tools:listitem="@layout/order_history_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -56,6 +56,7 @@ import com.winapp.saperp.R;
 import com.winapp.saperp.activity.DeliveryOrderListActivity;
 import com.winapp.saperp.adapter.InvoicePrintPreviewAdapter;
 import com.winapp.saperp.model.InvoicePrintPreviewModel;
+import com.winapp.saperp.thermalprinter.PrinterUtils;
 import com.winapp.saperp.tscprinter.TSCPrinterActivity;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
@@ -839,11 +840,13 @@ public class DOPrintPreview extends AppCompatActivity implements OnPageChangeLis
                     // tscPrinter.printInvoice(invoiceHeaderDetails,invoiceList);
 
                     TSCPrinter printer=new TSCPrinter(getApplicationContext(),printerMacId,"DO");
-                    try {
-                        printer.printDeliveryOrder1(1,invoiceHeaderDetails,invoiceList);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+
+                       // printer.printDeliveryOrder1(1,invoiceHeaderDetails,invoiceList);
+                        new PrinterUtils(getApplicationContext(), printerMacId).printDeliveryOrder1(
+                                1,
+                                invoiceHeaderDetails,
+                                invoiceList);
+
                     printer.setOnCompletionListener(new TSCPrinter.OnCompletionListener() {
                         @Override
                         public void onCompleted() {

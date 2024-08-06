@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -44,6 +45,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
     // Define the variable to use the Activity
     private TextView totalOrderTotal;
     private TextView totalOutstanding;
+    private TextView emptytxt_hisl;
     private RecyclerView orderListView;
     private Button btnReorder;
     private ArrayList<OrderHistoryModel> ordersList;
@@ -68,6 +70,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
         orderListView=findViewById(R.id.orderListView);
         btnReorder=findViewById(R.id.btn_reorder);
         emptyLayout=findViewById(R.id.empty_layout);
+        emptytxt_hisl = findViewById(R.id.emptytxt_his);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         // Get the all orders of the particular customer
         session=new SessionManager(this);
@@ -157,14 +160,18 @@ public class OrderHistoryActivity extends AppCompatActivity {
                             ordersList.add(model);
                         }
                         if (ordersList.size() > 0) {
-                            setOrdersAdapter(ordersList);
+                            emptytxt_hisl.setVisibility(View.GONE);
                             orderListView.setVisibility(View.VISIBLE);
-                            emptyLayout.setVisibility(View.GONE);
+                            setOrdersAdapter(ordersList);
                         }
                         else{
                             orderListView.setVisibility(View.GONE);
-                            emptyLayout.setVisibility(View.VISIBLE);
+                            emptytxt_hisl.setVisibility(View.VISIBLE);
                         }
+                    }
+                    else{
+                        orderListView.setVisibility(View.GONE);
+                        emptytxt_hisl.setVisibility(View.VISIBLE);
                     }
                 }
                 pDialog.dismiss();
@@ -252,15 +259,18 @@ public class OrderHistoryActivity extends AppCompatActivity {
                             ordersList.add(model);
                         }
                         if (ordersList.size() > 0) {
-                            setOrdersAdapter(ordersList);
+                            emptytxt_hisl.setVisibility(View.GONE);
                             orderListView.setVisibility(View.VISIBLE);
-                            emptyLayout.setVisibility(View.GONE);
+
+                            setOrdersAdapter(ordersList);
                         }
                         else{
                             orderListView.setVisibility(View.GONE);
-                            emptyLayout.setVisibility(View.VISIBLE);
+                            emptytxt_hisl.setVisibility(View.VISIBLE);
                         }
-
+                    } else{
+                        orderListView.setVisibility(View.GONE);
+                        emptytxt_hisl.setVisibility(View.VISIBLE);
                     }
                 }
                 pDialog.dismiss();

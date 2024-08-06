@@ -125,6 +125,7 @@ public class Constants {
     public static String SLG_DEMO ="http://13.251.236.153:90/api/";
 
     public static String TRANS_ORIENT_DEMO ="https://c21326-EasySales-Test.cloudiax.com/api/";
+    public static String fuxin ="https://app0030.cloudtaktiks.com:11018/api/";
 
    //RAYMANG
     //public static String RAYMANG_URL_JULY="https://app0027.cloudtaktiks.com:11014/api/";

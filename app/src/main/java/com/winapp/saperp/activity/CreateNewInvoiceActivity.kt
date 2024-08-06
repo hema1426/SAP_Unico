@@ -36,6 +36,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -95,6 +96,8 @@ import com.winapp.saperp.model.SalesOrderPrintPreviewModel
 import com.winapp.saperp.model.SalesOrderPrintPreviewModel.SalesList
 import com.winapp.saperp.model.SettingsModel
 import com.winapp.saperp.model.UomModel
+import com.winapp.saperp.receipts.ReceiptPrintPreviewModel
+import com.winapp.saperp.receipts.ReceiptPrintPreviewModel.ReceiptsDetails
 import com.winapp.saperp.thermalprinter.PrinterUtils
 import com.winapp.saperp.utils.BarCodeScanner
 import com.winapp.saperp.utils.CaptureSignatureView
@@ -136,6 +139,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var user: HashMap<String, String>? = null
     private var session: SessionManager? = null
     private var pDialog: SweetAlertDialog? = null
+    private var receiptsHeaderDetails: java.util.ArrayList<ReceiptPrintPreviewModel>? = null
+    private var receiptsList: ArrayList<ReceiptsDetails> =  ArrayList()
+
     private var productListView: RecyclerView? = null
     private var selectProductAdapter: SelectProductAdapter? = null
     private var btnCancel: Button? = null
@@ -170,6 +176,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     var isCartonQtyEdit = false
     var isQtyEdit = false
     var net_total_value = 0.0
+    var minimumSellingPriceM = "0.0"
     var valueGreat = false
 
     private var sharedPreferences: SharedPreferences? = null
@@ -219,7 +226,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var stockLayout: LinearLayout? = null
     private var attachmentLayInv: LinearLayout? = null
     var selectImageInv: TextView? = null
-
+    var inv_cash_CollectLayl: LinearLayout? = null
     private val cqtyTW: TextWatcher? = null
     private val lqtyTW: TextWatcher? = null
     private var qtyTW: TextWatcher? = null
@@ -250,7 +257,15 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var alert: AlertDialog? = null
     private var signatureAlert: AlertDialog? = null
     var invoicePrintCheck: CheckBox? = null
-    var invoiceprintDOcheck: CheckBox? = null
+    var doInvprintcheck: CheckBox? = null
+    var cash_collectedCheck: CheckBox? = null
+    var receipt_printCheck: CheckBox? = null
+    var emailCheck: CheckBox? = null
+    var isCashCollectCheck = false
+    var isReceiptPrint = false
+    var isInvoicePrint = false
+    var isDOPrint = false
+    var receiptNoApi: String? = ""
     var companyName: String? = null
     var remarkStr: String? = null
     var billDiscSetAmt_api: String? = "0.00"
@@ -307,6 +322,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var outstandingAmount = "0.00"
     var isCheckedInvoicePrint = false
     var isCheckedSalesPrint = false
+    var isEmailSetting = false
     var isUomSetting = true
     var isDeliveryAddrSetting = false
     var isSignatureSetting = false
@@ -315,6 +331,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     var minimum_disc_amt = 0.00
     var maximum_disc_amt = 0.00
     var isSettlementByNextDate = false
+    var isEditPrice = false
 
     var settings: ArrayList<SettingsModel>? = null
     var save_btn: MenuItem? = null
@@ -675,6 +692,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         } else {
                             false
                         }
+                    } else if (model.settingName == "sentEmailSwitch") {
+                        Log.w("SettingNameI:", model.settingName)
+                        Log.w("SettingValueI:", model.settingValue)
+                        isEmailSetting = if (model.settingValue == "1") {
+                            true
+                        } else {
+                            false
+                        }
                     } else if (model.settingName == "UomSwitch") {
                         Log.w("SettingNameI:", model.settingName)
                         Log.w("SettingValueI:", model.settingValue)
@@ -730,6 +755,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             isSettlementByNextDate = true
                         } else {
                             isSettlementByNextDate = false
+                        }
+                    } else if (model.settingName == "HaveEditPrice") {
+                        Log.w("SettingName_edPrice:", model.settingName)
+                        Log.w("SettingValue_edPrice:", model.settingValue)
+                        if (model.settingValue.equals("True", ignoreCase = true)) {
+                            isEditPrice = true
+                        } else {
+                            isEditPrice = false
                         }
                     }
                 }
@@ -1340,6 +1373,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         e.printStackTrace();
                     }*/
         })
+
         addProduct!!.setOnClickListener(View.OnClickListener {
             val s = productAutoComplete!!.getText().toString()
             Log.w("addpdt", "" + productAutoComplete!!.getText().toString())
@@ -1358,8 +1392,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         ) {
                             if (priceText!!.getText().toString().toDouble() > 0) {
                                 Log.w("mmimnimPrice","");
+                                if (!minimumSellingPriceText!!.text.toString().isEmpty()) {
+                                    minimumSellingPriceM = minimumSellingPriceText!!.text.toString()
+                                }
                                 val minimumsellingprice =
-                                    minimumSellingPriceText!!.getText().toString().toDouble()
+                                    minimumSellingPriceM.toDouble()
                                 if (minimumsellingprice <= priceText!!.getText().toString()
                                         .toDouble()
                                 ) {
@@ -1866,7 +1903,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     }
 
     fun insertProducts() {
-        try {
+       try {
             var focType = "pcs"
             var exchangeType = "pcs"
             var returnType = "pcs"
@@ -1938,7 +1975,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 billdiscc = bill_disc_amt_ed!!.text.toString()
             }
             if (!minimumSellingPriceText!!.text.toString().isEmpty()) {
-                minimumSellingPricel = bill_disc_amt_ed!!.text.toString()
+                minimumSellingPricel = minimumSellingPriceText!!.text.toString()
             }
             val priceValue = 0.0
             val net_qty = qty_value.toDouble() - return_qty.toDouble()
@@ -1971,7 +2008,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             Log.w("total_inv",""+netTotalValue!!.text.toString()+".. "+subTotalValue!!.text.toString())
 
             // Adding Return Qty Table values
-            if (return_qty.toInt() > 0) {
+            if (return_qty.toDouble() > 0) {
                 dbHelper!!.updateReturnQty("Delete", "0", "Saleable Return", productId)
                 dbHelper!!.updateReturnQty("Delete", "0", "Damaged/Expired", productId)
                 dbHelper!!.insertReturnProduct(
@@ -2143,6 +2180,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         pdtStockVal = model.stockQty
                         stockQtyValue!!.text = model.stockQty
                         stockCount!!.setText(model.stockQty)
+                        minimumSellingPriceText!!.setText(model.minimumSellingPrice)
 
                         /* for (ProductsModel m:productList) {
                         if (m.getProductCode().equals(productId)) {
@@ -3323,7 +3361,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         runOnUiThread {
                             AppUtils.setProductsList(productList)
 
-                            setProductsDisplay("All Products")
+                           // setProductsDisplay("All Products")
                         }
                     }
                 } catch (e: Exception) {
@@ -4466,10 +4504,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             okButton = customLayout.findViewById(R.id.btn_ok)
             cancelButton = customLayout.findViewById(R.id.btn_cancel)
             invoicePrintCheck = customLayout.findViewById(R.id.invoice_print_check)
-            invoiceprintDOcheck =  customLayout.findViewById(R.id.invoice_print_DO_check)
+            doInvprintcheck =  customLayout.findViewById(R.id.invoice_print_DO_check)
             attachmentLayInv = customLayout.findViewById(R.id.attachement_layoutInv)
+        receipt_printCheck = customLayout.findViewById(R.id.receipt_print_inv)
+        cash_collectedCheck = customLayout.findViewById(R.id.cash_collected_inv)
+        emailCheck = customLayout.findViewById(R.id.email_inv_check)
             selectImageInv = customLayout.findViewById(R.id.select_imageInv)
-
+        inv_cash_CollectLayl = customLayout.findViewById(R.id.inv_cash_CollectLay)
             saveMessage = customLayout.findViewById(R.id.save_message)
             saveTitle = customLayout.findViewById(R.id.save_title)
             signatureCapture = customLayout.findViewById(R.id.signature_capture)
@@ -4478,8 +4519,48 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             val copyMinus = customLayout.findViewById<Button>(R.id.decrease)
             val signatureButton = customLayout.findViewById<Button>(R.id.btn_signature)
             val copyLayout = customLayout.findViewById<LinearLayout>(R.id.print_layout)
+        receipt_printCheck!!.isChecked = false
+        cash_collectedCheck!!.isChecked = false
+        doInvprintcheck!!.isChecked = false
 
-            selectImageInv!!.setOnClickListener {
+
+        doInvprintcheck!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+              isPrintEnable = true
+                isDOPrint = true
+            } else {
+                isPrintEnable = false
+                isDOPrint = false
+            }
+        })
+        cash_collectedCheck!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                isCashCollectCheck = true
+                //showSaveAlertForReceiptPrint();
+                receipt_printCheck!!.setEnabled(true)
+                // Toast.makeText(getActivity(),"Cash Collected Activated...",Toast.LENGTH_SHORT).show();
+            } else {
+                isCashCollectCheck = false
+                isReceiptPrint = false
+                receipt_printCheck!!.setChecked(false)
+                receipt_printCheck!!.setEnabled(false)
+                // Toast.makeText(getActivity(),"Cash Collected DeActivated...",Toast.LENGTH_SHORT).show();
+            }
+        })
+        receipt_printCheck!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
+            if (validatePrinterConfiguration()) {
+                if (b) {
+                    isPrintEnable = true
+                    isReceiptPrint = true
+                } else {
+                    isReceiptPrint = false
+                }
+            } else {
+                receipt_printCheck!!.setChecked(false)
+            }
+        })
+
+        selectImageInv!!.setOnClickListener {
                 if (selectImageInv!!.getTag() == "view_image") {
                     showImage()
                 } else {
@@ -4500,6 +4581,10 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             ) {
 //                        showSaveAlert()
                 invoicePrintCheck!!.visibility = View.VISIBLE
+                inv_cash_CollectLayl!!.visibility = View.VISIBLE
+                if(isEmailSetting){
+                    emailCheck!!.isChecked = true
+                }
             }
                 if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
                 saveTitle!!.setText("Save SalesOrder")
@@ -4532,10 +4617,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 if (isCheckedInvoicePrint) {
                     invoicePrintCheck!!.setChecked(true)
                     isPrintEnable = true
+                    isInvoicePrint = true
                     copyLayout.visibility = View.VISIBLE
                 } else {
                     invoicePrintCheck!!.setChecked(false)
                     isPrintEnable = false
+                    isInvoicePrint = false
                     copyLayout.visibility = View.GONE
                 }
             }
@@ -4543,10 +4630,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             }
             invoicePrintCheck!!.setOnClickListener(View.OnClickListener {
                 if (invoicePrintCheck!!.isChecked()) {
+                    isInvoicePrint = true
                     isPrintEnable = true
                     copyLayout.visibility = View.VISIBLE
                 } else {
                     isPrintEnable = false
+                    isInvoicePrint = false
                     copyLayout.visibility = View.GONE
                 }
             })
@@ -4753,23 +4842,43 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             dbHelper.removeAllItems();
                             redirectActivity();
                         }*/isPrintEnable = false
-                        } else {
-                            if (isPrintEnable) {
+                        }else {
+                              if (isPrintEnable){
                                 try {
                                     //updateStockQty();
                                     dbHelper!!.removeAllInvoiceItems()
                                     val `object` = response.optJSONObject("responseData")
                                     val doucmentNo = `object`.optString("docNum")
+                                    val receiptNo = `object`.optString("receiptNo")
+                                    receiptNoApi = receiptNo
                                     //   String result=object.optString("Result");
-                                    if (!doucmentNo.isEmpty()) {
-                                        getInvoicePrintDetails(doucmentNo, copy)
-                                        val intent = Intent(
-                                            applicationContext,
-                                            NewInvoiceListActivity::class.java
-                                        )
-                                        startActivity(intent)
-                                        finish()
-                                    } else {
+                                    if(receiptNoApi!!.isNotEmpty()){
+                                        getReceiptsDetails(receiptNoApi!!)
+                                    }
+                                        if (!doucmentNo.isEmpty()) {
+                                            if (isInvoicePrint && isDOPrint) {
+
+                                                getInvoicePrintDetails(doucmentNo, copy, true)
+                                                val intent = Intent(
+                                                    applicationContext,
+                                                    NewInvoiceListActivity::class.java
+                                                )
+                                                startActivity(intent)
+                                                finish()
+                                            }
+                                            else {
+                                                if (!doucmentNo.isEmpty()) {
+                                                    getInvoicePrintDetails(doucmentNo, copy, false)
+                                                    val intent = Intent(
+                                                        applicationContext,
+                                                        NewInvoiceListActivity::class.java
+                                                    )
+                                                    startActivity(intent)
+                                                    finish()
+                                                }
+                                            }
+                                        }
+                                    else {
                                         Toast.makeText(
                                             applicationContext,
                                             "Error in getting printing data",
@@ -4861,6 +4970,177 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         } catch (e: Exception) {
             e.printStackTrace()
             Log.w("Error8:", Objects.requireNonNull(e.message!!))        }
+    }
+
+    @Throws(JSONException::class)
+    private fun getReceiptsDetails(receiptNumber: String) {
+        // Initialize a new RequestQueue instance
+        val jsonObject = JSONObject()
+        //   jsonObject.put("CompanyCode", companyId);
+        jsonObject.put("ReceiptNo", receiptNumber)
+        jsonObject.put("LocationCode", locationCode)
+        val requestQueue = Volley.newRequestQueue(this)
+        val url = Utils.getBaseUrl(this) + "ReceiptDetails"
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_url:", url)
+        Log.w("JsonObjectPrint:", jsonObject.toString())
+//        pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
+//        pDialog!!.progressHelper.barColor = Color.parseColor("#A5DC86")
+//        pDialog!!.setTitleText("Generating Print Preview...")
+//        pDialog!!.setCancelable(false)
+//        pDialog!!.show()
+        receiptsHeaderDetails = java.util.ArrayList<ReceiptPrintPreviewModel>()
+        receiptsList = ArrayList()
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST, url, jsonObject,
+            Response.Listener<JSONObject> { response: JSONObject ->
+                try {
+                    Log.w("ReceiptDetails_Details:", response.toString())
+
+                    //  {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"C1001","customerName":"BRINDAS PTE LTD",
+                    //  "receiptNumber":"9","receiptStatus":"O","receiptDate":"18\/8\/2021 12:00:00 am","netTotal":"5.350000",
+                    //  "balanceAmount":5.35,"totalDiscount":0,"paidAmount":0,"contactPersonCode":"","createDate":"18\/8\/2021 12:00:00 am",
+                    //  "updateDate":"18\/8\/2021 12:00:00 am","remark":"","fDocTotal":0,"fTaxAmount":0,"receivedAmount":0,"total":5.35,
+                    //  "fTotal":0,"iTotalDiscount":0,"taxTotal":0.35,"iPaidAmount":0,"currencyCode":"SGD","currencyName":"Singapore Dollar",
+                    //  "companyCode":"AATHI_LIVE_DB","docEntry":"9","address1":null,"taxPercentage":null,"discountPercentage":null,
+                    //  "subTotal":5,"taxType":"I","taxCode":"IN","taxPerc":"7.000000","billDiscount":0,"signFlag":null,"signature":null,
+                    //
+                    //  "receiptDetails":[{"paymentNo":"9","paymentDate":"29\/8\/2021 12:00:00 am","cardCode":"C1001",
+                    //  "cardName":"BRINDAS PTE LTD","paymentTot":225.02,"invoiceNo":"25","invoiceDate":"24\/8\/2021 12:00:00 am",
+                    //  "slpName":"-No Sales Employee-","invoiceTot":225.02,"totDiscount":0,"invoiceAcct":null}]}]}
+                    val statusCode = response.optString("statusCode")
+                    if (statusCode == "1") {
+                        val responseArray = response.optJSONArray("responseData")
+                        val responseObject = responseArray.optJSONObject(0)
+                        val model = ReceiptPrintPreviewModel()
+                        model.receiptNumber = responseObject.optString("receiptNumber")
+                        model.receiptDate = responseObject.optString("receiptDate")
+                        model.payMode = responseObject.optString("payMode")
+                        model.address =
+                            responseObject.optString("address1") + responseObject.optString(
+                                "address2"
+                            ) + responseObject.optString("address3")
+                        model.address1 = responseObject.optString("address1")
+                        model.address2 = responseObject.optString("address2")
+                        model.address3 = responseObject.optString("address3")
+                        model.addressstate =
+                            (responseObject.optString("block") + " " + responseObject.optString("street") + " "
+                                    + responseObject.optString("city"))
+                        model.addresssZipcode =
+                            (responseObject.optString("countryName") + " " + responseObject.optString(
+                                "state"
+                            ) + " "
+                                    + responseObject.optString("zipcode"))
+                        model.customerCode = responseObject.optString("customerCode")
+                        model.customerName = responseObject.optString("customerName")
+                        model.totalAmount = responseObject.optString("netTotal")
+                        model.paymentType = responseObject.optString("paymentType")
+                        model.bankCode = responseObject.optString("bankCode")
+                        model.bankName = responseObject.optString("bankName")
+                        model.chequeDate = responseObject.optString("checkDueDate")
+                        model.bankTransferDate = responseObject.optString("bankTransferDate")
+                        model.creditAmount = responseObject.optString("totalDiscount")
+                        model.chequeNo = responseObject.optString("checkNumber")
+                        Utils.setInvoiceMode("Invoice")
+                        Utils.setReceiptMode("true")
+//                        if (responseObject.optString("signature") != null && responseObject.optString(
+//                                "signature"
+//                            ) != "null" && !responseObject.optString("signature").isEmpty()
+//                        ) {
+//                            val signature = responseObject.optString("signature")
+//                            Utils.setSignature(signature)
+//                            createSignature()
+//                        } else {
+//                            Utils.setSignature("")
+//                        }
+                        val detailsArray = responseObject.optJSONArray("receiptDetails")
+                        for (i in 0 until detailsArray.length()) {
+                            val `object` = detailsArray.getJSONObject(i)
+                            val invoiceListModel = ReceiptsDetails()
+                            invoiceListModel.invoiceNumber = `object`.optString("invoiceNo")
+                            invoiceListModel.invoiceDate = `object`.optString("invoiceDate")
+                            invoiceListModel.amount = `object`.optString("paidAmount")
+                            invoiceListModel.discountAmount = `object`.optString("discountAmount")
+                            invoiceListModel.creditAmount = `object`.optString("creditAmount")
+                            invoiceListModel.balanceAmount = `object`.optString("balanceAmount")
+                        }
+
+                        model.setReceiptsDetailsList(receiptsList)
+                        receiptsHeaderDetails!!.add(model)
+                        if (receiptsList.size > 0) {
+                            printReceipt()
+                        }
+                    } else {
+                    }
+                   // pDialog!!.dismiss()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            },
+            Response.ErrorListener { error: VolleyError ->
+                // Do something when error occurred
+              //  pDialog!!.dismiss()
+                Log.w("Error_throwing:", error.toString())
+            }) {
+            override fun getHeaders(): Map<String, String> {
+                val params = java.util.HashMap<String, String>()
+                val creds =
+                    String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD)
+                val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
+                params["Authorization"] = auth
+                return params
+            }
+        }
+        jsonObjectRequest.setRetryPolicy(object : RetryPolicy {
+            override fun getCurrentTimeout(): Int {
+                return 50000
+            }
+
+            override fun getCurrentRetryCount(): Int {
+                return 50000
+            }
+
+            @Throws(VolleyError::class)
+            override fun retry(error: VolleyError) {
+            }
+        })
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    fun printReceipt() {
+        if (validatePrinterConfiguration()) {
+
+            try {
+// Bluetooth is enabled
+                //  TSCPrinter tscPrinter = new TSCPrinter(ReceiptsPrintPreview.this, printerMacId);
+                //  tscPrinter.printInvoice(receiptsHeaderDetails, receiptsList);
+                val printer = TSCPrinter(this, printerMacId, "Receipt")
+                // try {
+                // try {
+                printer.printReceipts(1, receiptsHeaderDetails, receiptsList)
+
+                printer.setOnCompletionListener {
+                    Utils.setSignature("")
+                    Toast.makeText(
+                        applicationContext,
+                        "Receipt printed successfully!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                }
+
+//            Utils.setSignature("")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.w("Error1:", Objects.requireNonNull(e.message!!))
+            }
+        }
+        else{
+            Toast.makeText(applicationContext, "Please configure the Printer", Toast.LENGTH_SHORT)
+                .show()
+        }
     }
 
     fun getCustomerDetails(customerCode: String?, isloader: Boolean, from: String?) {
@@ -5171,7 +5451,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     }
 
     @Throws(JSONException::class)
-    private fun getInvoicePrintDetails(invoiceNumber: String, copy: Int) {
+    private fun getInvoicePrintDetails(invoiceNumber: String, copy: Int , isDoPrint: Boolean) {
         // Initialize a new RequestQueue instance
         val jsonObject = JSONObject()
         // jsonObject.put("CompanyCode", companyId);
@@ -5384,7 +5664,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         }
                         model.salesReturnList = salesReturnList
                         invoiceHeaderDetails!!.add(model)
-                        printInvoice(copy)
+                        printInvoice(copy,isDoPrint)
                     } else {
                         Toast.makeText(
                             applicationContext,
@@ -5449,7 +5729,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         return printetCheck
     }
 
-    fun printInvoice(copy: Int) {
+    fun printInvoice(copy: Int,isDoPrint: Boolean) {
         if (validatePrinterConfiguration()) {
 
             try {
@@ -5462,7 +5742,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         copy,
                         invoiceHeaderDetails,
                         invoicePrintList,
-                        "false"
+                        isDoPrint.toString()
                     )
 
 //            Utils.setSignature("")
@@ -5774,27 +6054,31 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             rootJsonObject.put("itemDiscount", discountStr)
             rootJsonObject.put("billDiscount", sharedPref_billdisc!!.getString("billDisc_amt", ""))
             rootJsonObject.put("discountPercentage", billDisPercent_share_api)
-            rootJsonObject.put("Paymode", "")
             rootJsonObject.put("ChequeDateString", "")
             rootJsonObject.put("BankCode", "")
             rootJsonObject.put("AccountNo", "")
             rootJsonObject.put("ChequeNo", "")
+              if (isReceiptPrint) {
+                  rootJsonObject.put("Paymode", "Cash")
+          }else{
+                  rootJsonObject.put("Paymode", "")
+          }
 
-            /*  if (customerResponse.optString("CurrencyCode").equals("SGD")){
-                rootJsonObject.put("FTotal", totalValue);
-                rootJsonObject.put("FItemDiscount", itemDiscountAmount);
-                rootJsonObject.put("FBillDiscount", billDiscountAmount);
-                rootJsonObject.put("FSubTotal", subTotalValue);
-                rootJsonObject.put("FTax", taxValue);
-                rootJsonObject.put("FNetTotal", netTotalValue);
-            }else {
-                rootJsonObject.put("FTotal", "0");
-                rootJsonObject.put("FItemDiscount", "0");
-                rootJsonObject.put("FBillDiscount", "0");
-                rootJsonObject.put("FSubTotal", "0");
-                rootJsonObject.put("FTax", "0");
-                rootJsonObject.put("FNetTotal", "0");
-            }*/rootJsonObject.put("totalDiscount", "0")
+          /*  if (customerResponse.optString("CurrencyCode").equals("SGD")){
+              rootJsonObject.put("FTotal", totalValue);
+              rootJsonObject.put("FItemDiscount", itemDiscountAmount);
+              rootJsonObject.put("FBillDiscount", billDiscountAmount);
+              rootJsonObject.put("FSubTotal", subTotalValue);
+              rootJsonObject.put("FTax", taxValue);
+              rootJsonObject.put("FNetTotal", netTotalValue);
+          }else {
+              rootJsonObject.put("FTotal", "0");
+              rootJsonObject.put("FItemDiscount", "0");
+              rootJsonObject.put("FBillDiscount", "0");
+              rootJsonObject.put("FSubTotal", "0");
+              rootJsonObject.put("FTax", "0");
+              rootJsonObject.put("FNetTotal", "0");
+          }*/rootJsonObject.put("totalDiscount", "0")
             rootJsonObject.put("billDiscountPercentage", billDisPercent_share_api)
             rootJsonObject.put("deliveryCode", SettingUtils.getDeliveryAddressCode())
             rootJsonObject.put("delCustomerName", "")

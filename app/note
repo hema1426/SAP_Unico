@@ -10,6 +10,14 @@ Password: 12345
 SUPER_STAR_DEMO
 ST01
 Yn7876z@
+{"Username":"SuperStar01","Password":"SS123"}
+
+
+aug 24
+{
+    "Username" : "SuperStar01",
+    "Password" : "SS@123"
+}
 
 SHABAN_URL_demo
 shaban
@@ -30,7 +38,12 @@ new july
     username - ctc230003.1
     Pwd - 12345
 
+Username - ctc230004.1
+Pwd - 12345
 
+fuxin
+Username - ctc230004.1
+Pwd - 12345
 c12345
             case R.id.action_save:  -- CreateNewInvoiceActivity  common credt limit condtion
             createInvoiceValidation() method hide

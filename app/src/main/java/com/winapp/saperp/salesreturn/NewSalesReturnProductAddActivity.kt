@@ -1611,7 +1611,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                             runOnUiThread {
                                 AppUtils.setProductsList(productList)
                                 progressDialog!!.dismiss()
-                                setProductsDisplay("All Products")
+                             //   setProductsDisplay("All Products")
                                 // dbHelper.insertProducts(getActivity(),productList);
                             }
                         }

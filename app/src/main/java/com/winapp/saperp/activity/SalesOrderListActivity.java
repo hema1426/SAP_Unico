@@ -1295,7 +1295,6 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             for (SalesOrderModel model:salesOrderList){
                 if (model.getNetTotal()!=null && !model.getNetTotal().equals("null")){
                     net_amount=net_amount+Double.parseDouble(model.getNetTotal());
-                    Log.w("netAmt122",""+net_amount);
                 }
             }
             netTotalText.setText("$ "+Utils.twoDecimalPoint(net_amount));
