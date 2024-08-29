@@ -467,7 +467,7 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                                     model.setCustomerCode(customer_code);
                                     model.setCustomerName(customer_name);
                                     model.setCustomerAddress1(salesObject.optString("address1"));
-                                    model.setTaxPerc(salesObject.optString("taxPercentage"));
+                                    model.setTaxPerc(salesObject.optString("taxPerc"));
                                     model.setTaxType(salesObject.optString("taxType"));
                                     model.setTaxCode(salesObject.optString("taxCode"));
 
@@ -496,8 +496,8 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
 //                                        invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
 //                                        invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
 //                                        invoiceListModel.setSaleType("");
-//                                        if (detailObject.optString("itemID") != null) {
-//                                            invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+//                                        if (detailObject.optString("bP_CatalogNo") != null) {
+//                                            invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
 //                                        }
 //                                        invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
 //                                        invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
@@ -638,7 +638,7 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                                     model.setCustomerCode(customer_code);
                                     model.setCustomerName(customer_name);
                                     model.setCustomerAddress1(salesObject.optString("address1"));
-                                    model.setTaxPerc(salesObject.optString("taxPercentage"));
+                                    model.setTaxPerc(salesObject.optString("taxPerc"));
                                     model.setTaxType(salesObject.optString("taxType"));
                                     model.setTaxCode(salesObject.optString("taxCode"));
 
@@ -667,8 +667,8 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
 //                                        invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
 //                                        invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
 //                                        invoiceListModel.setSaleType("");
-//                                        if (detailObject.optString("itemID") != null) {
-//                                            invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+//                                        if (detailObject.optString("bP_CatalogNo") != null) {
+//                                            invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
 //                                        }
 //                                        invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
 //                                        invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));

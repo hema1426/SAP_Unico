@@ -51,14 +51,20 @@ public class InvoicePrintPreviewAdapter extends RecyclerView.Adapter<InvoicePrin
         }else {
             viewHolder.description.setText(invoiceList.getDescription());
         }
-        if (invoiceList.getSaleType().equals("Return")){
-            viewHolder.qtyValue.setText((int)Double.parseDouble(invoiceList.getNetQuantity())+" (as Return)");
-        }else if (invoiceList.getSaleType().equals("FOC")){
-            viewHolder.qtyValue.setText((int)Double.parseDouble(invoiceList.getNetQuantity())+" ( as FOC)");
-        } else if (invoiceList.getSaleType().equals("Exchange")){
-            viewHolder.qtyValue.setText((int)Double.parseDouble(invoiceList.getNetQuantity())+" ( as Exch)");
-        }else {
-            viewHolder.qtyValue.setText((int)Double.parseDouble(invoiceList.getNetQuantity())+"");
+        if (invoiceList.getSaleType() != null &&  !invoiceList.getSaleType().equals("null")) {
+
+            if (invoiceList.getSaleType().equals("Return")) {
+                viewHolder.qtyValue.setText((int) Double.parseDouble(invoiceList.getNetQuantity()) + " (as Return)");
+            } else if (invoiceList.getSaleType().equals("FOC")) {
+                viewHolder.qtyValue.setText((int) Double.parseDouble(invoiceList.getNetQuantity()) + " ( as FOC)");
+            } else if (invoiceList.getSaleType().equals("Exchange")) {
+                viewHolder.qtyValue.setText((int) Double.parseDouble(invoiceList.getNetQuantity()) + " ( as Exch)");
+            } else {
+                viewHolder.qtyValue.setText((int) Double.parseDouble(invoiceList.getNetQuantity()) + "");
+            }
+        }
+        else{
+            viewHolder.qtyValue.setText((int) Double.parseDouble(invoiceList.getNetQuantity()) + "");
         }
 
         viewHolder.price.setText(invoiceList.getPricevalue());

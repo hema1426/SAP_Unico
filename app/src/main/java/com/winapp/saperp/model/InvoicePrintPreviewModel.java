@@ -36,6 +36,15 @@ public class InvoicePrintPreviewModel {
     private String paymentTerm;
     private String excQty;
     private String allowDeliveryAddress;
+    private String currentAddress;
+
+    public String getCurrentAddress() {
+        return currentAddress;
+    }
+
+    public void setCurrentAddress(String currentAddress) {
+        this.currentAddress = currentAddress;
+    }
 
     public String getPaymentTerm() {
         return paymentTerm;

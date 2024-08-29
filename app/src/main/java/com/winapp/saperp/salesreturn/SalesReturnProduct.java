@@ -2108,8 +2108,8 @@ public class SalesReturnProduct extends Fragment {
                                 }else {
                                     product.setStockQty("0");
                                 }
-                                if (productObject.optString("itemID") != null){
-                                    product.setCustomerItemCode(productObject.optString("itemID"));
+                                if (productObject.optString("bP_CatalogNo") != null){
+                                    product.setCustomerItemCode(productObject.optString("bP_CatalogNo"));
                                 }
                                 product.setUomCode(productObject.optString("uomCode"));
                                 //  product.setProductBarcode(productObject.optString("BarCode")); Add values In Futue

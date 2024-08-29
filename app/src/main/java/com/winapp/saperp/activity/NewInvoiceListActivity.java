@@ -352,10 +352,14 @@ public class NewInvoiceListActivity extends NavigationActivity
         emptyTextView = findViewById(R.id.empty_text);
         customerNameEdittext = findViewById(R.id.customer_search);
         netTotalText = findViewById(R.id.net_total_value);
+
         session = new SessionManager(this);
         dbHelper = new DBHelper(this);
         companyCode = user.get(SessionManager.KEY_COMPANY_CODE);
         locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
+
+        Log.w("bankDetail ",""+user.get(SessionManager.KEY_PAY_NOW)+" bank "+user.get(SessionManager.KEY_BANK)
+                +" cheque "+user.get(SessionManager.KEY_CHEQUE));
         customerView = findViewById(R.id.customerList);
         totalCustomers = findViewById(R.id.total_customers);
         cancelSheet = findViewById(R.id.cancel_sheet);
@@ -1326,8 +1330,8 @@ public class NewInvoiceListActivity extends NavigationActivity
                                     if (!object.optString("quantity").equals("null")) {
                                         cqty = object.optString("quantity");
                                     }
-//                                    if (object.optString("itemID") != null) {
-//                                        invoiceListModel.setCustomerItemCode(object.optString("itemID"));
+//                                    if (object.optString("bP_CatalogNo") != null) {
+//                                        invoiceListModel.setCustomerItemCode(object.optString("bP_CatalogNo"));
 //                                    }
 
                                     double actualPrice = Double.parseDouble(object.optString("unitPrice"));
@@ -1676,7 +1680,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                                                 salesObject.optString("billDiscount"),
                                                 "",
                                                 "",
-                                                object.optString("foc_Qty"),
+                                                object.optString("exc_Qty"),
                                                 salesObject.optString("minimumSellingPrice")
                                         );
 
@@ -3409,6 +3413,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                             model.setDoDate(object.optString("doDate"));
                             model.setDoNumber(object.optString("doNumber"));
                             model.setAllowDeliveryAddress(object.optString("showShippingAddress"));
+                            model.setCurrentAddress(object.optString("CurrentAddress"));
                             String signFlag = object.optString("signFlag");
                             if (signFlag.equals("Y")) {
                                 String signature = object.optString("signature");
@@ -3431,8 +3436,8 @@ public class NewInvoiceListActivity extends NavigationActivity
                                     invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
                                     invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                                     invoiceListModel.setSaleType("");
-                                    if (detailObject.optString("itemID") != null) {
-                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    if (detailObject.optString("bP_CatalogNo") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
@@ -3464,8 +3469,8 @@ public class NewInvoiceListActivity extends NavigationActivity
                                     invoiceListModel.setNetQuantity(detailObject.optString("returnQty"));
                                     invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                                     invoiceListModel.setSaleType("Return");
-                                    if (detailObject.optString("itemID") != null) {
-                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    if (detailObject.optString("bP_CatalogNo") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
@@ -3497,8 +3502,8 @@ public class NewInvoiceListActivity extends NavigationActivity
                                     invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                                     invoiceListModel.setSaleType("Exchange");
 
-                                    if (detailObject.optString("itemID") != null) {
-                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    if (detailObject.optString("bP_CatalogNo") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
@@ -3530,8 +3535,8 @@ public class NewInvoiceListActivity extends NavigationActivity
                                     invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                                     invoiceListModel.setSaleType("FOC");
 
-                                    if (detailObject.optString("itemID") != null) {
-                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    if (detailObject.optString("bP_CatalogNo") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));

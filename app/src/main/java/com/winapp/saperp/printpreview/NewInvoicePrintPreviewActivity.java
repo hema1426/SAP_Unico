@@ -179,6 +179,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType = sharedPreferences.getString("printer_type", "");
         printerMacId = sharedPreferences.getString("mac_address", "");
+        Log.w("activity_cg",getClass().getSimpleName().toString());
 
         companyNametext =findViewById (R.id.company_name);
         companyAddress1Text =findViewById (R.id.company_addr1);
@@ -339,6 +340,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                     model.setAllowDeliveryAddress(object.optString("showShippingAddress"));
                     model.setDeliveryAddress(object.optString("shipAddress1")+object.optString("shipAddress2")+object.optString("shipAddress3")+
                             object.optString("shipStreet"));
+                    model.setCurrentAddress(object.optString("CurrentAddress"));
 
                     String signFlag=object.optString("signFlag");
                     if (signFlag.equals("Y")){
@@ -372,8 +374,8 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                             invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
                             invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                             invoiceListModel.setSaleType("");
-                            if (detailObject.optString("itemID") != null) {
-                                invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                            if (detailObject.optString("bP_CatalogNo") != null) {
+                                invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                             }
                             invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                             invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
@@ -405,8 +407,8 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                             invoiceListModel.setNetQuantity(detailObject.optString("returnQty"));
                             invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                             invoiceListModel.setSaleType("Return");
-                            if (detailObject.optString("itemID") != null) {
-                                invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                            if (detailObject.optString("bP_CatalogNo") != null) {
+                                invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                             }
                             invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                             invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
@@ -438,8 +440,8 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                             invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                             invoiceListModel.setSaleType("Exchange");
 
-                            if (detailObject.optString("itemID") != null) {
-                                invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                            if (detailObject.optString("bP_CatalogNo") != null) {
+                                invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                             }
                             invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                             invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
@@ -471,8 +473,8 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                             invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                             invoiceListModel.setSaleType("FOC");
 
-                            if (detailObject.optString("itemID") != null) {
-                                invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                            if (detailObject.optString("bP_CatalogNo") != null) {
+                                invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                             }
                             invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                             invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));

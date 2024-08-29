@@ -1565,7 +1565,6 @@ public class CashInvoiceFragment extends Fragment {
         receiptHeader.put("CustomerAccountNo","") ;
         receiptHeader.put("Description","");
         receiptHeader.put("ErrorMessage","");
-        receiptHeader.put("AdvancePaymentAmount","0.00");
         receiptHeader.put("AccountEnabled","");
         receiptHeader.put("BRNo","");
         receiptHeader.put("Debit","");
@@ -1590,8 +1589,9 @@ public class CashInvoiceFragment extends Fragment {
         receiptHeader.put("IsAdvancePaid",false);
         receiptHeader.put("TotalCustomerPaidAmount",CashCollectionActivity.netAmount.getText().toString());
         receiptHeader.put("ExcessPaidAmount",CashCollectionActivity.differenceAmount.getText().toString());
-        receiptHeader.put("WrightOff","0.00");
         receiptHeader.put("Balance",CashCollectionActivity.differenceAmount.getText().toString());
+        receiptHeader.put("WrightOff","0.00");
+        receiptHeader.put("AdvancePaymentAmount",CashCollectionActivity.differenceAmount.getText().toString());
         receiptHeader.put("Signature",Utils.getSignature());
         receiptHeader.put("RefPhoto",Utils.getSelectImage());
 
@@ -1607,8 +1607,10 @@ public class CashInvoiceFragment extends Fragment {
                 receiptDetails.put("ReceiptNo", "");
                 receiptDetails.put("PayTo", "");
                 receiptDetails.put("InvoiceNo", cashReceiptList.get(i).getInvoiceCode());
-                receiptDetails.put("InvoiceDate",/*changeDateFormat(cashReceiptList.get(i).getInvoiceDate(),"dd/MM/yyyy")*/ cashReceiptList.get(i).getInvoiceDate());
-                receiptDetails.put("InvoiceDateString", /*changeDateFormat(cashReceiptList.get(i).getInvoiceDate(),"dd/MM/yyyy")*/cashReceiptList.get(i).getInvoiceDate());
+                receiptDetails.put("InvoiceDate",
+                        /*changeDateFormat(cashReceiptList.get(i).getInvoiceDate(),"dd/MM/yyyy")*/ cashReceiptList.get(i).getInvoiceDate());
+                receiptDetails.put("InvoiceDateString",
+                        /*changeDateFormat(cashReceiptList.get(i).getInvoiceDate(),"dd/MM/yyyy")*/cashReceiptList.get(i).getInvoiceDate());
                 receiptDetails.put("CompanyCode", companyId);
                 receiptDetails.put("NetTotal", cashReceiptList.get(i).getNetTotal());
                 if (cashReceiptList.get(i).getTranType().equals("SR")){
@@ -1637,7 +1639,7 @@ public class CashInvoiceFragment extends Fragment {
                 receiptDetails.put("ModifyUser", userName);
                 receiptDetails.put("ModifyDate", currentDate);
                 receiptDetails.put("ErrorMessage", "");
-                receiptDetails.put("AdvancePaymentAmount", "0");
+               // receiptDetails.put("AdvancePaymentAmount", "0");
                 receiptDetails.put("CustomerCode", customerCode);
                 receiptDetails.put("AccountEnabled", "");
                 receiptDetails.put("AccountNo", "");
@@ -1648,7 +1650,7 @@ public class CashInvoiceFragment extends Fragment {
                 receiptDetails.put("FPaidAmount", cashReceiptList.get(i).getPayable());
                 receiptDetails.put("FDepositAmount", "0");
                 receiptDetails.put("FDebitAmount", "0");
-                receiptDetails.put("FAdvancePaymentAmount", "0.00");
+               // receiptDetails.put("FAdvancePaymentAmount", "0.00");
                 receiptDetails.put("FGainOrLoss", "0.00");
                 receiptDetails.put("SONo", "");
                 if (cashReceiptList.get(i).getTranType().equals("Excess")){

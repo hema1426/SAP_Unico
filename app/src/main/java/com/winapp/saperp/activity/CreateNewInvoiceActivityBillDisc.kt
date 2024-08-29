@@ -2462,8 +2462,8 @@ class CreateNewInvoiceActivityBillDisc : AppCompatActivity() {
                             } else {
                                 product.productName = productObject.optString("productName")
                             }
-                            if (productObject.optString("itemID") != null) {
-                                product.customerItemCode = productObject.optString("itemID")
+                            if (productObject.optString("bP_CatalogNo") != null) {
+                                product.customerItemCode = productObject.optString("bP_CatalogNo")
                             }
                             product.productCode = productObject.optString("productCode")
                             product.weight = ""

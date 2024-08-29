@@ -568,13 +568,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
             if (activityFrom == "iv") {
                 supportActionBar!!.setTitle("Invoice")
-                priceText!!.setEnabled(true)
+             //   priceText!!.setEnabled(true)
                 downArrow_inv_img!!.setVisibility(View.VISIBLE)
                 exchange_inv!!.visibility = View.VISIBLE
                 bill_disclayInvl!!.visibility = View.VISIBLE
 
             } else if (activityFrom == "ConvertInvoice") {
-                priceText!!.setEnabled(true)
+               // priceText!!.setEnabled(true)
                 orderNoText!!.setText(orderNo)
                 downArrow_inv_img!!.setVisibility(View.VISIBLE)
                 supportActionBar!!.setTitle("Covert Invoice -$editSoNumber")
@@ -583,7 +583,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
             }
             else if (activityFrom == "ConvertInvoiceFromDO") {
-                priceText!!.setEnabled(true)
+              //  priceText!!.setEnabled(true)
                 orderNoText!!.setText(orderNo)
                 downArrow_inv_img!!.setVisibility(View.VISIBLE)
                 supportActionBar!!.setTitle("Covert Invoice -$editDoNumber")
@@ -598,27 +598,27 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
             }
             else if (activityFrom == "SalesEdit") {
-                priceText!!.setEnabled(true)
+              //  priceText!!.setEnabled(true)
                 orderNoText!!.setText(orderNo)
                 returnQtyText!!.setVisibility(View.GONE)
                 supportActionBar!!.setTitle("SalesOrder Edit")
                 exchange_inv!!.visibility = View.VISIBLE
 
             } else if (activityFrom == "so") {
-                priceText!!.setEnabled(true)
+              //  priceText!!.setEnabled(true)
                 returnQtyText!!.setVisibility(View.GONE)
                 supportActionBar!!.setTitle("SalesOrder")
                 exchange_inv!!.visibility = View.VISIBLE
 
             } else if (activityFrom == "do") {
-                priceText!!.setEnabled(true)
+             //   priceText!!.setEnabled(true)
                 returnQtyText!!.setVisibility(View.GONE)
                 returnAdj!!.setVisibility(View.GONE)
                 supportActionBar!!.setTitle("Delivery Order")
                 exchange_inv!!.visibility = View.GONE
 
             } else if (activityFrom == "doEdit") {
-                priceText!!.setEnabled(true)
+              //  priceText!!.setEnabled(true)
                 orderNoText!!.setText(orderNo)
                 returnQtyText!!.setVisibility(View.GONE)
                 returnAdj!!.setVisibility(View.GONE)
@@ -626,7 +626,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 exchange_inv!!.visibility = View.GONE
 
             } else if (activityFrom == "Duplicate") {
-                priceText!!.setEnabled(true)
+               // priceText!!.setEnabled(true)
                 downArrow_inv_img!!.setVisibility(View.VISIBLE)
 
                 bill_disc_amt_ed!!.setText(pref_bill_disc_amt)
@@ -642,16 +642,15 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 supportActionBar!!.setTitle("Invoice - $duplicateInvNo")
             }
             else if (activityFrom == "ReOrderSales") {
-                priceText!!.setEnabled(true)
+              //  priceText!!.setEnabled(true)
                // downArrow_inv_img!!.setVisibility(View.VISIBLE)
                supportActionBar!!.setTitle("Re-SalesOrders ")
                 //Objects.requireNonNull(supportActionBar)!!.title = "Re-" + R.string.sales_orders
-                priceText!!.setEnabled(true)
                 returnQtyText!!.setVisibility(View.GONE)
                 exchange_inv!!.visibility = View.VISIBLE
             }
             else if (activityFrom == "ReOrderInvoice") {
-                priceText!!.setEnabled(true)
+               // priceText!!.setEnabled(true)
                 downArrow_inv_img!!.setVisibility(View.VISIBLE)
                 supportActionBar!!.setTitle("Re-Invoices ")
                 //Objects.requireNonNull(supportActionBar)!!.title = "Re-" + R.string.invoices
@@ -756,7 +755,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         } else {
                             isSettlementByNextDate = false
                         }
-                    } else if (model.settingName == "HaveEditPrice") {
+                    } else if (model.settingName == "haveEditPrice") {
                         Log.w("SettingName_edPrice:", model.settingName)
                         Log.w("SettingValue_edPrice:", model.settingValue)
                         if (model.settingValue.equals("True", ignoreCase = true)) {
@@ -801,7 +800,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         } else {
             deliveryAddr_layl!!.setVisibility(View.GONE)
         }
-
+        if(isEditPrice){
+            priceText!!.isEnabled = true
+        }
+        else{
+            priceText!!.isEnabled = false
+        }
 
         /* if (AddInvoiceActivity.invoice_delivery_date!=null && !AddInvoiceActivity.invoice_delivery_date.isEmpty()){
                 DateFormat inputFormat;
@@ -1405,7 +1409,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                     insertProducts()
 
                                     qtyValue!!.setEnabled(true)
-                                    priceText!!.setEnabled(true)
+                                   // priceText!!.setEnabled(true)
+                                    if(isEditPrice){
+                                        priceText!!.isEnabled = true
+                                    }
+                                    else{
+                                        priceText!!.isEnabled = false
+                                    }
+
                                 } else {
                                     showMinimumSellingpriceAlert(
                                         minimumSellingPriceText!!.getText().toString()
@@ -1441,7 +1452,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
                                     addProduct("Add")
                                     qtyValue!!.setEnabled(true)
-                                    priceText!!.setEnabled(true)
+                                    if(isEditPrice){
+                                        priceText!!.isEnabled = true
+                                    }
+                                    else{
+                                        priceText!!.isEnabled = false
+                                    }
+
+                                    //   priceText!!.setEnabled(true)
                                 } else {
                                     showMinimumSellingpriceAlert(
                                         minimumSellingPriceText!!.getText().toString()
@@ -3305,8 +3323,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             } else {
                                 product.productName = productObject.optString("productName")
                             }
-                            if (productObject.optString("itemID") != null) {
-                                product.customerItemCode = productObject.optString("itemID")
+                            if (productObject.optString("bP_CatalogNo") != null) {
+                                product.customerItemCode = productObject.optString("bP_CatalogNo")
                             }
                             product.productCode = productObject.optString("productCode")
                             product.weight = ""
@@ -4843,7 +4861,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             redirectActivity();
                         }*/isPrintEnable = false
                         }else {
-                              if (isPrintEnable){
+                            //  if (isPrintEnable){
                                 try {
                                     //updateStockQty();
                                     dbHelper!!.removeAllInvoiceItems()
@@ -4851,30 +4869,44 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                     val doucmentNo = `object`.optString("docNum")
                                     val receiptNo = `object`.optString("receiptNo")
                                     receiptNoApi = receiptNo
+
                                     //   String result=object.optString("Result");
-                                    if(receiptNoApi!!.isNotEmpty()){
-                                        getReceiptsDetails(receiptNoApi!!)
+                                    if ( isReceiptPrint && isCashCollectCheck) {
+                                        if (receiptNoApi!!.isNotEmpty() && receiptNoApi != null
+                                            && !receiptNoApi.equals("null")
+                                        ) {
+
+                                            Log.w("entryPrint1", "");
+                                            getReceiptsDetails(receiptNoApi!!)
+                                        }
                                     }
                                         if (!doucmentNo.isEmpty()) {
-                                            if (isInvoicePrint && isDOPrint) {
-
-                                                getInvoicePrintDetails(doucmentNo, copy, true)
-                                                val intent = Intent(
-                                                    applicationContext,
-                                                    NewInvoiceListActivity::class.java
-                                                )
-                                                startActivity(intent)
-                                                finish()
-                                            }
-                                            else {
-                                                if (!doucmentNo.isEmpty()) {
-                                                    getInvoicePrintDetails(doucmentNo, copy, false)
+                                            if (isPrintEnable) {
+                                                if (isInvoicePrint && isDOPrint) {
+                                                    getInvoicePrintDetails(doucmentNo, copy, true)
                                                     val intent = Intent(
                                                         applicationContext,
                                                         NewInvoiceListActivity::class.java
                                                     )
                                                     startActivity(intent)
                                                     finish()
+                                                } else {
+                                                    if (!doucmentNo.isEmpty()) {
+                                                        if (isInvoicePrint) {
+                                                            getInvoicePrintDetails(
+                                                                doucmentNo,
+                                                                copy,
+                                                                false
+                                                            )
+                                                            val intent = Intent(
+                                                                applicationContext,
+                                                                NewInvoiceListActivity::class.java
+                                                            )
+                                                            startActivity(intent)
+                                                            finish()
+
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -4886,14 +4918,19 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                         ).show()
                                         redirectActivity()
                                     }
-                                } catch (e: Exception) {
+                                    if (!isReceiptPrint || !isPrintEnable) {
+                                        dbHelper!!.removeAllInvoiceItems()
+                                        redirectActivity()
+                                    }
+
+                                    } catch (e: Exception) {
                                     e.printStackTrace()
                                     Log.w("Errora:", Objects.requireNonNull(e.message!!))
                                 }
-                            } else {
-                                dbHelper!!.removeAllInvoiceItems()
-                                redirectActivity()
-                            }
+//                            } else {
+//                                dbHelper!!.removeAllInvoiceItems()
+//                                redirectActivity()
+//                            }
                             isPrintEnable = false
 
                             myEdit!!.putString("billDisc_amt","0.0")
@@ -4982,20 +5019,22 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         val requestQueue = Volley.newRequestQueue(this)
         val url = Utils.getBaseUrl(this) + "ReceiptDetails"
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:", url)
-        Log.w("JsonObjectPrint:", jsonObject.toString())
-//        pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
-//        pDialog!!.progressHelper.barColor = Color.parseColor("#A5DC86")
-//        pDialog!!.setTitleText("Generating Print Preview...")
-//        pDialog!!.setCancelable(false)
-//        pDialog!!.show()
-        receiptsHeaderDetails = java.util.ArrayList<ReceiptPrintPreviewModel>()
+        Log.w("Given_url_recei:", url)
+        Log.w("JsonPrint_recei:", jsonObject.toString())
+        // pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        //  pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        //  pDialog.setTitleText("Getting Printing Data..");
+        // pDialog.setCancelable(false);
+        // pDialog.show();
+        receiptsHeaderDetails = ArrayList()
         receiptsList = ArrayList()
-        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
-            Method.POST, url, jsonObject,
+      //  receiptsPrintList = ArrayList()
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(Method.POST,
+            url,
+            jsonObject,
             Response.Listener<JSONObject> { response: JSONObject ->
                 try {
-                    Log.w("ReceiptDetails_Details:", response.toString())
+                    Log.w("receipt_Details:", response.toString())
 
                     //  {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"C1001","customerName":"BRINDAS PTE LTD",
                     //  "receiptNumber":"9","receiptStatus":"O","receiptDate":"18\/8\/2021 12:00:00 am","netTotal":"5.350000",
@@ -5038,21 +5077,22 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         model.bankCode = responseObject.optString("bankCode")
                         model.bankName = responseObject.optString("bankName")
                         model.chequeDate = responseObject.optString("checkDueDate")
-                        model.bankTransferDate = responseObject.optString("bankTransferDate")
-                        model.creditAmount = responseObject.optString("totalDiscount")
                         model.chequeNo = responseObject.optString("checkNumber")
-                        Utils.setInvoiceMode("Invoice")
-                        Utils.setReceiptMode("true")
-//                        if (responseObject.optString("signature") != null && responseObject.optString(
-//                                "signature"
-//                            ) != "null" && !responseObject.optString("signature").isEmpty()
-//                        ) {
-//                            val signature = responseObject.optString("signature")
-//                            Utils.setSignature(signature)
-//                            createSignature()
-//                        } else {
-//                            Utils.setSignature("")
-//                        }
+                        model.bankTransferDate = responseObject.optString("bankTransferDate")
+                        model.balanceAmount = responseObject.optString("balanceAmount")
+                        model.creditAmount = responseObject.optString("totalDiscount")
+                        // model.setSignFlag(responseObject.optString("signFlag"));
+                        // String signFlag = responseObject.optString("signFlag");
+                        if (responseObject.optString("signature") != null && responseObject.optString(
+                                "signature"
+                            ) != "null" && !responseObject.optString("signature").isEmpty()
+                        ) {
+                            val signature = responseObject.optString("signature")
+                            Utils.setSignature(signature)
+                            createSignature()
+                        } else {
+                            Utils.setSignature("")
+                        }
                         val detailsArray = responseObject.optJSONArray("receiptDetails")
                         for (i in 0 until detailsArray.length()) {
                             val `object` = detailsArray.getJSONObject(i)
@@ -5061,25 +5101,22 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             invoiceListModel.invoiceDate = `object`.optString("invoiceDate")
                             invoiceListModel.amount = `object`.optString("paidAmount")
                             invoiceListModel.discountAmount = `object`.optString("discountAmount")
-                            invoiceListModel.creditAmount = `object`.optString("creditAmount")
                             invoiceListModel.balanceAmount = `object`.optString("balanceAmount")
-                        }
+                            invoiceListModel.creditAmount = `object`.optString("creditAmount")
 
+                            receiptsList.add(invoiceListModel)
+                        }
                         model.setReceiptsDetailsList(receiptsList)
                         receiptsHeaderDetails!!.add(model)
-                        if (receiptsList.size > 0) {
-                            printReceipt()
-                        }
                     } else {
                     }
-                   // pDialog!!.dismiss()
+                    printReceipt()
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
-            },
-            Response.ErrorListener { error: VolleyError ->
+            }, Response.ErrorListener { error: VolleyError ->
                 // Do something when error occurred
-              //  pDialog!!.dismiss()
+                // pDialog.dismiss();
                 Log.w("Error_throwing:", error.toString())
             }) {
             override fun getHeaders(): Map<String, String> {
@@ -5108,6 +5145,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         requestQueue.add(jsonObjectRequest)
     }
 
+
     fun printReceipt() {
         if (validatePrinterConfiguration()) {
 
@@ -5118,6 +5156,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 val printer = TSCPrinter(this, printerMacId, "Receipt")
                 // try {
                 // try {
+                Log.w("entryprintRecp","");
                 printer.printReceipts(1, receiptsHeaderDetails, receiptsList)
 
                 printer.setOnCompletionListener {
@@ -5288,7 +5327,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             val requestQueue = Volley.newRequestQueue(this)
             val url = Utils.getBaseUrl(applicationContext) + "ItemGroupList"
             // Initialize a new JsonArrayRequest instance
-            Log.w("Given_url_group:", url)
+            Log.w("Given_url_gup_brand:", url)
             //    pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
             //   pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
             //   pDialog.setTitleText("Loading Groups...");
@@ -5300,7 +5339,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 object : JsonObjectRequest(Method.GET, url, null,
                     Response.Listener { response: JSONObject ->
                         try {
-                            Log.w("grouplist:", response.toString())
+                            Log.w("group_brandlist:", response.toString())
 
                             // pDialog.dismiss();
                             val statusCode = response.optString("statusCode")
@@ -5513,6 +5552,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         model.soDate = `object`.optString("soDate")
                         model.doDate = `object`.optString("doDate")
                         model.doNumber = `object`.optString("doNumber")
+                        model.currentAddress = `object`.optString("CurrentAddress")
                         model.deliveryAddress =
                             `object`.optString("shipAddress2") + `object`.optString("shipAddress3") + `object`.optString(
                                 "shipStreet"
@@ -5544,8 +5584,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             invoiceListModel.unitPrice = detailObject.optString("price")
                                 invoiceListModel.excQty = detailObject.optString("exc_Qty")
                                 invoiceListModel.saleType =""
-                            if (detailObject.optString("itemID") != null) {
-                                invoiceListModel.customerItemCode = detailObject.optString("itemID")
+                            if (detailObject.optString("bP_CatalogNo") != null) {
+                                invoiceListModel.customerItemCode = detailObject.optString("bP_CatalogNo")
                             }
                             val qty1 = detailObject.optString("quantity").toDouble()
                             val price1 = detailObject.optString("price").toDouble()
@@ -5573,8 +5613,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 invoiceListModel.saleType ="FOC"
                                 invoiceListModel.excQty = detailObject.optString("exc_Qty")
 
-                                if (detailObject.optString("itemID") != null) {
-                                    invoiceListModel.customerItemCode = detailObject.optString("itemID")
+                                if (detailObject.optString("bP_CatalogNo") != null) {
+                                    invoiceListModel.customerItemCode = detailObject.optString("bP_CatalogNo")
                                 }
                                 val qty1 = detailObject.optString("quantity").toDouble()
                                 val price1 = detailObject.optString("price").toDouble()
@@ -5603,8 +5643,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 invoiceListModel.excQty = detailObject.optString("exc_Qty")
                                 invoiceListModel.saleType ="Return"
 
-                                if (detailObject.optString("itemID") != null) {
-                                    invoiceListModel.customerItemCode = detailObject.optString("itemID")
+                                if (detailObject.optString("bP_CatalogNo") != null) {
+                                    invoiceListModel.customerItemCode = detailObject.optString("bP_CatalogNo")
                                 }
                                 val qty1 = detailObject.optString("quantity").toDouble()
                                 val price1 = detailObject.optString("price").toDouble()
@@ -5633,8 +5673,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 invoiceListModel.saleType ="Exchange"
                                 invoiceListModel.excQty = detailObject.optString("exc_Qty")
 
-                                if (detailObject.optString("itemID") != null) {
-                                    invoiceListModel.customerItemCode = detailObject.optString("itemID")
+                                if (detailObject.optString("bP_CatalogNo") != null) {
+                                    invoiceListModel.customerItemCode = detailObject.optString("bP_CatalogNo")
                                 }
                                 val qty1 = detailObject.optString("quantity").toDouble()
                                 val price1 = detailObject.optString("price").toDouble()
@@ -5664,6 +5704,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         }
                         model.salesReturnList = salesReturnList
                         invoiceHeaderDetails!!.add(model)
+
                         printInvoice(copy,isDoPrint)
                     } else {
                         Toast.makeText(
@@ -6058,7 +6099,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             rootJsonObject.put("BankCode", "")
             rootJsonObject.put("AccountNo", "")
             rootJsonObject.put("ChequeNo", "")
-              if (isReceiptPrint) {
+              if (isCashCollectCheck || isReceiptPrint) {
                   rootJsonObject.put("Paymode", "Cash")
           }else{
                   rootJsonObject.put("Paymode", "")

@@ -855,7 +855,7 @@ class DashboardActivity : NavigationActivity() {
                         if (creditLimitArrayList.size > 0) {
                             for (i in creditLimitArrayList.indices) {
                                 // if(Double.parseDouble(creditLimitArrayList.get(i).getCreditLine()) > 0) {
-                                Log.w("bal_dash", ".." + creditLimitArrayList[i].balance.toDouble())
+                              //  Log.w("bal_dash", ".." + creditLimitArrayList[i].balance.toDouble())
                                 if (creditLimitArrayList[i].creditLine.toDouble() > 0.00) {
                                     if (creditLimitArrayList[i].balance.toDouble() >= creditLimitArrayList[i].creditLine.toDouble()) {
                                         creditLimitListFilter.add(creditLimitArrayList[i])

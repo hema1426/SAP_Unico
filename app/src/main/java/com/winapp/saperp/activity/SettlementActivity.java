@@ -39,7 +39,6 @@ import com.winapp.saperp.adapter.ExpenseAdapter;
 import com.winapp.saperp.model.BankListModel;
 import com.winapp.saperp.model.CurrencyModel;
 import com.winapp.saperp.model.ExpenseModel;
-import com.winapp.saperp.model.InvoicePrintPreviewModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.MyKeyboard;
 import com.winapp.saperp.utils.SessionManager;
@@ -784,9 +783,10 @@ public class SettlementActivity extends AppCompatActivity {
             }
             expenseTotal.setText("Expense Total : $ "+Utils.twoDecimalPoint(expense_amount));
             net_total=total_currency + expense_amount;
+
             Log.w("settlenettot",""+net_total);
 
-            netTotal.setText("$ "+net_total);
+            netTotal.setText("$ "+Utils.twoDecimalPoint(net_total));
             net_total_value=Utils.twoDecimalPoint(net_total);
             expense_net_total=Utils.twoDecimalPoint(expense_amount);
 

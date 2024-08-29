@@ -158,6 +158,7 @@ public class SettingActivity extends AppCompatActivity implements Runnable, Comp
     public SwitchCompat uom_Switch;
     public SwitchCompat creditLimit_Switch;
     public SwitchCompat deliveryAddress_Switch;
+    public SwitchCompat latLong_Switch;
     public SwitchCompat email_Switch;
 
 
@@ -220,6 +221,7 @@ public class SettingActivity extends AppCompatActivity implements Runnable, Comp
         uom_Switch = findViewById(R.id.UomSwitch);
         creditLimit_Switch = findViewById(R.id.creditLimitSwitch);
         deliveryAddress_Switch = findViewById(R.id.deliveryAddressSwitch);
+        latLong_Switch = findViewById(R.id.latlong_LocSwitch);
         email_Switch = findViewById(R.id.sentEmailSwitch);
 
         inv_switch.setOnCheckedChangeListener(this);
@@ -228,6 +230,7 @@ public class SettingActivity extends AppCompatActivity implements Runnable, Comp
         uom_Switch.setOnCheckedChangeListener(this);
         creditLimit_Switch.setOnCheckedChangeListener(this);
         deliveryAddress_Switch.setOnCheckedChangeListener(this);
+        latLong_Switch.setOnCheckedChangeListener(this);
         signature_Switch.setOnCheckedChangeListener(this);
         discount_Switch.setOnCheckedChangeListener(this);
         email_Switch.setOnCheckedChangeListener(this);
@@ -308,6 +311,14 @@ public class SettingActivity extends AppCompatActivity implements Runnable, Comp
                             deliveryAddress_Switch.setChecked(true);
                         } else {
                             deliveryAddress_Switch.setChecked(false);
+                        }
+                    }else if (model.getSettingName().equals("latlong_LocSwitch")) {
+                        Log.w("SettingName:", model.getSettingName());
+                        Log.w("SettingValue:", model.getSettingValue());
+                        if (model.getSettingValue().equals("1")) {
+                            latLong_Switch.setChecked(true);
+                        } else {
+                            latLong_Switch.setChecked(false);
                         }
                     } else if (model.getSettingName().equals("signatureSwitch")) {
                         Log.w("SettingName:", model.getSettingName());
@@ -1180,6 +1191,13 @@ public class SettingActivity extends AppCompatActivity implements Runnable, Comp
                     dbHelper.insertSettings(signature_Switch.getTag().toString(),"1");
                 }else {
                     dbHelper.insertSettings(signature_Switch.getTag().toString(),"0");
+                }
+                break;
+            case R.id.latlong_LocSwitch:
+                if (isChecked){
+                    dbHelper.insertSettings(latLong_Switch.getTag().toString(),"1");
+                }else {
+                    dbHelper.insertSettings(latLong_Switch.getTag().toString(),"0");
                 }
                 break;
             case R.id.discountSwitch:

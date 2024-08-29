@@ -1126,13 +1126,10 @@ public class CartActivity extends AppCompatActivity {
             billDiscPercentage.addTextChangedListener(billDiscPercentageTextWatcher);
         }
     }
-
-
     private void hideKeybaord(View v) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
     }
-
     public double getSubtotal() {
         double subtotal = 0;
         double tax = 0;

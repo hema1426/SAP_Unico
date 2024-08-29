@@ -305,7 +305,7 @@ public class SalesOrderPrintPreview extends AppCompatActivity implements OnPageC
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url= Utils.getBaseUrl(this) +"SalesOrderDetails";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_url_SO_Print:",url+jsonObject.toString());
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Generating Print Preview...");
@@ -313,7 +313,6 @@ public class SalesOrderPrintPreview extends AppCompatActivity implements OnPageC
         pDialog.show();
         salesOrderHeaderDetails =new ArrayList<>();
         salesOrderList =new ArrayList<>();
-        Log.w("ExampleJson::",jsonObject.toString());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST, url, jsonObject,
                 response -> {

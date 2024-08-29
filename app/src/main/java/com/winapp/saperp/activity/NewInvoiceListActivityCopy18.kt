@@ -1064,8 +1064,8 @@
 //                                    if (`object`.optString("quantity") != "null") {
 //                                        cqty = `object`.optString("quantity")
 //                                    }
-//                                    //                                    if (object.optString("itemID") != null) {
-////                                        invoiceListModel.setCustomerItemCode(object.optString("itemID"));
+//                                    //                                    if (object.optString("bP_CatalogNo") != null) {
+////                                        invoiceListModel.setCustomerItemCode(object.optString("bP_CatalogNo"));
 ////                                    }
 //                                    val actualPrice = `object`.optString("unitPrice").toDouble()
 //                                    if (createInvoiceSetting == "true") {
@@ -3215,9 +3215,9 @@
 //                                invoiceListModel.returnQty = detailObject.optString("returnQty")
 //                                invoiceListModel.cartonPrice = detailObject.optString("cartonPrice")
 //                                invoiceListModel.unitPrice = detailObject.optString("price")
-//                                if (detailObject.optString("itemID") != null) {
+//                                if (detailObject.optString("bP_CatalogNo") != null) {
 //                                    invoiceListModel.customerItemCode =
-//                                        detailObject.optString("itemID")
+//                                        detailObject.optString("bP_CatalogNo")
 //                                }
 //                                val qty1 = detailObject.optString("quantity").toDouble()
 //                                val price1 = detailObject.optString("price").toDouble()

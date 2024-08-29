@@ -455,8 +455,8 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     invoiceListModel.setNetQuantity(detailObject.optString("netQuantity"));
                                     invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                                     invoiceListModel.setSaleType("");
-                                    if (detailObject.optString("itemID") != null) {
-                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    if (detailObject.optString("bP_CatalogNo") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
@@ -487,8 +487,8 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     invoiceListModel.setNetQuantity(detailObject.optString("returnQty"));
                                     invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                                     invoiceListModel.setSaleType("Return");
-                                    if (detailObject.optString("itemID") != null) {
-                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    if (detailObject.optString("bP_CatalogNo") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
@@ -520,8 +520,8 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                                     invoiceListModel.setSaleType("Exchange");
 
-                                    if (detailObject.optString("itemID") != null) {
-                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    if (detailObject.optString("bP_CatalogNo") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
@@ -553,8 +553,8 @@ public class InvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     invoiceListModel.setFocQty(detailObject.optString("foc_Qty"));
                                     invoiceListModel.setSaleType("FOC");
 
-                                    if (detailObject.optString("itemID") != null) {
-                                        invoiceListModel.setCustomerItemCode(detailObject.optString("itemID"));
+                                    if (detailObject.optString("bP_CatalogNo") != null) {
+                                        invoiceListModel.setCustomerItemCode(detailObject.optString("bP_CatalogNo"));
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));

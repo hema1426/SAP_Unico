@@ -52,7 +52,7 @@
                 android:textSize="13sp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:maxWidth="250dp"
+                android:maxWidth="210dp"
                 android:id="@+id/name"
                 android:textColor="#212121"
                 android:text="Azmal Trading Company"

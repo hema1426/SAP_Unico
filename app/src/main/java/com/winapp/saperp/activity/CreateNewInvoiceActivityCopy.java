@@ -2338,8 +2338,8 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
                         } else {
                             product.setProductName(productObject.optString("productName"));
                         }
-                        if (productObject.optString("itemID") != null){
-                            product.setCustomerItemCode(productObject.optString("itemID"));
+                        if (productObject.optString("bP_CatalogNo") != null){
+                            product.setCustomerItemCode(productObject.optString("bP_CatalogNo"));
                         }
                         product.setProductCode(productObject.optString("productCode"));
                         product.setWeight("");

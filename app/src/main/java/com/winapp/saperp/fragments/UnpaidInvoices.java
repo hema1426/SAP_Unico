@@ -248,8 +248,8 @@ public class UnpaidInvoices extends Fragment {
             jsonObject.put("User",username);
             jsonObject.put("LocationCode",locationCode);
             jsonObject.put("CustomerCode","");
-            jsonObject.put("FromDate",fromdate);
-            jsonObject.put("ToDate", todate);
+            jsonObject.put("FromDate","");
+            jsonObject.put("ToDate", "");
             jsonObject.put("DocStatus","");
             String url = Utils.getBaseUrl(getActivity()) + "InvoiceList";
             Log.w("Given_url:", url);
@@ -288,7 +288,8 @@ public class UnpaidInvoices extends Fragment {
                                                 model.setInvoiceCode(object.optString("code"));
                                                 // isFound=invoiceObject.optString("ErrorMessage");
 
-                                                if (!object.optString("balance").equals("null") && object.optString("balance") != null && Double.parseDouble(object.optString("balance")) > 0) {
+                                                if (!object.optString("balance").equals("null") && object.optString("balance") != null
+                                                        && Double.parseDouble(object.optString("balance")) > 0) {
                                                     ArrayList<InvoicePrintPreviewModel.InvoiceList> invoiceLists = new ArrayList<>();
                                                     model.setInvoiceList(invoiceLists);
                                                     invoiceList.add(model);

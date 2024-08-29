@@ -471,9 +471,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 dbHelper.insertSettings("showCustomer",object.optString("showCustomer"));
                                 dbHelper.insertSettings("showProduct",object.optString("showProduct"));
                                 dbHelper.insertSettings("HAVESETTLEMENTBYDATE",object.optString("haveSettlementByDate"));
-                                dbHelper.insertSettings("HaveEditPrice",object.optString("HaveEditPrice"));
-
-
+                                dbHelper.insertSettings("haveEditPrice",object.optString("haveEditPrice"));
                             }
                         }else {
                             Toast.makeText(getApplicationContext(),"Error,in getting Printer Settings",Toast.LENGTH_LONG).show();
@@ -692,7 +690,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject object=response.getJSONObject(i);
                                 Log.w("GivenCompanyLogo:",object.optString("LogoString"));
-                                session.setCompanyDetails(object.optString("ShortCode"),object.optString("LogoString"));
+                                session.setCompanyDetails(object.optString("ShortCode")
+                                        ,object.optString("LogoString"));
                                 // No need Load the Content Straight to the Dashboard
 
                                 // This is for Without loading Data

@@ -45,9 +45,19 @@ public class NewInvoicePrintPreviewAdapter extends RecyclerView.Adapter<NewInvoi
 //        viewHolder.product.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")");
 
         if (invoiceList.getUomCode()!=null && !invoiceList.getUomCode().equals("null") && !invoiceList.getUomCode().isEmpty()){
-            viewHolder.product.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")");
+          if(invoiceList.getCustomerItemCode()!=null && !invoiceList.getCustomerItemCode().equals("null")
+                  && !invoiceList.getCustomerItemCode().isEmpty()){
+              viewHolder.product.setText(invoiceList.getDescription()+" ("+invoiceList.getUomCode()+")"+"-"+invoiceList.getCustomerItemCode());
+          }else {
+              viewHolder.product.setText(invoiceList.getDescription() + " (" + invoiceList.getUomCode() + ")");
+          }
         }else {
-            viewHolder.product.setText(invoiceList.getDescription());
+            if(invoiceList.getCustomerItemCode()!=null && !invoiceList.getCustomerItemCode().equals("null")
+                    && !invoiceList.getCustomerItemCode().isEmpty()){
+                viewHolder.product.setText(invoiceList.getDescription()+"-"+invoiceList.getCustomerItemCode());
+            }else {
+                viewHolder.product.setText(invoiceList.getDescription());
+            }
         }
         if (invoiceList.getSaleType().equals("Return")){
             viewHolder.net.setText((int)Double.parseDouble(invoiceList.getNetQuantity())+" (as Return)");

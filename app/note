@@ -6,7 +6,6 @@ Username: V1
 Password: 12345
 
 
-
 SUPER_STAR_DEMO
 ST01
 Yn7876z@
@@ -45,6 +44,10 @@ fuxin
 Username - ctc230004.1
 Pwd - 12345
 c12345
+
+raymanng
+Username - ctc230003.1
+Pwd - 12345
             case R.id.action_save:  -- CreateNewInvoiceActivity  common credt limit condtion
             createInvoiceValidation() method hide
 

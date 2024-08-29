@@ -376,6 +376,7 @@
                 tools:listitem="@layout/denomination_items"
                 android:layout_height="match_parent"
                 android:visibility="visible"
+                android:layout_marginTop="10dp"
                 android:nestedScrollingEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -430,7 +431,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/expenseList_settle"
                         android:layout_width="match_parent"
-                        tools:listitem="@layout/expense_items"
+                        tools:listitem="@layout/expense_prev_items"
                         android:layout_height="match_parent"
                         android:visibility="visible"
                         android:paddingBottom="180dp"
