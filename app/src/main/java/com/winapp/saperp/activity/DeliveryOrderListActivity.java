@@ -551,6 +551,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                 salesOrderStatusSpinner.setSelection(0);
                 fromDate.setText(formattedDate);
                 toDate.setText(formattedDate);
+                selectedCustomerId ="";
                 searchFilterView.setVisibility(View.GONE);
                 salesOrderStatusSpinner.setSelection(0);
                 setFilterAdapeter();
@@ -1273,7 +1274,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                             String.valueOf(net_qty),
                                             "0",
                                             price_value,
-                                            /*object.optString("stockInHand")*/"0",
+                                            object.optString("stockInHand"),
                                             object.optString("total"),
                                             object.optString("subTotal"),
                                             object.optString("taxAmount"),
@@ -1282,7 +1283,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                             "",
                                             "",
                                             "",
-                                            "0","0"
+                                            "0","0", object.optString("stockInHand")
                                     );
 
                                     myEdit.putString("billDisc_amt", salesObject.optString("billDiscount"));
@@ -1619,6 +1620,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                 }
                                 doListView.setVisibility(View.VISIBLE);
                                 emptyLayout.setVisibility(View.GONE);
+                                selectedCustomerId ="";
                                 setDOAdapter();
 
                                 //outstandingLayout.setVisibility(View.VISIBLE);

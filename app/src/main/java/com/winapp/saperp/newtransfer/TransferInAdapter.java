@@ -101,9 +101,11 @@ public class TransferInAdapter extends RecyclerView.Adapter<TransferInAdapter.My
                         if (!s.toString().isEmpty()) {
                             if (transferMode.equals("Stock Request")){
                                 dataList.get(pos).setQty(s.toString());
+                              //  notifyDataSetChanged();
                             }else {
                                 if (dataList.get(pos).getStockInHand() >= Integer.parseInt(s.toString())) {
                                     dataList.get(pos).setQty(s.toString());
+//                                    notifyDataSetChanged();
                                 } else {
                                     qtytxt.setText("");
                                     Toast.makeText(context, "Low stock !", Toast.LENGTH_SHORT).show();

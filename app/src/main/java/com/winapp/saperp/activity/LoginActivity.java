@@ -42,6 +42,7 @@ import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.InternetConnector_Receiver;
 import com.winapp.saperp.utils.SessionManager;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.Utils;
 
 import org.json.JSONArray;
@@ -65,7 +66,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private boolean isEmailValid;
     private boolean isPasswordValid;
     private SessionManager session;
-    private TextView registerText; 
+    private TextView registerText;
+    private SharedPreferenceUtil sharedPreferenceUtil;
     private SweetAlertDialog pDialog;
     private String activityFrom;
     private ImageView passwordToggle;
@@ -109,9 +111,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         passwordText=findViewById(R.id.password);
         loginButton=findViewById(R.id.btn_login);
         registerButton=findViewById(R.id.btn_register);
+
         loginButton.setOnClickListener(this);
         dbHelper=new DBHelper(this);
         session=new SessionManager(this);
+        sharedPreferenceUtil = new SharedPreferenceUtil(this);
 
         // Set the Preference value in edittext for Remembering the values
         loginPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
@@ -289,6 +293,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 String salesManMail=object.optString("salesPersonEmail");
                                 String salesManOffice=object.optString("salesPersonOfficeNo");
                                 String negativeStock =object.optString("allowNegativeStock");
+
+                                String invUOM =object.optString("invoiceDefaultUOM");
+                                String salesUOM =object.optString("salesOrderDefaultUOM");
+                                String returnUOM =object.optString("salesRetunDefaultUOM");
+
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_INV_UOM, invUOM);
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_SO_UOM, invUOM);
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_RETURN_UOM, invUOM);
 
                                 session.createLoginSession(
                                         username,password,rollname,locationCode,"1",ispermission,

@@ -705,6 +705,7 @@ public class CustomerListActivity extends NavigationActivity {
                                 model.setTaxCode(object.optString("taxCode"));
                                 model.setBillDiscPercentage(object.optString("discountPercentage"));
                                 model.setAllowFOC(object.optString("allowFOC"));
+                                model.setMailId(object.optString("mailId"));
 
                                 if (object.optString("outstandingAmount").equals("null") || object.optString("outstandingAmount").isEmpty()) {
                                     model.setOutstandingAmount("0.00");
@@ -765,7 +766,6 @@ public class CustomerListActivity extends NavigationActivity {
                     if (from.equals("do") || from.equals("so") || from.equals("iv") || from.equals("sales_return")) {
                         Intent returnIntent = new Intent();
                         returnIntent.putExtra("customerCode", customer_code);
-
                         returnIntent.putExtra("isFOC", isFOCApi);
 
                         setResult(Activity.RESULT_OK, returnIntent);
@@ -787,7 +787,7 @@ public class CustomerListActivity extends NavigationActivity {
             @Override
             public void createInvoice(String customerCode, String cusname, String taxcode, String taxperc,
                                       String taxtype
-                    ,String billDisc,String isFOCApi) {
+                    ,String billDisc,String isFOCApi , String mailId) {
                 if (createInvoiceSetting.equals("true")) {
 
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
@@ -834,6 +834,7 @@ public class CustomerListActivity extends NavigationActivity {
                         intent.putExtra("customerBillDisc", billDisc);
                         intent.putExtra("from", from);
                         intent.putExtra("isFOC", isFOCApi);
+                        intent.putExtra("isMailId", mailId);
 
                         startActivity(intent);
                     }

@@ -80,13 +80,23 @@
             android:textColor="@color/red_btn_bg_color"
             android:text="Stock Summary Report"
             android:layout_height="match_parent"/>
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:id="@+id/stock_summary_openingBal"
+            android:layout_marginLeft="@dimen/_25sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:textSize="14dp"
+            android:textColor="@color/red_btn_bg_color"
+            android:text="Stock Summary With Opening Balance"
+            android:layout_height="match_parent"/>
         <TextView
             android:layout_width="wrap_content"
             android:textStyle="bold"
             android:id="@+id/bad_stock_summary"
             android:layout_marginLeft="@dimen/_25sdp"
             android:layout_marginTop="@dimen/_10sdp"
+            android:textSize="14dp"
             android:textColor="@color/red_btn_bg_color"
             android:text="Bad Stock Return Summary Report"
             android:layout_height="match_parent"/>

@@ -262,6 +262,15 @@ public class CartModel {
     public String stockQty;
     public String uomCode;
     public String minimumSellingPrice;
+    public String stockProductQty;
+
+    public String getStockProductQty() {
+        return stockProductQty;
+    }
+
+    public void setStockProductQty(String stockProductQty) {
+        this.stockProductQty = stockProductQty;
+    }
 
     public String getMinimumSellingPrice() {
         return minimumSellingPrice;

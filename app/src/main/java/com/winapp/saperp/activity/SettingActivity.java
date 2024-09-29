@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -18,6 +20,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,8 +46,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.winapp.saperp.R;
+import com.winapp.saperp.adapter.UomSettingInvoiceAdapter;
+import com.winapp.saperp.adapter.UomSettingTransferAdapter;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.model.AppUtils;
 import com.winapp.saperp.model.CustomerDetails;
@@ -53,11 +59,13 @@ import com.winapp.saperp.model.HomePageModel;
 import com.winapp.saperp.model.ProductImageModel;
 import com.winapp.saperp.model.ProductsModel;
 import com.winapp.saperp.model.SettingsModel;
+import com.winapp.saperp.model.UomModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.DeviceListActivity;
 import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.Utils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -75,6 +83,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class SettingActivity extends AppCompatActivity implements Runnable, CompoundButton.OnCheckedChangeListener {
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -84,6 +94,7 @@ public class SettingActivity extends AppCompatActivity implements Runnable, Comp
     private Switch createInvoiceSwitch;
     public DBHelper dbHelper;
     public ArrayList<SettingsModel> settingsList;
+    private ArrayList<UomModel> uomList;
     public Button btnScan;
     protected static final String TAG = "TAG";
     private static final int REQUEST_CONNECT_DEVICE = 1;
@@ -160,6 +171,10 @@ public class SettingActivity extends AppCompatActivity implements Runnable, Comp
     public SwitchCompat deliveryAddress_Switch;
     public SwitchCompat latLong_Switch;
     public SwitchCompat email_Switch;
+    public UomSettingInvoiceAdapter uomSettingInvoiceAdapter;
+    public UomSettingTransferAdapter uomSettingTransferAdapter;
+    public RecyclerView rv_uom_transf_setting;
+    public RecyclerView rv_uom_invoice_setting;
 
 
     @Override
@@ -223,7 +238,8 @@ public class SettingActivity extends AppCompatActivity implements Runnable, Comp
         deliveryAddress_Switch = findViewById(R.id.deliveryAddressSwitch);
         latLong_Switch = findViewById(R.id.latlong_LocSwitch);
         email_Switch = findViewById(R.id.sentEmailSwitch);
-
+        rv_uom_transf_setting = findViewById(R.id.uom_transf_setting);
+        rv_uom_invoice_setting = findViewById(R.id.uom_invoice_setting);
         inv_switch.setOnCheckedChangeListener(this);
         sales_switch.setOnCheckedChangeListener(this);
         receipt_switch.setOnCheckedChangeListener(this);
@@ -341,7 +357,15 @@ public class SettingActivity extends AppCompatActivity implements Runnable, Comp
                 }
             }
         }
-
+        JSONObject jsonObject = new JSONObject();
+        try {
+//            {"CustomerCode":"C1348","ItemCode":"AAA01"}
+            jsonObject.put("CustomerCode", "C1348");
+            jsonObject.put("ItemCode", "AAA01");
+            getUOM(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         if (isLProductSettingLogin.equals("true")) {
             productSettingLayout.setVisibility(View.VISIBLE);
             btnLogin.setText("Logout");
@@ -1208,6 +1232,99 @@ public class SettingActivity extends AppCompatActivity implements Runnable, Comp
                 }
                 break;
          }
+    }
+    public void getUOM(JSONObject jsonObject) {
+        // Initialize a new RequestQueue instance
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url = Utils.getBaseUrl(this) + "ItemUOMDetails";
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_UOM_URLSe:", url + jsonObject.toString());
+
+        SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading UOM...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, response -> {
+            try {
+                uomList = new ArrayList<>();
+
+                Log.w("Res_UOMSett:", response.toString());
+                // Loop through the array elements
+                JSONArray uomArray = response.optJSONArray("responseData");
+                if (uomArray != null && uomArray.length() > 0) {
+                    for (int j = 0; j < uomArray.length(); j++) {
+                        JSONObject uomObject = uomArray.getJSONObject(j);
+                        UomModel uomModel = new UomModel();
+                        uomModel.setUomCode(uomObject.optString("uomCode"));
+                        uomModel.setUomName(uomObject.optString("uomName"));
+                        uomModel.setUomEntry(uomObject.optString("uomEntry"));
+                        uomModel.setAltQty(uomObject.optString("altQty"));
+                        uomModel.setBaseQty(uomObject.optString("baseQty"));
+                        uomModel.setPrice(uomObject.optString("price"));
+                        uomList.add(uomModel);
+                    }
+                }
+
+                Log.w("UOM_TEXTSett:", uomArray.toString());
+                pDialog.dismiss();
+                if (uomList.size() > 0) {
+                    runOnUiThread(() -> {
+                        setUOMInvoiceAdapter(uomList);
+                        setUOMATransferdapter(uomList);
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, error -> {
+            // Do something when error occurred
+            pDialog.dismiss();
+            Log.w("Error_throwing:", error.toString());
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void setUOMInvoiceAdapter(ArrayList<UomModel> uomList ) {
+        rv_uom_invoice_setting.setHasFixedSize(true);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+        rv_uom_invoice_setting.setLayoutManager(mLayoutManager);
+        uomSettingInvoiceAdapter = new UomSettingInvoiceAdapter(SettingActivity.this, uomList);
+        rv_uom_invoice_setting.setAdapter(uomSettingInvoiceAdapter);
+    }
+    public void setUOMATransferdapter(ArrayList<UomModel> uomList ) {
+        rv_uom_transf_setting.setHasFixedSize(true);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+        rv_uom_transf_setting.setLayoutManager(mLayoutManager);
+        uomSettingTransferAdapter = new UomSettingTransferAdapter(SettingActivity.this, uomList);
+        rv_uom_transf_setting.setAdapter(uomSettingTransferAdapter);
     }
 
     private class ProductImageDownload extends AsyncTask<String, Integer, String> {

@@ -63,6 +63,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public String NET_TOTAL = "net_total";
     public String FOC_QTY = "foc_qty";
     public String STOCK_QTY = "stock_qty";
+    public String STOCK_QTYP = "stock_qtyp";
     public String ITEM_DISC = "item_disc";
     public String BILL_DISC = "bill_disc";
     public String SALEABLE = "saleable";
@@ -86,7 +87,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL("create table " + TABLE_CART + " " +
                 "(ID INTEGER PRIMARY KEY   AUTOINCREMENT,pid text, pname text,ctnqty text,qty text,price text, pimage text,netprice text,netweight text," +
-                "ctnprice text,unitprice text,pcspercarton text,tax text,total text,taxtype text,foc_qty text,foc_type text,exchange_qty text,exchange_type text,discount text,return_qty text,return_type text,stockrefno text,sub_total text,stock_qty text,uomcode text,minimumsellingprice text)"
+                "ctnprice text,unitprice text,pcspercarton text,tax text,total text,taxtype text,foc_qty text,foc_type text,exchange_qty text,exchange_type text,discount text,return_qty text,return_type text,stockrefno text,sub_total text,stock_qty text,uomcode text,minimumsellingprice text,stock_qtyp text)"
         );
 
         db.execSQL("create table " + TABLE_CUSTOMER_URL + " " +
@@ -132,7 +133,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.execSQL("create table " + TABLE_SAP_CART + " " +
                 "(ID INTEGER PRIMARY KEY   AUTOINCREMENT,pid text, pname text,ctnqty text,qty text,price text, pimage text,netprice text,netweight text," +
-                "ctnprice text,unitprice text,pcspercarton text,tax text,total text,taxtype text,foc_qty text,foc_type text,exchange_qty text,exchange_type text,discount text,return_qty text,return_type text,stockrefno text,sub_total text,stock_qty text,uomcode text,minimumSellingPrice text)"
+                "ctnprice text,unitprice text,pcspercarton text,tax text,total text,taxtype text,foc_qty text,foc_type text,exchange_qty text,exchange_type text,discount text,return_qty text,return_type text,stockrefno text,sub_total text,stock_qty text,uomcode text,minimumSellingPrice text,stock_qtyp text)"
         );
 
         db.execSQL("create table " + CUSTOMER_TAX_TABLE + " " +
@@ -140,7 +141,7 @@ public class DBHelper extends SQLiteOpenHelper {
         );
 
         db.execSQL("CREATE TABLE " + CREATE_INVOICE_TABLE + " " +
-                "(ID INTEGER PRIMARY KEY AUTOINCREMENT," + PRODUCT_CODE + " TEXT," + PRODUCT_NAME + " TEXT," + UOM_CODE + " TEXT," + UOM_TEXT + " TEXT," + ACTUAL_QTY + " TEXT," + STOCK_QTY + " TEXT," + RETURN_QTY + " TEXT," + NET_QTY + " TEXT," + FOC_QTY + " TEXT," + PRICE + " TEXT," + TOTAL + " TEXT," + SUB_TOTAL + " TEXT," + GST_AMOUNT + " TEXT," + NET_TOTAL + " TEXT," + ITEM_DISC + " TEXT,"+ BILL_DISC +" TEXT,"+ SALEABLE + " TEXT,"+ DAMAGED +" TEXT,"+ EXCHANGE_QTY +" TEXT,"+ MINIMUMSELL_PRICE +" TEXT )"
+                "(ID INTEGER PRIMARY KEY AUTOINCREMENT," + PRODUCT_CODE + " TEXT," + PRODUCT_NAME + " TEXT," + UOM_CODE + " TEXT," + UOM_TEXT + " TEXT," + ACTUAL_QTY + " TEXT," + STOCK_QTY + " TEXT," + RETURN_QTY + " TEXT," + NET_QTY + " TEXT," + FOC_QTY + " TEXT," + PRICE + " TEXT," + TOTAL + " TEXT," + SUB_TOTAL + " TEXT," + GST_AMOUNT + " TEXT," + NET_TOTAL + " TEXT," + ITEM_DISC + " TEXT,"+ BILL_DISC +" TEXT,"+ SALEABLE + " TEXT,"+ DAMAGED +" TEXT,"+ EXCHANGE_QTY +" TEXT,"+ MINIMUMSELL_PRICE +" TEXT,"+STOCK_QTYP+ " TEXT )"
         );
 
         db.execSQL("CREATE TABLE " + RETURN_PRODUCT_TABLE + " " +
@@ -1040,7 +1041,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean insertCreateInvoiceCartEdit(String productCode, String productName, String
             uomcode, String actualQty, String returnQty, String netQty, String foc, String price,
             String stock, String total, String subTotal, String gstAmount, String netTotal ,
-          String itemDisc ,String billDisc ,String saleable ,String damaged ,String exchangeQty,String minimumSellPrice) {
+          String itemDisc ,String billDisc ,String saleable ,String damaged ,String exchangeQty,
+                                               String minimumSellPrice,String productStock) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         // contentValues.put(PRODUCT_CODE, productCode+" ");
@@ -1063,6 +1065,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(DAMAGED, damaged);
         contentValues.put(EXCHANGE_QTY, exchangeQty);
         contentValues.put(MINIMUMSELL_PRICE, minimumSellPrice);
+        contentValues.put(STOCK_QTYP, productStock);
 
         db.insert(CREATE_INVOICE_TABLE, null, contentValues);
         Log.w("InsertProductValuesC:", contentValues.toString());
@@ -1076,7 +1079,7 @@ public class DBHelper extends SQLiteOpenHelper {
                                            String netQty, String foc,
                                            String price, String stock, String total, String subTotal,
                                            String gstAmount, String netTotal, String itemDisc ,String billDisc
-            ,String saleable,String damaged,String exchangeQty,String minimumSellPrice) {
+            ,String saleable,String damaged,String exchangeQty,String minimumSellPrice ,String productStock) {
         Cursor cursor = null;
         String netqty = null;
         String focQty = null;
@@ -1112,6 +1115,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     contentValues.put(DAMAGED, damaged);
                     contentValues.put(EXCHANGE_QTY, exchangeQty);
                     contentValues.put(MINIMUMSELL_PRICE, minimumSellPrice);
+                    contentValues.put(STOCK_QTYP, productStock);
 
                     db.update(CREATE_INVOICE_TABLE, contentValues, "product_code = ?", new String[]{productCode});
                     Log.w("Cart_updated", "Success");
@@ -1140,6 +1144,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     contentValues.put(DAMAGED, damaged);
                     contentValues.put(EXCHANGE_QTY, exchangeQty);
                     contentValues.put(MINIMUMSELL_PRICE, minimumSellPrice);
+                    contentValues.put(STOCK_QTYP, productStock);
 
                     db.insert(CREATE_INVOICE_TABLE, null, contentValues);
                     Log.w("InsertProductValuesIn2:", contentValues.toString());
@@ -1166,6 +1171,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 contentValues.put(DAMAGED, damaged);
                 contentValues.put(EXCHANGE_QTY, exchangeQty);
                 contentValues.put(MINIMUMSELL_PRICE, minimumSellPrice);
+                contentValues.put(STOCK_QTYP, productStock);
 
                 db.insert(CREATE_INVOICE_TABLE, null, contentValues);
                 Log.w("InsertProductValuesIn3:", contentValues.toString());
@@ -1190,7 +1196,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean insertCart(String pid,
                               String pname, String ctnqty, String qty, String price, String pimage, String netprice, String netweight,
                               String ctnprice, String unitprice, String pcspercarton, String tax, String subtotal, String taxtype, String foc_qty,
-                              String foc_type, String exchange_qty, String exchange_type, String discount, String return_qty, String return_type, String ref_no, String total, String stock, String uomcode, String minimumsellingprice) {
+                              String foc_type, String exchange_qty, String exchange_type, String discount,
+                              String return_qty, String return_type, String ref_no, String total, String stock,
+                              String uomcode, String minimumsellingprice ,String productStock) {
         Cursor cursor = null;
         String netqty = null;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -1230,6 +1238,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 contentValues.put("stock_qty", stock);
                 contentValues.put("uomcode", uomcode);
                 contentValues.put("minimumsellingprice", minimumsellingprice);
+                contentValues.put("stock_qtyp", productStock);
+
                 db.update(TABLE_CART, contentValues, "pid = ?", new String[]{pid});
                 Log.w("Cart_updated", "Success");
                 Toast.makeText(context, "Product Updated2 Successfully", Toast.LENGTH_LONG).show();
@@ -1262,6 +1272,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 contentValues.put("stock_qty", stock);
                 contentValues.put("uomcode", uomcode);
                 contentValues.put("minimumsellingprice", minimumsellingprice);
+                contentValues.put("stock_qtyp", productStock);
+
                 db.insert(TABLE_CART, null, contentValues);
                 Log.w("InsertProductValues:", contentValues.toString());
             }
@@ -1394,6 +1406,7 @@ public class DBHelper extends SQLiteOpenHelper {
             data.setDamagedQty(cursor.getString(cursor.getColumnIndex(DAMAGED)));
             data.setExchangeQty(cursor.getString(cursor.getColumnIndex(EXCHANGE_QTY)));
             data.setMinimumSellingPrice(cursor.getString(cursor.getColumnIndex(MINIMUMSELL_PRICE)));
+            data.setStockProductQty(cursor.getString(cursor.getColumnIndex(STOCK_QTYP)));
 
             array_list.add(data);
             cursor.moveToNext();
@@ -1437,6 +1450,7 @@ public class DBHelper extends SQLiteOpenHelper {
             data.setStockQty(cursor.getString(cursor.getColumnIndex("stock_qty")));
             data.setUomCode(cursor.getString(cursor.getColumnIndex("uomcode")));
             data.setMinimumSellingPrice(cursor.getString(cursor.getColumnIndex("minimumsellingprice")));
+            data.setStockProductQty(cursor.getString(cursor.getColumnIndex("stock_qtyp")));
             array_list.add(data);
             cursor.moveToNext();
         }

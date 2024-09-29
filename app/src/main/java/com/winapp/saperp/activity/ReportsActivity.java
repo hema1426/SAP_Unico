@@ -42,6 +42,7 @@ import com.winapp.saperp.ReportPreview.RoReceiptSettlePreviewActivity;
 import com.winapp.saperp.ReportPreview.RoSettlementPreviewActivity;
 import com.winapp.saperp.ReportPreview.SapSalesSummaryPreviewActivity;
 import com.winapp.saperp.ReportPreview.SapStockReturnPreviewActivity;
+import com.winapp.saperp.ReportPreview.SapStockSummaryOpenPreviewActivity;
 import com.winapp.saperp.ReportPreview.SapStockSummaryPreviewActivity;
 import com.winapp.saperp.model.CustomerModel;
 import com.winapp.saperp.model.CustomerStateModel;
@@ -54,6 +55,7 @@ import com.winapp.saperp.model.ReportStockSummaryModel;
 import com.winapp.saperp.model.SettlementReceiptDetailModel;
 import com.winapp.saperp.model.SettlementReceiptModel;
 import com.winapp.saperp.model.StockBadRequestReturnModel;
+import com.winapp.saperp.model.StockSummaryReportOpenModel;
 import com.winapp.saperp.model.UserListModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
@@ -127,6 +129,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     private ArrayList<ReportSalesSummaryModel.ReportSalesSummaryDetails> reportSalesSummaryDetailsList;
     private ArrayList<ReportSalesSummaryModel.ReportSalesSummaryInvDetails> reportSalesSummaryInvDetailsList;
     private ArrayList<ReportStockSummaryModel> reportStockSummaryList;
+    private ArrayList<StockSummaryReportOpenModel> reportStockSummaryOpenList;
+    private ArrayList<StockSummaryReportOpenModel> reportStockSummaryOpenList1;
     private ArrayList<ReportStockSummaryModel.ReportStockSummaryDetails> reportStockSummaryDetailsList;
     private ArrayList<CustomerStateModel> customerStateList ;
     private ArrayList<CustomerStateModel.CustInvoiceDetails> custInvoiceDetailsList ;
@@ -136,6 +140,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     private String currentDate;
     private String currentDateString;
     private TextView badStockReturnSummary;
+    private TextView stock_summary_openingBalm;
     private ArrayList<StockBadRequestReturnModel> stockBadRequestReturnList;
     private ArrayList<StockBadRequestReturnModel.StockBadRequestReturnDetails> stockBadRequestReturnDetailsList;
     private JSONObject jsonObject;
@@ -179,6 +184,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         settle_receiptReport=findViewById(R.id.settle_receipt_report);
         stockSummaryReport=findViewById(R.id.stock_summary);
         badStockReturnSummary=findViewById(R.id.bad_stock_summary);
+        stock_summary_openingBalm =findViewById(R.id.stock_summary_openingBal);
         printPreview=findViewById(R.id.preview);
         printView=findViewById(R.id.print);
 
@@ -196,6 +202,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         settle_receiptReport.setOnClickListener(this);
         stockSummaryReport.setOnClickListener(this);
         badStockReturnSummary.setOnClickListener(this);
+        stock_summary_openingBalm.setOnClickListener(this);
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType=sharedPreferences.getString("printer_type","");
@@ -353,7 +360,14 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else if (view.getId()==R.id.bad_stock_summary){
+        } else if (view.getId()==R.id.stock_summary_openingBal){
+            try {
+                showFilterAlertDialog(view,"Stock Summary Opening Balance");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else if (view.getId()==R.id.bad_stock_summary){
             try {
                 showFilterAlertDialog(view,"Bad Stock Report");
             } catch (Exception e) {
@@ -464,13 +478,14 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             setStatusList(status.get());
 
             if (title.equals("Receipt Details") || title.equals("Receipt Summary") || title.equals("Stock Summary")
-                    || title.equals("Bad Stock Report") ){
+                    || title.equals("Bad Stock Report") || title.equals("Stock Summary Opening Balance") ){
                 stattusLayout.setVisibility(View.GONE);
             }else {
                 stattusLayout.setVisibility(View.VISIBLE);
             }
 
-            if (title.equals("Stock Summary") || title.equals("Bad Stock Report")){
+            if (title.equals("Stock Summary") || title.equals("Bad Stock Report")
+             || title.equals("Stock Summary Opening Balance")){
                 customerListSpinner.setVisibility(View.GONE);
             }
 
@@ -766,6 +781,29 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                     }
                                 }else {
                                     Intent intent=new Intent(ReportsActivity.this, SapStockReturnPreviewActivity.class);
+                                    intent.putExtra("fromDate",from_date);
+                                    intent.putExtra("toDate",to_date);
+                                    intent.putExtra("locationCode",locationCode);
+                                    intent.putExtra("companyId",companyCode);
+                                    intent.putExtra("customerCode",customer_id);
+                                    intent.putExtra("customerName",customer_name);
+                                    intent.putExtra("userName",username);
+                                    startActivity(intent);
+                                }
+                                break;
+
+                            case "Stock Summary Opening Balance":
+                                dialog.dismiss();
+                                progressDialog.setMessage("Printing in Progress...!");
+                                progressDialog.show();
+                                if (isPrintEnable){
+                                    try {
+                                        getReportStockSummaryOpening(Integer.parseInt(noOfCopyText.getText().toString()),currentDate,locationCode,fromDateString,toDateString);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }else {
+                                    Intent intent=new Intent(ReportsActivity.this, SapStockSummaryOpenPreviewActivity.class);
                                     intent.putExtra("fromDate",from_date);
                                     intent.putExtra("toDate",to_date);
                                     intent.putExtra("locationCode",locationCode);
@@ -2254,6 +2292,161 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         requestQueue.add(jsonObjectRequest);
     }
 
+    private void getReportStockSummaryOpening(int copy,String date,String warehouseCode,String from_d,String to_d) throws JSONException {
+        // Initialize a new RequestQueue instance
+        jsonBody = new JSONObject();
+        jsonBody.put("Warehouse",warehouseCode);
+        jsonBody.put("FromDate",from_d);
+        jsonBody.put("ToDate",to_d);
+
+        requestQueue = Volley.newRequestQueue(this);
+        url= Utils.getBaseUrl(this) +"ReportStockSummaryAllItem";
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_url_summaryOpen:",url+"-"+jsonBody.toString());
+        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Processing Please wait...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        reportStockSummaryOpenList =new ArrayList<>();
+        reportStockSummaryOpenList1 =new ArrayList<>();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
+                response -> {
+                    try{
+                        Log.w("ReportStockSummaryOpen:",response.toString());
+
+                        pDialog.dismiss();
+                        String statusCode=response.optString("statusCode");
+                        String statusMessage=response.optString("statusMessage");
+                        String openqty = "0.0";
+                        String closeqty ="0.0";
+                        String inqty = "0.0";
+                        String outqty ="0.0";
+
+                        if (statusCode.equals("1")){
+                            JSONArray  stockDetailsArray=response.optJSONArray("responseData");
+                            if (stockDetailsArray.length() > 0){
+                                assert stockDetailsArray != null;
+                                JSONObject object1=stockDetailsArray.optJSONObject(0);
+                                ReportStockSummaryModel model=new ReportStockSummaryModel();
+                                //   model.setDeviceId(object1.optString(""));
+                                //  model.setCompantId(object1.optString(""));
+                                for (int i=0;i<stockDetailsArray.length();i++) {
+                                    JSONObject object=stockDetailsArray.optJSONObject(i);
+                                    if(!object.optString("openingQty").isEmpty() &&
+                                            object.optString("openingQty") != null &&
+                                            !object.optString("openingQty").equals("")&&
+                                            !object.optString("openingQty").equalsIgnoreCase("null")){
+                                        openqty = object.optString("openingQty") ;
+                                    }else{
+                                        openqty = "";
+                                    }
+                                    if(!object.optString("closingQty").isEmpty() &&
+                                            object.optString("closingQty") != null &&
+                                            !object.optString("closingQty").equals("")&&
+                                            !object.optString("closingQty").equalsIgnoreCase("null")){
+                                        closeqty = object.optString("closingQty") ;
+                                    }else{
+                                        closeqty = "";
+                                    }
+                                    if(!object.optString("inwardQty").isEmpty() &&
+                                            object.optString("inwardQty") != null &&
+                                            !object.optString("inwardQty").equals("")&&
+                                            !object.optString("inwardQty").equalsIgnoreCase("null")){
+                                        inqty = object.optString("inwardQty") ;
+                                    }else{
+                                        inqty = "";
+                                    }
+                                    if(!object.optString("outwardQty").isEmpty() &&
+                                            object.optString("outwardQty") != null &&
+                                            !object.optString("outwardQty").equals("")&&
+                                            !object.optString("outwardQty").equalsIgnoreCase("null")){
+                                        outqty = object.optString("outwardQty") ;
+                                    }else{
+                                        outqty = "";
+                                    }
+
+                                    StockSummaryReportOpenModel reportStockSummaryOpenModel = new StockSummaryReportOpenModel(
+                                            object.optString("itemCode"),object.optString("itemName"),
+                                            object.optString("warehouse"),openqty,
+                                            inqty,outqty,closeqty
+                                    );
+//                                    if(!object.optString("outwardQty").equals("")&&
+//                                        !object.optString("inwardQty").equals("")&&
+//                                                !object.optString("closingQty").equals("")&&
+//                                                !object.optString("openingQty").equals("")){
+//                                    }
+                                    reportStockSummaryOpenList.add(reportStockSummaryOpenModel);
+
+                                }
+                                if (reportStockSummaryOpenList.size()>0){
+                                    for(int i=0;i<reportStockSummaryOpenList.size();i++) {
+                                        if(!reportStockSummaryOpenList.get(i).getOpeningQty().equals("") &&
+                                                !reportStockSummaryOpenList.get(i).getClosingQty().equals("") &&
+                                                !reportStockSummaryOpenList.get(i).getInwardQty().equals("")&&
+                                                !reportStockSummaryOpenList.get(i).getOutwardQty().equals("")){
+
+                                            reportStockSummaryOpenList1.add(reportStockSummaryOpenList.get(i));
+                                            Log.w("summmasizeRepo",""+reportStockSummaryOpenList1.size());
+                                        }
+                                        else if (!reportStockSummaryOpenList.get(i).getOpeningQty().equals("") ||
+                                                !reportStockSummaryOpenList.get(i).getClosingQty().equals("") ||
+                                                !reportStockSummaryOpenList.get(i).getInwardQty().equals("") ||
+                                                !reportStockSummaryOpenList.get(i).getOutwardQty().equals("")) {
+                                            reportStockSummaryOpenList1.add(reportStockSummaryOpenList.get(i));
+                                        }
+                                    }
+
+                                    TSCPrinter printer=new TSCPrinter(this,printerMacId,"StockSummaryOpen");
+                                   printer.printReportStockSummaryOpen(copy,from_date,to_date,reportStockSummaryOpenList1);
+                                    clearAllSelection();
+                                }else {
+                                    Toast.makeText(getApplicationContext(),"No StockSummary Found...",Toast.LENGTH_SHORT).show();
+                                }
+                            }else {
+                                Toast.makeText(getApplicationContext(),"No StockSummary Found...",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(),statusMessage,Toast.LENGTH_SHORT).show();
+                        }
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }, error -> {
+            // Do something when error occurred
+            // pDialog.dismiss();
+            Log.w("Error_throwing:",error.toString());
+        }){
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
 
 
 
@@ -2505,7 +2698,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         try {
             // Creating ArrayAdapter using the string array and default spinner layout
             customerListSpinner.setTitle("Select Customer");
-            arrayAdapter = new ArrayAdapter<String>(ReportsActivity.this, android.R.layout.simple_spinner_item, arrayList);
+            arrayAdapter = new ArrayAdapter<String>(ReportsActivity.this, android.R.layout.simple_spinner_item,
+                    arrayList);
             // Specify layout to be used when list of choices appears
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Applying the adapter to our spinner

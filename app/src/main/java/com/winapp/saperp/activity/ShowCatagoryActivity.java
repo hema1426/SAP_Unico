@@ -788,7 +788,8 @@ public class ShowCatagoryActivity extends AppCompatActivity implements ProductAd
                             exchangeType,
                             discountEditext.getText().toString(),
                             returnEditext.getText().toString(),
-                            returnType,"",String.valueOf(total),availability.getText().toString(),"","0.00");
+                            returnType,"",String.valueOf(total),availability.getText().toString(),"",
+                            "0.00",availability.getText().toString());
                     if (status){
                         Toast.makeText(ShowCatagoryActivity.this,"Product Added Successfully",Toast.LENGTH_LONG).show();
                         viewCloseBottomSheet();

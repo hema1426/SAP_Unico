@@ -212,22 +212,32 @@ public class PaidInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((UserViewHolder) viewHolder).showHideBottomLayout.setTag("hide");
                 ((UserViewHolder) viewHolder).showHideBottomLayout.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_baseline_keyboard_arrow_down_24));
             }
-
+            ((UserViewHolder) viewHolder).shareWhatsApp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // NewInvoiceListActivity.viewPdfLayout();
+                    //((NewInvoiceListActivity)mContext).viewPdfLayout();
+                    try {
+                        // getInvoiceDetails(invoice.getInvoiceNumber(),viewHolder,position,invoice,"pdf");
+                        ((NewInvoiceListActivity)mContext).getInvoicePdf(invoice.getInvoiceCode(),"Whatsapp");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
             ((UserViewHolder) viewHolder).shareOption.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     // NewInvoiceListActivity.viewPdfLayout();
                     //((NewInvoiceListActivity)mContext).viewPdfLayout();
                     try {
-                        getInvoiceDetails(invoice.getInvoiceNumber(),viewHolder,position,invoice,"pdf");
-                    } catch (JSONException e) {
+                        // getInvoiceDetails(invoice.getInvoiceNumber(),viewHolder,position,invoice,"pdf");
+                        ((NewInvoiceListActivity)mContext).getInvoicePdf(invoice.getInvoiceCode(),"Whatsapp");
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
-
-
-
         } else if (viewHolder instanceof LoadingViewHolder) {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) viewHolder;
             loadingViewHolder.progressBar.setIndeterminate(true);
@@ -262,6 +272,7 @@ public class PaidInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private LinearLayout progressLayout;
         private CardView bottomLayout;
         private ImageView shareOption;
+        private ImageView shareWhatsApp;
 
         //    private TextView address;
         public UserViewHolder(View view) {
@@ -284,6 +295,7 @@ public class PaidInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             progressLayout=view.findViewById(R.id.progress_layout);
             bottomLayout=view.findViewById(R.id.bottom_layout);
             shareOption=view.findViewById(R.id.share_option);
+            shareWhatsApp=view.findViewById(R.id.share_whatsapp);
         }
     }
 

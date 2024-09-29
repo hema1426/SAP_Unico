@@ -664,7 +664,7 @@ public class NewSalesReturnListActivity extends NavigationActivity {
                                     object.optString("total"),
                                     "",
                                     object.optString("uomCode"),
-                                    object.optString("minimumSellingPrice"));
+                                    object.optString("minimumSellingPrice"),"");
 
 
                         }

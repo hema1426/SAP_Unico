@@ -634,7 +634,7 @@ public class SalesReturnList extends Fragment {
                                             object.optString("total"),
                                             "",
                                             object.optString("uomCode"),
-                                            object.optString("minimumSellingPrice"));
+                                            object.optString("minimumSellingPrice"),"");
 
 
                                 }

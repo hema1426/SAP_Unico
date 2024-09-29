@@ -1894,7 +1894,8 @@ public class ProductFragment extends Fragment {
                     String.valueOf(total),
                     stockQtyValue.getText().toString(),
                     uomText.getText().toString(),
-                    minimumSellingPriceText.getText().toString()
+                    minimumSellingPriceText.getText().toString(),
+                    stockQtyValue.getText().toString()
                     );
             if (status){
                 cartonQtyValue.setText("");
@@ -2077,7 +2078,7 @@ public class ProductFragment extends Fragment {
                 String.valueOf(total),
                 stockQtyValue.getText().toString(),
                 uomText.getText().toString(),
-                minimumSellingPriceText.getText().toString());
+                minimumSellingPriceText.getText().toString(), stockQtyValue.getText().toString());
 
 
         if (status){

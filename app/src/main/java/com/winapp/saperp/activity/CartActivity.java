@@ -2284,7 +2284,7 @@ public class CartActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         String url = Utils.getBaseUrl(getApplicationContext()) + "Customer";
-        Log.w("Given_url:", url);
+        Log.w("Given_url_custDet:", url+jsonObject);
         ProgressDialog progressDialog = new ProgressDialog(getApplicationContext());
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Customer Details Loading...");
@@ -2297,7 +2297,7 @@ public class CartActivity extends AppCompatActivity {
                 jsonObject,
                 response -> {
                     try {
-                        Log.w("SAP-response_customer:", response.toString());
+                        Log.w("SAp_response_custDet:", response.toString());
                         //  {"statusCode":1,"statusMessage":"Success","responseData":[{"customerCode":"CUS\/686","customerName":"VH FACTORY",
                         //  "groupCode":"100","contactPerson":"","creditLimit":"150.000000","currencyCode":"SGD","currencyName":"Singapore Dollar",
                         //  "taxType":"","taxCode":"SR","taxName":"Sales Standard Rated Supplier SR","taxPercentage":"7.000000","balance":"21.600000",
@@ -2392,6 +2392,7 @@ public class CartActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                Log.w("printenab_cart",""+isPrintEnable);
                 if (statusCode.equals("1")) {
                     if (action.equals("SalesOrder") || action.equals("SalesEdit")) {
                         if (isPrintEnable) {
@@ -2432,6 +2433,7 @@ public class CartActivity extends AppCompatActivity {
                                     Intent intent = new Intent(getApplicationContext(), NewInvoiceListActivity.class);
                                     intent.putExtra("printInvoiceNumber", doucmentNo);
                                     intent.putExtra("noOfCopy", String.valueOf(copy));
+                                    intent.putExtra("DOPrint", isDeliveryPrint);
                                     startActivity(intent);
                                     finish();
                                 } else {
@@ -2757,8 +2759,6 @@ public class CartActivity extends AppCompatActivity {
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
-
-
     public void showAlertDialog() {
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(CartActivity.this);
         builder.setCancelable(false);

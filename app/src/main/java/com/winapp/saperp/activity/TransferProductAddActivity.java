@@ -1112,7 +1112,7 @@ public class TransferProductAddActivity extends AppCompatActivity {
                             "0.00","0.00","0.00",
                             "",
                             "",
-                            "",""
+                            "","",""
                     );
 
             if (insertStatus){

@@ -95,6 +95,7 @@ import com.winapp.saperp.utils.FileCompressor
 import com.winapp.saperp.utils.ImageUtil
 import com.winapp.saperp.utils.SessionManager
 import com.winapp.saperp.utils.SettingUtils
+import com.winapp.saperp.utils.SharedPreferenceUtil
 import com.winapp.saperp.utils.Utils
 import com.winapp.saperp.zebraprinter.TSCPrinter
 import com.winapp.saperp.zebraprinter.ZebraPrinterActivity
@@ -146,6 +147,8 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
     var netTotalValue: TextView? = null
     var customerDetails: ArrayList<CustomerDetails>? = null
     private var dbHelper: DBHelper? = null
+    private var sharedPreferenceUtil: SharedPreferenceUtil? = null
+    private var settingUOMReturnval: String? = "PCS"
     var taxTitle: TextView? = null
     var addProduct: Button? = null
     var productsModel: ProductsModel? = null
@@ -250,6 +253,11 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         dbHelper = DBHelper(this)
         progressDialog = ProgressDialog(this)
         mCompressor = FileCompressor(this)
+        sharedPreferenceUtil = SharedPreferenceUtil(this)
+
+        settingUOMReturnval = sharedPreferenceUtil!!.getStringPreference(sharedPreferenceUtil!!.KEY_SETTING_RETURN_UOM,
+            "")
+        Log.w("settingUOMreturn..",""+settingUOMReturnval)
 
         companyCode = user!!.get(SessionManager.KEY_COMPANY_CODE)
         companyName = user!!.get(SessionManager.KEY_COMPANY_NAME)
@@ -1044,8 +1052,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                 "",
                 "",
                 "",
-                ""
-            )
+                "","")
 
             // Adding Return Qty Table values
             if (qty_value.toInt() > 0) {
@@ -3730,7 +3737,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                 saleObject.put("returnNetTotal", return_subtotal.toString() + "")
                 saleObject.put("taxCode", `object`.optString("taxCode"))
                 //                saleObject.put("uomCode",model.getUomCode());
-                saleObject.put("uomCode", "PCS")
+                saleObject.put("uomCode", settingUOMReturnval)
                 saleObject.put("retailPrice", "0.00")
                 saleObject.put("DamageStock", "")
                 saleObject.put("itemRemarks", "")

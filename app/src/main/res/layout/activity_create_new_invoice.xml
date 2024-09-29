@@ -263,8 +263,12 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="40dp"
                                 android:visibility="gone"
-                                android:background="@color/white"
-                                android:layout_margin="@dimen/_2sdp"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:padding="5dp"
+                                android:textColor="@color/pink_clr"
+                                android:background="@drawable/create_invoice_background"
+                                android:layout_marginLeft="2dp"
                                 android:gravity="center_vertical"
                                 android:text="uom"/>
 
@@ -528,7 +532,7 @@
                                 android:background="@drawable/create_invoice_background"
                                 android:hint="Qty"
                                 android:inputType="number"
-                                android:maxLength="4"
+                                android:maxLength="6"
                                 android:maxLines="1"
                                 android:padding="5dp"
                                 android:selectAllOnFocus="true"

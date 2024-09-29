@@ -16,7 +16,16 @@ public class CustomerModel {
     private String taxPerc;
     private String haveTax;
     private String allowFOC;
+    private String mailId;
     private String billDiscPercentage;
+
+    public String getMailId() {
+        return mailId;
+    }
+
+    public void setMailId(String mailId) {
+        this.mailId = mailId;
+    }
 
     public String getAllowFOC() {
         return allowFOC;

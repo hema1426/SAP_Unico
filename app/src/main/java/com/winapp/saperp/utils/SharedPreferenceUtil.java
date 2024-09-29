@@ -13,6 +13,10 @@ public class SharedPreferenceUtil {
     public  String KEY_CART_ITEM_DISC = "CartItemDisc";
     public  String KEY_ACTIVITY = "ACTIVITY";
     public  String KEY_ALLOW_FOC = "Allow_FOC";
+    public  String KEY_SETTING_INV_UOM = "setting_inv_UOM";
+    public  String KEY_SETTING_TRANS_UOM = "setting_trans_UOM";
+    public  String KEY_SETTING_SO_UOM = "setting_trans_UOM";
+    public  String KEY_SETTING_RETURN_UOM = "setting_return_UOM";
 
     private static SharedPreferences sharedPreferences;
     public static final boolean DEFAULT_BOOLEAN = false;

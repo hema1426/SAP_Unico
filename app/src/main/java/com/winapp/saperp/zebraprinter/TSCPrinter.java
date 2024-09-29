@@ -41,6 +41,7 @@ import com.winapp.saperp.model.SettingsModel;
 import com.winapp.saperp.model.SettlementReceiptDetailModel;
 import com.winapp.saperp.model.SettlementReceiptModel;
 import com.winapp.saperp.model.StockBadRequestReturnModel;
+import com.winapp.saperp.model.StockSummaryReportOpenModel;
 import com.winapp.saperp.model.TransferDetailModel;
 import com.winapp.saperp.receipts.ReceiptPrintPreviewModel;
 import com.winapp.saperp.model.SalesOrderPrintPreviewModel;
@@ -954,7 +955,7 @@ public class TSCPrinter {
                 y += LINE_SPACING + 10;
                 // Define the Box
                 //TscDll.sendcommand("BOX 0,"+y+",570,0,2\n");
-                TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,9,9,\"" + "SR No: " + salesReturnHeader.get(0).getSrNo() + "\"\n");
+                TscDll.sendcommand("TEXT 0," + y + ",\"Bold.TTF\",0,9,9,\"" + "Sales Return No: " + salesReturnHeader.get(0).getSrNo() + "\"\n");
                 TscDll.sendcommand("TEXT 400," + y + ",\"Bold.TTF\",0,7,7,\"" + salesReturnHeader.get(0).getSrDate() + "\"\n");
                 y += 30;
                 if (salesReturnHeader.get(0).getCustomerName().length() <= 45) {
@@ -3230,6 +3231,158 @@ public class TSCPrinter {
         }
     }
 
+    public void printReportStockSummaryOpen(int copy, String fromdate, String todate,
+                                            ArrayList<StockSummaryReportOpenModel> stockSummaryReportOpenModels)
+            throws IOException {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                TscDll.openport(macAddress);
+
+                int y = 0;
+                height = 90;
+
+                finalHeight = height + (stockSummaryReportOpenModels.size() * list_height);
+                TscDll.sendcommand("SIZE 80 mm, " + finalHeight + " mm\n");
+                TscDll.sendcommand("GAP 0 mm, 0 mm\r\n");//Gap media
+                TscDll.clearbuffer();
+                TscDll.sendcommand("SPEED 4\r\n");
+                TscDll.sendcommand("DENSITY 12\r\n");
+                TscDll.sendcommand("CLS\r\n");
+                TscDll.sendcommand("CODEPAGE UTF-8\r\n");
+                TscDll.sendcommand("SET TEAR ON\r\n");
+                TscDll.sendcommand("SET COUNTER @1 1\r\n");
+                TscDll.sendcommand("@1 = \"0001\"\r\n");
+
+                StringBuilder temp = new StringBuilder();
+                if (company_name.length() > 38) {
+                    temp.append((company_name.length() > 38) ? company_name.substring(0, 37) : company_name);
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + company_name + "\"\n\n");
+                    String companyname = company_name.substring(37);
+                    temp.append((companyname.length() > 37) ? companyname.substring(0, 36) : companyname);
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + temp.toString() + "\"\n\n");
+                } else {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + company_name + "\"\n\n");
+                }
+
+                if (company_address1 != null && !company_address1.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address1 + "\"\n");
+                }
+
+                if (company_address2 != null && !company_address2.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address2 + "\"\n\n");
+                }
+
+                if (company_address3 != null && !company_address3.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\"" + company_address3 + "\"\n");
+                }
+
+                if (company_phone != null && !company_phone.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\" TEL : " + company_phone + "\"\n");
+                }
+
+                if (company_gst != null && !company_gst.isEmpty()) {
+                    y += LINE_SPACING;
+                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\" GST REG NO : " + company_gst + "\"\n");
+                }
+
+                y += LINE_SPACING + 10;
+                TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,9,9,2,\"" + "Stock Summary Opening Balance" + "\"\n");
+
+                y += LINE_SPACING + 10;
+                y += 20;
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "From Date: " + fromdate + "\"\n");
+                TscDll.sendcommand("TEXT 330," + y + ",\"Poppins.TTF\",0,8,8,\"" + "To Date: " + todate + "\"\n");
+
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                y += 20;
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Sno" + "\"\n");
+                TscDll.sendcommand("TEXT 70," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Opening Bal" + "\"\n");
+                TscDll.sendcommand("TEXT 230," + y + ",\"Poppins.TTF\",0,8,8,\"" + "InQty" + "\"\n");
+                TscDll.sendcommand("TEXT 320," + y + ",\"Poppins.TTF\",0,8,8,\"" + "OutQty" + "\"\n");
+                TscDll.sendcommand("TEXT 430," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Closing Bal" + "\"\n");
+
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                int index = 1;
+                Double openqty = 0.0;
+                Double closeqty =0.0;
+                Double inqty = 0.0;
+                Double outqty = 0.0;
+                for (StockSummaryReportOpenModel stockSummaryReportOpenModels : stockSummaryReportOpenModels) {
+
+                    String itemNameStr = stockSummaryReportOpenModels.getItemName()+"-"+stockSummaryReportOpenModels.getItemCode() ;y += 30;
+                    TscDll.sendcommand("TEXT 5," + y + ",\"Poppins.TTF\",0,8,8,\"" + index + "\"\n");
+                    if (itemNameStr.length() <= 45) {
+                        TscDll.sendcommand("TEXT 70," + y + ",\"Bold.TTF\",0,8,8,\"" + itemNameStr + "\"\n\n");
+                    } else {
+                        String firstname = itemNameStr.substring(0, 42);
+                        String secondname = itemNameStr.substring(42);
+
+                        TscDll.sendcommand("TEXT 70," + y + ",\"Bold.TTF\",0,8,8,\"" + firstname + "\"\n\n");
+                        y += 30;
+                        TscDll.sendcommand("TEXT 70," + y + ",\"Bold.TTF\",0,8,8,\"" + secondname + "\"\n\n");
+                    }
+
+                    if(!stockSummaryReportOpenModels.getClosingQty().isEmpty() &&
+                            !stockSummaryReportOpenModels.getClosingQty().equals("")){
+                        closeqty = Double.parseDouble(stockSummaryReportOpenModels.getClosingQty());
+                    }else{
+                        closeqty = 0.0;
+                    }
+                    if(!stockSummaryReportOpenModels.getOpeningQty().isEmpty() &&
+                            !stockSummaryReportOpenModels.getOpeningQty().equals("")){
+                        openqty = Double.parseDouble(stockSummaryReportOpenModels.getOpeningQty());
+                    }else{
+                        openqty = 0.0;
+                    }
+                    if(!stockSummaryReportOpenModels.getInwardQty().isEmpty() &&
+                            !stockSummaryReportOpenModels.getInwardQty().equals("")){
+                        inqty = Double.parseDouble(stockSummaryReportOpenModels.getInwardQty());
+                    }else{
+                        inqty = 0.0;
+                    }
+                    if(!stockSummaryReportOpenModels.getOutwardQty().isEmpty() &&
+                            !stockSummaryReportOpenModels.getOutwardQty().equals("")){
+                        outqty = Double.parseDouble(stockSummaryReportOpenModels.getOutwardQty());
+                    }else{
+                        outqty = 0.0;
+                    }
+                    y += 30;
+                    TscDll.sendcommand("TEXT 70," + y + ",\"Bold.TTF\",0,8,8,\"" +  openqty + "\"\n");
+                    TscDll.sendcommand("TEXT 230," + y + ",\"Poppins.TTF\",0,8,8,\"" + inqty + "\"\n");
+                    TscDll.sendcommand("TEXT 320," + y + ",\"Poppins.TTF\",0,8,8,\"" + outqty + "\"\n");
+                    TscDll.sendcommand("TEXT 450," + y + ",\"Bold.TTF\",0,8,8,\"" + closeqty + "\"\n");
+
+                    index++;
+                }
+                y += LINE_SPACING;
+                TscDll.sendcommand("BAR 0," + y + ",800,2\n");
+
+                y += LINE_SPACING + 50;
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "------------" + "\"\n");
+                TscDll.sendcommand("TEXT 230," + y + ",\"Poppins.TTF\",0,8,8,\"" + "----------" + "\"\n");
+                TscDll.sendcommand("TEXT 420," + y + ",\"Poppins.TTF\",0,8,8,\"" + "------------" + "\"\n");
+
+                y += LINE_SPACING;
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Approved By" + "\"\n");
+                TscDll.sendcommand("TEXT 230," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Issue By" + "\"\n");
+                TscDll.sendcommand("TEXT 420," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Requested By" + "\"\n");
+
+                TscDll.printlabel(1, copy);
+                TscDll.closeport(5000);
+            }
+        }, 100);
+    }
 
     public void printStockBadRequestReturn(int copy, String fromdate, String todate, ArrayList<StockBadRequestReturnModel> stockBadRequestReturnModels)
             throws IOException {

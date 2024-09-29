@@ -635,7 +635,8 @@ public class InvoiceListActivityCopy extends NavigationActivity implements TabLa
                                         "",
                                         object.optString("ItemDiscount"),
                                         object.optString("ReturnQty"),
-                                        "","","","",object.optString("UOMCode"),"0.00");
+                                        "","","","",object.optString("UOMCode"),
+                                        "0.00","");
 
                                 int count=dbHelper.numberOfRows();
                                 if (products.length()==count){

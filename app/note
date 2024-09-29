@@ -6,6 +6,8 @@ Username: V1
 Password: 12345
 
 
+V1 V11234
+
 SUPER_STAR_DEMO
 ST01
 Yn7876z@
@@ -82,3 +84,65 @@ Pwd - 12345
                 }
 
                 NewSalesReturnProductAddActivity  --  createSalesReturnJson();
+
+                empty arraylist
+                --------------
+                   if(!reportStockSummaryOpenList.get(i).getOpeningQty().equals("") &&
+                                                                !reportStockSummaryOpenList.get(i).getClosingQty().equals("") &&
+                                                                !reportStockSummaryOpenList.get(i).getInwardQty().equals("")&&
+                                                                !reportStockSummaryOpenList.get(i).getOutwardQty().equals("")){
+
+                                                            reportStockSummaryOpenList1.add(reportStockSummaryOpenList.get(i));
+                                                            Log.w("summmasize",""+reportStockSummaryOpenList1.size());
+                                                            setAdapter(reportStockSummaryOpenList1);
+                                                        }
+
+
+
+add manual entry in list and check empty
+-------------------------------------------
+
+  StockSummaryReportOpenModel reportStockSummaryOpenModel =
+                                        new StockSummaryReportOpenModel("111",
+                                                "aaaa", "v1", "", "", "", "");
+                                StockSummaryReportOpenModel reportStockSummaryOpenModel1 =
+                                        new StockSummaryReportOpenModel("222",
+                                                "aaccaa", "v1", "", "", "", "45.8");
+                                StockSummaryReportOpenModel reportStockSummaryOpenModel2 =
+                                        new StockSummaryReportOpenModel("333",
+                                                "aassaa", "v1", "99", "", "", "");
+                                StockSummaryReportOpenModel reportStockSummaryOpenModel3 =
+                                        new StockSummaryReportOpenModel("444",
+                                                "aaxxaa", "v1", "33", "44", "33.7", "44.8");
+
+//                                    if(!object.optString("outwardQty").equals("")&&
+//                                        !object.optString("inwardQty").equals("")&&
+//                                                !object.optString("closingQty").equals("")&&
+//                                                !object.optString("openingQty").equals("")){
+//                                    }
+                                reportStockSummaryOpenList2.add(reportStockSummaryOpenModel);
+                                reportStockSummaryOpenList2.add(reportStockSummaryOpenModel1);
+                                reportStockSummaryOpenList2.add(reportStockSummaryOpenModel2);
+                                reportStockSummaryOpenList2.add(reportStockSummaryOpenModel3);
+
+
+                                Log.w("summmasizeww", "" + reportStockSummaryOpenList2.size());
+                                if (reportStockSummaryOpenList2.size()>0){
+
+                                    for (int i = 0; i < reportStockSummaryOpenList2.size(); i++) {
+                                    if (!reportStockSummaryOpenList2.get(i).getOpeningQty().equals("") &&
+                                            !reportStockSummaryOpenList2.get(i).getClosingQty().equals("") &&
+                                            !reportStockSummaryOpenList2.get(i).getInwardQty().equals("") &&
+                                            !reportStockSummaryOpenList2.get(i).getOutwardQty().equals("")) {
+
+                                        reportStockSummaryOpenList1.add(reportStockSummaryOpenList2.get(i));
+                                    } else if (!reportStockSummaryOpenList2.get(i).getOpeningQty().equals("") ||
+                                            !reportStockSummaryOpenList2.get(i).getClosingQty().equals("") ||
+                                            !reportStockSummaryOpenList2.get(i).getInwardQty().equals("") ||
+                                            !reportStockSummaryOpenList2.get(i).getOutwardQty().equals("")) {
+                                        reportStockSummaryOpenList1.add(reportStockSummaryOpenList2.get(i));
+                                    }
+                                        setAdapter(reportStockSummaryOpenList1);
+                                        Log.w("summmasize", "" + reportStockSummaryOpenList1.size());
+                                    }
+                            }

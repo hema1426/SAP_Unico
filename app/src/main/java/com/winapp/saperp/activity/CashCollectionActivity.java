@@ -358,7 +358,19 @@ public class CashCollectionActivity extends AppCompatActivity {
                   /*  if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                     }*/
-                }else if (payment_method.equals("Bank Transfer")){
+                }else if (payment_method.equals("CHEQUE")){
+                    editCheque.setVisibility(View.VISIBLE);
+                    dueDateEdittext.setText(chequeDate);
+                    chequeNo.setText(chequeNoValue);
+                    selectValue(bankNameEntry,bankName);
+                    paymentCode="";
+                    paymentName="";
+                    viewCloseBottomSheet("BankOption");
+                  /*  if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    }*/
+                }
+                else if (payment_method.equals("Bank Transfer")){
                     check=false;
                     editCheque.setVisibility(View.GONE);
                     bankName="";
@@ -499,11 +511,17 @@ public class CashCollectionActivity extends AppCompatActivity {
         btnSplit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!netAmount.getText().toString().isEmpty() && (Double.parseDouble(netAmount.getText().toString()) > 0.00)){
-                    CashInvoiceFragment.splitInvoices();
+                if ( !netAmount.getText().toString().equals(".")) {
+                    if (!netAmount.getText().toString().isEmpty() &&
+                            (Double.parseDouble(netAmount.getText().toString()) > 0.00)) {
+                        CashInvoiceFragment.splitInvoices();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Value Should not be empty", Toast.LENGTH_LONG).show();
+                    }
                 }else {
-                    Toast.makeText(getApplicationContext(),"Value Should not be empty",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Value Should not be empty", Toast.LENGTH_LONG).show();
                 }
+
             }
         });
 
@@ -773,12 +791,17 @@ public class CashCollectionActivity extends AppCompatActivity {
                             amt1+=Double.parseDouble(model.getPayable());
                         }
                     }
-                    if (netAmount.getText().toString()!=null && !netAmount.getText().toString().isEmpty() && Double.parseDouble(netAmount.getText().toString()) > 0 && Double.parseDouble(selectedAmount.getText().toString()) >= 0){
+                    if(!netAmount.getText().toString().equals(".")){
+                    if (netAmount.getText().toString()!=null &&
+                            !netAmount.getText().toString().isEmpty() &&
+                            Double.parseDouble(netAmount.getText().toString()) > 0 &&
+                            Double.parseDouble(selectedAmount.getText().toString()) >= 0){
                         showCashCollectionClearAlert();
                     }else {
 //                        Intent intent=new Intent(CashCollectionActivity.this,NewInvoiceListActivity.class);
 //                        startActivity(intent);
                         finish();
+                    }
                     }
                 }
                 break;
@@ -867,27 +890,33 @@ public class CashCollectionActivity extends AppCompatActivity {
                         }
                     }
                 }else {
-                    if (!netAmount.getText().toString().isEmpty() &&
-                            netAmount.getText().toString()!=null &&
-                            Double.parseDouble(netAmount.getText().toString()) > 0 ){
+                    if(!netAmount.getText().toString().equals(".")) {
 
-                        if (Double.parseDouble(differenceAmount.getText().toString())< 0) {
-                            netAmount.setError(null);
-                            Toast.makeText(getApplicationContext(),"Excess Amount should not be negative",Toast.LENGTH_SHORT).show();
-                        }else {
-                            ArrayList<CashCollectionInvoiceModel> cashReceipts=CashInvoiceFragment.cashCollectionInvoiceAdapter.getList();
-                            double net_paid_amount=0.0;
-                            for (CashCollectionInvoiceModel model:cashReceipts){
-                                if (model.getPayable()!=null && !model.getPayable().isEmpty() && !model.getPayable().equals("null"))
-                                    net_paid_amount+=Double.parseDouble(model.getPayable());
-                            }
-                            if (net_paid_amount > 0){
+                        if (!netAmount.getText().toString().isEmpty() &&
+                                netAmount.getText().toString() != null &&
+                                Double.parseDouble(netAmount.getText().toString()) > 0) {
+
+                            if (Double.parseDouble(differenceAmount.getText().toString()) < 0) {
                                 netAmount.setError(null);
-                                //showAlert();
-                                showSaveAlert();
-                            }else {
-                                Toast.makeText(getApplicationContext(),"Select Invoice to save receipt",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Excess Amount should not be negative", Toast.LENGTH_SHORT).show();
+                            } else {
+                                ArrayList<CashCollectionInvoiceModel> cashReceipts = CashInvoiceFragment.cashCollectionInvoiceAdapter.getList();
+                                double net_paid_amount = 0.0;
+                                for (CashCollectionInvoiceModel model : cashReceipts) {
+                                    if (model.getPayable() != null && !model.getPayable().isEmpty() && !model.getPayable().equals("null"))
+                                        net_paid_amount += Double.parseDouble(model.getPayable());
+                                }
+                                if (net_paid_amount > 0) {
+                                    netAmount.setError(null);
+                                    //showAlert();
+                                    showSaveAlert();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Select Invoice to save receipt", Toast.LENGTH_SHORT).show();
+                                }
                             }
+                        }else {
+                            netAmount.setError("Enter the Amount");
+                            Toast.makeText(getApplicationContext(),"Please Add values to save receipt",Toast.LENGTH_SHORT).show();
                         }
                     }else {
                         netAmount.setError("Enter the Amount");

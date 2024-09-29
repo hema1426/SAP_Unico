@@ -12,6 +12,15 @@ public class UomModel {
     private String altQty;
     private String baseQty;
     private String price;
+    private Boolean isChecked;
+
+    public Boolean getChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(Boolean checked) {
+        isChecked = checked;
+    }
 
     public String getPrice() {
         return price;

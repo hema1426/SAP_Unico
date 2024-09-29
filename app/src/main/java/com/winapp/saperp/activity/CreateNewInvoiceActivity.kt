@@ -107,6 +107,7 @@ import com.winapp.saperp.utils.ImageUtil
 import com.winapp.saperp.utils.LocationTrack
 import com.winapp.saperp.utils.SessionManager
 import com.winapp.saperp.utils.SettingUtils
+import com.winapp.saperp.utils.SharedPreferenceUtil
 import com.winapp.saperp.utils.Utils
 import com.winapp.saperp.utils.Utils.twoDecimalPoint
 import com.winapp.saperp.zebraprinter.TSCPrinter
@@ -172,6 +173,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var itemCount: TextView? = null
     private var noproductText: TextView? = null
     private var productId: String? = null
+    private var productEditId: String? = null
     private var productName: String? = null
     var isCartonQtyEdit = false
     var isQtyEdit = false
@@ -182,7 +184,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var sharedPreferences: SharedPreferences? = null
     private var sharedPref_billdisc: SharedPreferences? = null
     private var myEdit: SharedPreferences.Editor? = null
-
+    private var sharedPreferenceUtil: SharedPreferenceUtil? = null
     private val qtyTextWatcher: TextWatcher? = null
     private val cartonTextWatcher: TextWatcher? = null
     private val lqtyTextWatcher: TextWatcher? = null
@@ -235,6 +237,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     var isAllowLowStock = false
     var isCheckedCreditLimit = false
     private var pdtStockVal: String? = "0.00"
+    private var pdtStockEditVal: String? = "0.00"
     val REQUEST_TAKE_PHOTO = 1
     val REQUEST_GALLERY_PHOTO = 2
     var mPhotoFile: File? = null
@@ -272,6 +275,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     var billDiscSetPercent_api: String? = "0.00"
     var billDisPercent_share_api: String? = "0"
     private var printerMacId: String? = ""
+    private var settingUOMInvval: String? = "PCS"
+    private var settingUOMSOval: String? = "PCS"
+    private var settingUOM_DOval: String? = "PCS"
     private var printerType: String? = null
     private var pref_bill_disc_amt: String? = "0.00"
     private var pref_bill_disc_percent: String? = "0.00"
@@ -324,6 +330,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     var isCheckedSalesPrint = false
     var isEmailSetting = false
     var isUomSetting = true
+    var ischangeUOM = false
     var isDeliveryAddrSetting = false
     var isSignatureSetting = false
     var isDiscountSetting = false
@@ -363,6 +370,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     var uomChangel: TextView? = null
     private var billDiscApiStr: String = "0.00"
     private var isFOCStr: String? = ""
+    private var isMailId: String? = ""
 
     @SuppressLint("LogNotTimber", "ClickableViewAccessibility", "SuspiciousIndentation")
     @RequiresApi(Build.VERSION_CODES.O)
@@ -377,6 +385,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         dbHelper = DBHelper(this)
         progressDialog = ProgressDialog(this)
         mCompressor = FileCompressor(this)
+        sharedPreferenceUtil = SharedPreferenceUtil(this)
 
         companyCode = user!!.get(SessionManager.KEY_COMPANY_CODE)
         companyName = user!!.get(SessionManager.KEY_COMPANY_NAME)
@@ -408,6 +417,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         subTotalValue = findViewById(R.id.balance_valueInv)
         taxValueText = findViewById(R.id.taxInv)
         netTotalValue = findViewById(R.id.net_totalInv)
+        taxTitle = findViewById(R.id.tax_title)
         taxTitle = findViewById(R.id.tax_title)
         addProduct = findViewById(R.id.add_product)
         itemCount = findViewById(R.id.item_count)
@@ -495,6 +505,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         Log.w("macIdd..",""+printerMacId +"type.."+printerType)
         Log.w("billDiscInvoice..",""+pref_bill_disc_percent)
 
+        settingUOMInvval = sharedPreferenceUtil!!.getStringPreference(sharedPreferenceUtil!!.KEY_SETTING_INV_UOM,
+            "")
+        settingUOMSOval = sharedPreferenceUtil!!.getStringPreference(sharedPreferenceUtil!!.KEY_SETTING_SO_UOM,
+            "")
+
+        Log.w("settingUOMinv..",""+settingUOMInvval)
+        Log.w("settingUOMso..",""+settingUOMSOval)
+
         productAutoComplete!!.setEnabled(false)
         item_discount_ed!!.isEnabled = false
         exchange_inv!!.isEnabled = false
@@ -537,6 +555,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
             customerCodeStr = intent.getStringExtra("customerDupCode")
             isFOCStr = intent.getStringExtra("isFOC")
+            if(intent.getStringExtra("isMailId") != null &&
+                !intent.getStringExtra("isMailId").equals(null) &&
+                !intent.getStringExtra("isMailId").equals("")){
+                isMailId = intent.getStringExtra("isMailId")
+            }
 
             if (intent.getStringExtra("customerBillDisc") != null) {
                 billDiscApiStr = intent.getStringExtra("customerBillDisc")!!
@@ -667,7 +690,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 //                returnAdj.setVisibility(View.GONE);
             }
 
-            Log.w("isFOCStrvv",""+isFOCStr)
+            Log.w("isFOCStrvv",""+isFOCStr+isMailId)
         } else {
             orderNoText!!.setText("")
         }
@@ -1522,20 +1545,35 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         })
         uomChangel!!.setOnClickListener(){
             if (isUomSetting) {
+                ischangeUOM = true
                 uomChangel!!.visibility = View.VISIBLE
                 ed_uomTxtl!!.visibility = View.GONE
                 uomSpinnerLayl!!.visibility = View.VISIBLE
 
                             val jsonObject = JSONObject()
-                            try {
-                                jsonObject.put("CustomerCode", selectCustomerId)
-                                jsonObject.put("ItemCode",productId)
-                                getUOM(jsonObject)
+                if(isEditItem){
+                    try {
+                        Log.w("pdtediyyy",""+productEditId);
+                        jsonObject.put("CustomerCode", selectCustomerId)
+                        jsonObject.put("ItemCode",productEditId)
+                        getUOM(jsonObject)
 
-                            } catch (e: JSONException) {
-                                e.printStackTrace()
-                                Log.w("Errort:", Objects.requireNonNull(e.message!!))
-                            }
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                        Log.w("Errort:", Objects.requireNonNull(e.message!!))
+                    }
+                }else{
+                    try {
+                        jsonObject.put("CustomerCode", selectCustomerId)
+                        jsonObject.put("ItemCode",productId)
+                        getUOM(jsonObject)
+
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                        Log.w("Errort:", Objects.requireNonNull(e.message!!))
+                    }
+                }
+
                         }
             else{
                 Toast.makeText(this, "UOM settings not enabled", Toast.LENGTH_LONG).show()
@@ -1607,6 +1645,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         }else {
             Toast.makeText(getApplicationContext(), "Enter the price", Toast.LENGTH_SHORT).show();
         }*/
+
     fun showSignatureAlert() {
         val alertDialog = AlertDialog.Builder(this)
         val customLayout = layoutInflater.inflate(R.layout.signature_layout, null)
@@ -1759,7 +1798,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
     fun setProductResult(productId: String) {
         try {
-            lowStockSetting
             for (model in AppUtils.getProductsList()) {
                 Log.w("product_Code:", model.productCode)
 
@@ -2018,7 +2056,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 saleable,
                 damaged,
                 exchange,
-                minimumSellingPricel
+                minimumSellingPricel,pdtStockVal
             )
             Log.w("itemds_inv",""+exchange+".. "+
                     sharedPref_billdisc!!.getString("billDisc_amt", ""))
@@ -2054,6 +2092,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 stockCount!!.setText("")
                 stockQtyValue!!.text = ""
                 qtyValue!!.clearFocus()
+                ischangeUOM = false
+//                pdtStockVal="0.00"
                 uomChangel!!.visibility = View.GONE
                 ed_uomTxtl!!.visibility = View.GONE
                 uomSpinnerLayl!!.visibility = View.VISIBLE
@@ -2124,15 +2164,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         uomPriceEd = model.price
                         damage_editVal = model.damagedQty
                         saleable_editVal = model.saleableQty
+//                        pdtStockEditVal = model.stockProductQty
+                        pdtStockVal = model.stockProductQty
+                        productEditId = model.productCode
 
-                        uomChangel!!.visibility = View.VISIBLE
-                        ed_uomTxtl!!.visibility = View.VISIBLE
-                        uomSpinnerLayl!!.visibility = View.GONE
-
-                        ed_uomTxtl!!.setText(model.uomCode)
-
-                        val jsonObject = JSONObject()
-                        Log.w("pdtuomentryy", "" + model.productCode);
+                        Log.w("pdtuomentryy", "" + model.stockProductQty);
+                        Log.w("pdtstockk", "" + model.stockQty);
                         Log.w("sal_damag_txt:", model.saleableQty)
                         Log.w("miniSell_txt:",model.minimumSellingPrice)
 
@@ -2193,9 +2230,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         returnQtyText!!.isEnabled = true
                         exchange_inv!!.isEnabled = true
 
+                        uomValueVisible(model.uomCode)
+
                         stockLayout!!.visibility = View.VISIBLE
                         stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
-                        pdtStockVal = model.stockQty
+
                         stockQtyValue!!.text = model.stockQty
                         stockCount!!.setText(model.stockQty)
                         minimumSellingPriceText!!.setText(model.minimumSellingPrice)
@@ -2572,7 +2611,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         uomChangel!!.visibility = View.GONE
         ed_uomTxtl!!.visibility = View.GONE
         uomSpinnerLayl!!.visibility = View.VISIBLE
-
+        ischangeUOM = false
+//        pdtStockVal = "0.00"
         productAutoComplete!!.setText("")
         priceText!!.setText("0.00")
         qtyValue!!.setText("")
@@ -3221,7 +3261,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     pDialog.dismiss()
                     if (uomList!!.size > 0) {
                         runOnUiThread {
-                            setUomList(uomList!!)
+                            if(ischangeUOM) {
+                                setUomList(uomList!!)
+                            }else{
+                                defaultUOMset(uomList!!)
+                            }
                         }
                     }
                 } catch (e: Exception) {
@@ -3819,6 +3863,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             productsModel = model
             productId = productsModel!!.productCode
             Log.w("pdtsInv", "" + model.productName + "  .. " + model.barcode)
+            Log.w("pdtsInvStoc", "" + model.stockQty)
+
             // setUomList(model.getProductUOMList());
             uomTextView!!.text = model.uomText
             if (isUomSetting) {
@@ -3952,33 +3998,133 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         }
     }
 
+    fun defaultUOMset(uomList: ArrayList<UomModel>){
+        if (activityFrom == "iv" || activityFrom == "ConvertInvoice" ||
+            activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+            || activityFrom == "ReOrderInvoice"
+        ) {
+            uomValueVisible(settingUOMInvval!!)
+            UOMdetail1(settingUOMInvval!!,uomList);
+        }
+        if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
+            uomValueVisible(settingUOMSOval!!)
+            UOMdetail1(settingUOMSOval!!,uomList)
+        }
+        if (activityFrom == "do" || activityFrom == "doEdit" ) {
+            uomValueVisible(settingUOM_DOval!!)
+            UOMdetail1(settingUOM_DOval!!,uomList)
+        }
+    }
+
     private fun setUomList(uomList: ArrayList<UomModel>) {
         Log.w("UOMList:", uomList.toString())
         val adapter = ArrayAdapter(this, R.layout.cust_spinner_item, uomList)
         uomSpinner!!.adapter = adapter
         setUOMCode(uomList)
-        if (productsModel != null) {
-            //setuom
-            Log.d("cg_uomsiz1", uomList.size.toString() + "")
-            for (i in uomList.indices) {
-                Log.w("cg_uomsiz", uomList.size.toString() + "")
-                if (uomList[i].uomCode == productsModel!!.defaultUom) {
-                    Log.w("cg_uoomcode_", productsModel!!.defaultUom)
-                    uomSpinner!!.setSelection(i)
+
+//        if (productsModel != null) {
+//            //setuom
+//            Log.d("cg_uomsiz1", uomList.size.toString() + "")
+//                Log.w("cg_uomsiz", uomList.size.toString() + "")
+//                if (activityFrom == "iv" || activityFrom == "ConvertInvoice" ||
+//                    activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+//                    || activityFrom == "ReOrderInvoice"
+//                ) {
+//                    UOMdetail(settingUOMInvval!!,uomList)
+//                }
+//            if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
+//                UOMdetail(settingUOMSOval!!,uomList)
+//            }
+//
+//            }
+
+    }
+    fun uomValueVisible(uomcode:String){
+        ed_uomTxtl!!.setText(uomcode)
+        uomChangel!!.visibility = View.VISIBLE
+        ed_uomTxtl!!.visibility = View.VISIBLE
+        uomSpinnerLayl!!.visibility = View.GONE
+    }
+//    fun uomValueGone(){
+//        uomChangel!!.visibility = View.VISIBLE
+//        ed_uomTxtl!!.visibility = View.GONE
+//        uomSpinnerLayl!!.visibility = View.VISIBLE
+//    }
+    fun UOMdetail1(settingUOMval:String, uomList: ArrayList<UomModel>){
+        for (i in uomList.indices) {
+            if (settingUOMval!!.isNotEmpty()) {
+                if (uomList[i].uomCode == settingUOMval) {
+                    Log.w("cg_uoomcode_", settingUOMval)
+//                    uomSpinner!!.setSelection(i)
                     uomText!!.setText(uomList[i].uomCode)
                     priceText!!.setText(uomList[i].price)
-                    if(stockQtyValue!!.text.toString().isNotEmpty()){
-                        if(uomList[i].uomCode.equals("CTN",true)) {
+                        if (settingUOMval.equals("CTN", true)) {
                             var ctnStockVal = 0.00
                             var baseCtnQty = uomList[i].baseQty.toDouble()
                             var pdtStock = pdtStockVal!!.toDouble()
 
                             ctnStockVal = pdtStock / baseCtnQty
-                            stockQtyValue!!.setText(ctnStockVal.toString())
-                            Log.w("ctnStockkk",""+ctnStockVal)
-                            Log.w("ctnStock11",""+baseCtnQty)
+                            stockQtyValue!!.setText(twoDecimalPoint(ctnStockVal).toString())
+                            Log.w(
+                                "ctnStockkk",
+                                "" + ctnStockVal + ".." + twoDecimalPoint(ctnStockVal).toString()
+                            )
+                            Log.w("ctnStock11", "" + baseCtnQty)
+                        } else {
+                            stockQtyValue!!.setText(pdtStockVal.toString())
                         }
-                        else{
+                }
+            }
+        }
+    }
+
+    fun UOMdetail(settingUOMval:String, uomList: ArrayList<UomModel>){
+        for (i in uomList.indices) {
+            if (settingUOMval!!.isEmpty()) {
+                if (uomList[i].uomCode == productsModel!!.defaultUom) {
+                    Log.w("cg_uoomcode_", productsModel!!.defaultUom)
+                    uomSpinner!!.setSelection(i)
+                    uomText!!.setText(uomList[i].uomCode)
+                    priceText!!.setText(uomList[i].price)
+                    if (stockQtyValue!!.text.toString().isNotEmpty()) {
+                        if (uomList[i].uomCode.equals("CTN", true)) {
+                            var ctnStockVal = 0.00
+                            var baseCtnQty = uomList[i].baseQty.toDouble()
+                            var pdtStock = pdtStockVal!!.toDouble()
+
+                            ctnStockVal = pdtStock / baseCtnQty
+                            stockQtyValue!!.setText(twoDecimalPoint(ctnStockVal).toString())
+                            Log.w(
+                                "ctnStockkk",
+                                "" + ctnStockVal + ".." + twoDecimalPoint(ctnStockVal).toString()
+                            )
+                            Log.w("ctnStock11", "" + baseCtnQty)
+                        } else {
+                            stockQtyValue!!.setText(pdtStockVal.toString())
+                        }
+                    }
+                }
+            } else {
+                if (uomList[i].uomCode == settingUOMval) {
+                    Log.w("cg_uoomcode_1",settingUOMval)
+
+                    uomSpinner!!.setSelection(i)
+                    uomText!!.setText(uomList[i].uomCode)
+                    priceText!!.setText(uomList[i].price)
+                    if (stockQtyValue!!.text.toString().isNotEmpty()) {
+                        if (uomList[i].uomCode.equals("CTN", true)) {
+                            var ctnStockVal = 0.00
+                            var baseCtnQty = uomList[i].baseQty.toDouble()
+                            var pdtStock = pdtStockVal!!.toDouble()
+
+                            ctnStockVal = pdtStock / baseCtnQty
+                            stockQtyValue!!.setText(twoDecimalPoint(ctnStockVal).toString())
+                            Log.w(
+                                "ctnStockkk11",
+                                "" + ctnStockVal + ".." + twoDecimalPoint(ctnStockVal).toString()
+                            )
+                            Log.w("ctnStock11aa", "" + baseCtnQty)
+                        } else {
                             stockQtyValue!!.setText(pdtStockVal.toString())
                         }
                     }
@@ -3986,6 +4132,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 }
             }
         }
+
     }
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -4100,7 +4247,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         } else {
             priceText!!.setText(model.unitCost)
         }
-        // uomText.setText(model.getUomCode());
+                // uomText.setText(model.getUomCode());
         stockCount!!.setText(model.stockQty)
         pcsPerCarton!!.setText(model.pcsPerCarton)
         qtyValue!!.isEnabled = true
@@ -4181,15 +4328,15 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 //
 //                } else {
                     uomName = uomSpinner!!.selectedItem.toString()
+                Log.w("uomentyy:", uomName+pdtStockVal)
                 if(uomName.equals("CTN",true)) {
                     var ctnStockVal = 0.00
                     var baseCtnQty = uomList[position].baseQty.toDouble()
-
                     var pdtStock = pdtStockVal!!.toDouble()
 
                     ctnStockVal = pdtStock / baseCtnQty
-                    stockQtyValue!!.setText(ctnStockVal.toString())
-                    Log.w("ctnStockaa",""+ctnStockVal)
+                    stockQtyValue!!.setText(twoDecimalPoint(ctnStockVal).toString())
+                    Log.w("ctnStockaa",""+ctnStockVal+".."+twoDecimalPoint(ctnStockVal).toString())
                     Log.w("ctnStock22",""+baseCtnQty)
                 }
                 else{
@@ -4311,7 +4458,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             android.R.id.home -> {
                 /*   Intent intent = new Intent(CreateNewInvoiceActivity.this, CustomerListActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);*/finish()
+                startActivity(intent);*/
+                val count = dbHelper!!.numberOfRowsInInvoice()
+                if (count > 0) {
+                    showDeleteAlert()
+                } else {
+                    finish()
+                }
                 true
             }
 
@@ -4577,7 +4730,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 receipt_printCheck!!.setChecked(false)
             }
         })
-
+        emailCheck!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { compoundButton, b ->
+                if (b) {
+                    isEmailEnable = true
+                } else {
+                    isEmailEnable = false
+                }
+        })
         selectImageInv!!.setOnClickListener {
                 if (selectImageInv!!.getTag() == "view_image") {
                     showImage()
@@ -4600,8 +4759,16 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 //                        showSaveAlert()
                 invoicePrintCheck!!.visibility = View.VISIBLE
                 inv_cash_CollectLayl!!.visibility = View.VISIBLE
-                if(isEmailSetting){
-                    emailCheck!!.isChecked = true
+                if(!isMailId.equals("")) {
+                    if (isEmailSetting) {
+                        emailCheck!!.isChecked = true
+                        isEmailEnable = true
+                    }
+                    emailCheck!!.visibility = View.VISIBLE
+                }
+                else{
+                    isEmailEnable = false
+                    emailCheck!!.visibility = View.GONE
                 }
             }
                 if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
@@ -5583,6 +5750,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             invoiceListModel.cartonPrice = detailObject.optString("cartonPrice")
                             invoiceListModel.unitPrice = detailObject.optString("price")
                                 invoiceListModel.excQty = detailObject.optString("exc_Qty")
+                                invoiceListModel.stockQty = detailObject.optString("stockInHand")
                                 invoiceListModel.saleType =""
                             if (detailObject.optString("bP_CatalogNo") != null) {
                                 invoiceListModel.customerItemCode = detailObject.optString("bP_CatalogNo")
@@ -5612,6 +5780,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 invoiceListModel.unitPrice = detailObject.optString("price")
                                 invoiceListModel.saleType ="FOC"
                                 invoiceListModel.excQty = detailObject.optString("exc_Qty")
+                                invoiceListModel.stockQty = detailObject.optString("stockInHand")
 
                                 if (detailObject.optString("bP_CatalogNo") != null) {
                                     invoiceListModel.customerItemCode = detailObject.optString("bP_CatalogNo")
@@ -5642,6 +5811,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 invoiceListModel.unitPrice = detailObject.optString("price")
                                 invoiceListModel.excQty = detailObject.optString("exc_Qty")
                                 invoiceListModel.saleType ="Return"
+                                invoiceListModel.stockQty = detailObject.optString("stockInHand")
 
                                 if (detailObject.optString("bP_CatalogNo") != null) {
                                     invoiceListModel.customerItemCode = detailObject.optString("bP_CatalogNo")
@@ -5672,6 +5842,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 invoiceListModel.unitPrice = detailObject.optString("price")
                                 invoiceListModel.saleType ="Exchange"
                                 invoiceListModel.excQty = detailObject.optString("exc_Qty")
+                                invoiceListModel.stockQty = detailObject.optString("stockInHand")
 
                                 if (detailObject.optString("bP_CatalogNo") != null) {
                                     invoiceListModel.customerItemCode = detailObject.optString("bP_CatalogNo")
@@ -6099,7 +6270,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             rootJsonObject.put("BankCode", "")
             rootJsonObject.put("AccountNo", "")
             rootJsonObject.put("ChequeNo", "")
-              if (isCashCollectCheck || isReceiptPrint) {
+          if(isEmailEnable) {
+              rootJsonObject.put("SendMail", "Yes")
+          }
+          else{
+              rootJsonObject.put("SendMail", "No")
+          }
+          if (isCashCollectCheck || isReceiptPrint) {
                   rootJsonObject.put("Paymode", "Cash")
           }else{
                   rootJsonObject.put("Paymode", "")
@@ -6418,6 +6595,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         var barCodeLayl: LinearLayout? = null
         var customerCode: String? = null
         var isPrintEnable = false
+        var isEmailEnable = false
         var selectedBank: TextView? = null
         var amountText: EditText? = null
         var currentLocationLatitude = 0.0

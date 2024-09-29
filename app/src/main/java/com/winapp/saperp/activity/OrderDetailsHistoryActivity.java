@@ -104,6 +104,8 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
         sharedPref_billdisc = getSharedPreferences("BillDiscPref", MODE_PRIVATE);
         myEdit = sharedPref_billdisc.edit();
 
+        Log.w("activity_cg",getClass().getSimpleName().toString());
+
         companyId=user.get(SessionManager.KEY_COMPANY_CODE);
         userName=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get((SessionManager.KEY_LOCATION_CODE));
@@ -183,7 +185,7 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                     for (OrderDetailsAdapter.OrderDetailsModel model : orderDetailsList){
                         model.setProductCheck(true);
                         insertOrderProducts(true,model);
-                        if (index==orderDetailsList.size()-1){
+                        if(index==orderDetailsList.size()-1){
                             closeDialog();
                         }
                         index++;
@@ -253,7 +255,7 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                     String.valueOf(net_qty),
                     model.getFocQty(),
                     price_value,
-                    "",
+                    model.getStockQty(),
                     model.getTotal(),
                     model.getSubTotal(),
                     model.getPriceWithGST(),
@@ -263,9 +265,8 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                     "",
                     "",
                     model.getExchangeQty(),
-                    model.getMinimumSellingPrice()
+                    model.getMinimumSellingPrice(),model.getStockQty()
             );
-
             myEdit.putString("billDisc_amt", model.getBillDisc());
             myEdit.putString("billDisc_percent", model.getBillDiscPercentage());
             myEdit.apply();
@@ -522,6 +523,7 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                                         model1.setReturnQty("0.00");
                                         model1.setTotal(object.optString("total"));
                                         model1.setCtnQty(cqty);
+                                        model1.setStockQty(object.optString("stockInHand"));
 
                                         //  model.setPcsQty(lqty);
                                         model1.setPcsPerCarton(object.optString("pcsPerCarton"));
@@ -693,6 +695,7 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                                         model1.setReturnQty(object.optString("returnQty"));
                                         model1.setTotal(object.optString("total"));
                                         model1.setCtnQty(cqty);
+                                        model1.setStockQty(object.optString("stockInHand"));
 
                                       //  model.setPcsQty(lqty);
                                         model1.setPcsPerCarton(object.optString("pcsPerCarton"));

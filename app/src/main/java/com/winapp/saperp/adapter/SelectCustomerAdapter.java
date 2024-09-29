@@ -131,7 +131,8 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
                   //  onMoreButtonClicked.moreOption(model.getCustomerName(),model.getCustomerCode(),model.getOutstandingAmount());
 
                     onMoreButtonClicked.createInvoice(model.getCustomerCode(),model.getCustomerName(),model.getTaxCode(),
-                            model.getTaxPerc(),model.getTaxType() , model.getBillDiscPercentage() , model.getAllowFOC());
+                            model.getTaxPerc(),model.getTaxType() , model.getBillDiscPercentage() ,
+                            model.getAllowFOC(),model.getMailId());
 
                 }
             });
@@ -156,8 +157,8 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
         viewHolder.moreIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onMoreButtonClicked.moreOption(model.getCustomerName(),model.getCustomerCode(),model.getOutstandingAmount()
-                ,model.getAllowFOC());
+                onMoreButtonClicked.moreOption(model.getCustomerName(),model.getCustomerCode(),
+                        model.getOutstandingAmount(),model.getAllowFOC());
             }
         });
         viewHolder.three_dot_custl.setOnClickListener(new View.OnClickListener() {
@@ -213,7 +214,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
     public interface OnMoreButtonClicked{
         void moreOption(String customename,String id,String outstanding ,String isFoc);
         void createInvoice(String customerCode,String customerName,String taxcode,String taxperc,String taxtype,
-                           String BillDisc,String isFOC);
+                           String BillDisc,String isFOC , String mailId);
     }
     /**
      * Showing popup menu when tapping on 3 dots

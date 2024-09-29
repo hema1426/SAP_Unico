@@ -209,19 +209,53 @@
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/pdtsize"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+         >
+            <TextView
+                android:id="@+id/pdtsize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:text="0 Products"
+                android:visibility="visible"
+                android:textStyle="bold"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/red_btn_bg_color"
+                android:textSize="12sp" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"
+                >
+            <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="0 Products"
-            android:layout_marginTop="3dp"
-            android:visibility="gone"
+            android:ellipsize="end"
             android:textStyle="bold"
-            android:layout_marginBottom="3dp"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/red_btn_bg_color"
-            android:textSize="12sp" />
+            android:singleLine="true"
+
+            android:text="Default UOM : "
+            android:textColor="@color/black"
+            android:textSize="12dp"
+            />
+            <TextView
+                android:id="@+id/default_uom_transf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:text="Default UOM : "
+                android:textColor="@color/bluen"
+                android:textSize="12dp"
+                />
+        </LinearLayout>
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"

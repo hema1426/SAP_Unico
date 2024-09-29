@@ -21,6 +21,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.cete.dynamicpdf.merger.S;
 import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.SelectCustomerAdapter;
 import com.winapp.saperp.adapter.SortAdapter;
@@ -96,7 +97,7 @@ public class CustomerSelectActivity extends AppCompatActivity {
 
             @Override
             public void createInvoice(String customerCode, String customerName, String taxcode,
-                                      String taxperc, String taxtype, String billdisc ,String isFoc) {
+                                      String taxperc, String taxtype, String billdisc , String isFoc, String mailid) {
 
             }
         });

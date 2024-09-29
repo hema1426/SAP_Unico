@@ -1524,7 +1524,7 @@ public class SalesReturnProduct extends Fragment {
                     "N","",
                     String.valueOf(total),
                     stockQtyValue.getText().toString(),
-                    uomText.getText().toString(),"0.00");
+                    uomText.getText().toString(),"0.00",stockQtyValue.getText().toString());
 
             // Adding Return Qty Table values
             if (Integer.parseInt(return_qty) > 0){
@@ -1655,7 +1655,8 @@ public class SalesReturnProduct extends Fragment {
                 exchangeType,
                 discountEditext.getText().toString(),
                 returnEditext.getText().toString(),
-                returnType,stockAdjustRefCode,String.valueOf(total),"",uomText.getText().toString(),"0.00");
+                returnType,stockAdjustRefCode,String.valueOf(total),
+                "",uomText.getText().toString(),"0.00","");
 
         // Adding Return Qty Table values
         if (Integer.parseInt(return_qty) > 0){

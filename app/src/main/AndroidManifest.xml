@@ -113,6 +113,10 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ReportPreview.SapStockSummaryOpenPreviewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ReportPreview.RoCustomerOutstandDatePreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

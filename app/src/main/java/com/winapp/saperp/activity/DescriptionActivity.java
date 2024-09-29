@@ -774,7 +774,8 @@ public class DescriptionActivity extends AppCompatActivity {
                                         returnType,"",
                                         String.valueOf(total),
                                         availability.getText().toString(),
-                                        uomCode,"0.00");
+                                        uomCode,"0.00",
+                                        availability.getText().toString());
 
 
                     /*boolean status= dbHelper.insertCart(
@@ -1842,7 +1843,7 @@ public class DescriptionActivity extends AppCompatActivity {
                         String.valueOf(total),
                         availability.getText().toString(),
                         uomCode,
-                        "0.00");
+                        "0.00",availability.getText().toString());
 
 
                     /*boolean status= dbHelper.insertCart(

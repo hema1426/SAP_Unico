@@ -84,6 +84,7 @@
                 android:layout_width="wrap_content"
                 android:id="@+id/share_whatsapp"
                 android:layout_marginRight="10dp"
+                android:padding="2dp"
                 android:background="?actionBarItemBackground"
                 android:src="@drawable/ic_whatsapp"
                 android:layout_height="@dimen/_23sdp"/>

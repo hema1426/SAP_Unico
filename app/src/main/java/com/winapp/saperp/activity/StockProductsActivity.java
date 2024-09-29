@@ -760,7 +760,7 @@ public class StockProductsActivity extends NavigationActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(StockProductsActivity.this);
         String url=Utils.getBaseUrl(this) +"ProductListForTransfer";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_pdt_stock_URL:",url);
+        Log.w("Given_pdt_stock_URL:",url+jsonObject);
         productList=new ArrayList<>();
         products=new ArrayList<>();
         dialog=new ProgressDialog(this);

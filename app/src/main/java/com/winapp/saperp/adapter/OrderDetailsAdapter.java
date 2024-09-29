@@ -192,7 +192,7 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
                             String.valueOf(net_qty),
                             model.getFocQty(),
                             price_value,
-                            "",
+                            model.getStockQty(),
                             model.getTotal(),
                             model.getSubTotal(),
                             model.getPriceWithGST(),
@@ -202,7 +202,7 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
                             "",
                             "",
                             model.getExchangeQty(),
-                            model.getMinimumSellingPrice()
+                            model.getMinimumSellingPrice(),model.getStockQty()
                     );
 ;
 

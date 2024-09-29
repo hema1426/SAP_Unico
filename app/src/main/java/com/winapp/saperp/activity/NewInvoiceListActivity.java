@@ -237,6 +237,7 @@ public class NewInvoiceListActivity extends NavigationActivity
     private ArrayList<InvoicePrintPreviewModel.InvoiceList> invoicePrintList;
     public String printInvoiceNumber;
     public String noOfCopy;
+    public String DOPrint = "false";
     private String printerMacId;
     private String printerType;
     private SharedPreferences sharedPreferences;
@@ -499,17 +500,21 @@ public class NewInvoiceListActivity extends NavigationActivity
         toDate.setText(formattedDate);
 
         // This function for print the invoice details
-       /* if (getIntent() !=null){
+        if (getIntent() !=null){
             printInvoiceNumber=getIntent().getStringExtra("printInvoiceNumber");
             noOfCopy=getIntent().getStringExtra("noOfCopy");
+//            if(getIntent().getStringExtra("DOPrint").equals("null") &&
+//                    getIntent().getStringExtra("DOPrint") != null) {
+//                DOPrint = getIntent().getStringExtra("DOPrint");
+         //   }
             if (printInvoiceNumber!=null && !printInvoiceNumber.isEmpty()){
                 try {
-                    getInvoicePrintDetails(printInvoiceNumber,Integer.parseInt(noOfCopy));
+                    getInvoicePrintDetails(printInvoiceNumber,Integer.parseInt(noOfCopy),DOPrint);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-        }*/
+        }
 
         /*customerList=dbHelper.getAllCustomers();
         if (customerList!=null && customerList.size()>0){
@@ -588,7 +593,6 @@ public class NewInvoiceListActivity extends NavigationActivity
         duplicateInvoiceLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.w("entrylist", "");
                 viewCloseBottomSheet();
                 if (!invStatus.equals("Closed") && !invStatus.equals("InProgress Invoice")) {
                     try {
@@ -886,7 +890,7 @@ public class NewInvoiceListActivity extends NavigationActivity
             public void onClick(View view) {
                 if (printInvoiceNumber != null && !printInvoiceNumber.isEmpty()) {
                     try {
-                        getInvoicePrintDetails(printInvoiceNumber, 1);
+                        getInvoicePrintDetails(printInvoiceNumber, 1,"false");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -900,7 +904,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                 try {
                     viewCloseBottomSheet();
                     isInvoicePrint = true;
-                    getInvoicePrintDetails(invoiceNumberValue, 1);
+                    getInvoicePrintDetails(invoiceNumberValue, 1,"false");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -914,7 +918,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                 try {
                     viewCloseBottomSheet();
                     isInvoicePrint = true;
-                    getInvoicePrintDetails(invoiceNumberValue, 1);
+                    getInvoicePrintDetails(invoiceNumberValue, 1,"false");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -940,7 +944,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                 try {
                     viewCloseBottomSheet();
                     isInvoicePrint = false;
-                    getInvoicePrintDetails(invoiceNumberValue, 1);
+                    getInvoicePrintDetails(invoiceNumberValue, 1,"false");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -1382,8 +1386,11 @@ public class NewInvoiceListActivity extends NavigationActivity
                                                 "",
                                                 "0.00",
                                                 object.optString("ReturnQty"),
-                                                "", "", object.optString("total"), "", object.optString("uomCode"),
-                                                object.optString("minimumSellingPrice")
+                                                "", "", object.optString("total"),
+                                                object.optString("stockInHand"),
+                                                object.optString("uomCode"),
+                                                object.optString("minimumSellingPrice"),
+                                                object.optString("stockInHand")
                                         );
                                     }
 
@@ -1671,7 +1678,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                                                 String.valueOf(net_qty),
                                                 object.optString("foc_Qty"),
                                                 price_value,
-                                                "",
+                                                object.optString("stockInHand"),
                                                 object.optString("total"),
                                                 object.optString("subTotal"),
                                                 object.optString("priceWithGST"),
@@ -1681,8 +1688,9 @@ public class NewInvoiceListActivity extends NavigationActivity
                                                 "",
                                                 "",
                                                 object.optString("exc_Qty"),
-                                                salesObject.optString("minimumSellingPrice")
-                                        );
+                                                salesObject.optString("minimumSellingPrice"),
+                                                object.optString("stockInHand")
+                                                );
 
                                         myEdit.putString("billDisc_amt", salesObject.optString("billDiscount"));
                                         myEdit.putString("billDisc_percent", salesObject.optString("discountPercentage"));
@@ -3341,7 +3349,7 @@ public class NewInvoiceListActivity extends NavigationActivity
         requestQueue.add(jsonObjectRequest);
     }
 
-    private void getInvoicePrintDetails(String invoiceNumber, int copy) throws JSONException {
+    private void getInvoicePrintDetails(String invoiceNumber, int copy, String doPrint) throws JSONException {
         // Initialize a new RequestQueue instance
         JSONObject jsonObject = new JSONObject();
         // jsonObject.put("CompanyCode", companyId);
@@ -3574,7 +3582,7 @@ public class NewInvoiceListActivity extends NavigationActivity
 
                             model.setSalesReturnList(salesReturnList);
                             invoiceHeaderDetails.add(model);
-                            printInvoice(copy);
+                            printInvoice(copy,doPrint);
                         } else {
                             Toast.makeText(getApplicationContext(), "Error in printing Data...", Toast.LENGTH_SHORT).show();
                         }
@@ -3656,13 +3664,13 @@ public class NewInvoiceListActivity extends NavigationActivity
         return printetCheck;
     }
 
-    public void printInvoice(int copy) {
+    public void printInvoice(int copy,String doPrint) {
         if (validatePrinterConfiguration()) {
 
             if (createInvoiceSetting.equals("true")) {
             Log.w("invPrinter", "cg");
                 PrinterUtils printerUtils = new PrinterUtils(this, printerMacId);
-                printerUtils.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");
+                printerUtils.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, doPrint);
 
           /*  TSCPrinter printer = new TSCPrinter(NewInvoiceListActivity.this, printerMacId);
             printer.printInvoice(copy, invoiceHeaderDetails, invoicePrintList, "false");

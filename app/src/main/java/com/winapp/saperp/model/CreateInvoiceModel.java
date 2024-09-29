@@ -13,6 +13,7 @@ public class CreateInvoiceModel {
     private String gstAmount;
     private String netTotal;
     private String stockQty;
+    private String stockProductQty;
     private String uomCode;
     private String uomText;
 
@@ -21,6 +22,14 @@ public class CreateInvoiceModel {
     private String exchangeQty;
     private String productBarCode;
     private String minimumSellingPrice;
+
+    public String getStockProductQty() {
+        return stockProductQty;
+    }
+
+    public void setStockProductQty(String stockProductQty) {
+        this.stockProductQty = stockProductQty;
+    }
 
     public String getMinimumSellingPrice() {
         return minimumSellingPrice;

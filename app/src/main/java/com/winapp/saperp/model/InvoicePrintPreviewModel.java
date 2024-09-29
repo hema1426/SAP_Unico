@@ -330,6 +330,16 @@ public class InvoicePrintPreviewModel {
 
         private String accountName;
         private String excQty;
+        private String stockQty;
+
+
+        public String getStockQty() {
+            return stockQty;
+        }
+
+        public void setStockQty(String stockQty) {
+            this.stockQty = stockQty;
+        }
 
         public String getExcQty() {
             return excQty;

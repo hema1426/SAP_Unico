@@ -50,6 +50,7 @@ import com.winapp.saperp.utils.CaptureSignatureView;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.Utils;
 
 import org.json.JSONArray;
@@ -113,8 +114,12 @@ public class TransferInActivity extends AppCompatActivity {
     public static String imageString;
     private AlertDialog signatureAlert;
     private TextView saveMessage;
+    private TextView default_uom_transfl;
     private String transferType;
+    private String settingUOMval ="PCS";
     private String islocationPermission;
+
+    private SharedPreferenceUtil sharedPreferenceUtil;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -127,12 +132,17 @@ public class TransferInActivity extends AppCompatActivity {
         session=new SessionManager(this);
         user=session.getUserDetails();
         progressDialog =new ProgressDialog(this);
+        sharedPreferenceUtil = new SharedPreferenceUtil(this);
+        settingUOMval = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SETTING_TRANS_UOM, "");
+        Log.w("transferUOM..", "" + settingUOMval);
+
         companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
         companyName=user.get(SessionManager.KEY_COMPANY_NAME);
         username=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
         islocationPermission=user.get(SessionManager.IS_LOCATION_PERMISSION);
 
+        default_uom_transfl  = findViewById(R.id.default_uom_transf);
         transferInView = findViewById(R.id.rv_transferInList);
         tolocationl = findViewById(R.id.tolocation_transfer);
         fromlocationl = findViewById(R.id.fromlocation_transfer);
@@ -145,6 +155,8 @@ public class TransferInActivity extends AppCompatActivity {
         saveImg= findViewById(R.id.save_image);
         toolbarImglay= findViewById(R.id.iv_customtoolbar_img);
         toolbartxt= findViewById(R.id.tv_customtoolbar_title);
+
+        default_uom_transfl.setText(settingUOMval);
         transferInDetailsl=new ArrayList<>();
 
         Date c = Calendar.getInstance().getTime();
@@ -521,7 +533,7 @@ public class TransferInActivity extends AppCompatActivity {
                 itemsObject.put("qty",String.valueOf(model.getQty()));
                 itemsObject.put("fromWhsCode",fromWarehouseCode);
                 itemsObject.put("toWhsCode",toWarehouseCode);
-                itemsObject.put("UomCode","PCS");
+                itemsObject.put("UomCode",settingUOMval);
                 itemsObject.put("docEntry","");
                 itemsObject.put("objectType","");
                 itemsObject.put("lineNum","");
