@@ -34,7 +34,7 @@ import java.util.Objects;
 
 import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
-public class AddInvoiceActivity extends NavigationActivity {
+public class AddInvoiceActivityOld extends NavigationActivity {
 
     private static TabLayout tabLayout;
     public static HomeViewPager viewPager;
@@ -430,7 +430,7 @@ public class AddInvoiceActivity extends NavigationActivity {
     }
 
     public void showSaveAlert(String action, String message){
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(AddInvoiceActivity.this);
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(AddInvoiceActivityOld.this);
         builder1.setTitle("Information !");
         builder1.setMessage(message);
         builder1.setCancelable(false);
@@ -488,7 +488,7 @@ public class AddInvoiceActivity extends NavigationActivity {
 
 
     public void showAlert(){
-        AlertDialog.Builder builder=new AlertDialog.Builder(AddInvoiceActivity.this);
+        AlertDialog.Builder builder=new AlertDialog.Builder(AddInvoiceActivityOld.this);
         builder.setTitle("Warning..!");
         builder.setMessage("All Products Will be cleared ,Are you sure want to back?");
         builder.setCancelable(false);
@@ -504,16 +504,16 @@ public class AddInvoiceActivity extends NavigationActivity {
                 Utils.setOrderNo("");
                 Utils.setOrderDate("");
                 if (activityFrom.equals("SalesOrder") || activityFrom.equals("SalesEdit") || activityFrom.equals("ConvertInvoice")){
-                    Intent intent=new Intent(AddInvoiceActivity.this,SalesOrderListActivity.class);
+                    Intent intent=new Intent(AddInvoiceActivityOld.this,SalesOrderListActivity.class);
                     startActivity(intent);
                     finish();
                 }else if (activityFrom.equals("DeliveryOrder") || activityFrom.equals("ConvertInvoiceFromDO") || activityFrom.equals("DeliveryOrderEdit")){
-                    Intent intent=new Intent(AddInvoiceActivity.this,DeliveryOrderListActivity.class);
+                    Intent intent=new Intent(AddInvoiceActivityOld.this,DeliveryOrderListActivity.class);
                     startActivity(intent);
                     finish();
                 }
                 else if (activityFrom.equals("InvoiceEdit") || activityFrom.equals("Invoice") ){
-                    Intent intent=new Intent(AddInvoiceActivity.this,NewInvoiceListActivity.class);
+                    Intent intent=new Intent(AddInvoiceActivityOld.this,NewInvoiceListActivity.class);
                     startActivity(intent);
                     finish();
                 }else if (activityFrom.equals("ReOrderInvoice") || activityFrom.equals("ReOrderSales")){
@@ -550,7 +550,7 @@ public class AddInvoiceActivity extends NavigationActivity {
     @Override
     protected void onDestroy() {
         Utils.setOrderNo("");
-        AddInvoiceActivity.order_no="";
+        AddInvoiceActivityOld.order_no="";
         super.onDestroy();
     }
 }

@@ -68,8 +68,7 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.winapp.saperp.BuildConfig;
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
-import com.winapp.saperp.activity.CartActivity;
+import com.winapp.saperp.activity.AddInvoiceActivityOld;
 import com.winapp.saperp.activity.DeliveryOrderListActivity;
 import com.winapp.saperp.activity.NewInvoiceListActivity;
 import com.winapp.saperp.activity.SalesOrderListActivity;
@@ -117,7 +116,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
-import static com.winapp.saperp.activity.AddInvoiceActivity.activityFrom;
+import static com.winapp.saperp.activity.AddInvoiceActivityOld.activityFrom;
 import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
 public class SummaryFragment extends Fragment {
@@ -386,8 +385,8 @@ public class SummaryFragment extends Fragment {
                 || activityFrom.equals("ReOrderSales")
                 || activityFrom.equals("DeliveryOrderEdit")
         ){
-            if (AddInvoiceActivity.bill_discount!=null && !AddInvoiceActivity.bill_discount.isEmpty() && !AddInvoiceActivity.bill_discount.equals("null")){
-                String bill_disc=AddInvoiceActivity.bill_discount;
+            if (AddInvoiceActivityOld.bill_discount!=null && !AddInvoiceActivityOld.bill_discount.isEmpty() && !AddInvoiceActivityOld.bill_discount.equals("null")){
+                String bill_disc= AddInvoiceActivityOld.bill_discount;
                 billDiscAmount.removeTextChangedListener(billDiscAmountTextWatcher);
                 billDiscAmount.setText(bill_disc);
                 billDiscAmount.addTextChangedListener(billDiscAmountTextWatcher);
@@ -818,8 +817,8 @@ public class SummaryFragment extends Fragment {
                 || activityFrom.equals("ReOrderInvoice")
                 || activityFrom.equals("ReOrderSales")
         ){
-            if (AddInvoiceActivity.bill_discount!=null && !AddInvoiceActivity.bill_discount.isEmpty() && !AddInvoiceActivity.bill_discount.equals("null")){
-                String bill_disc=AddInvoiceActivity.bill_discount;
+            if (AddInvoiceActivityOld.bill_discount!=null && !AddInvoiceActivityOld.bill_discount.isEmpty() && !AddInvoiceActivityOld.bill_discount.equals("null")){
+                String bill_disc= AddInvoiceActivityOld.bill_discount;
                 billDiscAmount.removeTextChangedListener(billDiscAmountTextWatcher);
                 billDiscAmount.setText(bill_disc);
                 billDiscAmount.addTextChangedListener(billDiscAmountTextWatcher);
@@ -1073,7 +1072,7 @@ public class SummaryFragment extends Fragment {
             JSONObject object=detailsArray.optJSONObject(0);
 
             if (activityFrom.equals("DeliveryOrderEdit")){
-                rootJsonObject.put("doNumber", AddInvoiceActivity.editSoNumber);
+                rootJsonObject.put("doNumber", AddInvoiceActivityOld.editSoNumber);
                 rootJsonObject.put("mode", "E");
                 rootJsonObject.put("status", "O");
             }else {
@@ -1250,7 +1249,7 @@ public class SummaryFragment extends Fragment {
             JSONObject object=detailsArray.optJSONObject(0);
 
             if (activityFrom.equals("SalesEdit")){
-                rootJsonObject.put("soNumber", AddInvoiceActivity.editSoNumber);
+                rootJsonObject.put("soNumber", AddInvoiceActivityOld.editSoNumber);
                 rootJsonObject.put("mode", "E");
                 rootJsonObject.put("status", "O");
             }else {
@@ -2053,17 +2052,17 @@ public class SummaryFragment extends Fragment {
         try {
             // Sales Header Add values
             if (activityFrom.equals("InvoiceEdit")){
-                rootJsonObject.put("invoiceNumber", AddInvoiceActivity.editInvoiceNumber);
+                rootJsonObject.put("invoiceNumber", AddInvoiceActivityOld.editInvoiceNumber);
                 rootJsonObject.put("mode", "E");
             }else if (activityFrom.equals("ConvertInvoiceFromDO")){
                 rootJsonObject.put("mode", "I");
                 rootJsonObject.put("soNo","");
-                rootJsonObject.put("doNo",AddInvoiceActivity.editDoNumber);
+                rootJsonObject.put("doNo", AddInvoiceActivityOld.editDoNumber);
                 rootJsonObject.put("invoiceNumber", "");
             }
             else if (activityFrom.equals("ConvertInvoice")){
                 rootJsonObject.put("mode", "I");
-                rootJsonObject.put("soNo",AddInvoiceActivity.editSoNumber);
+                rootJsonObject.put("soNo", AddInvoiceActivityOld.editSoNumber);
                 rootJsonObject.put("invoiceNumber", "");
             }else {
                 rootJsonObject.put("invoiceNumber", "");
@@ -2140,7 +2139,7 @@ public class SummaryFragment extends Fragment {
             for (CartModel model:localCart){
                 invoiceObject=new JSONObject();
                 if (activityFrom.equals("InvoiceEdit")){
-                    rootJsonObject.put("invoiceNumber", AddInvoiceActivity.editInvoiceNumber);
+                    rootJsonObject.put("invoiceNumber", AddInvoiceActivityOld.editInvoiceNumber);
                 }else {
                     rootJsonObject.put("invoiceNumber", "");
                 }
@@ -2216,7 +2215,7 @@ public class SummaryFragment extends Fragment {
             }
 
             if (activityFrom.equals("InvoiceEdit")){
-                signatureObject.put("InvoiceNo",AddInvoiceActivity.editInvoiceNumber);
+                signatureObject.put("InvoiceNo", AddInvoiceActivityOld.editInvoiceNumber);
             }else {
                 signatureObject.put("InvoiceNo","");
             }
@@ -2247,7 +2246,7 @@ public class SummaryFragment extends Fragment {
                     "ModifyUser": null*/
 
             if (activityFrom.equals("InvoiceEdit")){
-                invoiceImageObject.put("InvoiceNo",AddInvoiceActivity.editInvoiceNumber);
+                invoiceImageObject.put("InvoiceNo", AddInvoiceActivityOld.editInvoiceNumber);
             }else {
                 invoiceImageObject.put("InvoiceNo","");
             }

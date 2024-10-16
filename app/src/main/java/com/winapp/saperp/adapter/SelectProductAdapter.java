@@ -16,7 +16,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
+import com.winapp.saperp.activity.AddInvoiceActivityOld;
 import com.winapp.saperp.activity.CreateNewInvoiceActivity;
 import com.winapp.saperp.activity.ProductAnalyzeActivity;
 import com.winapp.saperp.activity.SearchProductActivity;
@@ -28,6 +28,7 @@ import com.winapp.saperp.model.SettingsModel;
 import com.winapp.saperp.salesreturn.NewSalesReturnProductAddActivity;
 import com.winapp.saperp.salesreturn.SalesReturnActivity;
 import com.winapp.saperp.utils.SessionManager;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.Utils;
 
 import java.util.ArrayList;
@@ -44,6 +45,10 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
     private SessionManager session;
     private String negativeStockStr = "No";
     public String saveAction="0";
+    public String isLastPrice="false";
+    public String shortCodeStr="";
+    private SharedPreferenceUtil sharedPreferenceUtil;
+
     public SelectProductAdapter(Context context,ArrayList<ProductsModel> products, CallBack callBack) {
         this.products = Utils.getProductList(products);
         this.callBack=callBack;
@@ -57,28 +62,32 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
     }
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        ProductsModel model= products.get(i);
-        dbHelper=new DBHelper(context);
-        session=new SessionManager(context);
+        ProductsModel model = products.get(i);
+        dbHelper = new DBHelper(context);
+        session = new SessionManager(context);
+        sharedPreferenceUtil = new SharedPreferenceUtil(context);
 
-        HashMap<String ,String > user=session.getUserDetails();
-        negativeStockStr=user.get(SessionManager.KEY_NEGATIVE_STOCK);
+        HashMap<String, String> user = session.getUserDetails();
+        negativeStockStr = user.get(SessionManager.KEY_NEGATIVE_STOCK);
+
+        shortCodeStr = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SHORT_CODE, "");
+        isLastPrice = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_LAST_PRICE, "");
 
         viewHolder.productName.setText(model.getProductName());
         viewHolder.productCode.setText(model.getProductCode());
 
-        if (model.getStockQty()!=null && !model.getStockQty().equals("null")){
-            if (Double.parseDouble(model.getStockQty()) == 0 || Double.parseDouble(model.getStockQty()) < 0 ) {
-                viewHolder.stockQty.setText(model.getStockQty()+" ( No Stock )");
-            }else {
+        if (model.getStockQty() != null && !model.getStockQty().equals("null")) {
+            if (Double.parseDouble(model.getStockQty()) == 0 || Double.parseDouble(model.getStockQty()) < 0) {
+                viewHolder.stockQty.setText(model.getStockQty() + " ( No Stock )");
+            } else {
                 viewHolder.stockQty.setText(model.getStockQty());
             }
-        }else {
-            Log.w("LogStockQty:",model.getStockQty());
-            if (model.getStockQty().equals("null")){
-                viewHolder.stockQty.setText("0"+" ( No Stock )");
-            }else {
-                viewHolder.stockQty.setText(model.getStockQty()+" ( No Stock )");
+        } else {
+            Log.w("LogStockQty:", model.getStockQty());
+            if (model.getStockQty().equals("null")) {
+                viewHolder.stockQty.setText("0" + " ( No Stock )");
+            } else {
+                viewHolder.stockQty.setText(model.getStockQty() + " ( No Stock )");
             }
         }
       /*  if (model.getLastPrice()!=null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00){
@@ -86,11 +95,18 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
         }else {
             viewHolder.price.setText(String.valueOf("$ "+ Utils.twoDecimalPoint(Double.parseDouble(model.getUnitCost()))));
         }*/
-
-        if (model.getLastPrice()!=null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00){
-            viewHolder.price.setText(String.valueOf("$ "+ model.getLastPrice()));
+        if (shortCodeStr.equalsIgnoreCase("FUXIN")) {
+            if (isLastPrice.equalsIgnoreCase("True")) {
+                viewHolder.price.setText(String.valueOf("$ " + model.getLastPrice()));
+            }else {
+                    viewHolder.price.setText(String.valueOf("$ " + model.getUnitCost()));
+            }
         }else {
-            viewHolder.price.setText(String.valueOf("$ "+ model.getUnitCost()));
+            if (model.getLastPrice() != null && !model.getLastPrice().isEmpty() && Double.parseDouble(model.getLastPrice()) > 0.00) {
+                viewHolder.price.setText(String.valueOf("$ " + model.getLastPrice()));
+            } else {
+                viewHolder.price.setText(String.valueOf("$ " + model.getUnitCost()));
+            }
         }
 
         if (model.getStockQty()!=null && !model.getStockQty().equals("null")) {
@@ -110,8 +126,8 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
                     if (context instanceof SalesReturnActivity || context instanceof NewSalesReturnProductAddActivity || context instanceof TransferProductAddActivity){
                         callBack.searchProduct(model);
                     }else {
-                        if (context instanceof AddInvoiceActivity){
-                            if (AddInvoiceActivity.activityFrom.equals("ReOrderSales")){
+                        if (context instanceof AddInvoiceActivityOld){
+                            if (AddInvoiceActivityOld.activityFrom.equals("ReOrderSales")){
                                 callBack.searchProduct(model);
                             }else {
 //                                if (isAllowLowStock){
@@ -152,9 +168,9 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
             }
         });
 
-        if (context instanceof NewSalesReturnProductAddActivity || context instanceof TransferProductAddActivity || context instanceof CreateNewInvoiceActivity || context instanceof StockProductsActivity || context instanceof SearchProductActivity || context instanceof SalesReturnActivity || AddInvoiceActivity.activityFrom.equals("SalesOrder") ||
-                AddInvoiceActivity.activityFrom.equals("SalesEdit") ||
-                AddInvoiceActivity.activityFrom.equals("ReOrderSales") ){
+        if (context instanceof NewSalesReturnProductAddActivity || context instanceof TransferProductAddActivity || context instanceof CreateNewInvoiceActivity || context instanceof StockProductsActivity || context instanceof SearchProductActivity || context instanceof SalesReturnActivity || AddInvoiceActivityOld.activityFrom.equals("SalesOrder") ||
+                AddInvoiceActivityOld.activityFrom.equals("SalesEdit") ||
+                AddInvoiceActivityOld.activityFrom.equals("ReOrderSales") ){
             viewHolder.productInfo.setVisibility(View.GONE);
         }else {
             viewHolder.productInfo.setVisibility(View.VISIBLE);
@@ -166,7 +182,7 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
                 Intent intent=new Intent(context, ProductAnalyzeActivity.class);
                 intent.putExtra("productId",model.getProductCode());
                 intent.putExtra("productName",model.getProductName());
-                intent.putExtra("customerCode", AddInvoiceActivity.customerId);
+                intent.putExtra("customerCode", AddInvoiceActivityOld.customerId);
                 intent.putExtra("uom",model.getUomCode());
                 context.startActivity(intent);
             }
@@ -183,8 +199,8 @@ public class SelectProductAdapter extends RecyclerView.Adapter<SelectProductAdap
 
                             callBack.searchProduct(model);
                         }else {
-                            if (context instanceof AddInvoiceActivity){
-                                if (AddInvoiceActivity.activityFrom.equals("ReOrderSales")){
+                            if (context instanceof AddInvoiceActivityOld){
+                                if (AddInvoiceActivityOld.activityFrom.equals("ReOrderSales")){
                                     callBack.searchProduct(model);
                                 }else {
 //                                    if (isAllowLowStock){

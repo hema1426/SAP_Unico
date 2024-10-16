@@ -297,10 +297,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 String invUOM =object.optString("invoiceDefaultUOM");
                                 String salesUOM =object.optString("salesOrderDefaultUOM");
                                 String returnUOM =object.optString("salesRetunDefaultUOM");
+                                String settleNextDate =object.optString("haveSettlementByDate");
+                                String shortCode =object.optString("shortCode");
+                                String lastPrice =object.optString("showlastSalesPrice");
 
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_INV_UOM, invUOM);
-                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_SO_UOM, invUOM);
-                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_RETURN_UOM, invUOM);
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_SO_UOM, salesUOM);
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_RETURN_UOM, returnUOM);
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTLEMENT_NEXT_DATE, settleNextDate);
+                               //mahudoom given "shortCode": "TRAN",
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SHORT_CODE, shortCode);
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_LAST_PRICE, lastPrice);
 
                                 session.createLoginSession(
                                         username,password,rollname,locationCode,"1",ispermission,
@@ -482,7 +489,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 dbHelper.insertSettings("showCatelog",object.optString("showCatelog"));
                                 dbHelper.insertSettings("showCustomer",object.optString("showCustomer"));
                                 dbHelper.insertSettings("showProduct",object.optString("showProduct"));
-                                dbHelper.insertSettings("HAVESETTLEMENTBYDATE",object.optString("haveSettlementByDate"));
+//                                dbHelper.insertSettings("HAVESETTLEMENTBYDATE",object.optString("haveSettlementByDate"));
                                 dbHelper.insertSettings("haveEditPrice",object.optString("haveEditPrice"));
                             }
                         }else {

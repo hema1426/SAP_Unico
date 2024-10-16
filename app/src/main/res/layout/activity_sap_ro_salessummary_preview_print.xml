@@ -71,7 +71,7 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5sp"
+                        android:layout_marginRight="5sp"
                         android:layout_marginTop="5sp"
                         android:layout_alignParentEnd="true"
                         android:orientation="horizontal">
@@ -110,7 +110,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5sp"
-                    android:layout_marginRight="5sp"
+                    android:layout_marginLeft="5sp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -142,6 +142,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_marginTop="10sp"
+            android:layout_marginLeft="5dp"
             android:singleLine="true"
             android:text="Cash Sales"
             android:textColor="@color/colorPrimary"
@@ -176,20 +177,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="3"
+                    android:layout_weight="2"
                     android:gravity="center"
                     android:text="TransNo"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="12dp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:text="Customer"
                     android:textColor="@color/colorPrimary"
                     android:textSize="12dp"
                     android:textStyle="bold" />
@@ -209,7 +199,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:gravity="center"
                     android:text="Type"
                     android:textColor="@color/colorPrimary"
@@ -276,6 +266,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_marginTop="10sp"
+            android:layout_marginLeft="5dp"
             android:singleLine="true"
             android:text="Invoice"
             android:textColor="@color/colorPrimary"
@@ -316,18 +307,6 @@
                     android:textColor="@color/colorPrimary"
                     android:textSize="12dp"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:text="Customer"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="12dp"
-                    android:textStyle="bold" />
-
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

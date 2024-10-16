@@ -112,7 +112,9 @@ public class DescriptionActivity extends AppCompatActivity {
 
     public boolean isUomSetting = false;
     private String uomCode = "";
+    private double ctnStockVal =0.0;
     private String uomName = "";
+    private String stockStr = "";
     double net_amount=0.0;
     double carton_amount=0.0;
     double loose_amount=0.0;
@@ -617,6 +619,7 @@ public class DescriptionActivity extends AppCompatActivity {
         }else {
             availability.setText("0");
         }
+        stockStr = model.getStockQty() ;
 
         if (model.getPcsPerCarton() !=null && !model.getPcsPerCarton().equals("null")){
             cartonText.setText("1 * "+model.getPcsPerCarton());
@@ -1257,6 +1260,7 @@ public class DescriptionActivity extends AppCompatActivity {
             }
         }
     }
+
     public double calculatePercentage(double obtained, double total) {
         return obtained * 100 / total;
     }
@@ -1270,6 +1274,17 @@ public class DescriptionActivity extends AppCompatActivity {
                     uomCode = uomList.get(position).getUomCode() ;
                   //  uomText.setText(uomList.get(position).getUomCode());
                    ctnPrice.setText(uomList.get(position).getPrice());
+                if (uomName.equals("CTN")) {
+                    double baseCtnQty = Double.parseDouble(uomList.get(position).getBaseQty());
+                    double pdtStock = Double.parseDouble(stockStr);
+
+                    ctnStockVal = pdtStock / baseCtnQty ;
+                    availability.setText(String.valueOf(ctnStockVal));
+                }else{
+                    availability.setText(stockStr);
+
+                }
+
                     Log.w("UOMQtyValueCart:", uomList.get(position).getUomEntry());
                     Log.w("SelectedUOMCart:", uomName + "");
 

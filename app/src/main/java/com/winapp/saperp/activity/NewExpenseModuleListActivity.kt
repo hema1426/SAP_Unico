@@ -339,7 +339,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
         emptyTextView!!.setVisibility(View.VISIBLE)
         dbHelper!!.removeAllItems()
         dbHelper!!.removeAllInvoiceItems()
-        AddInvoiceActivity.order_no = ""
+        AddInvoiceActivityOld.order_no = ""
         Log.w("Printer_Mac_Id:", printerMacId!!)
         Log.w("Printer_Type:", printerType!!)
 
@@ -472,7 +472,7 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
                             CustomerFragment.isLoad = true
                             val intent = Intent(
                                 this@NewExpenseModuleListActivity,
-                                AddInvoiceActivity::class.java
+                                AddInvoiceActivityOld::class.java
                             )
                             intent.putExtra("customerId", selectCustomerId)
                             intent.putExtra("activityFrom", "Invoice")
@@ -1256,8 +1256,8 @@ class NewExpenseModuleListActivity : NavigationActivity(), View.OnClickListener,
             dbHelper!!.removeCustomer()
             dbHelper!!.removeAllItems()
             setCustomerDetails(customer_code)
-            AddInvoiceActivity.customerId = customer_code
-            val intent = Intent(this@NewExpenseModuleListActivity, AddInvoiceActivity::class.java)
+            AddInvoiceActivityOld.customerId = customer_code
+            val intent = Intent(this@NewExpenseModuleListActivity, AddInvoiceActivityOld::class.java)
             intent.putExtra("customerId", customer_code)
             intent.putExtra("activityFrom", "Invoice")
             startActivity(intent)

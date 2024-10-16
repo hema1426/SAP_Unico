@@ -1515,7 +1515,9 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         jsonObject.put("User",username);
         jsonObject.put("FromDate",from_date);
         jsonObject.put("ToDate",to_date);
-        jsonObject.put("LocationCode",locationCode);
+        jsonObject.put("CustomerCode",customer_id);
+        jsonObject.put("Status","");
+//        jsonObject.put("LocationCode",locationCode);
         requestQueue = Volley.newRequestQueue(this);
         url= Utils.getBaseUrl(this) +"ReportSalesSummary";
         // Initialize a new JsonArrayRequest instance

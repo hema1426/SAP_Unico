@@ -52,7 +52,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
+import com.winapp.saperp.activity.AddInvoiceActivityOld;
 import com.winapp.saperp.adapter.ProductSummaryAdapter;
 import com.winapp.saperp.adapter.SelectProductAdapter;
 import com.winapp.saperp.db.DBHelper;
@@ -81,7 +81,7 @@ import java.util.Objects;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.winapp.saperp.activity.AddInvoiceActivity.activityFrom;
+import static com.winapp.saperp.activity.AddInvoiceActivityOld.activityFrom;
 import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
 public class ProductFragment extends Fragment {
@@ -323,12 +323,12 @@ public class ProductFragment extends Fragment {
                     case BottomSheetBehavior.STATE_EXPANDED:
                         Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_EXPANDED");
                         transLayout.setVisibility(View.VISIBLE);
-                        AddInvoiceActivity.disableTab(false);
+                        AddInvoiceActivityOld.disableTab(false);
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_COLLAPSED");
                         transLayout.setVisibility(View.GONE);
-                        AddInvoiceActivity.disableTab(true);
+                        AddInvoiceActivityOld.disableTab(true);
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
                         Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_HIDDEN");

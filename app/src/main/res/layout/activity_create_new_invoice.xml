@@ -200,21 +200,21 @@
                                 android:id="@+id/uomTxtTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="5dp"
                                 android:text="Product UOM  "
+                                android:padding="5dp"
                                 android:textColor="#212121"
-                                android:textSize="11sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold"
                                 android:visibility="invisible" />
                             <TextView
                                 android:id="@+id/uomChange"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="5dp"
-                                android:layout_marginLeft="@dimen/_10sdp"
+                                android:layout_margin="3dp"
                                 android:text="change"
+                                android:padding="5dp"
                                 android:textColor="@color/btn_green"
-                                android:textSize="11sp"
+                                android:textSize="13sp"
                                 android:textStyle="bold"
                                 android:visibility="invisible" />
 
@@ -1346,7 +1346,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginRight="10dp"
                                     android:textColor="@color/pink_clr"
-                                    android:textSize="9sp"
+                                    android:textSize="12sp"
                                     android:text="Bill Disc % : "
                                     android:textStyle="bold"
                                     />
@@ -1355,8 +1355,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginRight="10dp"
-                                    android:textColor="@color/gray"
-                                    android:textSize="10sp"
+                                    android:textColor="@color/black"
+                                    android:textSize="12sp"
                                     android:text="0"
                                     android:textStyle="bold"
                                     />

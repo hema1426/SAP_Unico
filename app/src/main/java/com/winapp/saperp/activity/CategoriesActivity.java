@@ -37,17 +37,14 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.winapp.saperp.R;
 import com.winapp.saperp.adapter.CustomerNameAdapter;
 import com.winapp.saperp.adapter.ViewPagerAdapter;
 import com.winapp.saperp.db.DBHelper;
-import com.winapp.saperp.fragments.CustomerFragment;
 import com.winapp.saperp.model.AllCategories;
 import com.winapp.saperp.model.CartModel;
 import com.winapp.saperp.model.CustomerDetails;
@@ -74,7 +71,7 @@ import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-import static com.winapp.saperp.activity.AddInvoiceActivity.activityFrom;
+import static com.winapp.saperp.activity.AddInvoiceActivityOld.activityFrom;
 import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
 public class CategoriesActivity extends AppCompatActivity {

@@ -385,7 +385,7 @@ public class SapStockSummaryOpenPreviewActivity extends AppCompatActivity {
         if (validatePrinterConfiguration()){
             if (printerType.equals("TSC Printer")){
                 TSCPrinter printer=new TSCPrinter(this,printerMacId,"StockSummaryOpen");
-                printer.printReportStockSummaryOpen(copy,from_date,to_date,reportStockSummaryOpenList);
+                printer.printReportStockSummaryOpen(copy,from_date,to_date,reportStockSummaryOpenList1);
             }
         }else {
             Toast.makeText(getApplicationContext(),"Please configure the Printer",Toast.LENGTH_SHORT).show();

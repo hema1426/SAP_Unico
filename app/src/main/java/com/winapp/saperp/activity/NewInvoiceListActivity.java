@@ -348,6 +348,8 @@ public class NewInvoiceListActivity extends NavigationActivity
         sharedPref_billdisc = getSharedPreferences("BillDiscPref", MODE_PRIVATE);
         myEdit = sharedPref_billdisc.edit();
 
+        visibleFragment = "invoices";
+
         operationLayout = findViewById(R.id.operation_layout);
         emptyLayout = findViewById(R.id.empty_layout);
         emptyTextView = findViewById(R.id.empty_text);
@@ -433,7 +435,7 @@ public class NewInvoiceListActivity extends NavigationActivity
 
         dbHelper.removeAllItems();
         dbHelper.removeAllInvoiceItems();
-        AddInvoiceActivity.order_no = "";
+        AddInvoiceActivityOld.order_no = "";
 
         Log.w("Printer_Mac_Id:", printerMacId);
         Log.w("Printer_Type:", printerType);
@@ -571,7 +573,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                         transLayout.setVisibility(View.GONE);
                         if (redirectInvoice) {
                             CustomerFragment.isLoad = true;
-                            Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivity.class);
+                            Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivityOld.class);
                             intent.putExtra("customerId", selectCustomerId);
                             intent.putExtra("activityFrom", "Invoice");
                             startActivity(intent);
@@ -1191,7 +1193,7 @@ public class NewInvoiceListActivity extends NavigationActivity
             cashCollectionLayout.setVisibility(View.VISIBLE);
             deleteInvoiceLayout.setVisibility(View.GONE);
             invoiceStatusValue = "PR";
-        } else if (invoiceStatus.equals("Open")) {
+        } else if (invoiceStatus.equals("Open") || invoiceStatus.equals("O")) {
             // editInvoiceLayout.setVisibility(View.VISIBLE);
             cashCollectionLayout.setVisibility(View.VISIBLE);
             duplicateInvoiceLayout.setVisibility(View.VISIBLE);
@@ -1406,7 +1408,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                                             startActivity(intent);
                                             finish();
                                         } else {
-                                            Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivity.class);
+                                            Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivityOld.class);
                                             intent.putExtra("billDiscount", bill_discount);
                                             intent.putExtra("itemDiscount", item_discount);
                                             intent.putExtra("subTotal", sub_total);
@@ -2026,7 +2028,7 @@ public class NewInvoiceListActivity extends NavigationActivity
             if (resultCode == Activity.RESULT_OK) {
                 String result = data.getStringExtra("customerCode");
                 Utils.setCustomerSession(this, result);
-                Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivity.class);
+                Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivityOld.class);
                 intent.putExtra("customerId", result);
                 intent.putExtra("activityFrom", "Invoice");
                 startActivity(intent);
@@ -2076,8 +2078,8 @@ public class NewInvoiceListActivity extends NavigationActivity
                 dbHelper.removeCustomer();
                 dbHelper.removeAllItems();
                 setCustomerDetails(customer_code);
-                AddInvoiceActivity.customerId = customer_code;
-                Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivity.class);
+                AddInvoiceActivityOld.customerId = customer_code;
+                Intent intent = new Intent(NewInvoiceListActivity.this, AddInvoiceActivityOld.class);
                 intent.putExtra("customerId", customer_code);
                 intent.putExtra("activityFrom", "Invoice");
                 startActivity(intent);

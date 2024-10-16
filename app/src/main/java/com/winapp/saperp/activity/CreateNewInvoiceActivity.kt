@@ -277,12 +277,14 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var printerMacId: String? = ""
     private var settingUOMInvval: String? = "PCS"
     private var settingUOMSOval: String? = "PCS"
+    private var isSettlementByNextDate: String? = "false"
+    private var isLastPrice: String? = "false"
+    private var shortCodeStr: String? = ""
     private var settingUOM_DOval: String? = "PCS"
     private var printerType: String? = null
     private var pref_bill_disc_amt: String? = "0.00"
     private var pref_bill_disc_percent: String? = "0.00"
     private var remarkText: EditText? = null
-    private var activityFrom: String? = ""
     var saveTitle: TextView? = null
     private var saveMessage: TextView? = null
     private var editSoNumber: String? = ""
@@ -337,7 +339,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     var isDiscountApiSetting = false
     var minimum_disc_amt = 0.00
     var maximum_disc_amt = 0.00
-    var isSettlementByNextDate = false
     var isEditPrice = false
 
     var settings: ArrayList<SettingsModel>? = null
@@ -509,9 +510,28 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             "")
         settingUOMSOval = sharedPreferenceUtil!!.getStringPreference(sharedPreferenceUtil!!.KEY_SETTING_SO_UOM,
             "")
+        isSettlementByNextDate = sharedPreferenceUtil!!.getStringPreference(sharedPreferenceUtil!!
+            .KEY_SETTLEMENT_NEXT_DATE,"")
 
-        Log.w("settingUOMinv..",""+settingUOMInvval)
-        Log.w("settingUOMso..",""+settingUOMSOval)
+        shortCodeStr = sharedPreferenceUtil!!.getStringPreference(sharedPreferenceUtil!!
+            .KEY_SHORT_CODE,"")
+
+        isLastPrice = sharedPreferenceUtil!!.getStringPreference(sharedPreferenceUtil!!
+            .KEY_LAST_PRICE,"")
+
+        // else if (model.settingName == "HAVESETTLEMENTBYDATE") {
+//            Log.w("SettingNamedate:", model.settingName)
+//            Log.w("SettingValuedate:", model.settingValue)
+//            if (model.settingValue.equals("True", ignoreCase = true)) {
+//                isSettlementByNextDate = true
+//            } else {
+//                isSettlementByNextDate = false
+//            }
+//        }
+
+
+            Log.w("settingUOMinv..",""+settingUOMInvval+"lastPrice.."+isLastPrice)
+        Log.w("settingUOMso..",""+settingUOMSOval+"shortcodd.."+shortCodeStr)
 
         productAutoComplete!!.setEnabled(false)
         item_discount_ed!!.isEnabled = false
@@ -563,11 +583,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
             if (intent.getStringExtra("customerBillDisc") != null) {
                 billDiscApiStr = intent.getStringExtra("customerBillDisc")!!
-                 Log.w("billdiscpi_inv::", billDiscApiStr!!)
-               // myEdit!!.putString("billDisc_amt", pref_bill_disc_amt1)
+                val amount: Double = percentageToAmount(billDiscApiStr.toDouble())
                 myEdit!!.putString("billDisc_percent", billDiscApiStr)
+                myEdit!!.putString("billDisc_amt", amount.toString())
                 myEdit!!.apply()
                 billdisc_displayl!!.setText(billDiscApiStr)
+                Log.w("billdiscpi_inv::", billDiscApiStr!!+amount)
 
 //                val subtotal: Double = getSubtotal()
 //                if (netTotalValue!!.text.toString().toDouble() > 0.00) {
@@ -579,9 +600,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 //                }
 
                 pref_bill_disc_percent = sharedPref_billdisc!!.getString("billDisc_percent", "")
+                pref_bill_disc_amt = sharedPref_billdisc!!.getString("billDisc_amt", "")
 
             }
-
 
             currentSaveDateTime = intent.getStringExtra("currentDateTime")
             editDoNumber = intent.getStringExtra("editDoNumber")
@@ -770,15 +791,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         Log.w("SettingNamediscmax:", model.settingName)
                         Log.w("SettingValuediscmax:", model.settingValue)
                         maximum_disc_amt = model.settingValue.toDouble()
-                    } else if (model.settingName == "HAVESETTLEMENTBYDATE") {
-                        Log.w("SettingNamedate:", model.settingName)
-                        Log.w("SettingValuedate:", model.settingValue)
-                        if (model.settingValue.equals("True", ignoreCase = true)) {
-                            isSettlementByNextDate = true
-                        } else {
-                            isSettlementByNextDate = false
-                        }
-                    } else if (model.settingName == "haveEditPrice") {
+                    }  else if (model.settingName == "haveEditPrice") {
                         Log.w("SettingName_edPrice:", model.settingName)
                         Log.w("SettingValue_edPrice:", model.settingValue)
                         if (model.settingValue.equals("True", ignoreCase = true)) {
@@ -845,15 +858,17 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             } else {
                 Utils.setDeliveryDate(currentDate);
                 dueDateEdittext.setText(currentDate);
-            }*/if (isSettlementByNextDate) {
-            try {
-                getSettlementDateApi()
-            } catch (e: JSONException) {
-                e.printStackTrace()
+            }*/
+        if(!shortCodeStr.equals("TRAN")) {
+            if (isSettlementByNextDate.equals("True", ignoreCase = true)) {
+                try {
+                    getSettlementDateApi()
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                }
             }
         }
-
-
+        Log.w("settleInvDate",""+isSettlementByNextDate)
         val jsonObject = JSONObject()
         try {
             jsonObject.put("User", username)
@@ -1054,20 +1069,27 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
                 val disc = editable.toString()
-                if (!disc.isEmpty()) {
-                    addProduct!!.setAlpha(0.9f)
-                    addProduct!!.setEnabled(true)
-
-                    damageReturnQty!!.removeTextChangedListener(damageQtyTextWatcher)
-                    damageReturnQty!!.setText(disc)
-                    damageReturnQty!!.addTextChangedListener(damageQtyTextWatcher)
-                } else {
-                    addProduct!!.setAlpha(0.9f)
-                    addProduct!!.setEnabled(true)
-
-                    damageReturnQty!!.removeTextChangedListener(damageQtyTextWatcher)
-                    damageReturnQty!!.setText("0")
-                    damageReturnQty!!.addTextChangedListener(damageQtyTextWatcher)
+                if (editable.toString() == ".") {
+                    item_discount_ed!!.setText("0.")
+                }
+                else {
+                    if (!disc.isEmpty()) {
+                        addProduct!!.setAlpha(0.9f)
+                        addProduct!!.setEnabled(true)
+                        if (editable.toString() == ".") {
+                            exchange_inv!!.removeTextChangedListener(exchangeTextWatcher)
+                            exchange_inv!!.setText("0.")
+                            exchange_inv!!.setSelection(exchange_inv!!.getText().length)
+                            exchange_inv!!.addTextChangedListener(exchangeTextWatcher)
+                        }
+                    } else {
+                        addProduct!!.setAlpha(0.9f)
+                        addProduct!!.setEnabled(true)
+                        exchange_inv!!.removeTextChangedListener(exchangeTextWatcher)
+                        exchange_inv!!.setText("")
+                        exchange_inv!!.setSelection( exchange_inv!!.getText().length)
+                        exchange_inv!!.addTextChangedListener(exchangeTextWatcher)
+                    }
                 }
             }
         }
@@ -1318,25 +1340,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     }
                 }
             }
-        });*/focEditText!!.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {
-                //setCalculation();
-                setCalculationView()
-                if (!editable.toString().isEmpty()) {
-                    addProduct!!.setAlpha(0.9f)
-                    addProduct!!.setEnabled(true)
-                } else {
-                    addProduct!!.setAlpha(0.9f)
-                    addProduct!!.setEnabled(true)
-//                    addProduct!!.setAlpha(0.4f)
-//                    addProduct!!.setEnabled(false)
-                }
+        });*/
 
-                //  setButtonView();
-            }
-        })
         loosePriceTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
@@ -1345,6 +1350,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             }
         }
         priceText!!.addTextChangedListener(loosePriceTextWatcher)
+
         qtyTW = object : TextWatcher {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -1399,6 +1405,29 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }*/
+        })
+        focEditText!!.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                //setCalculation();
+              //  setCalculationView()
+
+                //negativeStock no only stock check
+                if (negativeStockStr.equals("No",ignoreCase = true)){
+                    checkLowStockFOC()
+                }
+                if (!editable.toString().isEmpty()) {
+                    addProduct!!.setAlpha(0.9f)
+                    addProduct!!.setEnabled(true)
+                } else {
+                    addProduct!!.setAlpha(0.9f)
+                    addProduct!!.setEnabled(true)
+//                    addProduct!!.setAlpha(0.4f)
+//                    addProduct!!.setEnabled(false)
+                }
+                //  setButtonView();
+            }
         })
 
         addProduct!!.setOnClickListener(View.OnClickListener {
@@ -1520,7 +1549,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     if ((focEditText!!.getText() != null && !focEditText!!.getText().toString()
                             .isEmpty() && focEditText!!.getText()
                             .toString() != "0") || (returnQtyText!!.getText() != null && !returnQtyText!!.getText()
-                            .toString().isEmpty() && returnQtyText!!.getText().toString() != "0") || (exchange_inv!!.getText() != null && !exchange_inv!!.getText()
+                            .toString().isEmpty() && returnQtyText!!.getText().toString() != "0") ||
+                        (exchange_inv!!.getText() != null && !exchange_inv!!.getText()
                             .toString().isEmpty() && exchange_inv!!.getText()
                             .toString() != "0")
                     ) {
@@ -1550,7 +1580,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 ed_uomTxtl!!.visibility = View.GONE
                 uomSpinnerLayl!!.visibility = View.VISIBLE
 
-                            val jsonObject = JSONObject()
+                val jsonObject = JSONObject()
                 if(isEditItem){
                     try {
                         Log.w("pdtediyyy",""+productEditId);
@@ -1818,13 +1848,23 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
                             productAutoComplete!!.clearFocus()
                             cartonPrice!!.setText(model.unitCost)
-                            if (model.lastPrice != null && !model.lastPrice.isEmpty() &&
-                                model.lastPrice.toDouble() > 0.00
-                            ) {
-                                priceText!!.setText(model.lastPrice)
-                            } else {
-                                priceText!!.setText(model.unitCost)
+                            if(shortCodeStr.equals("FUXIN",true)) {
+                                if (isLastPrice.equals("True", true)) {
+                                    priceText!!.setText(model.lastPrice)
+                                } else {
+                                    priceText!!.setText(model.unitCost)
+                                }
                             }
+                            else{
+                                if (model.lastPrice != null && !model.lastPrice.isEmpty() &&
+                                    model.lastPrice.toDouble() > 0.00
+                                ) {
+                                    priceText!!.setText(model.lastPrice)
+                                } else {
+                                    priceText!!.setText(model.unitCost)
+                                }
+                            }
+
                             loosePrice!!.setText(model.unitCost)
                             // uomText.setText(model.getUomCode());
                             stockCount!!.setText(model.stockQty)
@@ -1856,10 +1896,21 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     } else {
                         productAutoComplete!!.clearFocus()
                         cartonPrice!!.setText(model.unitCost)
-                        if (model.lastPrice != null && !model.lastPrice.isEmpty() && model.lastPrice.toDouble() > 0.00) {
-                            priceText!!.setText(model.lastPrice)
-                        } else {
-                            priceText!!.setText(model.unitCost)
+                        if(shortCodeStr.equals("FUXIN",true)) {
+                            if (isLastPrice.equals("True", true)) {
+                                priceText!!.setText(model.lastPrice)
+                            } else {
+                                priceText!!.setText(model.unitCost)
+                            }
+                        }
+                        else{
+                            if (model.lastPrice != null && !model.lastPrice.isEmpty() &&
+                                model.lastPrice.toDouble() > 0.00
+                            ) {
+                                priceText!!.setText(model.lastPrice)
+                            } else {
+                                priceText!!.setText(model.unitCost)
+                            }
                         }
                         loosePrice!!.setText(model.unitCost)
                         // uomText.setText(model.getUomCode());
@@ -2018,9 +2069,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             if (!exchange_inv!!.text.toString().isEmpty()) {
                 exchange = exchange_inv!!.text.toString()
             }
-            if (!uomText!!.text.toString().isEmpty()) {
-                uom = uomText!!.text.toString()
-            }
             if (!expiryReturnQty!!.text.toString().isEmpty()) {
                 saleable = expiryReturnQty!!.text.toString()
             }
@@ -2044,7 +2092,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 uom,
                 uom,
                 qty_value,
-                return_qty, net_qty.toString(),
+                return_qty,
+                qty_value,
                 foc,
                 price_value,
                 stockQtyValue!!.text.toString(), total.toString(),
@@ -2135,7 +2184,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     @SuppressLint("SetTextI18n")
     private fun getProducts() {
         val products = dbHelper!!.allInvoiceProducts
+        Log.w("activityfr1",""+activityFrom)
 //        Log.w("pdtArraylis",""+products.get(0).netTotal)
+
         if (products.size > 0) {
             itemCount!!.text = "Products ( " + products.size + " )"
             productSummaryView!!.layoutManager =
@@ -2158,6 +2209,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         item_discount_ed!!.isEnabled = true
 
                         productId = model.productCode
+                        var stockVal = 0.0
+                        var qtyVal = 0.0
+                        var finalStockVal = 0.0
+                        var stockStr = ""
+
                         productName = model.productName
                         uomText!!.setText(model.uomCode)
                         uomName = model.uomCode
@@ -2197,7 +2253,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         }
 
                         qtyValue!!.removeTextChangedListener(qtyTW)
-                        qtyValue!!.setText(Utils.getQtyValue(netqty.toString()))
+                       qtyValue!!.setText(Utils.getQtyValue(netqty.toString()))
+                        Log.w("editqty11",""+model.netQty+"..mm"+Utils.getQtyValue(netqty.toString()))
                         qtyValue!!.addTextChangedListener(qtyTW)
                         productAutoComplete!!.setText(model.productName + "-" + model.productCode)
                         priceText!!.setText(model.price)
@@ -2675,6 +2732,27 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         }
     }
 
+    fun checkLowStockFOC() {
+        var stock = 0.0
+        var focl = 0.0
+        if (!stockQtyValue!!.text.toString().isEmpty()) {
+            if (!stockQtyValue!!.text.toString().isEmpty()) {
+                stock = stockQtyValue!!.text.toString().toDouble()
+            }
+            if (!focEditText!!.text.toString().isEmpty()) {
+                focl = focEditText!!.text.toString().toDouble()
+            }
+            if (stock < focl) {
+                Toast.makeText(applicationContext, "Low Stock please check", Toast.LENGTH_SHORT)
+                    .show()
+              //  focEditText!!.removeTextChangedListener()
+                focEditText!!.setText("")
+             //   focEditText!!.addTextChangedListener()
+              //  setCalculationView()
+            }
+        }
+    }
+
     fun getSubtotal(): Double {
         try {
             val localCart: ArrayList<CreateInvoiceModel>
@@ -2706,6 +2784,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 val taxType = customerDetails!!.get(0).taxType
 
                 net_total_value = net_sub_total
+                Log.w("subtotall",""+net_total_value);
 
 //                if (taxType == "I") {
 //                    net_total_value = net_total + discount
@@ -2759,63 +2838,118 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             Log.w("TaxType-Summary:", taxType)
             Log.w("TaxValue12-Summary:", taxValue)
             Log.w("SubTotalValues:", subTotal.toString())
-            val Prodtotal = Utils.twoDecimalPoint(subTotal)
+            var Prodtotal = "0.0" ;
+            if(shortCodeStr!!.equals("FUXIN",true)) {
+                 Prodtotal = Utils.fourDecimalPoint(subTotal)
+            }else{
+                 Prodtotal = Utils.twoDecimalPoint(subTotal)
+
+            }
             if (!taxType.matches("".toRegex()) && !taxValue.matches("".toRegex())) {
                 val taxValueCalc = taxValue.toDouble()
                 if (taxType.matches("E".toRegex())) {
                     taxAmount1 = subTotal * taxValueCalc / 100
-                    val prodTax = Utils.twoDecimalPoint(taxAmount1)
-                    taxValueText!!.text = "" + prodTax
                     netTotal1 = subTotal + taxAmount1
-                    val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
-                    netTotalValue!!.text = "" + ProdNetTotal
                     taxTitle!!.text = "GST ( Exc ) : " + taxValue.toDouble().toInt() + " % "
-                    subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
-                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
+
+                    if(shortCodeStr!!.equals("FUXIN",true)){
+                        val prodTax = Utils.fourDecimalPoint(taxAmount1)
+                        taxValueText!!.text = "" + prodTax
+
+                        val ProdNetTotal = Utils.fourDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        subTotalValue!!.text = Utils.fourDecimalPoint(subTotal)
+                    }else{
+                        val prodTax = Utils.twoDecimalPoint(taxAmount1)
+                        taxValueText!!.text = "" + prodTax
+
+                        val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
+                    }
+                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(netTotal1)
 
                 } else if (taxType.matches("I".toRegex())) {
                     taxAmount1 = subTotal * taxValueCalc / (100 + taxValueCalc)
-                    val prodTax = Utils.twoDecimalPoint(taxAmount1)
-                    taxValueText!!.text = "" + prodTax
-                    // netTotal1 = subTotal + taxAmount1;
                     netTotal1 = subTotal
-                    val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
-                    netTotalValue!!.text = "" + ProdNetTotal
                     val dTotalIncl = netTotal1 - taxAmount1
                     val totalIncl = Utils.twoDecimalPoint(dTotalIncl)
                     Log.d("totalIncl", "" + totalIncl)
-                    val sub_total = subTotal - taxAmount1
                     taxTitle!!.text = "GST ( Inc ) : " + taxValue.toDouble().toInt() + " % "
-                    subTotalValue!!.text = Utils.twoDecimalPoint(sub_total)
-                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
+
+                    if(shortCodeStr!!.equals("FUXIN",true)){
+                        val prodTax = Utils.fourDecimalPoint(taxAmount1)
+                        taxValueText!!.text = "" + prodTax
+                        val sub_total = subTotal - taxAmount1
+
+                        val ProdNetTotal = Utils.fourDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        subTotalValue!!.text = Utils.fourDecimalPoint(sub_total)
+                    }else{
+                        val prodTax = Utils.twoDecimalPoint(taxAmount1)
+                        taxValueText!!.text = "" + prodTax
+                        val sub_total = subTotal - taxAmount1
+
+                        val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        subTotalValue!!.text = Utils.twoDecimalPoint(sub_total)
+                    }
+
+
+                    // netTotal1 = subTotal + taxAmount1;
+                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(netTotal1)
 
                 } else if (taxType.matches("Z".toRegex())) {
-                    taxValueText!!.text = "0.0"
-                    // netTotal1 = subTotal + taxAmount;
                     netTotal1 = subTotal
-                    val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
-                    netTotalValue!!.text = "" + ProdNetTotal
-                    subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
-                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
+
+                    if(shortCodeStr!!.equals("FUXIN",true)){
+                        taxValueText!!.text = "0.0000"
+                        val ProdNetTotal = Utils.fourDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        subTotalValue!!.text = Utils.fourDecimalPoint(subTotal)
+
+                    }else{
+                        taxValueText!!.text = "0.0"
+                        val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
+
+                    }
+                    // netTotal1 = subTotal + taxAmount;
+                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(netTotal1)
                     taxTitle!!.text = "GST ( Zero )"
                 } else {
-                    taxValueText!!.text = "0.0"
+                    if(shortCodeStr!!.equals("FUXIN",true)) {
+                        taxValueText!!.text = "0.0000"
+                        subTotalValue!!.text = Utils.fourDecimalPoint(subTotal)
+                    }else{
+                        taxValueText!!.text = "0.0"
+                        subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
+
+                    }
                     netTotalValue!!.text = "" + Prodtotal
-                    subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
-                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
+                    bill_disc_subtotal_txtl!!.text =Prodtotal
                     taxTitle!!.text = "GST ( Zero )"
                 }
             } else if (taxValue.matches("".toRegex())) {
                 taxValueText!!.text = "0.0"
                 netTotalValue!!.text = "" + Prodtotal
-                subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
-                bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
+                if(shortCodeStr!!.equals("FUXIN",true)) {
+                    subTotalValue!!.text = Utils.fourDecimalPoint(subTotal)
+                }else{
+                    subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
+                }
+                bill_disc_subtotal_txtl!!.text =Prodtotal
                 taxTitle!!.text = "GST ( Zero )"
             } else {
                 taxValueText!!.text = "0.0"
                 netTotalValue!!.text = "" + Prodtotal
-                subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
-                bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
+                if(shortCodeStr!!.equals("FUXIN",true)) {
+                    subTotalValue!!.text = Utils.fourDecimalPoint(subTotal)
+                }else{
+                    subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
+                }
+                bill_disc_subtotal_txtl!!.text =Prodtotal
 
                 taxTitle!!.text = "GST ( Zero )"
             }
@@ -2855,6 +2989,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             Log.w("TaxType12:", taxType)
             Log.w("TaxValue12:", taxValue)
             var price = priceText!!.text.toString()
+            Log.w("priceIn2:", price)
             var qty = qtyValue!!.text.toString()
             var disc = item_discount_ed!!.text.toString()
             var exchang = exchange_inv!!.text.toString()
@@ -2881,11 +3016,16 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 expiryReturnQty!!.setText("")
                 damageReturnQty!!.setText("")
             }
+            var Prodtotal = "0.0" ;
             net_qty = qty.toDouble() - return_qty
             var tt = net_qty * cPriceCalc - discountStr.toDouble()
             Log.w("dis_invStr", "$tt..$disc")
             Log.w("TOTALVALUES:", tt.toString())
-            val Prodtotal = Utils.twoDecimalPoint(tt)
+            if(shortCodeStr!!.equals("FUXIN",true)) {
+                Prodtotal = Utils.fourDecimalPoint(tt)
+            }else{
+                 Prodtotal = Utils.twoDecimalPoint(tt)
+            }
             var subTotal = 0.0
             val itemDisc = discountEditext!!.text.toString()
             subTotal = if (!itemDisc.matches("".toRegex())) {
@@ -2908,62 +3048,108 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             Log.w("SubTotalValues:", subTotal.toString())
             if (!taxType.matches("".toRegex()) && !taxValue.matches("".toRegex())) {
                 val taxValueCalc = taxValue.toDouble()
+
                 if (taxType.matches("E".toRegex())) {
                     taxAmount1 = subTotal * taxValueCalc / 100
-                    val prodTax = Utils.twoDecimalPoint(taxAmount1)
-                    taxValueText!!.text = "" + prodTax
                     netTotal1 = subTotal + taxAmount1
-                    val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
-                    netTotalValue!!.text = "" + ProdNetTotal
                     taxTitle!!.text = "GST ( Exc ) :" + taxValue.toDouble().toInt() + " % "
-                    subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
-                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
+
+                    if(shortCodeStr!!.equals("FUXIN",true)){
+                        val prodTax = Utils.fourDecimalPoint(taxAmount1)
+                        taxValueText!!.text = "" + prodTax
+                        val ProdNetTotal = Utils.fourDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        subTotalValue!!.text = Utils.fourDecimalPoint(subTotal)
+                        bill_disc_subtotal_txtl!!.text = ProdNetTotal
+
+                    }else{
+                        val prodTax = Utils.twoDecimalPoint(taxAmount1)
+                        taxValueText!!.text = "" + prodTax
+                        val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
+                        bill_disc_subtotal_txtl!!.text = ProdNetTotal
+                    }
+
                 } else if (taxType.matches("I".toRegex())) {
                     taxAmount1 = subTotal * taxValueCalc / (100 + taxValueCalc)
-                    val prodTax = Utils.twoDecimalPoint(taxAmount1)
-                    taxValueText!!.text = "" + prodTax
-                    // netTotal1 = subTotal + taxAmount1;
                     netTotal1 = subTotal
-                    val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
-                    netTotalValue!!.text = "" + ProdNetTotal
-                    val dTotalIncl = netTotal1 - taxAmount1
-                    val totalIncl = Utils.twoDecimalPoint(dTotalIncl)
-                    Log.d("totalIncl", "" + totalIncl)
-                    val sub_total = subTotal - taxAmount1
                     taxTitle!!.text = "GST ( Inc ) : " + taxValue.toDouble().toInt() + " % "
-                    subTotalValue!!.text = Utils.twoDecimalPoint(sub_total)
-                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(sub_total)
+
+                    // netTotal1 = subTotal + taxAmount1;
+                    if(shortCodeStr!!.equals("FUXIN",true)){
+                        val prodTax = Utils.fourDecimalPoint(taxAmount1)
+                        taxValueText!!.text = "" + prodTax
+                        val ProdNetTotal = Utils.fourDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        val dTotalIncl = netTotal1 - taxAmount1
+                        val totalIncl = Utils.fourDecimalPoint(dTotalIncl)
+                        val sub_total = subTotal - taxAmount1
+                        subTotalValue!!.text = Utils.fourDecimalPoint(sub_total)
+                        bill_disc_subtotal_txtl!!.text = ProdNetTotal
+                    }else{
+                        val prodTax = Utils.twoDecimalPoint(taxAmount1)
+                        taxValueText!!.text = "" + prodTax
+                        val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        val dTotalIncl = netTotal1 - taxAmount1
+                        val totalIncl = Utils.twoDecimalPoint(dTotalIncl)
+                        val sub_total = subTotal - taxAmount1
+                        subTotalValue!!.text = Utils.twoDecimalPoint(sub_total)
+                        bill_disc_subtotal_txtl!!.text = ProdNetTotal
+                    }
 
                 } else if (taxType.matches("Z".toRegex())) {
                     taxValueText!!.text = "0.0"
                     // netTotal1 = subTotal + taxAmount;
                     netTotal1 = subTotal
-                    val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
-                    netTotalValue!!.text = "" + ProdNetTotal
-                    subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
-                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
-
+                    if(shortCodeStr!!.equals("FUXIN",true)){
+                        val ProdNetTotal = Utils.fourDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        subTotalValue!!.text = Utils.fourDecimalPoint(subTotal)
+                        bill_disc_subtotal_txtl!!.text = ProdNetTotal
+                    }else{
+                        val ProdNetTotal = Utils.twoDecimalPoint(netTotal1)
+                        netTotalValue!!.text = "" + ProdNetTotal
+                        subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
+                        bill_disc_subtotal_txtl!!.text = ProdNetTotal
+                    }
                     taxTitle!!.text = "GST ( Zero )"
                 } else {
-                    taxValueText!!.text = "0.0"
+                    if(shortCodeStr!!.equals("FUXIN",true)){
+                        taxValueText!!.text = "0.0000"
+
+                    }else{
+                        taxValueText!!.text = "0.0"
+
+                    }
                     netTotalValue!!.text = "" + Prodtotal
                     subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
-                    bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
-
+                    bill_disc_subtotal_txtl!!.text = Prodtotal
                     taxTitle!!.text = "GST ( Zero )"
                 }
             } else if (taxValue.matches("".toRegex())) {
-                taxValueText!!.text = "0.0"
+                if(shortCodeStr!!.equals("FUXIN",true)){
+                    taxValueText!!.text = "0.0000"
+
+                }else {
+                    taxValueText!!.text = "0.0"
+                }
                 netTotalValue!!.text = "" + Prodtotal
                 subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
-                bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
+                bill_disc_subtotal_txtl!!.text =Prodtotal
 
                 taxTitle!!.text = "GST ( Zero )"
             } else {
-                taxValueText!!.text = "0.0"
+                if(shortCodeStr!!.equals("FUXIN",true)){
+                    taxValueText!!.text = "0.0000"
+
+                }else {
+                    taxValueText!!.text = "0.0"
+                }
                 netTotalValue!!.text = "" + Prodtotal
                 subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
-                bill_disc_subtotal_txtl!!.text =Utils.twoDecimalPoint(subTotal)
+                bill_disc_subtotal_txtl!!.text =Prodtotal
 
                 taxTitle!!.text = "GST ( Zero )"
             }
@@ -3481,6 +3667,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 }
             }
         }
+
         // Filter the products list depending the Settings
         val filteredProducts = ArrayList<ProductsModel>()
         //   for (ProductsModel s : selectProductAdapter.getProductsList()) {
@@ -3503,6 +3690,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 }
             }
         }
+
         if (filteredProducts.size > 0) {
             productLayout!!.visibility = View.VISIBLE
             emptyLayout!!.visibility = View.GONE
@@ -3536,11 +3724,23 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             }
             // setUomList(model.getProductUOMList());
             uomTextView!!.text = model.uomText
-            if (model.lastPrice != null && !model.lastPrice.isEmpty() && model.lastPrice.toDouble() > 0.00) {
-                priceText!!.setText(model.lastPrice)
-            } else {
-                priceText!!.setText(model.unitCost)
+            if(shortCodeStr.equals("FUXIN",true)) {
+                if (isLastPrice.equals("True", true)) {
+                    priceText!!.setText(model.lastPrice)
+                } else {
+                    priceText!!.setText(model.unitCost)
+                }
             }
+            else{
+                if (model.lastPrice != null && !model.lastPrice.isEmpty() &&
+                    model.lastPrice.toDouble() > 0.00
+                ) {
+                    priceText!!.setText(model.lastPrice)
+                } else {
+                    priceText!!.setText(model.unitCost)
+                }
+            }
+
             //  uomText.setText(model.getUomCode());
             stockCount!!.setText(model.stockQty)
             // looseQtyValue.setEnabled(true);
@@ -3893,11 +4093,23 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             productAutoComplete!!.setText(model.productName + " - " + model.productCode)
             //  cartonPrice.setText(model.getUnitCost()+"");
             //  loosePrice.setText(model.getUnitCost());
-            if (model.lastPrice != null && !model.lastPrice.isEmpty() && model.lastPrice.toDouble() > 0.00) {
-                priceText!!.setText(model.lastPrice)
-            } else {
-                priceText!!.setText(model.unitCost)
+            if(shortCodeStr.equals("FUXIN",true)) {
+                if (isLastPrice.equals("True", true)) {
+                    priceText!!.setText(model.lastPrice)
+                } else {
+                    priceText!!.setText(model.unitCost)
+                }
             }
+            else{
+                if (model.lastPrice != null && !model.lastPrice.isEmpty() &&
+                    model.lastPrice.toDouble() > 0.00
+                ) {
+                    priceText!!.setText(model.lastPrice)
+                } else {
+                    priceText!!.setText(model.unitCost)
+                }
+            }
+
             // uomText.setText(model.getUomCode());
             stockCount!!.setText(model.stockQty)
             pcsPerCarton!!.setText(model.pcsPerCarton)
@@ -4074,66 +4286,67 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             stockQtyValue!!.setText(pdtStockVal.toString())
                         }
                 }
+                uomText!!.setText(settingUOMval)
             }
         }
     }
 
-    fun UOMdetail(settingUOMval:String, uomList: ArrayList<UomModel>){
-        for (i in uomList.indices) {
-            if (settingUOMval!!.isEmpty()) {
-                if (uomList[i].uomCode == productsModel!!.defaultUom) {
-                    Log.w("cg_uoomcode_", productsModel!!.defaultUom)
-                    uomSpinner!!.setSelection(i)
-                    uomText!!.setText(uomList[i].uomCode)
-                    priceText!!.setText(uomList[i].price)
-                    if (stockQtyValue!!.text.toString().isNotEmpty()) {
-                        if (uomList[i].uomCode.equals("CTN", true)) {
-                            var ctnStockVal = 0.00
-                            var baseCtnQty = uomList[i].baseQty.toDouble()
-                            var pdtStock = pdtStockVal!!.toDouble()
-
-                            ctnStockVal = pdtStock / baseCtnQty
-                            stockQtyValue!!.setText(twoDecimalPoint(ctnStockVal).toString())
-                            Log.w(
-                                "ctnStockkk",
-                                "" + ctnStockVal + ".." + twoDecimalPoint(ctnStockVal).toString()
-                            )
-                            Log.w("ctnStock11", "" + baseCtnQty)
-                        } else {
-                            stockQtyValue!!.setText(pdtStockVal.toString())
-                        }
-                    }
-                }
-            } else {
-                if (uomList[i].uomCode == settingUOMval) {
-                    Log.w("cg_uoomcode_1",settingUOMval)
-
-                    uomSpinner!!.setSelection(i)
-                    uomText!!.setText(uomList[i].uomCode)
-                    priceText!!.setText(uomList[i].price)
-                    if (stockQtyValue!!.text.toString().isNotEmpty()) {
-                        if (uomList[i].uomCode.equals("CTN", true)) {
-                            var ctnStockVal = 0.00
-                            var baseCtnQty = uomList[i].baseQty.toDouble()
-                            var pdtStock = pdtStockVal!!.toDouble()
-
-                            ctnStockVal = pdtStock / baseCtnQty
-                            stockQtyValue!!.setText(twoDecimalPoint(ctnStockVal).toString())
-                            Log.w(
-                                "ctnStockkk11",
-                                "" + ctnStockVal + ".." + twoDecimalPoint(ctnStockVal).toString()
-                            )
-                            Log.w("ctnStock11aa", "" + baseCtnQty)
-                        } else {
-                            stockQtyValue!!.setText(pdtStockVal.toString())
-                        }
-                    }
-                    break
-                }
-            }
-        }
-
-    }
+//    fun UOMdetail(settingUOMval:String, uomList: ArrayList<UomModel>){
+//        for (i in uomList.indices) {
+//            if (settingUOMval!!.isEmpty()) {
+//                if (uomList[i].uomCode == productsModel!!.defaultUom) {
+//                    Log.w("cg_uoomcode_", productsModel!!.defaultUom)
+//                    uomSpinner!!.setSelection(i)
+//                    uomText!!.setText(uomList[i].uomCode)
+//                    priceText!!.setText(uomList[i].price)
+//                    if (stockQtyValue!!.text.toString().isNotEmpty()) {
+//                        if (uomList[i].uomCode.equals("CTN", true)) {
+//                            var ctnStockVal = 0.00
+//                            var baseCtnQty = uomList[i].baseQty.toDouble()
+//                            var pdtStock = pdtStockVal!!.toDouble()
+//
+//                            ctnStockVal = pdtStock / baseCtnQty
+//                            stockQtyValue!!.setText(twoDecimalPoint(ctnStockVal).toString())
+//                            Log.w(
+//                                "ctnStockkk",
+//                                "" + ctnStockVal + ".." + twoDecimalPoint(ctnStockVal).toString()
+//                            )
+//                            Log.w("ctnStock11", "" + baseCtnQty)
+//                        } else {
+//                            stockQtyValue!!.setText(pdtStockVal.toString())
+//                        }
+//                    }
+//                }
+//            } else {
+//                if (uomList[i].uomCode == settingUOMval) {
+//                    Log.w("cg_uoomcode_1",settingUOMval)
+//
+//                    uomSpinner!!.setSelection(i)
+//                    uomText!!.setText(uomList[i].uomCode)
+//                    priceText!!.setText(uomList[i].price)
+//                    if (stockQtyValue!!.text.toString().isNotEmpty()) {
+//                        if (uomList[i].uomCode.equals("CTN", true)) {
+//                            var ctnStockVal = 0.00
+//                            var baseCtnQty = uomList[i].baseQty.toDouble()
+//                            var pdtStock = pdtStockVal!!.toDouble()
+//
+//                            ctnStockVal = pdtStock / baseCtnQty
+//                            stockQtyValue!!.setText(twoDecimalPoint(ctnStockVal).toString())
+//                            Log.w(
+//                                "ctnStockkk11",
+//                                "" + ctnStockVal + ".." + twoDecimalPoint(ctnStockVal).toString()
+//                            )
+//                            Log.w("ctnStock11aa", "" + baseCtnQty)
+//                        } else {
+//                            stockQtyValue!!.setText(pdtStockVal.toString())
+//                        }
+//                    }
+//                    break
+//                }
+//            }
+//        }
+//
+//    }
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
@@ -4242,12 +4455,23 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         productAutoComplete!!.setText(model.productName + " - " + model.productCode)
         //  cartonPrice.setText(model.getUnitCost()+"");
         //  loosePrice.setText(model.getUnitCost());
-        if (model.lastPrice != null && !model.lastPrice.isEmpty() && model.lastPrice.toDouble() > 0.00) {
-            priceText!!.setText(model.lastPrice)
-        } else {
-            priceText!!.setText(model.unitCost)
+        if(shortCodeStr.equals("FUXIN",true)) {
+            if (isLastPrice.equals("True", true)) {
+                priceText!!.setText(model.lastPrice)
+            } else {
+                priceText!!.setText(model.unitCost)
+            }
         }
-                // uomText.setText(model.getUomCode());
+        else{
+            if (model.lastPrice != null && !model.lastPrice.isEmpty() &&
+                model.lastPrice.toDouble() > 0.00
+            ) {
+                priceText!!.setText(model.lastPrice)
+            } else {
+                priceText!!.setText(model.unitCost)
+            }
+        }
+        // uomText.setText(model.getUomCode());
         stockCount!!.setText(model.stockQty)
         pcsPerCarton!!.setText(model.pcsPerCarton)
         qtyValue!!.isEnabled = true
@@ -4328,6 +4552,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 //
 //                } else {
                     uomName = uomSpinner!!.selectedItem.toString()
+                uomText!!.setText(uomName)
                 Log.w("uomentyy:", uomName+pdtStockVal)
                 if(uomName.equals("CTN",true)) {
                     var ctnStockVal = 0.00
@@ -4349,6 +4574,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     Log.w("UOMQtyValue:", uomList[position].uomEntry)
                     Log.w("SelectedUOM:", uomName + "")
                // }
+                qtyValue!!.setText("")
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -4472,7 +4698,9 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 bill_disc_savel!!.visibility = View.GONE
 
                 val products = dbHelper!!.allInvoiceProducts
+                val localCart = dbHelper!!.allInvoiceProducts
 
+                if (localCart.size > 0) {
                 if (netTotalValue!!.text.toString().toDouble() > 0.00 && products!!.size>0) {
                    // bill_disc_percent_ed!!.setText(billDiscApiStr)
                     bill_disc_amt_ed!!.setText(pref_bill_disc_amt)
@@ -4480,6 +4708,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     billdisc_displayl!!.setText(pref_bill_disc_percent)
 
                     isBillPercentageTouch = true
+                    billDischide()
 
                     val subtotal: Double = getSubtotal()
                     if (isBillPercentageTouch) {
@@ -4500,6 +4729,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             } else {
                                 if(billDiscApiStr != null || !billDiscApiStr.equals("null") ) {
                                     val amount: Double = percentageToAmount(billDiscApiStr.toDouble())
+                                    bill_disc_percent_ed!!.setText(billDiscApiStr)
                                     Log.w("PercentageAmtdishc:", amount.toString() + "")
                                     bill_disc_amt_ed!!.removeTextChangedListener(
                                         billDiscAmountTextWatcher
@@ -4529,7 +4759,16 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     bill_disc_percent_ed!!.requestFocus()
                     Log.w("billdiscpi_aa::", billDiscApiStr!!)
                 }
-                billDischide()
+
+                }
+                else {
+                    Toast.makeText(
+                        applicationContext,
+                        "Add the Product First...!",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
                 // billDiscountBottomSheet()
                 true
             }
@@ -4845,45 +5084,45 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             okButton!!.setOnClickListener(View.OnClickListener { view1: View? ->
                try {
                     Log.w("entyyinv",""+activityFrom)
-                    if (companyCode == "AADHI INTERNATIONAL PTE LTD") {
-                        if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-                            || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
-                            || activityFrom == "ReOrderInvoice"
-                        ) {
-                            if (signatureString != null && !signatureString!!.isEmpty()) {
-                                alert!!.dismiss()
-                                if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-                                    || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
-                                    || activityFrom == "ReOrderInvoice"
-                                ) {
-                                    createInvoiceJson(noOfCopy.text.toString().toInt())
-                                } else if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
-                                    createSalesOrderJson(noOfCopy.text.toString().toInt())
-                                } else if (activityFrom == "do" || activityFrom == "doEdit") {
-                                    createDOJson(noOfCopy.text.toString().toInt())
-                                }
-                            } else {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "Add Signature to Save Invoice",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        } else {
-                            alert!!.dismiss()
-                            if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
-                                || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
-                                || activityFrom == "ReOrderInvoice"
-                            ) {
-                                Log.w("convet","")
-                                createInvoiceJson(noOfCopy.text.toString().toInt())
-                            } else if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
-                                createSalesOrderJson(noOfCopy.text.toString().toInt())
-                            } else if (activityFrom == "do" || activityFrom == "doEdit") {
-                                createDOJson(noOfCopy.text.toString().toInt())
-                            }
-                        }
-                    } else {
+//                    if (companyCode == "AADHI INTERNATIONAL PTE LTD") {
+//                        if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
+//                            || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+//                            || activityFrom == "ReOrderInvoice"
+//                        ) {
+//                            if (signatureString != null && !signatureString!!.isEmpty()) {
+//                                alert!!.dismiss()
+//                                if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
+//                                    || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+//                                    || activityFrom == "ReOrderInvoice"
+//                                ) {
+//                                    createInvoiceJson(noOfCopy.text.toString().toInt())
+//                                } else if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
+//                                    createSalesOrderJson(noOfCopy.text.toString().toInt())
+//                                } else if (activityFrom == "do" || activityFrom == "doEdit") {
+//                                    createDOJson(noOfCopy.text.toString().toInt())
+//                                }
+//                            } else {
+//                                Toast.makeText(
+//                                    applicationContext,
+//                                    "Add Signature to Save Invoice",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                            }
+//                        } else {
+//                            alert!!.dismiss()
+//                            if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
+//                                || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+//                                || activityFrom == "ReOrderInvoice"
+//                            ) {
+//                                Log.w("convet","")
+//                                createInvoiceJson(noOfCopy.text.toString().toInt())
+//                            } else if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
+//                                createSalesOrderJson(noOfCopy.text.toString().toInt())
+//                            } else if (activityFrom == "do" || activityFrom == "doEdit") {
+//                                createDOJson(noOfCopy.text.toString().toInt())
+//                            }
+//                        }
+//                    } else {
                         alert!!.dismiss()
                         if (activityFrom == "iv" || activityFrom == "ConvertInvoice"
                             || activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
@@ -4909,7 +5148,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         } else if (activityFrom == "do" || activityFrom == "doEdit") {
                             createDOJson(noOfCopy.text.toString().toInt())
                         }
-                    }
+                    //}
                 } catch (exception: Exception) {
                 }
             })
@@ -6205,14 +6444,17 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 //                  throw java.lang.RuntimeException(e)
 //              }
               // inDate = SimpleDateFormat("yyyyMMdd").format(oldToDatel)
-             inDate = df1.format(inputFormat.parse(Utils.getInvoiceDate()))
+              if(!shortCodeStr.equals("TRAN")) {
+                  inDate = df1.format(inputFormat.parse(Utils.getInvoiceDate()))
+              }
+              else{
+                  inDate = currentDate
+              }
              invDate = Utils.getInvoiceDate()
           } else {
               inDate = currentDate
 //              invDate = currentDate
           }
-
-
           if (activityFrom == "ConvertInvoice") {
                 rootJsonObject.put("mode", "I")
                 rootJsonObject.put("soNo", editSoNumber)
@@ -6608,6 +6850,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         var currentDate: String? = null
         var customerResponse = JSONObject()
         var locationTrack: LocationTrack? = null
+        var activityFrom: String? = ""
 
         @RequiresApi(api = Build.VERSION_CODES.O)
         private fun convertDate(strDate: String): String {

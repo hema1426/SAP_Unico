@@ -161,7 +161,7 @@ public class ReOrderCartActivity extends AppCompatActivity {
                 getCustomerDetails(customerId);
             }
         }else {
-            getCustomerDetails(AddInvoiceActivity.customerId);
+            getCustomerDetails(AddInvoiceActivityOld.customerId);
         }
 
         View bottomSheet = findViewById(R.id.design_bottom_sheet);
@@ -403,18 +403,18 @@ public class ReOrderCartActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_save) {
-            switch (AddInvoiceActivity.activityFrom) {
+            switch (AddInvoiceActivityOld.activityFrom) {
                 case "SalesOrder":
                 case "SalesEdit":
                 case "ReOrderSales":
-                    Log.w("ActionFromvalue:",AddInvoiceActivity.activityFrom);
+                    Log.w("ActionFromvalue:", AddInvoiceActivityOld.activityFrom);
                     showSaveOption("SalesOrder");
                     break;
                 case "Invoice":
                 case "InvoiceEdit":
                 case "ConvertInvoice":
                 case "ReOrderInvoice":
-                    Log.w("ActionFromvalue:",AddInvoiceActivity.activityFrom);
+                    Log.w("ActionFromvalue:", AddInvoiceActivityOld.activityFrom);
                     showSaveOption("Invoice");
                     break;
 

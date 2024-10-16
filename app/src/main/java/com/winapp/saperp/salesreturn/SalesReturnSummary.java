@@ -40,11 +40,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
-import com.winapp.saperp.activity.CartActivity;
 import com.winapp.saperp.adapter.TableViewAdapter;
 import com.winapp.saperp.db.DBHelper;
-import com.winapp.saperp.fragments.CustomerFragment;
 import com.winapp.saperp.fragments.SummaryFragment;
 import com.winapp.saperp.model.AppUtils;
 import com.winapp.saperp.model.CartModel;
@@ -77,7 +74,6 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.content.Context.MODE_PRIVATE;
-import static com.winapp.saperp.activity.AddInvoiceActivity.activityFrom;
 
 public class SalesReturnSummary extends Fragment {
 

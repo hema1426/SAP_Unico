@@ -71,6 +71,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.winapp.saperp.BuildConfig
 import com.winapp.saperp.R
+import com.winapp.saperp.activity.CreateNewInvoiceActivity
 import com.winapp.saperp.activity.NewInvoiceListActivity
 import com.winapp.saperp.activity.SalesOrderListActivity
 import com.winapp.saperp.adapter.NewSalesReturnProductAdapter
@@ -353,6 +354,9 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         try {
             jsonObject.put("User", username)
             jsonObject.put("CardCode", customerCode)
+//            jsonObject.put("ItemGroupCode", "All")
+            jsonObject.put("LocationCode", locationCode)
+
             getAllProducts(jsonObject)
         } catch (e: JSONException) {
             e.printStackTrace()
@@ -797,13 +801,13 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                             filterdNames.add(s)
                         }
                     }
-                } else if (action == "Out of Stock") {
+                }  else if (action == "Out of Stock") {
                     if (s.stockQty != null && s.stockQty != "null") {
-                        if (s.stockQty.toDouble() < 0) {
+                        if (s.stockQty.toDouble() < 0 || s.stockQty.toDouble() == 0.0) {
                             filterdNames.add(s)
                         }
                     }
-                } else {
+                }else {
                     filterdNames.add(s)
                 }
             }
@@ -1553,94 +1557,116 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         val requestQueue = Volley.newRequestQueue(this)
         val url = Utils.getBaseUrl(this) + "CustomerProductList"
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_SAP_PROUCT_URL:", url + jsonObject)
+        Log.w("Given_SAP_PROUCT_URL:", url + jsonObject.toString())
         productList = ArrayList()
         products = ArrayList()
-        progressDialog = ProgressDialog(this)
-        progressDialog!!.setCancelable(false)
-        progressDialog!!.setMessage("Getting Customer Products List...")
-        progressDialog!!.show()
-        val jsonObjectRequest: JsonObjectRequest =
-            object : JsonObjectRequest(Method.POST, url, jsonObject,
-                Response.Listener { response: JSONObject ->
-                    try {
-                        progressDialog!!.dismiss()
-                        Log.w("Response_SAP_PRODUCTS:", response.toString())
-                        // Loop through the array elements
-                        val productArray = response.optJSONArray("responseData")
-                        for (i in 0 until productArray.length()) {
-                            // Get current json object
-                            val productObject = productArray.getJSONObject(i)
-                            val product = ProductsModel()
-                            if (productObject.optString("isActive") == "N") {
-                                product.companyCode = "1"
-                                // Adding bp name for products
-                                if (productObject.optString("bP_Description") != null && !productObject.optString(
-                                        "bP_Description"
-                                    )
-                                        .isEmpty() && productObject.optString("bP_Description") != "null"
-                                ) {
-                                    product.productName = productObject.optString("bP_Description")
-                                } else {
-                                    product.productName = productObject.optString("productName")
-                                }
-                                if (productObject.optString("bP_CatalogNo") != null) {
-                                    product.customerItemCode = productObject.optString("bP_CatalogNo")
-                                }
-                                product.productCode = productObject.optString("productCode")
-                                product.weight = ""
-                                product.productImage = productObject.optString("imageURL")
-                                product.wholeSalePrice = "0.00"
-                                product.retailPrice = productObject.optDouble("retailPrice")
-                                product.cartonPrice = productObject.optString("cartonPrice")
-                                product.pcsPerCarton = productObject.optString("pcsPerCarton")
-                                product.barcode = productObject.optString("barcode")
-                                // product.setUnitCost(productObject.optString("price"));
-                                product.unitCost = productObject.optString("lastSalesPrice")
-                                product.minimumSellingPrice =
-                                    productObject.optString("minimumSellingPrice")
-                                if (productObject.optString("stockInHand") != "null") {
-                                    product.stockQty = productObject.optString("stockInHand")
-                                } else {
-                                    product.stockQty = "0"
-                                }
-                                product.uomCode = productObject.optString("uomCode")
-                                //  product.setProductBarcode(productObject.optString("BarCode")); Add values In Futue
-                                product.productBarcode = ""
-                                productList!!.add(product)
+        //  SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        //  pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        //  pDialog.setTitleText("Loading Products...");
+        //  pDialog.setCancelable(false);
+        //  pDialog.show();
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST,
+            url,
+            jsonObject,
+            Response.Listener { response: JSONObject ->
+                try {
+
+                   Log.w("Response_SAP_PRODUCTS:", response.toString())
+                    // Loop through the array elements
+                    val productArray = response.optJSONArray("responseData")
+                    for (i in 0 until Objects.requireNonNull(productArray).length()) {
+                        // Get current json object
+                        val productObject = productArray.getJSONObject(i)
+                        val product = ProductsModel()
+                        if (productObject.optString("isActive") == "N") {
+                            product.companyCode = "1"
+                            // Adding bp name for products
+                            if (productObject.optString("bP_Description") != null && !productObject.optString(
+                                    "bP_Description"
+                                ).isEmpty() && productObject.optString("bP_Description") != "null"
+                            ) {
+                                product.productName = productObject.optString("bP_Description")
+                            } else {
+                                product.productName = productObject.optString("productName")
                             }
-                        }
-                        HomePageModel.productsList = ArrayList()
-                        HomePageModel.productsList.addAll(productList!!)
-                        setAdapter(productList)
-                        HomePageModel.productsList.addAll(productList!!)
-                        if (productList!!.size > 0) {
-                            runOnUiThread {
-                                AppUtils.setProductsList(productList)
-                                progressDialog!!.dismiss()
-                             //   setProductsDisplay("All Products")
-                                // dbHelper.insertProducts(getActivity(),productList);
+                            if (productObject.optString("bP_CatalogNo") != null) {
+                                product.customerItemCode = productObject.optString("bP_CatalogNo")
                             }
+                            product.productCode = productObject.optString("productCode")
+                            product.weight = ""
+                            product.productImage = productObject.optString("imageURL")
+                            product.wholeSalePrice = "0.00"
+                            product.retailPrice = productObject.optDouble("retailPrice")
+                            product.barcode = productObject.optString("barCode")
+                            product.cartonPrice = productObject.optString("cartonPrice")
+                            product.pcsPerCarton = productObject.optString("pcsPerCarton")
+                            product.unitCost = productObject.optString("price")
+                            product.lastPrice = productObject.optString("lastSalesPrice")
+                            product.minimumSellingPrice =
+                                productObject.optString("minimumSellingPrice")
+                            product.defaultUom = productObject.optString("defaultSalesUOM")
+                            if (productObject.optString("stockInHand") != "null") {
+                                product.stockQty = productObject.optString("stockInHand")
+                            } else {
+                                product.stockQty = "0"
+                            }
+                            product.uomCode = productObject.optString("uomCode")
+                            //  product.setProductBarcode(productObject.optString("BarCode")); Add values In Futue
+                            // product.productBarcode = ""
+
+                            /*  ArrayList<UomModel> uomList=new ArrayList<>();
+                                JSONArray uomArray=productObject.optJSONArray("uomDetails");
+                                if (uomArray!=null && uomArray.length() > 0){
+                                    for (int j = 0; j< uomArray.length(); j++){
+                                        JSONObject uomObject = uomArray.getJSONObject(j);
+                                        UomModel uomModel =new UomModel();
+                                        uomModel.setUomCode(uomObject.optString("uomCode"));
+                                        uomModel.setUomName(uomObject.optString("uomName"));
+                                        uomModel.setUomEntry(uomObject.optString("uomEntry"));
+                                        uomModel.setAltQty(uomObject.optString("altQty"));
+                                        uomModel.setBaseQty(uomObject.optString("baseQty"));
+
+                                        uomList.add(uomModel);
+                                    }
+                                }
+                                product.setUomText(uomList.toString());
+                                product.setProductUOMList(uomList);*/
+
+                            productList!!.add(product)
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
                     }
-                }, Response.ErrorListener { error: VolleyError ->
-                    // Do something when error occurred
-                    Log.w("Error_throwing:", error.toString())
-                }) {
-                override fun getHeaders(): Map<String, String> {
-                    val params = HashMap<String, String>()
-                    val creds = String.format(
-                        "%s:%s",
-                        Constants.API_SECRET_CODE,
-                        Constants.API_SECRET_PASSWORD
-                    )
-                    val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
-                    params["Authorization"] = auth
-                    return params
-                }
+                    HomePageModel.productsList = ArrayList()
+//                    productList!!.get(0).barcode = "1234566"
+//                    productList!!.get(1).barcode = "888801566968"
+                    setAdapter(productList)
+                    HomePageModel.productsList.addAll(productList!!)
+                    // pDialog.dismiss();
+                    if (productList!!.size > 0) {
+                        runOnUiThread {
+                            AppUtils.setProductsList(productList)
+
+                            // setProductsDisplay("All Products")
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.w("Errorn:", Objects.requireNonNull(e.message!!))                }
+            },
+            Response.ErrorListener { error: VolleyError ->
+                // Do something when error occurred
+                // pDialog.dismiss();
+                Log.w("Error_throwing:", error.toString())
+            }) {
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                val creds =
+                    String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD)
+                val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
+                params["Authorization"] = auth
+                return params
             }
+        }
         jsonObjectRequest.setRetryPolicy(object : RetryPolicy {
             override fun getCurrentTimeout(): Int {
                 return 50000
@@ -1662,7 +1688,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
     private fun setAdapter(productList: ArrayList<ProductsModel>?) {
         // Get the Settings to Display the Product list with the Settings
         val settings = dbHelper!!.settings
-        if (settings.size > 0) {
+        if (settings!!.size > 0) {
             for (model in settings) {
                 if (model.settingName == "stock_view") {
                     if (model.settingValue == "1") {
@@ -1688,7 +1714,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                     }
                 } else if (stockProductView == "0") {
                     if (product.stockQty != null && product.stockQty != "null") {
-                        if (product.stockQty.toDouble() < 0 || product.stockQty.toDouble().equals("0")) {
+                        if (product.stockQty.toDouble() < 0 || product.stockQty.toDouble() == 0.0) {
                             filteredProducts.add(product)
                         }
                     }
@@ -1950,8 +1976,8 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         // Filter the products list depending the Settings
         val filteredProducts = ArrayList<ProductsModel>()
         //   for (ProductsModel s : selectProductAdapter.getProductsList()) {
-        if (AppUtils.getProductsList() != null && AppUtils.getProductsList().size > 0) {
-            for (product in AppUtils.getProductsList()) {
+        if (productList != null && productList!!.size > 0) {
+            for (product in productList!!) {
                 if (stockProductView == "1") {
                     if (product.stockQty != null && product.stockQty != "null") {
                         if (product.stockQty.toDouble() > 0) {
@@ -1960,7 +1986,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                     }
                 } else if (stockProductView == "0") {
                     if (product.stockQty != null && product.stockQty != "null") {
-                        if (product.stockQty.toDouble() < 0 || product.stockQty.toDouble().equals("0")) {
+                        if (product.stockQty.toDouble() < 0 || product.stockQty.toDouble() == 0.0) {
                             filteredProducts.add(product)
                         }
                     }
@@ -2065,7 +2091,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                /*   Intent intent = new Intent(CreateNewInvoiceActivity.this, CustomerListActivity.class);
+                /*   Intent intent = new Intent(this, CustomerListActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);*/finish()
                 true
@@ -2722,12 +2748,12 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                 try {
                     val itemCode = itemGroup!![i].groupCode
                     Log.e("selectspinn", "" + itemCode)
-                    if (itemCode != "Select Brand") {
+                  //  if (itemCode != "Select Brand") {
                         jsonObject.put("User", username)
                         jsonObject.put("CardCode", customerCode)
                         jsonObject.put("ItemGroupCode", itemCode)
                         getAllProducts(jsonObject)
-                    }
+                  //  }
                 } catch (e: JSONException) {
                     e.printStackTrace()
                 }
@@ -2888,57 +2914,58 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
             val requestQueue = Volley.newRequestQueue(this)
             val url = Utils.getBaseUrl(applicationContext) + "ItemGroupList"
             // Initialize a new JsonArrayRequest instance
-            Log.w("Given_url_group:", url)
-            pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
-            pDialog!!.progressHelper.barColor = Color.parseColor("#A5DC86")
-            pDialog!!.setTitleText("Loading Groups...")
-            pDialog!!.setCancelable(false)
-            pDialog!!.show()
+            Log.w("Given_url_gup_brand:", url)
+            //    pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+            //   pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+            //   pDialog.setTitleText("Loading Groups...");
+            //  pDialog.setCancelable(false);
+            //  pDialog.show();
             itemGroup = ArrayList()
-            itemGroup!!.add(ItemGroupList("Select Brand", "Select Brand"))
-            val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
-                Method.GET,
-                url,
-                null,
-                Response.Listener { response: JSONObject ->
-                    try {
-                        Log.w("grouplist:", response.toString())
-                        pDialog!!.dismiss()
-                        val statusCode = response.optString("statusCode")
-                        val statusMessage = response.optString("statusMessage")
-                        if (statusCode == "1") {
-                            val groupArray = response.optJSONArray("responseData")
-                            for (i in 0 until groupArray.length()) {
-                                val jsonObject = groupArray.getJSONObject(i)
-                                val groupName = jsonObject.getString("itemGroupName")
-                                val groupCode = jsonObject.getString("itemGroupCode")
-                                val itemGroupList = ItemGroupList(groupCode, groupName)
-                                itemGroup!!.add(itemGroupList)
+            //  itemGroup.add(new ItemGroupList("Select Brand", "Select Brand"));
+            val jsonObjectRequest: JsonObjectRequest =
+                object : JsonObjectRequest(Method.GET, url, null,
+                    Response.Listener { response: JSONObject ->
+                        try {
+                            Log.w("group_brandlist:", response.toString())
+
+                            // pDialog.dismiss();
+                            val statusCode = response.optString("statusCode")
+                            val statusMessage = response.optString("statusMessage")
+                            if (statusCode == "1") {
+                                val groupArray = response.optJSONArray("responseData")
+                                for (i in 0 until groupArray.length()) {
+                                    val jsonObject = groupArray.getJSONObject(i)
+                                    val groupName = jsonObject.getString("itemGroupName")
+                                    val groupCode = jsonObject.getString("itemGroupCode")
+                                    val itemGroupList = ItemGroupList(groupCode, groupName)
+                                    itemGroup!!.add(itemGroupList)
+                                }
+                                if (itemGroup!!.size > 0) {
+                                    setupGroup(itemGroup!!)
+                                }
                             }
-                            if (itemGroup!!.size > 0) {
-                                setupGroup(itemGroup!!)
-                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            Log.w("Error4:", Objects.requireNonNull(e.message!!))
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    }, Response.ErrorListener { error: VolleyError ->
+                        // Do something when error occurred
+                        //  pDialog.dismiss();
+                        Log.w("Error_throwing:", error.toString())
+                    }) {
+                    override fun getHeaders(): Map<String, String> {
+                        val params = HashMap<String, String>()
+                        val creds = String.format(
+                            "%s:%s",
+                            Constants.API_SECRET_CODE,
+                            Constants.API_SECRET_PASSWORD
+                        )
+                        val auth =
+                            "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
+                        params["Authorization"] = auth
+                        return params
                     }
-                }, Response.ErrorListener { error: VolleyError ->
-                    // Do something when error occurred
-                    pDialog!!.dismiss()
-                    Log.w("Error_throwing:", error.toString())
-                }) {
-                override fun getHeaders(): Map<String, String> {
-                    val params = HashMap<String, String>()
-                    val creds = String.format(
-                        "%s:%s",
-                        Constants.API_SECRET_CODE,
-                        Constants.API_SECRET_PASSWORD
-                    )
-                    val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
-                    params["Authorization"] = auth
-                    return params
                 }
-            }
             jsonObjectRequest.setRetryPolicy(object : RetryPolicy {
                 override fun getCurrentTimeout(): Int {
                     return 50000

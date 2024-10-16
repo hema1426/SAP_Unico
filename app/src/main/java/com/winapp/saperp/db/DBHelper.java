@@ -10,8 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.cete.dynamicpdf.merger.S;
-import com.winapp.saperp.activity.AddInvoiceActivity;
+import com.winapp.saperp.activity.AddInvoiceActivityOld;
 import com.winapp.saperp.activity.MainHomeActivity;
 import com.winapp.saperp.fragments.ProductFragment;
 import com.winapp.saperp.model.CartModel;
@@ -858,7 +857,7 @@ public class DBHelper extends SQLiteOpenHelper {
             }
 
             Log.w("Insert_all_success_1", "Success");
-            if (context instanceof AddInvoiceActivity) {
+            if (context instanceof AddInvoiceActivityOld) {
                 ProductFragment.closeDialog();
             }
             db.close();

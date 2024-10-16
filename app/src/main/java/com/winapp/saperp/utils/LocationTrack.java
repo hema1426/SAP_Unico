@@ -18,7 +18,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
-import com.winapp.saperp.activity.AddInvoiceActivity;
+import com.winapp.saperp.activity.AddInvoiceActivityOld;
 import com.winapp.saperp.activity.CartActivity;
 
 /**
@@ -176,7 +176,7 @@ public class LocationTrack extends Service implements LocationListener {
     public void onLocationChanged(Location location) {
         if (mContext instanceof CartActivity){
             ((CartActivity) mContext).setCurrentLocation(location.getLatitude(),location.getLongitude());
-        }else if (mContext instanceof AddInvoiceActivity){
+        }else if (mContext instanceof AddInvoiceActivityOld){
 
         }
        // Toast.makeText(getApplicationContext(), "Long: " + location.getLongitude() + ", Lat: " + location.getLatitude(), Toast.LENGTH_SHORT).show();

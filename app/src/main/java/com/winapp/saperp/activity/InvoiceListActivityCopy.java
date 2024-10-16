@@ -640,7 +640,7 @@ public class InvoiceListActivityCopy extends NavigationActivity implements TabLa
 
                                 int count=dbHelper.numberOfRows();
                                 if (products.length()==count){
-                                    Intent intent=new Intent(InvoiceListActivityCopy.this,AddInvoiceActivity.class);
+                                    Intent intent=new Intent(InvoiceListActivityCopy.this, AddInvoiceActivityOld.class);
                                     intent.putExtra("customerId",customer_code);
                                     intent.putExtra("invoiceNumber",invoice_no);
                                     intent.putExtra("activityFrom","InvoiceEdit");
@@ -958,8 +958,8 @@ public class InvoiceListActivityCopy extends NavigationActivity implements TabLa
                 alertDialog.dismiss();
                 dbHelper.removeCustomer();
                 dbHelper.removeAllItems();
-                AddInvoiceActivity.customerId=customer_code;
-                Intent intent=new Intent(InvoiceListActivityCopy.this,AddInvoiceActivity.class);
+                AddInvoiceActivityOld.customerId=customer_code;
+                Intent intent=new Intent(InvoiceListActivityCopy.this, AddInvoiceActivityOld.class);
                 intent.putExtra("customerId",customer_code);
                 intent.putExtra("activityFrom","Invoice");
                 startActivity(intent);
@@ -1112,7 +1112,7 @@ public class InvoiceListActivityCopy extends NavigationActivity implements TabLa
                             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                         }
                         dbHelper.removeAllItems();
-                        Intent intent=new Intent(InvoiceListActivityCopy.this,AddInvoiceActivity.class);
+                        Intent intent=new Intent(InvoiceListActivityCopy.this, AddInvoiceActivityOld.class);
                         intent.putExtra("customerId",customer);
                         intent.putExtra("activityFrom","Invoice");
                         startActivity(intent);
@@ -1140,7 +1140,7 @@ public class InvoiceListActivityCopy extends NavigationActivity implements TabLa
                         }
                         dialog.cancel();
                         dbHelper.removeAllItems();
-                        Intent intent=new Intent(InvoiceListActivityCopy.this,AddInvoiceActivity.class);
+                        Intent intent=new Intent(InvoiceListActivityCopy.this, AddInvoiceActivityOld.class);
                         intent.putExtra("customerId",customerId);
                         intent.putExtra("activityFrom","Invoice");
                         startActivity(intent);

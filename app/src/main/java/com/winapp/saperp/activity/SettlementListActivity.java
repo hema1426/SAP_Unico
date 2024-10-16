@@ -94,6 +94,8 @@ public class SettlementListActivity extends NavigationActivity implements View.O
     private SessionManager session;
     private HashMap<String ,String> user;
     private ArrayList<CurrencyModel> currencyList;
+    String settlementdate = "";
+
     private CurrencyDenominationAdapter currencyDenominationAdapter;
     private ExpenseAdapter expenseAdapter;
     private String printerMacId;
@@ -580,6 +582,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
                                 JSONArray responseDataArray=response.getJSONArray("responseData");
                                 JSONObject responseObject=responseDataArray.getJSONObject(0);
                                 String settlementAmount=responseObject.optString("totalAmount");
+                                settlementdate =responseObject.optString("settlementDate");
                                 JSONArray denominationArray=responseObject.optJSONArray("settlementDetails");
                                 for (int i = 0; i< Objects.requireNonNull(denominationArray).length(); i++){
                                     JSONObject currencyObject = denominationArray.optJSONObject(i);
@@ -607,7 +610,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
                         }
                         if (currencyList.size()>0){
                             hideOption();
-                            printSettlement(savePrint);
+                            printSettlement(savePrint,settlementdate);
                         }else {
                             Toast.makeText(getApplicationContext(),"No Data Found...",Toast.LENGTH_SHORT).show();
                         }
@@ -646,7 +649,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void printSettlement(String savePrint){
+    public void printSettlement(String savePrint,String settleDate){
         if (Utils.validatePrinterConfiguration(this,printerType,printerMacId)) {
 
         if (printerType.equals("Zebra Printer")) {
@@ -664,7 +667,7 @@ public class SettlementListActivity extends NavigationActivity implements View.O
                 try {
                     printer.setSettlementPrintSave(1,
                             saveSettlemtNo,
-                            currentDate,
+                            settleDate,
                             locationCode,
                             username,
                             currencyList,

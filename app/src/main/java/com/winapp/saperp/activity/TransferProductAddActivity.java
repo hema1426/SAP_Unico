@@ -2354,7 +2354,7 @@ public class TransferProductAddActivity extends AppCompatActivity {
 
         Log.w("GivenTransferRequest:",rootJson.toString());
 
-        saveTransferOrRequest(rootJson,1,transferType);
+       // saveTransferOrRequest(rootJson,1,transferType);
 
     }
 

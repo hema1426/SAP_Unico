@@ -365,7 +365,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 finish();
                             }else {
                                 CustomerFragment.isLoad=true;
-                                Intent intent=new Intent(SalesOrderListActivity.this,AddInvoiceActivity.class);
+                                Intent intent=new Intent(SalesOrderListActivity.this, AddInvoiceActivityOld.class);
                                 intent.putExtra("customerId",selectedCustomerId);
                                 intent.putExtra("activityFrom","SalesOrder");
                                 startActivity(intent);
@@ -2120,7 +2120,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             if(resultCode == Activity.RESULT_OK){
                 String result=data.getStringExtra("customerCode");
                 Utils.setCustomerSession(this,result);
-                Intent intent=new Intent(SalesOrderListActivity.this,AddInvoiceActivity.class);
+                Intent intent=new Intent(SalesOrderListActivity.this, AddInvoiceActivityOld.class);
                 intent.putExtra("customerId",result);
                 intent.putExtra("activityFrom","SalesOrder");
                 startActivity(intent);
@@ -2169,11 +2169,11 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                 alertDialog.dismiss();
                 dbHelper.removeCustomer();
                 dbHelper.removeAllItems();
-                AddInvoiceActivity.customerId=customer_code;
+                AddInvoiceActivityOld.customerId=customer_code;
                 setCustomerDetails(customer_code);
                 selectedCustomerId=customer_code;
                 redirectInvoice=false;
-                Intent intent=new Intent(SalesOrderListActivity.this,AddInvoiceActivity.class);
+                Intent intent=new Intent(SalesOrderListActivity.this, AddInvoiceActivityOld.class);
                 intent.putExtra("customerId",customer_code);
                 intent.putExtra("activityFrom","SalesOrder");
                 startActivity(intent);

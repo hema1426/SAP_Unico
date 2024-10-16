@@ -232,7 +232,7 @@ public class AllInvoices extends Fragment {
                 pDialog.show();
             }*/
             isfirstTime=false;
-            invoiceList=new ArrayList<>();
+
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                     response -> {
                         try {
@@ -242,6 +242,7 @@ public class AllInvoices extends Fragment {
                             // "totalDiscount":"0.000000","paidAmount":"0.000000","contactPersonCode":"0","createDate":"13\/07\/2021",
                             // "updateDate":"13\/07\/2021","remark":""}]}
                           //  pDialog.dismiss();
+                            invoiceList=new ArrayList<>();
                             if (response.length() > 0) {
                                 String statusCode=response.optString("statusCode");
                                 if (statusCode.equals("1")){

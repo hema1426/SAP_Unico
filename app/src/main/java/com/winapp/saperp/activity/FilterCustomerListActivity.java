@@ -239,7 +239,7 @@ public class FilterCustomerListActivity extends NavigationActivity {
             public void onClick(View view) {
                 viewCloseBottomSheet();
                 dbHelper.removeAllItems();
-                AddInvoiceActivity.customerId=customerId.getText().toString();
+                AddInvoiceActivityOld.customerId=customerId.getText().toString();
                 Utils.setCustomerSession(FilterCustomerListActivity.this,customerId.getText().toString());
                 if (createInvoiceSetting.equals("true")){
 
@@ -250,7 +250,7 @@ public class FilterCustomerListActivity extends NavigationActivity {
                     startActivity(intent);
 
                 }else {
-                    Intent intent=new Intent(FilterCustomerListActivity.this,AddInvoiceActivity.class);
+                    Intent intent=new Intent(FilterCustomerListActivity.this, AddInvoiceActivityOld.class);
                     intent.putExtra("customerId",customerId.getText().toString());
                     intent.putExtra("activityFrom","SalesOrder");
                     startActivity(intent);
@@ -266,7 +266,7 @@ public class FilterCustomerListActivity extends NavigationActivity {
             public void onClick(View view) {
                 viewCloseBottomSheet();
                 dbHelper.removeAllItems();
-                AddInvoiceActivity.customerId=customerId.getText().toString();
+                AddInvoiceActivityOld.customerId=customerId.getText().toString();
                 Utils.setCustomerSession(FilterCustomerListActivity.this,customerId.getText().toString());
                 if (createInvoiceSetting.equals("true")){
 
@@ -277,7 +277,7 @@ public class FilterCustomerListActivity extends NavigationActivity {
                     startActivity(intent);
 
                 }else {
-                    Intent intent = new Intent(FilterCustomerListActivity.this, AddInvoiceActivity.class);
+                    Intent intent = new Intent(FilterCustomerListActivity.this, AddInvoiceActivityOld.class);
                     intent.putExtra("customerId", customerId.getText().toString());
                     intent.putExtra("activityFrom", "SalesOrder");
                     startActivity(intent);
@@ -291,7 +291,7 @@ public class FilterCustomerListActivity extends NavigationActivity {
             public void onClick(View view) {
                 viewCloseBottomSheet();
                 dbHelper.removeAllItems();
-                AddInvoiceActivity.customerId=customerId.getText().toString();
+                AddInvoiceActivityOld.customerId=customerId.getText().toString();
                 Utils.setCustomerSession(FilterCustomerListActivity.this,customerId.getText().toString());
                 if (createInvoiceSetting.equals("true")){
 
@@ -302,7 +302,7 @@ public class FilterCustomerListActivity extends NavigationActivity {
                     startActivity(intent);
 
                 }else {
-                    Intent intent = new Intent(FilterCustomerListActivity.this, AddInvoiceActivity.class);
+                    Intent intent = new Intent(FilterCustomerListActivity.this, AddInvoiceActivityOld.class);
                     intent.putExtra("customerId", customerId.getText().toString());
                     intent.putExtra("activityFrom", "Invoice");
                     startActivity(intent);
@@ -316,7 +316,7 @@ public class FilterCustomerListActivity extends NavigationActivity {
             public void onClick(View view) {
                 viewCloseBottomSheet();
                 dbHelper.removeAllItems();
-                AddInvoiceActivity.customerId=customerId.getText().toString();
+                AddInvoiceActivityOld.customerId=customerId.getText().toString();
                 Utils.setCustomerSession(FilterCustomerListActivity.this,customerId.getText().toString());
                 if (createInvoiceSetting.equals("true")){
 
@@ -327,7 +327,7 @@ public class FilterCustomerListActivity extends NavigationActivity {
                     startActivity(intent);
 
                 }else {
-                    Intent intent = new Intent(FilterCustomerListActivity.this, AddInvoiceActivity.class);
+                    Intent intent = new Intent(FilterCustomerListActivity.this, AddInvoiceActivityOld.class);
                     intent.putExtra("customerId", customerId.getText().toString());
                     intent.putExtra("activityFrom", "Invoice");
                     startActivity(intent);

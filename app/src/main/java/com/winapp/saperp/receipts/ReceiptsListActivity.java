@@ -53,7 +53,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
+import com.winapp.saperp.activity.AddInvoiceActivityOld;
 import com.winapp.saperp.activity.FilterCustomerListActivity;
 import com.winapp.saperp.activity.NavigationActivity;
 import com.winapp.saperp.adapter.SelectCustomerAdapter;
@@ -1698,7 +1698,7 @@ public class ReceiptsListActivity extends NavigationActivity {
                 }else {
                     viewCloseBottomSheet();
                     dbHelper.removeAllItems();
-                    Intent intent=new Intent(ReceiptsListActivity.this, AddInvoiceActivity.class);
+                    Intent intent=new Intent(ReceiptsListActivity.this, AddInvoiceActivityOld.class);
                     intent.putExtra("customerId",customer);
                     intent.putExtra("activityFrom","SalesOrder");
                     startActivity(intent);
@@ -1720,7 +1720,7 @@ public class ReceiptsListActivity extends NavigationActivity {
                         dialog.cancel();
                         dbHelper.removeAllItems();
                         viewCloseBottomSheet();
-                        Intent intent=new Intent(ReceiptsListActivity.this,AddInvoiceActivity.class);
+                        Intent intent=new Intent(ReceiptsListActivity.this, AddInvoiceActivityOld.class);
                         intent.putExtra("customerId",customerId);
                         intent.putExtra("activityFrom","SalesOrder");
                         startActivity(intent);

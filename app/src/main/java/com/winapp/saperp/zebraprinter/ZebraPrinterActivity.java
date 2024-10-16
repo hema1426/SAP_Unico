@@ -20,7 +20,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
+import com.winapp.saperp.activity.AddInvoiceActivityOld;
 import com.winapp.saperp.activity.CartActivity;
 import com.winapp.saperp.fragments.SummaryFragment;
 import com.winapp.saperp.model.CurrencyModel;
@@ -180,7 +180,7 @@ public class ZebraPrinterActivity {
         if (context instanceof InvoicePrintPreviewActivity){
             InvoicePrintPreviewActivity printPreviewActivity=new InvoicePrintPreviewActivity();
             printPreviewActivity.closeAlert();
-        }else if (context instanceof AddInvoiceActivity){
+        }else if (context instanceof AddInvoiceActivityOld){
             SummaryFragment.closeAlert();
         }else if (context instanceof CartActivity){
             CartActivity.closeAlert();
@@ -315,7 +315,7 @@ public class ZebraPrinterActivity {
                     dialog.setMessage(e.getMessage());
                 } catch (ConnectionException e1) {
                     // TODO Auto-generated catch block
-                    if (context instanceof AddInvoiceActivity){
+                    if (context instanceof AddInvoiceActivityOld){
                         SummaryFragment.redirectActivity();
                     }else if (context instanceof CartActivity){
                         ((CartActivity)context).redirectActivity();

@@ -28,18 +28,53 @@
             android:layout_width="1dip"
             android:background="#f2f2f2"
             android:layout_height="match_parent"/>
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/table_content_cell_bg"
+            android:orientation="horizontal"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="top|center"
+                android:gravity="left"
+                android:layout_marginLeft="4dp"
+                android:textStyle="bold"
+                android:id="@+id/product"
+                android:textColor="#212121"
+                android:text="Item Descrition"
+                android:textSize="12sp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="top|center"
+                android:textStyle="bold"
+                android:id="@+id/stockQtyInv"
+                android:textColor="@color/pink_clr"
+                android:text=""
+                android:textSize="12sp"
+                />
+
+        </LinearLayout>
+        <View
+            android:layout_width="1dip"
+            android:background="#f2f2f2"
+            android:layout_height="match_parent"/>
 
         <TextView
-            android:layout_width="200dp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_gravity="top"
             android:gravity="center"
             android:layout_weight="1"
+            android:id="@+id/uomItem_inv"
             android:textStyle="bold"
-            android:id="@+id/product"
             android:textColor="#212121"
             android:background="@drawable/table_content_cell_bg"
-            android:text="Item Descrition"
+            android:text="0"
             android:textSize="12sp"
             />
         <View

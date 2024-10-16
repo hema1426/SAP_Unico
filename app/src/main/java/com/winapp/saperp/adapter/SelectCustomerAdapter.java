@@ -1,8 +1,5 @@
 package com.winapp.saperp.adapter;
 
-import static androidx.core.content.ContextCompat.startActivity;
-import static com.winapp.saperp.activity.AddInvoiceActivity.activityFrom;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -23,9 +20,8 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.cete.dynamicpdf.C;
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
+import com.winapp.saperp.activity.AddInvoiceActivityOld;
 import com.winapp.saperp.activity.CustomerListActivity;
 import com.winapp.saperp.activity.DeliveryOrderListActivity;
 import com.winapp.saperp.activity.InvoiceListActivityCopy;
@@ -99,7 +95,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
                 || context instanceof NewInvoiceListActivity
                 || context instanceof DeliveryOrderListActivity
                 || context instanceof SalesReturnActivity
-                || context instanceof AddInvoiceActivity) {
+                || context instanceof AddInvoiceActivityOld) {
             viewHolder.customerCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -112,7 +108,7 @@ public class SelectCustomerAdapter extends RecyclerView.Adapter<SelectCustomerAd
                 || context instanceof InvoiceListActivityCopy
                 || context instanceof NewInvoiceListActivity
                 || context instanceof DeliveryOrderListActivity
-                || context instanceof AddInvoiceActivity
+                || context instanceof AddInvoiceActivityOld
                 || context instanceof SalesReturnActivity){
             viewHolder.customerLayout.setOnClickListener(new View.OnClickListener() {
                 @Override

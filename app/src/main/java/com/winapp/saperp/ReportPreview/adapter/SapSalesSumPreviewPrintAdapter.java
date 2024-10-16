@@ -39,7 +39,12 @@ public class SapSalesSumPreviewPrintAdapter extends RecyclerView.Adapter<SapSale
         viewHolder.transNo.setText(reportSalesSummarymodel.getTransNo());
         viewHolder.cust.setText(reportSalesSummarymodel.getCustomer());
         viewHolder.price.setText("$   "+ Utils.twoDecimalPoint(Double.parseDouble(reportSalesSummarymodel.getAmount())));
-        viewHolder.type.setText(String.valueOf(reportSalesSummarymodel.getType()));
+        if(reportSalesSummarymodel.getType().equalsIgnoreCase("CS")) {
+            viewHolder.type.setText("Cash Sales");
+        }
+        else{
+            viewHolder.type.setText(String.valueOf(reportSalesSummarymodel.getType()));
+        }
     }
 
     @Override

@@ -23,6 +23,7 @@ import com.winapp.saperp.receipts.ReceiptsListActivity
 import com.winapp.saperp.salesreturn.NewSalesReturnListActivity
 import com.winapp.saperp.utils.NetworkChangeReceiver
 import com.winapp.saperp.utils.SessionManager
+import com.winapp.saperp.utils.SharedPreferenceUtil
 import com.winapp.saperp.utils.Utils
 
 open class NavigationActivity : AppCompatActivity() {
@@ -33,6 +34,7 @@ open class NavigationActivity : AppCompatActivity() {
     private val mCurrentSelectedPosition = 0
     @JvmField
     var session: SessionManager? = null
+    private var sharedPreferenceUtil: SharedPreferenceUtil? = null
     var isCheckedSO1 = false
     var isCheckedInvoice1 = false
     var isCheckedCustomer1 = false
@@ -60,6 +62,7 @@ open class NavigationActivity : AppCompatActivity() {
         loginPrefsEditor = loginPreferences!!.edit()
         helper = DBHelper(this)
         session = SessionManager(this)
+        sharedPreferenceUtil = SharedPreferenceUtil(this)
         user = session!!.userDetails
 
         actionBarDrawerToggle = ActionBarDrawerToggle(
@@ -361,6 +364,31 @@ open class NavigationActivity : AppCompatActivity() {
             helper!!.removeAllItems()
             // helper.removeSettings();
             session!!.logoutUser()
+            sharedPreferenceUtil!!.setStringPreference(
+                sharedPreferenceUtil!!.KEY_SETTING_INV_UOM,
+                ""
+            )
+            sharedPreferenceUtil!!.setStringPreference(
+                sharedPreferenceUtil!!.KEY_SETTING_SO_UOM,
+                ""
+            )
+            sharedPreferenceUtil!!.setStringPreference(
+                sharedPreferenceUtil!!.KEY_SETTING_RETURN_UOM,
+                ""
+            )
+            sharedPreferenceUtil!!.setStringPreference(
+                sharedPreferenceUtil!!.KEY_SETTLEMENT_NEXT_DATE,
+                "false"
+            )
+            //mahudoom given "shortCode": "TRAN",
+            sharedPreferenceUtil!!.setStringPreference(
+                sharedPreferenceUtil!!.KEY_SHORT_CODE,
+                ""
+            )
+            sharedPreferenceUtil!!.setStringPreference(
+                sharedPreferenceUtil!!.KEY_LAST_PRICE,
+                ""
+            )
             dialog.cancel()
         }
         alertDialog.setNegativeButton(

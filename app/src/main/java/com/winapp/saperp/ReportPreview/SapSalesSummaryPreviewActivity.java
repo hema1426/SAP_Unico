@@ -116,7 +116,7 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
     private String to_date;
     private String locationCode;
     private String customer_name;
-    private String customer_code;
+    private String customer_code = "";
     private JSONObject jsonObject;
     private String url;
     private RequestQueue requestQueue;
@@ -202,10 +202,12 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
         // Initialize a new RequestQueue instance
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("FromDate",fromDate);
-        jsonBody.put("LocationCode",loccodetxt);
+//        jsonBody.put("LocationCode",loccodetxt);
+        jsonBody.put("CustomerCode",customer_code);
+        jsonBody.put("Status","");
         jsonBody.put("ToDate",toDate);
         jsonBody.put("User",user);
-
+//        "Warehouse":"VAN 5"
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url= Utils.getBaseUrl(this) +"ReportSalesSummary";
         // Initialize a new JsonArrayRequest instance

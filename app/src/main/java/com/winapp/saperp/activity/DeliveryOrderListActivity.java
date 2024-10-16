@@ -41,7 +41,6 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -304,7 +303,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                         transLayout.setVisibility(View.GONE);
                         if (redirectInvoice){
                             CustomerFragment.isLoad=true;
-                            Intent intent=new Intent(DeliveryOrderListActivity.this,AddInvoiceActivity.class);
+                            Intent intent=new Intent(DeliveryOrderListActivity.this, AddInvoiceActivityOld.class);
                             intent.putExtra("customerId",selectedCustomerId);
                             intent.putExtra("activityFrom","DeliveryOrder");
                             startActivity(intent);
@@ -1620,7 +1619,6 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                 }
                                 doListView.setVisibility(View.VISIBLE);
                                 emptyLayout.setVisibility(View.GONE);
-                                selectedCustomerId ="";
                                 setDOAdapter();
 
                                 //outstandingLayout.setVisibility(View.VISIBLE);
@@ -1629,9 +1627,12 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                 emptyLayout.setVisibility(View.VISIBLE);
                                 //outstandingLayout.setVisibility(View.GONE);
                             }
+                            selectedCustomerId ="";
+
                         }else {
                             doListView.setVisibility(View.GONE);
                             emptyLayout.setVisibility(View.VISIBLE);
+                            selectedCustomerId ="";
 
                          // Toast.makeText(getApplicationContext(),"Error in getting SalesOrder Data",Toast.LENGTH_LONG).show();
                         }
@@ -1688,7 +1689,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
     public void setFilterAdapeter(){
         doListView.setVisibility(View.VISIBLE);
         emptyLayout.setVisibility(View.GONE);
-        outstandingLayout.setVisibility(View.VISIBLE);
+        outstandingLayout.setVisibility(View.GONE);
         doListView.setHasFixedSize(true);
         doListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         deliveryOrderAdapter =new DeliveryOrderAdapter(this, doListView, deliveryOrderList,this);
@@ -1774,7 +1775,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
             if (resultCode == Activity.RESULT_OK) {
                 String result = data.getStringExtra("customerCode");
                 Utils.setCustomerSession(this, result);
-                Intent intent = new Intent(DeliveryOrderListActivity.this, AddInvoiceActivity.class);
+                Intent intent = new Intent(DeliveryOrderListActivity.this, AddInvoiceActivityOld.class);
                 intent.putExtra("customerId", result);
                 intent.putExtra("activityFrom", "DeliveryOrder");
                 startActivity(intent);
@@ -1826,11 +1827,11 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                 alertDialog.dismiss();
                 dbHelper.removeCustomer();
                 dbHelper.removeAllItems();
-                AddInvoiceActivity.customerId=customer_code;
+                AddInvoiceActivityOld.customerId=customer_code;
                 setCustomerDetails(customer_code);
               //  selectedCustomerId=customer_code;
                 redirectInvoice=true;
-                Intent intent=new Intent(DeliveryOrderListActivity.this,AddInvoiceActivity.class);
+                Intent intent=new Intent(DeliveryOrderListActivity.this, AddInvoiceActivityOld.class);
                 intent.putExtra("customerId",customer_code);
                 intent.putExtra("activityFrom","SalesOrder");
                 startActivity(intent);

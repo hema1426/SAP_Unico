@@ -69,7 +69,7 @@ import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-import static com.winapp.saperp.activity.AddInvoiceActivity.activityFrom;
+import static com.winapp.saperp.activity.AddInvoiceActivityOld.activityFrom;
 import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
 

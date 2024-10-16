@@ -81,6 +81,8 @@ public class TransferInActivity extends AppCompatActivity {
     public TextView toolbartxt;
     public LinearLayout toolbarImglay;
     public ImageView saveImg;
+    int count=0;
+
     private ArrayList<ItemGroupList> itemGroup;
     private AppCompatSpinner groupspinner;
     public LinearLayout tolocationlay;
@@ -133,7 +135,7 @@ public class TransferInActivity extends AppCompatActivity {
         user=session.getUserDetails();
         progressDialog =new ProgressDialog(this);
         sharedPreferenceUtil = new SharedPreferenceUtil(this);
-        settingUOMval = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SETTING_TRANS_UOM, "");
+      //  settingUOMval = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SETTING_TRANS_UOM, "");
         Log.w("transferUOM..", "" + settingUOMval);
 
         companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
@@ -217,14 +219,14 @@ public class TransferInActivity extends AppCompatActivity {
         saveImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int count=0;
                 for(int i = 0; i<transferInDetailsl.size(); i++){
                     if(!transferInDetailsl.get(i).getQty().isEmpty()){
                         count+=Integer.parseInt(transferInDetailsl.get(i).getQty());
                     }
                 }
                 Log.e("qqty",""+count);
-                if (fromWarehouseCode!=null && toWarehouseCode!=null && !toWarehouseCode.isEmpty() && !fromWarehouseCode.isEmpty()){
+                if (fromWarehouseCode!=null && toWarehouseCode!=null && !toWarehouseCode.isEmpty() &&
+                        !fromWarehouseCode.isEmpty()){
                     if (count > 0){
                         try {
                             showSaveAlert(transferType);
@@ -275,7 +277,15 @@ public class TransferInActivity extends AppCompatActivity {
         search_ed.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {
-                filter(s.toString());
+                if(!s.equals("")) {
+                    String searchtxt = s.toString();
+                    if (!searchtxt.isEmpty()) {
+                        filter(searchtxt.toString());
+                    }
+//                    else{
+//                        setTransferInAdapter(transferInDetailsl);
+//                    }
+                }
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -533,7 +543,17 @@ public class TransferInActivity extends AppCompatActivity {
                 itemsObject.put("qty",String.valueOf(model.getQty()));
                 itemsObject.put("fromWhsCode",fromWarehouseCode);
                 itemsObject.put("toWhsCode",toWarehouseCode);
-                itemsObject.put("UomCode",settingUOMval);
+                if (transferType.equals("Transfer In") || transferType.equals("Transfer Out")) {
+                    if(!model.getInventoryUOM().equals("null") &&
+                            model.getInventoryUOM() != null &&  !model.getInventoryUOM().equals("")) {
+                        itemsObject.put("UomCode", model.getInventoryUOM());
+                    }else{
+                        itemsObject.put("UomCode",settingUOMval);
+                    }
+                }else {
+                    itemsObject.put("UomCode",settingUOMval);
+                }
+
                 itemsObject.put("docEntry","");
                 itemsObject.put("objectType","");
                 itemsObject.put("lineNum","");
@@ -547,7 +567,7 @@ public class TransferInActivity extends AppCompatActivity {
 
         Log.w("GivenStockRequest:",rootJson.toString());
 
-        saveTransferOrRequest(rootJson,1,transferType);
+       saveTransferOrRequest(rootJson,1,transferType);
 
     }
 
@@ -750,15 +770,16 @@ public class TransferInActivity extends AppCompatActivity {
                                             transferInDetails.setProductCode(jsonObject.optString("productCode"));
                                             transferInDetails.setStockInHand((jsonObject.optInt("stockInHand")));
                                             transferInDetails.setQty("");
+                                            transferInDetails.setInventoryUOM(jsonObject.optString("defaultInventoryUOM"));
                                             transferInDetailsl.add(transferInDetails);
-
                                         }
-                                    }else {
+                                    } else {
                                         TransferInModel.TransferInDetails transferInDetails = new TransferInModel.TransferInDetails();
                                         transferInDetails.setProductName(jsonObject.optString("productName"));
                                         transferInDetails.setProductCode(jsonObject.optString("productCode"));
                                         transferInDetails.setStockInHand((jsonObject.optInt("stockInHand")));
                                         transferInDetails.setQty("");
+                                        transferInDetails.setInventoryUOM(jsonObject.optString("defaultInventoryUOM"));
                                         transferInDetailsl.add(transferInDetails);
                                     }
                                 }

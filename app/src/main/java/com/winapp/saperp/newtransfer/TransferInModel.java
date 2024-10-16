@@ -19,6 +19,15 @@ public class TransferInModel {
         private String productName;
         private int stockInHand;
         private String qty;
+        private String inventoryUOM;
+
+        public String getInventoryUOM() {
+            return inventoryUOM;
+        }
+
+        public void setInventoryUOM(String inventoryUOM) {
+            this.inventoryUOM = inventoryUOM;
+        }
 
         public String getProductCode() {
             return productCode;

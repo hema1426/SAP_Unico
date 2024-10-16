@@ -1,5 +1,6 @@
 package com.winapp.saperp.zebraprinter;
 
+import static com.winapp.saperp.utils.Utils.currentDateTime;
 import static com.winapp.saperp.utils.Utils.getPrintSize;
 import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
@@ -23,7 +24,7 @@ import android.widget.Toast;
 
 import com.example.tscdll.TSCActivity;
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
+import com.winapp.saperp.activity.AddInvoiceActivityOld;
 import com.winapp.saperp.activity.CartActivity;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.fragments.SummaryFragment;
@@ -60,8 +61,6 @@ import com.zebra.sdk.printer.ZebraPrinter;
 import com.zebra.sdk.printer.ZebraPrinterFactory;
 import com.zebra.sdk.printer.ZebraPrinterLanguageUnknownException;
 
-import org.json.JSONArray;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -70,8 +69,10 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Objects;
 
 public class TSCPrinter {
@@ -121,6 +122,7 @@ public class TSCPrinter {
     private SessionManager session;
     private HashMap<String, String> user;
     private String username;
+    private String locationCode1;
     private TSCActivity TscDll;
     private int height = 100;
     private int bottom_height = 50;
@@ -139,8 +141,10 @@ public class TSCPrinter {
     private String showStamp = "";
     private String payNow = "";
     private String bankCode = "";
+    private String currentDate = "";
     private String cheque = "";
-
+    String locStr = " ";
+    String dateStr = " ";
 
     private BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
         @Override
@@ -181,6 +185,7 @@ public class TSCPrinter {
             company_name = user.get(SessionManager.KEY_COMPANY_NAME);
             company_code = user.get(SessionManager.KEY_COMPANY_CODE);
             username = user.get(SessionManager.KEY_USER_NAME);
+            locationCode1=user.get(SessionManager.KEY_LOCATION_CODE);
             company_address1 = user.get(SessionManager.KEY_ADDRESS1);
             company_address2 = user.get(SessionManager.KEY_ADDRESS2);
             company_address3 = user.get(SessionManager.KEY_ADDRESS3);
@@ -189,6 +194,12 @@ public class TSCPrinter {
             payNow = user.get(SessionManager.KEY_PAY_NOW);
             cheque = user.get(SessionManager.KEY_CHEQUE);
             bankCode = user.get(SessionManager.KEY_BANK);
+
+            Date c = Calendar.getInstance().getTime();
+            System.out.println("Current time => " + c);
+            SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            currentDate = df1.format(c);
+
             settingsList = dbHelper.getSettings();
             if (settingsList != null) {
                 if (settingsList.size() > 0) {
@@ -376,7 +387,7 @@ public class TSCPrinter {
         if (context instanceof InvoicePrintPreviewActivity) {
             InvoicePrintPreviewActivity printPreviewActivity = new InvoicePrintPreviewActivity();
             printPreviewActivity.closeAlert();
-        } else if (context instanceof AddInvoiceActivity) {
+        } else if (context instanceof AddInvoiceActivityOld) {
             SummaryFragment.closeAlert();
         } else if (context instanceof CartActivity) {
             CartActivity.closeAlert();
@@ -2385,7 +2396,7 @@ public class TSCPrinter {
                 height = 60;
                 double currencytotal = 0.0;
                 double expensetotal = 0.0;
-                finalHeight = height + (currencyList.size() * 8) + (expenseList.size() * 8) + 10;
+                finalHeight = height + (currencyList.size() * 8) + (expenseList.size() * 8) + invoiceBottomLine;
                 TscDll.sendcommand("SIZE 80 mm, " + finalHeight + " mm\n");
                 TscDll.sendcommand("GAP 0 mm, 0 mm\r\n");//Gap media
                 TscDll.clearbuffer();
@@ -2419,10 +2430,20 @@ public class TSCPrinter {
                     TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\" TEL : " + company_phone + "\"\n");
                 }
 
-                if (company_gst != null && !company_gst.isEmpty()) {
-                    y += LINE_SPACING;
-                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\" GST REG NO : " + company_gst + "\"\n");
+//                if (company_gst != null && !company_gst.isEmpty()) {
+//                    y += LINE_SPACING;
+//                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,9,9,2,\" GST REG NO : " + company_gst + "\"\n");
+//                }
+                if(settlementDate!=null && settlementDate.equals("null") && !settlementDate.equals("")){
+                    dateStr = settlementDate ;
+                }else{
+                    dateStr = currentDate ;
                 }
+                    if(locationCode!=null && locationCode.equals("null") && !locationCode.equals("")){
+                        locStr = locationCode ;
+                    }else{
+                        locStr = locationCode1 ;
+                    }
 
                 y += LINE_SPACING + 10;
                 TscDll.sendcommand("TEXT 260," + y + ",\"Bold.TTF\",0,10,10,2,\"" + "SETTLEMENT" + "\"\n");
@@ -2431,9 +2452,9 @@ public class TSCPrinter {
                 // Define the Box
                 TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Settlement No : " + settlementNo + "\"\n");
                 y += 30;
-                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Settlement Date : " + settlementDate + "\"\n");
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Settlement Date : " + dateStr + "\"\n");
                 y += 30;
-                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Location Code : " + locationCode + "\"\n");
+                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Location Code : " + locStr + "\"\n");
                 y += 30;
                 TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Settlement By : " + settlementBy + "\"\n");
 
@@ -2450,7 +2471,6 @@ public class TSCPrinter {
 
                     y += LINE_SPACING;
                     TscDll.sendcommand("BAR 0," + y + ",800,2\n");
-
 
                     int index = 1;
                     currencytotal = 0.0;
@@ -3240,7 +3260,7 @@ public class TSCPrinter {
                 TscDll.openport(macAddress);
 
                 int y = 0;
-                height = 90;
+                height = 80;
 
                 finalHeight = height + (stockSummaryReportOpenModels.size() * list_height);
                 TscDll.sendcommand("SIZE 80 mm, " + finalHeight + " mm\n");
@@ -3893,9 +3913,8 @@ public class TSCPrinter {
                     y += 20;
                     TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "NO" + "\"\n");
                     TscDll.sendcommand("TEXT 60," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Invoice No" + "\"\n");
-                    TscDll.sendcommand("TEXT 260," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Customer" + "\"\n");
-                    TscDll.sendcommand("TEXT 400," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Amount" + "\"\n");
-                    TscDll.sendcommand("TEXT 500," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Type" + "\"\n");
+                    TscDll.sendcommand("TEXT 250," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Amount" + "\"\n");
+                    TscDll.sendcommand("TEXT 430," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Type" + "\"\n");
 
                     y += LINE_SPACING;
                     TscDll.sendcommand("BAR 0," + y + ",800,2\n");
@@ -3923,8 +3942,13 @@ public class TSCPrinter {
 
                         y += 30;
                         TscDll.sendcommand("TEXT 60," + y + ",\"Poppins.TTF\",0,8,8,\"" + reportSalesSummaryDetails.getTransNo() + "\"\n");
-                        TscDll.sendcommand("TEXT 380," + y + ",\"Bold.TTF\",0,8,8,\"" + ("$   " + reportSalesSummaryDetails.getAmount()) + "\"\n");
-                        TscDll.sendcommand("TEXT 510," + y + ",\"Poppins.TTF\",0,8,8,\"" + reportSalesSummaryDetails.getType() + "\"\n");
+                        TscDll.sendcommand("TEXT 250," + y + ",\"Bold.TTF\",0,8,8,\"" + ("$   " + reportSalesSummaryDetails.getAmount()) + "\"\n");
+                        if(reportSalesSummaryDetails.getType().equalsIgnoreCase("CS")) {
+                            TscDll.sendcommand("TEXT 420," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Cash Sales" + "\"\n");
+                        }
+                        else{
+                            TscDll.sendcommand("TEXT 420," + y + ",\"Poppins.TTF\",0,8,8,\"" + reportSalesSummaryDetails.getType() + "\"\n");
+                        }
                         y += 30;
                         TscDll.sendcommand("TEXT 60," + y + ",\"Poppins.TTF\",0,7,7,\"" + reportSalesSummaryDetails.getPaymentDate() + "\"\n");
 
@@ -3948,7 +3972,6 @@ public class TSCPrinter {
                     y += 30;
                     TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"" + "NO" + "\"\n");
                     TscDll.sendcommand("TEXT 60," + y + ",\"Poppins.TTF\",0,8,8,\"" + "TransNo" + "\"\n");
-                    TscDll.sendcommand("TEXT 300," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Customer" + "\"\n");
                     TscDll.sendcommand("TEXT 450," + y + ",\"Poppins.TTF\",0,8,8,\"" + "Amount" + "\"\n");
 
                     y += LINE_SPACING;

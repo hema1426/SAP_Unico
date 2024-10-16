@@ -17,6 +17,9 @@ public class SharedPreferenceUtil {
     public  String KEY_SETTING_TRANS_UOM = "setting_trans_UOM";
     public  String KEY_SETTING_SO_UOM = "setting_trans_UOM";
     public  String KEY_SETTING_RETURN_UOM = "setting_return_UOM";
+    public  String KEY_SETTLEMENT_NEXT_DATE = "settlement_next_date";
+    public  String KEY_SHORT_CODE = "short_code";
+    public  String KEY_LAST_PRICE = "last_price";
 
     private static SharedPreferences sharedPreferences;
     public static final boolean DEFAULT_BOOLEAN = false;

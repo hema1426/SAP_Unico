@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.winapp.saperp.R;
+import com.winapp.saperp.activity.CreateNewInvoiceActivity;
 import com.winapp.saperp.activity.TransferProductAddActivity;
 import com.winapp.saperp.model.CreateInvoiceModel;
 import com.winapp.saperp.model.ProductSummaryModel;
@@ -26,6 +27,9 @@ public class NewProductSummaryAdapter extends RecyclerView.Adapter<NewProductSum
     private ArrayList<CreateInvoiceModel> summaryList;
     public CallBack callBack;
     public Context context;
+   double stockVal = 0.0;
+    double qtyVal= 0.0;
+    double finalStockVal = 0.0;
 
     public NewProductSummaryAdapter(Context context,ArrayList<CreateInvoiceModel> customers, CallBack callBack) {
         this.summaryList = customers;
@@ -43,9 +47,36 @@ public class NewProductSummaryAdapter extends RecyclerView.Adapter<NewProductSum
     public void onBindViewHolder(ViewHolder viewHolder, @SuppressLint("RecyclerView") int i) {
         try {
             CreateInvoiceModel model= summaryList.get(i);
-            viewHolder.product.setText(model.getProductName().trim());
             viewHolder.productCode.setText(model.getProductCode().trim());
             viewHolder.actualQty.setText(String.valueOf(getQty(model.getActualQty())));
+
+            if(Objects.equals(CreateNewInvoiceActivity.Companion.getActivityFrom(), "Duplicate")){
+//                stockVal = Double.parseDouble(model.getStockProductQty());
+                qtyVal = Double.parseDouble(model.getNetQty());
+                stockVal = 15;
+
+                finalStockVal = stockVal - qtyVal ;
+                Log.w("stockSumval",""+stockVal+".."+qtyVal);
+                if(stockVal < 0.0){
+                    viewHolder.product.setText(model.getProductName().trim());
+                    viewHolder.stockQtyInvoice.setText(" ( " +model.getStockProductQty()+" No Stock )");
+                    Log.w("stockSum",""+model.getStockProductQty());
+                }else{
+                    if(finalStockVal < 0.0) {
+                        viewHolder.product.setText(model.getProductName().trim());
+                        viewHolder.stockQtyInvoice.setText(" ( " + finalStockVal + " No Stock )");
+                        Log.w("stockSum1",""+finalStockVal);
+                    }
+                    else {
+                        viewHolder.product.setText(model.getProductName().trim());
+                        viewHolder.stockQtyInvoice.setText(" ( " + finalStockVal + " )");
+                        Log.w("stockSum2",""+finalStockVal);
+                    }
+                }
+            }
+            else{
+                viewHolder.product.setText(model.getProductName().trim());
+            }
 
             if (context instanceof TransferProductAddActivity){
                 viewHolder.netQty.setVisibility(View.GONE);
@@ -57,6 +88,7 @@ public class NewProductSummaryAdapter extends RecyclerView.Adapter<NewProductSum
                 viewHolder.netTotalValue.setVisibility(View.GONE);
             }
             viewHolder.netQty.setText(String.valueOf(getQty(model.getNetQty())));
+            viewHolder.uomItem.setText(String.valueOf(model.getUomCode()));
             viewHolder.returnQty.setText(String.valueOf(getQty(model.getReturnQty())));
             viewHolder.focQty.setText(String.valueOf(getQty(model.getFocQty())));
          //   viewHolder.priceValue.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getPrice())));
@@ -121,9 +153,11 @@ public class NewProductSummaryAdapter extends RecyclerView.Adapter<NewProductSum
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
         private TextView product;
+        private TextView stockQtyInvoice;
         private TextView productCode;
         private TextView actualQty;
         private TextView netQty;
+        private TextView uomItem;
         private TextView returnQty;
         private TextView focQty;
         private TextView priceValue;
@@ -136,9 +170,11 @@ public class NewProductSummaryAdapter extends RecyclerView.Adapter<NewProductSum
         public ViewHolder(View view) {
             super(view);
             product = view.findViewById(R.id.product);
+            stockQtyInvoice = view.findViewById(R.id.stockQtyInv);
             productCode =view.findViewById(R.id.item_code);
             actualQty =view.findViewById(R.id.actual_qty);
             netQty=view.findViewById(R.id.net_qty);
+            uomItem=view.findViewById(R.id.uomItem_inv);
             returnQty =view.findViewById(R.id.return_qty);
             focQty =view.findViewById(R.id.foc);
             priceValue=view.findViewById(R.id.price);

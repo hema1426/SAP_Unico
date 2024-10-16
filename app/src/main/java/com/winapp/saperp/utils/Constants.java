@@ -76,7 +76,7 @@ public class Constants {
     public static String DT_FRESH ="http://172.16.10.98:88/api/";
 
 
-    public static String DEMO_URL_SUPERSTAR="http://43.228.126.65:80/api/";
+    public static String DEMO_URL_SUPERSTAR ="http://43.228.126.65:80/api/";
 
     // Super Star- Demo
     public static String SUPER_STAR_DEMO ="http://13.215.239.251:81/api/";
@@ -126,7 +126,7 @@ public class Constants {
 
     public static String TRANS_ORIENT_DEMO ="https://c21326-EasySales-Test.cloudiax.com/api/";
     public static String FUXIN ="https://app0030.cloudtaktiks.com:11018/api/";
-
+    public static String test_URL_OCT24 ="https://c21199-er-test.cloudiax.com/api/";
    //RAYMANG
     public static String RAYMANG_URL_JULY="https://app0027.cloudtaktiks.com:11014/api/";
 

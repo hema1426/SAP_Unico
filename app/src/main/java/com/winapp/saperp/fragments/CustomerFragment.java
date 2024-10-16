@@ -41,7 +41,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.winapp.saperp.R;
-import com.winapp.saperp.activity.AddInvoiceActivity;
+import com.winapp.saperp.activity.AddInvoiceActivityOld;
 import com.winapp.saperp.activity.NewInvoiceListActivity;
 import com.winapp.saperp.activity.OrderHistoryActivity;
 import com.winapp.saperp.activity.SalesOrderListActivity;
@@ -71,7 +71,7 @@ import java.util.Objects;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.winapp.saperp.activity.AddInvoiceActivity.activityFrom;
+import static com.winapp.saperp.activity.AddInvoiceActivityOld.activityFrom;
 
 public class CustomerFragment extends Fragment {
 
@@ -122,7 +122,7 @@ public class CustomerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.fragment_customer,container,false);
-        customerId = AddInvoiceActivity.customerId;
+        customerId = AddInvoiceActivityOld.customerId;
         session=new SessionManager(getActivity());
         user=session.getUserDetails();
         dbHelper=new DBHelper(getActivity());
@@ -206,8 +206,8 @@ public class CustomerFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 try {
-                    if (AddInvoiceActivity.viewPager!=null){
-                        AddInvoiceActivity.viewPager.setCurrentItem(1);
+                    if (AddInvoiceActivityOld.viewPager!=null){
+                        AddInvoiceActivityOld.viewPager.setCurrentItem(1);
                     }
                 }catch (Exception exception){}
             }
@@ -646,7 +646,7 @@ public class CustomerFragment extends Fragment {
                     } else {
                         behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
-                    AddInvoiceActivity.customerId=customer;
+                    AddInvoiceActivityOld.customerId=customer;
                     if (customer!=null && !customer.isEmpty() && customer.equals("null")){
                         customerDetails=dbHelper.getCustomer(customer);
                         setAllValues(customerDetails);
@@ -683,7 +683,7 @@ public class CustomerFragment extends Fragment {
                 } else {
                     behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
-                AddInvoiceActivity.customerId=customer;
+                AddInvoiceActivityOld.customerId=customer;
                 setCustomerDetails(customer);
                 customerDetails=dbHelper.getCustomer(customer);
                 getCustomerDetails(customer,true);
@@ -876,8 +876,8 @@ public class CustomerFragment extends Fragment {
         taxList.add(model);
         dbHelper.insertCustomerTaxValues(taxList);
 
-        if (AddInvoiceActivity.order_no!=null && !AddInvoiceActivity.order_no.isEmpty()){
-            orderNoText.setText(AddInvoiceActivity.order_no);
+        if (AddInvoiceActivityOld.order_no!=null && !AddInvoiceActivityOld.order_no.isEmpty()){
+            orderNoText.setText(AddInvoiceActivityOld.order_no);
         }else {
             orderNoText.setText("");
         }

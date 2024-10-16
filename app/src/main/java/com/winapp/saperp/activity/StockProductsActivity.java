@@ -1,6 +1,6 @@
 package com.winapp.saperp.activity;
 
-import static com.winapp.saperp.activity.AddInvoiceActivity.activityFrom;
+import static com.winapp.saperp.activity.AddInvoiceActivityOld.activityFrom;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
