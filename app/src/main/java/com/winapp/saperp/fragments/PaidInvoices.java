@@ -1,5 +1,7 @@
 package com.winapp.saperp.fragments;
 
+import static com.winapp.saperp.activity.NewInvoiceListActivity.isLastSales;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -64,6 +66,8 @@ public class PaidInvoices extends Fragment {
     private HashMap<String, String> user;
     private String companyId;
     public String InvoiceStatus;
+    public static LinearLayout totalSalesLayout;
+    static TextView total_sales_valuel;
     int paidPageNo = 1;
     int unpaidPageNo = 1;
 
@@ -113,6 +117,7 @@ public class PaidInvoices extends Fragment {
         Glide.with(this)
                 .load(R.raw.loading_image1)
                 .into(loadingImage);
+
 
         Date c = Calendar.getInstance().getTime();
         System.out.println("Current time => " + c);
@@ -331,7 +336,12 @@ public class PaidInvoices extends Fragment {
     public void setShowHide(){
         if (invoiceList.size()>0){
             invoiceListView.setVisibility(View.VISIBLE);
+            if(isLastSales.equalsIgnoreCase("True")){
             outstandingLayout.setVisibility(View.VISIBLE);
+        }
+        else{
+            outstandingLayout.setVisibility(View.GONE);
+        }
             emptyLayout.setVisibility(View.GONE);
         }else {
             invoiceListView.setVisibility(View.GONE);

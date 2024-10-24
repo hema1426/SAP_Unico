@@ -1,5 +1,7 @@
 package com.winapp.saperp.adapter;
 
+import static com.winapp.saperp.activity.NewInvoiceListActivity.shortCodeStr;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -156,8 +158,13 @@ public class NewInvoicePrintPreviewAdapter extends RecyclerView.Adapter<NewInvoi
       //  viewHolder.net.setText(invoiceList.getNetQuantity());
 
        // viewHolder.price.setText(Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getPricevalue())));
-        viewHolder.price.setText(invoiceList.getPricevalue());
-        viewHolder.total.setText(Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getTotal())));
+        if(shortCodeStr.equalsIgnoreCase("FUXIN")) {
+            viewHolder.price.setText(Utils.fourDecimalPoint(Double.parseDouble((invoiceList.getPricevalue()))));
+            viewHolder.total.setText(Utils.fourDecimalPoint(Double.parseDouble(invoiceList.getTotal())));
+        }else{
+            viewHolder.price.setText(invoiceList.getPricevalue());
+            viewHolder.total.setText(Utils.twoDecimalPoint(Double.parseDouble(invoiceList.getTotal())));
+        }
     }
 
     @Override

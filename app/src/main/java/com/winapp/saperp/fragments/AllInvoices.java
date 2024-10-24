@@ -1,5 +1,7 @@
 package com.winapp.saperp.fragments;
 
+import static com.winapp.saperp.activity.NewInvoiceListActivity.isLastSales;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -68,7 +71,10 @@ public class AllInvoices extends Fragment {
     private String companyId;
     public String InvoiceStatus;
     public static LinearLayout emptyLayout;
-    public static LinearLayout outstandingLayout;
+
+     public static LinearLayout outstandingLayout;
+    public static LinearLayout totalSalesLayout;
+    static TextView total_sales_valuel;
     public int paidPageNo=1;
     public int unpaidPageNo=1;
     //This is our tablayout
@@ -76,6 +82,7 @@ public class AllInvoices extends Fragment {
     //This is our viewPager
     private ViewPager viewPager;
     static TextView netTotalText;
+
     boolean isfirstTime=true;
     TextView titletext;
     View progressLayout;
@@ -109,6 +116,8 @@ public class AllInvoices extends Fragment {
         netTotalText=view.findViewById(R.id.net_total_value);
         emptyLayout=view.findViewById(R.id.empty_layout);
         outstandingLayout=view.findViewById(R.id.outstanding_layout);
+        totalSalesLayout=view.findViewById(R.id.totalSales_layout);
+        total_sales_valuel=view.findViewById(R.id.total_sales_value);
         progressLayout=view.findViewById(R.id.progress_layout);
         titletext=view.findViewById(R.id.title);
         createNewInvoice=view.findViewById(R.id.create_invoice);
@@ -133,6 +142,12 @@ public class AllInvoices extends Fragment {
         currentDate = df1.format(c);
         getInvoices(companyId,String.valueOf(pageNo),"ALL",currentDate,currentDate);
 
+        if(isLastSales.equalsIgnoreCase("True")){
+            totalSalesLayout.setVisibility(View.VISIBLE);
+        }
+        else{
+            totalSalesLayout.setVisibility(View.INVISIBLE);
+        }
         /*if (invoiceList.size()>0){
             invoiceListView.setVisibility(View.VISIBLE);
             outstandingLayout.setVisibility(View.VISIBLE);
@@ -193,8 +208,10 @@ public class AllInvoices extends Fragment {
     }
 
     public static void setNettotal(ArrayList<InvoiceModel> invoiceList){
-        try {
+//        try {
             double net_amount=0.0;
+            double total_sales=0.0;
+            double net_total_sales=0.0;
             double balance_amt=0.0;
             for (InvoiceModel model:invoiceList){
                 if (model.getBalance()!=null && !model.getBalance().equals("null")){
@@ -203,9 +220,14 @@ public class AllInvoices extends Fragment {
                     balance_amt=0.0;
                 }
                 net_amount+=balance_amt;
+
+                net_total_sales = net_total_sales + Double.parseDouble(model.getNetTotal());
+
             }
             netTotalText.setText("$ "+Utils.twoDecimalPoint(net_amount));
-        }catch (Exception ex){}
+            total_sales_valuel.setText("$ "+Utils.twoDecimalPoint(net_total_sales));
+            Log.w("neeess",""+net_amount+".."+net_total_sales);
+//        }catch (Exception ex){}
 
     }
 
@@ -314,10 +336,12 @@ public class AllInvoices extends Fragment {
 
     public void setShowHide(){
         if (invoiceList.size()>0){
+            Log.w("entyylist","");
             invoiceListView.setVisibility(View.VISIBLE);
             outstandingLayout.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
         }else {
+            Log.w("entyylist22","");
             invoiceListView.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
             outstandingLayout.setVisibility(View.GONE);
@@ -357,15 +381,7 @@ public class AllInvoices extends Fragment {
                 // InvoiceListActivity.showInvoiceOption();
             }
         });
-        if (invoiceList.size()>0){
-            invoiceListView.setVisibility(View.VISIBLE);
-            outstandingLayout.setVisibility(View.VISIBLE);
-            emptyLayout.setVisibility(View.GONE);
-        }else {
-            invoiceListView.setVisibility(View.GONE);
-            outstandingLayout.setVisibility(View.GONE);
-            emptyLayout.setVisibility(View.VISIBLE);
-        }
+        setShowHide();
         invoiceListView.setAdapter(invoiceAdapter);
         setNettotal(invoiceList);
         NewInvoiceListActivity.isSearchCustomerNameClicked=false;

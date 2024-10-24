@@ -112,6 +112,7 @@ import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.Pager;
 import com.winapp.saperp.utils.PdfUtils;
 import com.winapp.saperp.utils.SessionManager;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.UserAdapter;
 import com.winapp.saperp.utils.Utils;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
@@ -128,6 +129,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -239,7 +241,10 @@ public class NewInvoiceListActivity extends NavigationActivity
     public String noOfCopy;
     public String DOPrint = "false";
     private String printerMacId;
+    public static String isLastSales = "false";
     private String printerType;
+    private SharedPreferenceUtil sharedPreferenceUtil;
+
     private SharedPreferences sharedPreferences;
 
     private SharedPreferences sharedPref_billdisc;
@@ -303,6 +308,7 @@ public class NewInvoiceListActivity extends NavigationActivity
     private String selectedUser = "";
     private ArrayList<UserListModel> usersList;
     public String locationCode;
+    public static String shortCodeStr = "" ;
 
 
     @Override
@@ -344,6 +350,7 @@ public class NewInvoiceListActivity extends NavigationActivity
         user = session.getUserDetails();
         companyId = user.get(SessionManager.KEY_COMPANY_CODE);
         username = user.get(SessionManager.KEY_USER_NAME);
+        sharedPreferenceUtil = new SharedPreferenceUtil(this);
 
         sharedPref_billdisc = getSharedPreferences("BillDiscPref", MODE_PRIVATE);
         myEdit = sharedPref_billdisc.edit();
@@ -363,6 +370,9 @@ public class NewInvoiceListActivity extends NavigationActivity
 
         Log.w("bankDetail ",""+user.get(SessionManager.KEY_PAY_NOW)+" bank "+user.get(SessionManager.KEY_BANK)
                 +" cheque "+user.get(SessionManager.KEY_CHEQUE));
+
+        shortCodeStr = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil
+            .KEY_SHORT_CODE,"");
         customerView = findViewById(R.id.customerList);
         totalCustomers = findViewById(R.id.total_customers);
         cancelSheet = findViewById(R.id.cancel_sheet);
@@ -427,6 +437,8 @@ public class NewInvoiceListActivity extends NavigationActivity
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType = sharedPreferences.getString("printer_type", "");
         printerMacId = sharedPreferences.getString("mac_address", "");
+
+        isLastSales = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_TOTAL_SALES, "");
 
         // PrinterUtils printerUtils=new PrinterUtils(this,printerMacId);
         //   printerUtils.connectPrinter();
@@ -1671,6 +1683,14 @@ public class NewInvoiceListActivity extends NavigationActivity
                                         double total1 = (net_qty * Double.parseDouble(price_value));
                                         double sub_total1 = total1 - return_amt;
 
+                                        long laterDate = System.currentTimeMillis();
+                                        int millisec = 18000;
+                                        Timestamp original = new Timestamp(laterDate);
+                                        Calendar cal = Calendar.getInstance();
+                                        cal.setTimeInMillis(original.getTime());
+                                        cal.add(Calendar.MILLISECOND, millisec);
+                                        Timestamp timeStamp = new Timestamp(cal.getTime().getTime());
+
                                         dbHelper.insertCreateInvoiceCartEdit(
                                                 object.optString("productCode"),
                                                 object.optString("productName"),
@@ -1691,7 +1711,8 @@ public class NewInvoiceListActivity extends NavigationActivity
                                                 "",
                                                 object.optString("exc_Qty"),
                                                 salesObject.optString("minimumSellingPrice"),
-                                                object.optString("stockInHand")
+                                                object.optString("stockInHand"), String.valueOf(timeStamp),
+                                                object.optString("itemAllowFOC")
                                                 );
 
                                         myEdit.putString("billDisc_amt", salesObject.optString("billDiscount"));

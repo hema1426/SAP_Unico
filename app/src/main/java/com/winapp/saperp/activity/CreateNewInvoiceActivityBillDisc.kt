@@ -1553,7 +1553,7 @@ class CreateNewInvoiceActivityBillDisc : AppCompatActivity() {
                 "",
                 "",
                 "",
-                "",""
+                "","","",""
             )
 
             // Adding Return Qty Table values
@@ -1624,7 +1624,7 @@ class CreateNewInvoiceActivityBillDisc : AppCompatActivity() {
                 products,
                 object : NewProductSummaryAdapter.CallBack {
                     override fun searchCustomer(letter: String, pos: Int) {}
-                    override fun removeItem(pid: String) {
+                    override fun removeItem(pid: String,time: String) {
                         showRemoveItemAlert(pid)
                     }
 

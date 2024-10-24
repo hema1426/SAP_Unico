@@ -20,6 +20,8 @@ public class SharedPreferenceUtil {
     public  String KEY_SETTLEMENT_NEXT_DATE = "settlement_next_date";
     public  String KEY_SHORT_CODE = "short_code";
     public  String KEY_LAST_PRICE = "last_price";
+    public  String KEY_TOTAL_SALES = "total_sales";
+    public  String KEY_USER_MIDDLE_NAME = "user_middle_name";
 
     private static SharedPreferences sharedPreferences;
     public static final boolean DEFAULT_BOOLEAN = false;

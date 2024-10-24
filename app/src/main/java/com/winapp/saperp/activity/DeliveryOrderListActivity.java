@@ -31,6 +31,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,6 +67,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -77,8 +79,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
-
-import static com.winapp.saperp.fragments.AllInvoices.outstandingLayout;
 
 public class DeliveryOrderListActivity extends NavigationActivity implements DeliveryOrderAdapter.CallBack {
 
@@ -98,6 +98,7 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
     Button btnCancel;
     TextView customerName;
     EditText customerNameEdittext;
+    LinearLayout outstandingLayout;
     DBHelper dbHelper;
     TextView netTotalText;
     private SharedPreferences sharedPref_billdisc;
@@ -1262,7 +1263,13 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                   //  double return_amt=(Double.parseDouble(return_qty)*Double.parseDouble(price_value));
                                     //double total1=(net_qty * Double.parseDouble(price_value));
                                     //double sub_total1=total1-return_amt;
-
+                                    long laterDate = System.currentTimeMillis();
+                                    int millisec = 18000;
+                                    Timestamp original = new Timestamp(laterDate);
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.setTimeInMillis(original.getTime());
+                                    cal.add(Calendar.MILLISECOND, millisec);
+                                    Timestamp timeStamp = new Timestamp(cal.getTime().getTime());
 
                                     dbHelper.insertCreateInvoiceCartEdit(
                                             object.optString("productCode"),
@@ -1282,7 +1289,8 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
                                             "",
                                             "",
                                             "",
-                                            "0","0", object.optString("stockInHand")
+                                            "0","0",
+                                            object.optString("stockInHand"), String.valueOf(timeStamp),"Yes"
                                     );
 
                                     myEdit.putString("billDisc_amt", salesObject.optString("billDiscount"));

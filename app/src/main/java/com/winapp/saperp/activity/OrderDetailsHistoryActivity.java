@@ -40,7 +40,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -246,6 +248,15 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
             String return_qty = "0";
             double net_qty = Double.parseDouble(model.getCtnQty()) - Double.parseDouble(return_qty);
             String price_value = model.getLoosePrice();
+
+            long laterDate = System.currentTimeMillis();
+            int millisec = 18000;
+            Timestamp original = new Timestamp(laterDate);
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(original.getTime());
+            cal.add(Calendar.MILLISECOND, millisec);
+            Timestamp timeStamp = new Timestamp(cal.getTime().getTime());
+
             dbHelper.insertCreateInvoiceCartEdit(
                     model.getProductId(),
                     model.getProductName(),
@@ -265,7 +276,8 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                     "",
                     "",
                     model.getExchangeQty(),
-                    model.getMinimumSellingPrice(),model.getStockQty()
+                    model.getMinimumSellingPrice(),model.getStockQty(), String.valueOf(timeStamp),
+                    model.getIsItemFOC()
             );
             myEdit.putString("billDisc_amt", model.getBillDisc());
             myEdit.putString("billDisc_percent", model.getBillDiscPercentage());
@@ -298,7 +310,7 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
 //                    model.getUomcode(),"0.00");
        //    // Toast.makeText(getApplicationContext(),"Product added to your list",Toast.LENGTH_SHORT).show();
         }else {
-            dbHelper.deleteInvoiceProduct(model.getProductId());
+            dbHelper.deleteInvoiceProductNew(model.getProductId(),model.getProductId());
           //  Toast.makeText(getApplicationContext(),"Product removed from your list",Toast.LENGTH_SHORT).show();
         }
     }
@@ -536,6 +548,7 @@ public class OrderDetailsHistoryActivity extends AppCompatActivity {
                                         model1.setPriceWithGST(object.optString("taxAmount"));
                                         model1.setItemDiscount(object.optString("itemDiscount"));
                                         model1.setBillDisc(salesObject.optString("billDiscount"));
+                                        model1.setIsItemFOC(salesObject.optString("itemAllowFOC"));
                                         model1.setMinimumSellingPrice(salesObject.optString("minimumSellingPrice"));
                                         model1.setBillDiscPercentage("0.00");
                                         double qty = Double.parseDouble(object.optString("quantity"));

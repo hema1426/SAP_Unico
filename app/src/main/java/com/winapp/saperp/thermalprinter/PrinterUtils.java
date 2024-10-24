@@ -1,8 +1,10 @@
 package com.winapp.saperp.thermalprinter;
 
 import static android.hardware.usb.UsbManager.ACTION_USB_DEVICE_DETACHED;
+import static com.winapp.saperp.activity.NewInvoiceListActivity.shortCodeStr;
 import static com.winapp.saperp.thermalprinter.DeviceConnFactoryManager.ACTION_QUERY_PRINTER_STATE;
 import static com.winapp.saperp.thermalprinter.DeviceConnFactoryManager.CONN_STATE_FAILED;
+import static com.winapp.saperp.utils.Utils.fourDecimalPoint;
 import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
 import android.Manifest;
@@ -28,6 +30,7 @@ import com.winapp.saperp.model.SettingsModel;
 import com.winapp.saperp.model.TransferDetailModel;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.Utils;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
 import com.zebra.sdk.printer.ZebraPrinter;
@@ -88,6 +91,8 @@ public class PrinterUtils extends AppCompatActivity {
     private DBHelper dbHelper;
     private String showUserName = "";
     private String showSignature = "";
+    public static String shortCodeStr = "" ;
+
     private int height = 100;
 
     private String showLogo = "";
@@ -98,9 +103,11 @@ public class PrinterUtils extends AppCompatActivity {
     private String latLongLoc = "";
     private String payNow = "";
     private String salesManName = "";
+    private String userMiddleName = "";
     private String salesManPhone = "";
     private String salesManMail = "";
     private String salesManOffice = "";
+    private SharedPreferenceUtil sharedPreferenceUtil;
     int finalHeight = 0;
     private final int invoiceDefaultHeight = 60;
 
@@ -165,6 +172,8 @@ public class PrinterUtils extends AppCompatActivity {
         TscDll = new TSCActivity();
         session = new SessionManager(context);
         dbHelper = new DBHelper(context);
+        sharedPreferenceUtil = new SharedPreferenceUtil(context);
+
         user = session.getUserDetails();
         username = user.get(SessionManager.KEY_USER_NAME);
         company_name = user.get(SessionManager.KEY_COMPANY_NAME);
@@ -181,6 +190,10 @@ public class PrinterUtils extends AppCompatActivity {
         salesManPhone = user.get(SessionManager.KEY_SALESMAN_PHONE);
         salesManMail = user.get(SessionManager.KEY_SALESMAN_EMAIL);
         salesManOffice = user.get(SessionManager.KEY_SALESMAN_OFFICE);
+        userMiddleName = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil
+                .KEY_USER_MIDDLE_NAME,"");
+        shortCodeStr = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil
+                .KEY_SHORT_CODE,"");
 
         settingsList = dbHelper.getSettings();
         if (settingsList != null) {
@@ -1390,7 +1403,7 @@ public class PrinterUtils extends AppCompatActivity {
 
                     if (salesManName != null && !salesManName.isEmpty()) {
                         y += LINE_SPACING;
-                        TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"Contact : " + salesManName + "/" + salesManPhone + "\"\n");
+                        TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"Contact : " + salesManName +" "+userMiddleName+ "/" + salesManPhone + "\"\n");
                     }
 //        if(salesManPhone!=null && !salesManPhone.isEmpty()){
 //            y += 30;
@@ -1878,13 +1891,23 @@ public class PrinterUtils extends AppCompatActivity {
                             TscDll.sendcommand("TEXT 80," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int) Double.parseDouble(invoice.getNetQty()) + "\"\n");
                             TscDll.sendcommand("TEXT 210," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int) Double.parseDouble(invoice.getReturnQty()) + "\"\n");
                             TscDll.sendcommand("TEXT 310," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int) Double.parseDouble(invoice.getNetQuantity()) + "\"\n");
-                            TscDll.sendcommand("TEXT 410," + y + ",\"Poppins.TTF\",0,8,8,\"" + invoice.getPricevalue() + "\"\n");
-                            TscDll.sendcommand("TEXT 490," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(invoice.getTotal())) + "\"\n");
-                        } else {
+                            if(shortCodeStr.equalsIgnoreCase("FUXIN")) {
+                                TscDll.sendcommand("TEXT 410," + y + ",\"Poppins.TTF\",0,8,8,\"" + fourDecimalPoint(Double.parseDouble(invoice.getPricevalue())) + "\"\n");
+                                TscDll.sendcommand("TEXT 490," + y + ",\"Poppins.TTF\",0,8,8,\"" + fourDecimalPoint(Double.parseDouble(invoice.getTotal())) + "\"\n");
+                            }else {
+                                TscDll.sendcommand("TEXT 410," + y + ",\"Poppins.TTF\",0,8,8,\"" + invoice.getPricevalue() + "\"\n");
+                                TscDll.sendcommand("TEXT 490," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(invoice.getTotal())) + "\"\n");
+                            }
+                            } else {
                             y += 30;
                             TscDll.sendcommand("TEXT 310," + y + ",\"Poppins.TTF\",0,8,8,\"" + (int) Double.parseDouble(invoice.getNetQuantity()) + "\"\n");
-                            TscDll.sendcommand("TEXT 410," + y + ",\"Poppins.TTF\",0,8,8,\"" + invoice.getPricevalue() + "\"\n");
-                            TscDll.sendcommand("TEXT 490," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(invoice.getTotal())) + "\"\n");
+                            if(shortCodeStr.equalsIgnoreCase("FUXIN")) {
+                                TscDll.sendcommand("TEXT 410," + y + ",\"Poppins.TTF\",0,8,8,\"" + fourDecimalPoint(Double.parseDouble(invoice.getPricevalue())) + "\"\n");
+                                TscDll.sendcommand("TEXT 490," + y + ",\"Poppins.TTF\",0,8,8,\"" + fourDecimalPoint(Double.parseDouble(invoice.getTotal())) + "\"\n");
+                            }else{
+                                TscDll.sendcommand("TEXT 410," + y + ",\"Poppins.TTF\",0,8,8,\"" + invoice.getPricevalue() + "\"\n");
+                                TscDll.sendcommand("TEXT 490," + y + ",\"Poppins.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(invoice.getTotal())) + "\"\n");
+                            }
                         }
 
                         index++;
@@ -1907,32 +1930,63 @@ public class PrinterUtils extends AppCompatActivity {
                         TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,8,8,\"" + "GRAND TOTAL: $ " + "\"\n");
                         TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getNetTotal())) + "\"\n");
                     } else {
-                        if (!invoiceHeaderDetails.get(0).getTaxType().equals("I")) {
-                            y += 20;
-                            TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "SUB TOTAL:$ " + "\"\n");
-                            TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getSubTotal())) + "\"\n");
-                            if (!invoiceHeaderDetails.get(0).getBillDiscount().isEmpty() &&
-                                    invoiceHeaderDetails.get(0).getBillDiscount() != null &&
-                                    Double.parseDouble(invoiceHeaderDetails.get(0).getBillDiscount()) > 0.00) {
+
+                        if(shortCodeStr.equalsIgnoreCase("FUXIN")){
+                            if (!invoiceHeaderDetails.get(0).getTaxType().equals("I")) {
+                                y += 20;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "SUB TOTAL:$ " + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + fourDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getSubTotal())) + "\"\n");
+                                if (!invoiceHeaderDetails.get(0).getBillDiscount().isEmpty() &&
+                                        invoiceHeaderDetails.get(0).getBillDiscount() != null &&
+                                        Double.parseDouble(invoiceHeaderDetails.get(0).getBillDiscount()) > 0.00) {
+                                    y += LINE_SPACING;
+                                    TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "BILL DISC:$ " + "\"\n");
+                                    TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + fourDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getBillDiscount())) + "\"\n");
+                                }
                                 y += LINE_SPACING;
-                                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "BILL DISC:$ " + "\"\n");
-                                TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getBillDiscount())) + "\"\n");
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "GST(" + invoiceHeaderDetails.get(0).getTaxType() + ":" + (int) Double.parseDouble(invoiceHeaderDetails.get(0).getTaxValue()) + " % ):$ " + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + fourDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getNetTax())) + "\"\n");
+
+                                y += LINE_SPACING;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,9,9,\"" + "GRAND TOTAL:$ " + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,9,9,\"" + fourDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getNetTotal())) + "\"\n");
+
+                            } else {
+                                y += 30;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,9,9,\"" + "GRAND TOTAL:$ " + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,9,9,\"" + fourDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getNetTotal())) + "\"\n");
+                                y += 30;
+                                TscDll.sendcommand("TEXT 220," + y + ",\"Poppins.TTF\",0,8,8,\"" + "(GST Included " + (int) Double.parseDouble(invoiceHeaderDetails.get(0).getTaxValue()) + " % )\"\n");
                             }
-                            y += LINE_SPACING;
-                            TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "GST(" + invoiceHeaderDetails.get(0).getTaxType() + ":" + (int) Double.parseDouble(invoiceHeaderDetails.get(0).getTaxValue()) + " % ):$ " + "\"\n");
-                            TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getNetTax())) + "\"\n");
+                        }else {
+                            if (!invoiceHeaderDetails.get(0).getTaxType().equals("I")) {
+                                y += 20;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "SUB TOTAL:$ " + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getSubTotal())) + "\"\n");
+                                if (!invoiceHeaderDetails.get(0).getBillDiscount().isEmpty() &&
+                                        invoiceHeaderDetails.get(0).getBillDiscount() != null &&
+                                        Double.parseDouble(invoiceHeaderDetails.get(0).getBillDiscount()) > 0.00) {
+                                    y += LINE_SPACING;
+                                    TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "BILL DISC:$ " + "\"\n");
+                                    TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getBillDiscount())) + "\"\n");
+                                }
+                                y += LINE_SPACING;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "GST(" + invoiceHeaderDetails.get(0).getTaxType() + ":" + (int) Double.parseDouble(invoiceHeaderDetails.get(0).getTaxValue()) + " % ):$ " + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getNetTax())) + "\"\n");
 
-                            y += LINE_SPACING;
-                            TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,9,9,\"" + "GRAND TOTAL:$ " + "\"\n");
-                            TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getNetTotal())) + "\"\n");
+                                y += LINE_SPACING;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,9,9,\"" + "GRAND TOTAL:$ " + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getNetTotal())) + "\"\n");
 
-                        } else {
-                            y += 30;
-                            TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,9,9,\"" + "GRAND TOTAL:$ " + "\"\n");
-                            TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getNetTotal())) + "\"\n");
-                            y += 30;
-                            TscDll.sendcommand("TEXT 220," + y + ",\"Poppins.TTF\",0,8,8,\"" + "(GST Included " + (int) Double.parseDouble(invoiceHeaderDetails.get(0).getTaxValue()) + " % )\"\n");
+                            } else {
+                                y += 30;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,9,9,\"" + "GRAND TOTAL:$ " + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getNetTotal())) + "\"\n");
+                                y += 30;
+                                TscDll.sendcommand("TEXT 220," + y + ",\"Poppins.TTF\",0,8,8,\"" + "(GST Included " + (int) Double.parseDouble(invoiceHeaderDetails.get(0).getTaxValue()) + " % )\"\n");
+                            }
                         }
+
                     }
 
                     y += LINE_SPACING;
@@ -1984,8 +2038,12 @@ public class PrinterUtils extends AppCompatActivity {
                     }
                     //need flag
                     y += 20;
-                    TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"TOTAL OUTSTANDING :$ " + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getOutStandingAmount())) + "\"\n");
+                    if(shortCodeStr.equalsIgnoreCase("FUXIN")) {
+                        TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"TOTAL OUTSTANDING :$ " + fourDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getOutStandingAmount())) + "\"\n");
+                    }else{
+                        TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"TOTAL OUTSTANDING :$ " + twoDecimalPoint(Double.parseDouble(invoiceHeaderDetails.get(0).getOutStandingAmount())) + "\"\n");
 
+                    }
                     if (latLongLoc.equals("true")) {
                         if (invoiceHeaderDetails.get(0).getCurrentAddress() != null &&
                                 !invoiceHeaderDetails.get(0).getCurrentAddress().isEmpty()) {
@@ -2021,7 +2079,7 @@ public class PrinterUtils extends AppCompatActivity {
 
                     if (salesManName != null && !salesManName.isEmpty()) {
                         y += LINE_SPACING;
-                        TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"Contact : " + salesManName + "/" + salesManPhone + "\"\n");
+                        TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"Contact : " + salesManName +" "+userMiddleName+ "/" + salesManPhone + "\"\n");
                     }
 //        if(salesManPhone!=null && !salesManPhone.isEmpty()){
 //            y += 30;

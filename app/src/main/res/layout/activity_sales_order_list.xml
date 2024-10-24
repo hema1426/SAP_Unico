@@ -98,6 +98,7 @@
                         android:layout_gravity="bottom|center"
                         android:background="#006DDB"
                         android:gravity="end"
+                        android:visibility="gone"
                         android:id="@+id/outstanding_layout"
                         android:padding="10dp"
                         android:orientation="horizontal"

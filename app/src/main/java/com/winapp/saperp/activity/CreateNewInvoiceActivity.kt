@@ -167,6 +167,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var netTotalValue: TextView? = null
     private var customerDetails: ArrayList<CustomerDetails>? = null
     private var dbHelper: DBHelper? = null
+    var editTimeStamp: String? = null
     private var taxTitle: TextView? = null
     private var addProduct: Button? = null
     private var productsModel: ProductsModel? = null
@@ -235,6 +236,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private val beforeLooseQty: String? = null
     private val ss_Cqty: String? = null
     var isAllowLowStock = false
+    var isItemFOCApi = "false"
     var isCheckedCreditLimit = false
     private var pdtStockVal: String? = "0.00"
     private var pdtStockEditVal: String? = "0.00"
@@ -352,6 +354,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     private var delivery_addrSpinner: Spinner? = null
     private var deliveryAddr_layl: LinearLayout? = null
     private var uomList: ArrayList<UomModel>? = null
+    private var uomListEdit: ArrayList<UomModel>? = null
     private var deliveryAddrList: ArrayList<DeliveryAddressModel>? = null
     private val uomCode = ""
     private var uomName = ""
@@ -1869,8 +1872,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             // uomText.setText(model.getUomCode());
                             stockCount!!.setText(model.stockQty)
                             pcsPerCarton!!.setText(model.pcsPerCarton)
-                            if(isFOCStr.equals("Yes")){
-                                focEditText!!.isEnabled = true
+                            if(isFOCStr.equals("Yes",true)){
+                                if(model.isItemFOC.equals("Yes",true)) {
+                                    focEditText!!.isEnabled = true
+                                } else{
+                                    focEditText!!.isEnabled = false
+                                }
                             }
                             else{
                                 focEditText!!.isEnabled = false
@@ -1922,8 +1929,11 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         openKeyborard(qtyValue)
                         qtyValue!!.setSelection(qtyValue!!.text.length)
                         if(isFOCStr.equals("Yes")){
-                            focEditText!!.isEnabled = true
-                        }
+                            if(model.isItemFOC.equals("Yes",true)) {
+                                focEditText!!.isEnabled = true
+                            } else{
+                                focEditText!!.isEnabled = false
+                            }                        }
                         else{
                             focEditText!!.isEnabled = false
                         }
@@ -1977,6 +1987,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
     }
 
     fun addProduct(action: String?) {
+        Log.w("ProductIdView222:",""+ isProductExist(productId))
 
         if (isProductExist(productId)) {
             Log.w("ProductIdView:", productId!!)
@@ -1984,16 +1995,18 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                     .toDouble() > 0
             ) {
                 showExistingProductAlert(productId, productName)
-            } else {
-                insertProducts()
             }
+//            else {
+//                insertProducts()
+//            }
         } else {
+            Log.w("ProductIdView11:", productId!!)
             insertProducts()
         }
     }
 
     fun showExistingProductAlert(productId: String?, productName: String?) {
-        val builder1 = AlertDialog.Builder(applicationContext)
+        val builder1 = AlertDialog.Builder(this@CreateNewInvoiceActivity)
         builder1.setTitle("Warning !")
         builder1.setMessage("$productName - $productId\nAlready Exist Do you want to replace ? ")
         builder1.setCancelable(false)
@@ -2081,7 +2094,15 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             if (!minimumSellingPriceText!!.text.toString().isEmpty()) {
                 minimumSellingPricel = minimumSellingPriceText!!.text.toString()
             }
-            val priceValue = 0.0
+
+           var timeStamp: String? = Calendar.getInstance().timeInMillis.toString()
+           if(isEditItem){
+               timeStamp = editTimeStamp
+           }else{
+               timeStamp = SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(Date())
+           }
+
+           val priceValue = 0.0
             val net_qty = qty_value.toDouble() - return_qty.toDouble()
             val return_amt = return_qty.toDouble() * price_value.toDouble()
             val total = net_qty * price_value.toDouble()
@@ -2096,7 +2117,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 qty_value,
                 foc,
                 price_value,
-                stockQtyValue!!.text.toString(), total.toString(),
+                stockQtyValue!!.text.toString(),
+                total.toString(),
                 subTotalValue!!.text.toString(),
                 taxValueText!!.text.toString(),
                 netTotalValue!!.text.toString(),
@@ -2105,12 +2127,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 saleable,
                 damaged,
                 exchange,
-                minimumSellingPricel,pdtStockVal
+                minimumSellingPricel,pdtStockVal,timeStamp,isItemFOCApi
             )
             Log.w("itemds_inv",""+exchange+".. "+
                     sharedPref_billdisc!!.getString("billDisc_amt", ""))
 
             Log.w("total_inv",""+netTotalValue!!.text.toString()+".. "+subTotalValue!!.text.toString())
+            Log.w("timeupdat",""+timeStamp)
 
             // Adding Return Qty Table values
             if (return_qty.toDouble() > 0) {
@@ -2142,6 +2165,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 stockQtyValue!!.text = ""
                 qtyValue!!.clearFocus()
                 ischangeUOM = false
+                editTimeStamp = ""
 //                pdtStockVal="0.00"
                 uomChangel!!.visibility = View.GONE
                 ed_uomTxtl!!.visibility = View.GONE
@@ -2181,6 +2205,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             Log.e("Error_InsertProduct:", ec.message!!)
         }
     }
+
     @SuppressLint("SetTextI18n")
     private fun getProducts() {
         val products = dbHelper!!.allInvoiceProducts
@@ -2196,8 +2221,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                 products,
                 object : NewProductSummaryAdapter.CallBack {
                     override fun searchCustomer(letter: String, pos: Int) {}
-                    override fun removeItem(pid: String) {
-                        showRemoveItemAlert(pid)
+                    override fun removeItem(pid: String,updateTime: String) {
+                        showRemoveItemAlert(pid , updateTime)
                     }
 
                     override fun editItem(model: CreateInvoiceModel) {
@@ -2217,16 +2242,24 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                         productName = model.productName
                         uomText!!.setText(model.uomCode)
                         uomName = model.uomCode
+                        editTimeStamp = model.updateTime
                         uomPriceEd = model.price
                         damage_editVal = model.damagedQty
                         saleable_editVal = model.saleableQty
 //                        pdtStockEditVal = model.stockProductQty
                         pdtStockVal = model.stockProductQty
+                        var pdtStock = 0.0;
                         productEditId = model.productCode
 
-                        Log.w("pdtuomentryy", "" + model.stockProductQty);
-                        Log.w("pdtstockk", "" + model.stockQty);
-                        Log.w("sal_damag_txt:", model.saleableQty)
+                        val jsonObject = JSONObject()
+                        jsonObject.put("CustomerCode", selectCustomerId)
+                        jsonObject.put("ItemCode",productEditId)
+                        getUOMEdit(jsonObject,model.uomCode,model.stockProductQty)
+
+
+                        Log.w("pdtuomentryy", "" + model.stockProductQty)
+                        Log.w("pdtstockk", "" + model.stockQty)
+                        Log.w("timeupdat_edit:", model.saleableQty+".."+model.updateTime)
                         Log.w("miniSell_txt:",model.minimumSellingPrice)
 
 //                        if (isUomSetting) {
@@ -2279,20 +2312,22 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             returnQtyText!!.setText("0")
                         }
                         if(isFOCStr.equals("Yes")){
-                            focEditText!!.isEnabled = true
-                        }
+                            if(model.isItemFOC.equals("Yes",true)) {
+                                focEditText!!.isEnabled = true
+                            } else{
+                                focEditText!!.isEnabled = false
+                            }                            }
                         else{
                             focEditText!!.isEnabled = false
                         }
+
                         returnQtyText!!.isEnabled = true
                         exchange_inv!!.isEnabled = true
+                        isItemFOCApi = model.isItemFOC
 
                         uomValueVisible(model.uomCode)
 
-                        stockLayout!!.visibility = View.VISIBLE
-                        stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
 
-                        stockQtyValue!!.text = model.stockQty
                         stockCount!!.setText(model.stockQty)
                         minimumSellingPriceText!!.setText(model.minimumSellingPrice)
 
@@ -2339,13 +2374,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         }
         return valueGreat
     }
-    fun showRemoveItemAlert(pid: String?) {
+    fun showRemoveItemAlert(pid: String?,updateTime:String) {
         try {
             SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE) // .setTitleText("Are you sure?")
                 .setContentText("Are you sure want to remove this item ?")
                 .setConfirmText("YES")
                 .setConfirmClickListener { sDialog ->
-                    dbHelper!!.deleteInvoiceProduct(pid)
+                    dbHelper!!.deleteInvoiceProductNew(pid,updateTime)
                     clearFields()
                     sDialog.dismissWithAnimation()
                     getProducts()
@@ -2677,6 +2712,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         pcsPerCarton!!.setText("")
         uomText!!.setText("")
         uomTextView!!.text = ""
+        editTimeStamp = ""
         stockCount!!.setText("")
         exchange_inv!!.setText("")
         item_discount_ed!!.setText("")
@@ -2692,22 +2728,26 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
     fun isProductExist(productId: String?): Boolean {
         var isExist = false
-        try {
-            val localCart = dbHelper!!.allCartItems
+       // try {
+            val localCart = dbHelper!!.allInvoiceProducts
+
             if (localCart.size > 0) {
+
                 for (cart in localCart) {
-                    if (cart.carT_COLUMN_PID != null) {
-                        if (cart.carT_COLUMN_PID == productId) {
-                            Log.w("ProductIdPrint:", cart.carT_COLUMN_PID)
+                Log.w("localPdt1",""+cart.productCode)
+
+                    if (cart.productCode != null) {
+                        if (cart.productCode == productId) {
+                            Log.w("ProductIdPrint:", cart.productCode)
                             isExist = true
                             break
                         }
                     }
                 }
             }
-        } catch (ex: Exception) {
-            Log.e("Exp_to_check_product:", Objects.requireNonNull(ex.message!!))
-        }
+//        } catch (ex: Exception) {
+//            Log.e("Exp_to_check_product:", Objects.requireNonNull(ex.message!!))
+//        }
         return isExist
     }
 
@@ -3121,7 +3161,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
                     }else{
                         taxValueText!!.text = "0.0"
-
                     }
                     netTotalValue!!.text = "" + Prodtotal
                     subTotalValue!!.text = Utils.twoDecimalPoint(subTotal)
@@ -3408,7 +3447,6 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest)
     }
-
     fun getUOM(jsonObject: JSONObject) {
         // Initialize a new RequestQueue instance
         val requestQueue = Volley.newRequestQueue(this)
@@ -3453,6 +3491,105 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 defaultUOMset(uomList!!)
                             }
                         }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.w("Errory:", Objects.requireNonNull(e.message!!))
+                }
+            },
+            Response.ErrorListener { error: VolleyError ->
+                // Do something when error occurred
+                pDialog.dismiss()
+                Log.w("Error_throwing:", error.toString())
+            }) {
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                val creds =
+                    String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD)
+                val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
+                params["Authorization"] = auth
+                return params
+            }
+        }
+        jsonObjectRequest.setRetryPolicy(object : RetryPolicy {
+            override fun getCurrentTimeout(): Int {
+                return 50000
+            }
+
+            override fun getCurrentRetryCount(): Int {
+                return 50000
+            }
+
+            @Throws(VolleyError::class)
+            override fun retry(error: VolleyError) {
+            }
+        })
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    fun getUOMEdit(jsonObject: JSONObject, uomcode:String, pdtStockStr :String) {
+        // Initialize a new RequestQueue instance
+        val requestQueue = Volley.newRequestQueue(this)
+        val url = Utils.getBaseUrl(this) + "ItemUOMDetails"
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_UOM_URL:", url + jsonObject.toString())
+        val pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
+        pDialog.progressHelper.barColor = Color.parseColor("#A5DC86")
+        pDialog.setTitleText("Loading UOM...")
+        pDialog.setCancelable(false)
+        pDialog.show()
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST,
+            url,
+            jsonObject,
+            Response.Listener { response: JSONObject ->
+                try {
+                    uomListEdit = ArrayList()
+                    Log.w("Res_UOM:", response.toString())
+                    // Loop through the array elements
+                    val uomArray = response.optJSONArray("responseData")
+                    if (uomArray != null && uomArray.length() > 0) {
+                        for (j in 0 until uomArray.length()) {
+                            val uomObject = uomArray.getJSONObject(j)
+                            val uomModel = UomModel()
+                            uomModel.uomCode = uomObject.optString("uomCode")
+                            uomModel.uomName = uomObject.optString("uomName")
+                            uomModel.uomEntry = uomObject.optString("uomEntry")
+                            uomModel.altQty = uomObject.optString("altQty")
+                            uomModel.baseQty = uomObject.optString("baseQty")
+                            uomModel.price = uomObject.optString("price")
+                            uomListEdit!!.add(uomModel)
+                        }
+                    }
+                    Log.w("UOM_TEXT:", uomArray.toString())
+                    pDialog.dismiss()
+                    var pdtStockl = 0.0
+                    if (uomListEdit!!.size > 0) {
+                        for (i in uomListEdit!!.indices) {
+                            if (uomcode.equals("CTN", true)) {
+                                stockLayout!!.visibility = View.VISIBLE
+                                var baseCtnQty = uomListEdit!![i].baseQty.toDouble()
+                                pdtStockl = pdtStockStr.toDouble()
+                                var ctnStockVal = pdtStockl / baseCtnQty!!
+                                stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
+
+                                stockQtyValue!!.setText(twoDecimalPoint(ctnStockVal).toString())
+                                Log.w("baseCtnQtyEditaa", "" + baseCtnQty)
+                            } else {
+                                stockLayout!!.visibility = View.VISIBLE
+                                stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
+
+                                stockQtyValue!!.text = pdtStockStr
+                            }
+                        }
+//                        runOnUiThread {
+//                            if(ischangeUOM) {
+//                                setUomList(uomList!!)
+//                            }else{
+//                                defaultUOMset(uomList!!)
+//                            }
+//                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -3575,6 +3712,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 product.stockQty = "0"
                             }
                             product.uomCode = productObject.optString("uomCode")
+                            product.isItemFOC = productObject.optString("itemAllowFOC")
                             //  product.setProductBarcode(productObject.optString("BarCode")); Add values In Futue
                            // product.productBarcode = ""
 
@@ -4120,8 +4258,12 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
 
             // looseQtyValue.setEnabled(true);
             cartonPrice!!.isEnabled = true
-            if(isFOCStr.equals("Yes")){
-                focEditText!!.isEnabled = true
+            if(isFOCStr.equals("Yes",true)){
+                if(model.isItemFOC.equals("Yes",true)) {
+                    focEditText!!.isEnabled = true
+                }else{
+                    focEditText!!.isEnabled = false
+                }
             }
             else{
                 focEditText!!.isEnabled = false
@@ -4129,6 +4271,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
             exchangeEditext!!.isEnabled = true
             discountEditext!!.isEnabled = true
             returnEditext!!.isEnabled = true
+            isItemFOCApi = model.isItemFOC
+
             stockLayout!!.visibility = View.VISIBLE
             if (model.stockQty != null && model.stockQty != "null") {
                 pdtStockVal = model.stockQty
@@ -4482,11 +4626,18 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         // looseQtyValue.setEnabled(true);
         cartonPrice!!.isEnabled = true
         if(isFOCStr.equals("Yes")){
-            focEditText!!.isEnabled = true
+            if(model.isItemFOC.equals("Yes",true)) {
+                focEditText!!.isEnabled = true
+            }else{
+                focEditText!!.isEnabled = false
+            }
         }
         else{
             focEditText!!.isEnabled = false
         }
+
+        isItemFOCApi = model.isItemFOC
+
         exchangeEditext!!.isEnabled = true
         discountEditext!!.isEnabled = true
         returnEditext!!.isEnabled = true

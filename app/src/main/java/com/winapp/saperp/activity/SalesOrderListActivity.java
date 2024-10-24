@@ -59,6 +59,7 @@ import com.winapp.saperp.utils.BarCodeScanner;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.ImageUtil;
 import com.winapp.saperp.utils.SessionManager;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.UserAdapter;
 import com.winapp.saperp.utils.Utils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -70,6 +71,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,7 +86,6 @@ import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-import static com.winapp.saperp.fragments.AllInvoices.outstandingLayout;
 
 public class SalesOrderListActivity extends NavigationActivity implements AdapterView.OnItemSelectedListener {
 
@@ -137,8 +138,10 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     public Button cancelSearch;
     public Spinner salesOrderStatusSpinner;
     public static LinearLayout emptyLayout;
+    public static LinearLayout outstandingLayout;
     public String printSoNumber;
     public String noOfCopy;
+    private SharedPreferenceUtil sharedPreferenceUtil;
     private ArrayList<SalesOrderPrintPreviewModel> salesOrderHeaderDetails;
     private ArrayList<SalesOrderPrintPreviewModel.SalesList> salesPrintList;
     private String printerMacId;
@@ -157,7 +160,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     private ArrayList<UserListModel> usersList;
     private Spinner salesManSpinner;
     private String selectedUser="";
-
+    public static String shortCodeStr = "" ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,6 +175,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         dbHelper=new DBHelper(this);
         session=new SessionManager(this);
         user=session.getUserDetails();
+        sharedPreferenceUtil = new SharedPreferenceUtil(this);
+
         companyId=user.get(SessionManager.KEY_COMPANY_CODE);
         userName=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get((SessionManager.KEY_LOCATION_CODE));
@@ -209,6 +214,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         salesManSpinner=findViewById(R.id.salesman_spinner);
         salesManSpinner.setOnItemSelectedListener(this);
 
+        shortCodeStr = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil
+                .KEY_SHORT_CODE,"");
         Date c = Calendar.getInstance().getTime();
         System.out.println("Current time => " + c);
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -1437,6 +1444,14 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                     double total1=(net_qty * Double.parseDouble(price_value));
                                     double sub_total1=total1-return_amt;
 
+                                    long laterDate = System.currentTimeMillis();
+                                    int millisec = 18000;
+                                    Timestamp original = new Timestamp(laterDate);
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.setTimeInMillis(original.getTime());
+                                    cal.add(Calendar.MILLISECOND, millisec);
+                                    Timestamp timeStamp = new Timestamp(cal.getTime().getTime());
+
                                    dbHelper.insertCreateInvoiceCartEdit(
                                             object.optString("productCode"),
                                             object.optString("productName"),
@@ -1456,7 +1471,9 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                            "",
                                            "",
                                            object.optString("focQty"),
-                                           object.optString("minimumSellingPrice"),  object.optString("stockInHand")
+                                           object.optString("minimumSellingPrice"),
+                                           object.optString("stockInHand") , String.valueOf(timeStamp),
+                                           object.optString("itemAllowFOC")
                                     );
                                     Log.w("ProductsLength:",products.length()+"");
                                     Log.w("ActualPrintProducts:",dbHelper.numberOfRowsInInvoice()+"");

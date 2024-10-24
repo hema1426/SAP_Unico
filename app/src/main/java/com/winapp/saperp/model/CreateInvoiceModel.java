@@ -22,6 +22,24 @@ public class CreateInvoiceModel {
     private String exchangeQty;
     private String productBarCode;
     private String minimumSellingPrice;
+    private String updateTime;
+    private String isItemFOC;
+
+    public String getIsItemFOC() {
+        return isItemFOC;
+    }
+
+    public void setIsItemFOC(String isItemFOC) {
+        this.isItemFOC = isItemFOC;
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public String getStockProductQty() {
         return stockProductQty;

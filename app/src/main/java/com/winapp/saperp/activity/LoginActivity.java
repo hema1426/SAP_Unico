@@ -293,6 +293,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 String salesManMail=object.optString("salesPersonEmail");
                                 String salesManOffice=object.optString("salesPersonOfficeNo");
                                 String negativeStock =object.optString("allowNegativeStock");
+                                String userMiddlename =object.optString("userMiddleName");
+
 
                                 String invUOM =object.optString("invoiceDefaultUOM");
                                 String salesUOM =object.optString("salesOrderDefaultUOM");
@@ -300,6 +302,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 String settleNextDate =object.optString("haveSettlementByDate");
                                 String shortCode =object.optString("shortCode");
                                 String lastPrice =object.optString("showlastSalesPrice");
+                                String totalSales =object.optString("invoiceListShowBalance");
 
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_INV_UOM, invUOM);
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_SO_UOM, salesUOM);
@@ -308,6 +311,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                //mahudoom given "shortCode": "TRAN",
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SHORT_CODE, shortCode);
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_LAST_PRICE, lastPrice);
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_TOTAL_SALES, totalSales);
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_USER_MIDDLE_NAME, userMiddlename);
 
                                 session.createLoginSession(
                                         username,password,rollname,locationCode,"1",ispermission,

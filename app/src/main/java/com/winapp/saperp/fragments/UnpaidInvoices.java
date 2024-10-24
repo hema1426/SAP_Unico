@@ -1,5 +1,7 @@
 package com.winapp.saperp.fragments;
 
+import static com.winapp.saperp.activity.NewInvoiceListActivity.isLastSales;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -73,7 +76,9 @@ public class UnpaidInvoices extends Fragment {
     private ViewPager viewPager;
     TextView netTotalText;
     LinearLayout emptyLayout;
-    LinearLayout outstandingLayout;
+    RelativeLayout outstandingLayout;
+    public static LinearLayout totalSalesLayout;
+    TextView total_sales_valuel;
     boolean isfirstTime;
     TextView titletext;
     View progressLayout;
@@ -101,6 +106,8 @@ public class UnpaidInvoices extends Fragment {
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
         emptyLayout=view.findViewById(R.id.empty_layout);
         outstandingLayout=view.findViewById(R.id.outstanding_layout);
+        totalSalesLayout=view.findViewById(R.id.totalSales_layout);
+        total_sales_valuel=view.findViewById(R.id.total_sales_value1);
         progressLayout=view.findViewById(R.id.progress_layout);
         createNewInvoice=view.findViewById(R.id.create_invoice);
         titletext=view.findViewById(R.id.title);
@@ -114,6 +121,12 @@ public class UnpaidInvoices extends Fragment {
 
        // setUnPaidInvoices();
 
+        if(isLastSales.equalsIgnoreCase("True")){
+            totalSalesLayout.setVisibility(View.VISIBLE);
+        }
+        else{
+            totalSalesLayout.setVisibility(View.INVISIBLE);
+        }
 
         Date c = Calendar.getInstance().getTime();
         System.out.println("Current time => " + c);
@@ -354,10 +367,14 @@ public class UnpaidInvoices extends Fragment {
     public void setNettotal(ArrayList<InvoiceModel> invoiceList){
         outstandingLayout.setVisibility(View.VISIBLE);
         double net_amount=0.0;
+        double net_total_sales=0.0;
         for (InvoiceModel model:invoiceList){
             net_amount=net_amount+Double.parseDouble(model.getBalance());
+            net_total_sales = net_total_sales + Double.parseDouble(model.getNetTotal());
+
         }
         netTotalText.setText("$ "+ Utils.twoDecimalPoint(net_amount));
+        total_sales_valuel.setText("$ "+Utils.twoDecimalPoint(net_total_sales));
     }
 
 }

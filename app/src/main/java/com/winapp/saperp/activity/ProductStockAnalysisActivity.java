@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -42,7 +43,6 @@ import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-import static com.winapp.saperp.fragments.AllInvoices.outstandingLayout;
 
 public class ProductStockAnalysisActivity extends NavigationActivity {
 
@@ -63,6 +63,7 @@ public class ProductStockAnalysisActivity extends NavigationActivity {
     TextView customerName;
     EditText customerNameEdittext;
     DBHelper dbHelper;
+    LinearLayout outstandingLayout;
     TextView netTotalText;
     private ArrayList<CustomerDetails> customerDetails;
     LinearLayout transLayout;

@@ -182,7 +182,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_gravity="bottom|center"
         android:background="#006DDB"
@@ -192,25 +192,61 @@
         android:padding="10dp"
         android:orientation="horizontal"
         android:layout_height="40dp">
-
-        <TextView
+        <LinearLayout
+            android:id="@+id/totalSales_layout"
             android:layout_width="wrap_content"
-            android:text="Total Outstanding :"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_height="wrap_content"/>
+            android:visibility="invisible"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
 
-        <TextView
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Total Sales :"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:paddingRight="20sp"
+                android:id="@+id/total_sales_value1"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:paddingRight="20sp"
-            android:id="@+id/net_total_value"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_height="wrap_content"/>
+            android:visibility="visible"
+            android:layout_alignParentRight="true"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Total Outstanding :"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:paddingRight="20sp"
+                android:id="@+id/net_total_value"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:text="0.0"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 
 </FrameLayout>

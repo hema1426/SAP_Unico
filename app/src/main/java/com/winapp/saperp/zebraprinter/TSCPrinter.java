@@ -1,6 +1,7 @@
 package com.winapp.saperp.zebraprinter;
 
 import static com.winapp.saperp.utils.Utils.currentDateTime;
+import static com.winapp.saperp.utils.Utils.fourDecimalPoint;
 import static com.winapp.saperp.utils.Utils.getPrintSize;
 import static com.winapp.saperp.utils.Utils.twoDecimalPoint;
 
@@ -50,6 +51,7 @@ import com.winapp.saperp.salesreturn.SalesReturnPrintPreviewModel;
 import com.winapp.saperp.printpreview.InvoicePrintPreviewActivity;
 import com.winapp.saperp.utils.Constants;
 import com.winapp.saperp.utils.SessionManager;
+import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.Utils;
 import com.zebra.sdk.comm.BluetoothConnection;
 import com.zebra.sdk.comm.Connection;
@@ -132,11 +134,13 @@ public class TSCPrinter {
     int finalHeight = 0;
     public ArrayList<SettingsModel> settingsList;
     private DBHelper dbHelper;
+    private SharedPreferenceUtil sharedPreferenceUtil;
     private String showUserName = "";
     private String showSignature = "";
     private String showLogo = "";
     private String showReturn = "";
     private String showUom = "";
+    public static String shortCodeStr = "" ;
     private String showQrCode = "";
     private String showStamp = "";
     private String payNow = "";
@@ -181,6 +185,8 @@ public class TSCPrinter {
             session = new SessionManager(context);
             user = session.getUserDetails();
             dbHelper = new DBHelper(context);
+            sharedPreferenceUtil = new SharedPreferenceUtil(context);
+
             TscDll = new TSCActivity();
             company_name = user.get(SessionManager.KEY_COMPANY_NAME);
             company_code = user.get(SessionManager.KEY_COMPANY_CODE);
@@ -199,6 +205,9 @@ public class TSCPrinter {
             System.out.println("Current time => " + c);
             SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
             currentDate = df1.format(c);
+
+            shortCodeStr = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil
+                    .KEY_SHORT_CODE,"");
 
             settingsList = dbHelper.getSettings();
             if (settingsList != null) {
@@ -4290,9 +4299,19 @@ public class TSCPrinter {
                             }
                             y += 30;
                             TscDll.sendcommand("TEXT 290," + y + ",\"Poppins.TTF\",0,9,9,\"" + (int) Double.parseDouble(salesOrder.getNetQty()) + "\"\n");
-                            TscDll.sendcommand("TEXT 390," + y + ",\"Poppins.TTF\",0,9,9,\"" + salesOrder.getPricevalue() + "\"\n");
+                            if(shortCodeStr.equalsIgnoreCase("FUXIN")) {
 
-                            TscDll.sendcommand("TEXT 490," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(salesOrder.getTotal())) + "\"\n");
+                                TscDll.sendcommand("TEXT 390," + y + ",\"Poppins.TTF\",0,9,9,\"" +
+                                        fourDecimalPoint(Double.parseDouble(salesOrder.getPricevalue()))+ "\"\n");
+
+                                TscDll.sendcommand("TEXT 490," + y + ",\"Poppins.TTF\",0,9,9,\"" +
+                                        fourDecimalPoint(Double.parseDouble(salesOrder.getTotal())) + "\"\n");
+                            }else{
+                                TscDll.sendcommand("TEXT 390," + y + ",\"Poppins.TTF\",0,9,9,\"" + salesOrder.getPricevalue() + "\"\n");
+
+                                TscDll.sendcommand("TEXT 490," + y + ",\"Poppins.TTF\",0,9,9,\"" +
+                                        twoDecimalPoint(Double.parseDouble(salesOrder.getTotal())) + "\"\n");
+                            }
                             index++;
                         }
                         y += LINE_SPACING;
@@ -4313,17 +4332,31 @@ public class TSCPrinter {
                             TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,8,8,\"" + "GRAND TOTAL : $ " + "\"\n");
                             TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,8,8,\"" + twoDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getNetTotal())) + "\"\n");
                         } else {
-                            y += 20;
-                            TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "SUB TOTAL:$" + "\"\n");
-                            TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getSubTotal())) + "\"\n");
+                            if (shortCodeStr.equalsIgnoreCase("FUXIN")) {
+                                y += 20;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "SUB TOTAL:$" + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + fourDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getSubTotal())) + "\"\n");
 
-                            y += LINE_SPACING;
-                            TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "GST(" + salesOrderHeaderDetails.get(0).getTaxType() + ":" + (int) Double.parseDouble(salesOrderHeaderDetails.get(0).getTaxValue()) + " % ):$" + "\"\n");
-                            TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getNetTax())) + "\"\n");
+                                y += LINE_SPACING;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "GST(" + salesOrderHeaderDetails.get(0).getTaxType() + ":" + (int) Double.parseDouble(salesOrderHeaderDetails.get(0).getTaxValue()) + " % ):$" + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + fourDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getNetTax())) + "\"\n");
 
-                            y += LINE_SPACING;
-                            TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,9,9,\"" + "GRAND TOTAL:$" + "\"\n");
-                            TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getNetTotal())) + "\"\n");
+                                y += LINE_SPACING;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,9,9,\"" + "GRAND TOTAL:$" + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,9,9,\"" + fourDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getNetTotal())) + "\"\n");
+                            }else{
+                                y += 20;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "SUB TOTAL:$" + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getSubTotal())) + "\"\n");
+
+                                y += LINE_SPACING;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Poppins.TTF\",0,9,9,\"" + "GST(" + salesOrderHeaderDetails.get(0).getTaxType() + ":" + (int) Double.parseDouble(salesOrderHeaderDetails.get(0).getTaxValue()) + " % ):$" + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Poppins.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getNetTax())) + "\"\n");
+
+                                y += LINE_SPACING;
+                                TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,9,9,\"" + "GRAND TOTAL:$" + "\"\n");
+                                TscDll.sendcommand("TEXT 480," + y + ",\"Bold.TTF\",0,9,9,\"" + twoDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getNetTotal())) + "\"\n");
+                            }
                         }
 
                         y += LINE_SPACING;
@@ -4331,8 +4364,11 @@ public class TSCPrinter {
 
                         if (salesOrderHeaderDetails.get(0).getOutStandingAmount() != null && Double.parseDouble(salesOrderHeaderDetails.get(0).getOutStandingAmount()) > 0.00) {
                             y += 20;
-                            TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"TOTAL OUTSTANDING: " + twoDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getOutStandingAmount())) + "\"\n");
-
+                            if (shortCodeStr.equalsIgnoreCase("FUXIN")) {
+                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"TOTAL OUTSTANDING: " + fourDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getOutStandingAmount())) + "\"\n");
+                            }else{
+                                TscDll.sendcommand("TEXT 0," + y + ",\"Poppins.TTF\",0,8,8,\"TOTAL OUTSTANDING: " + twoDecimalPoint(Double.parseDouble(salesOrderHeaderDetails.get(0).getOutStandingAmount())) + "\"\n");
+                            }
                             y += LINE_SPACING;
                             TscDll.sendcommand("BAR 0," + y + ",800,2\n");
                         }

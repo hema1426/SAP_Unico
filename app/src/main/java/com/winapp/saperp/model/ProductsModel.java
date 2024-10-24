@@ -30,6 +30,15 @@ public class ProductsModel {
     private String uomText;
     private String defaultUom;
     private String barcode;
+    private String isItemFOC;
+
+    public String getIsItemFOC() {
+        return isItemFOC;
+    }
+
+    public void setIsItemFOC(String isItemFOC) {
+        this.isItemFOC = isItemFOC;
+    }
 
     public String getBarcode() {
         return barcode;

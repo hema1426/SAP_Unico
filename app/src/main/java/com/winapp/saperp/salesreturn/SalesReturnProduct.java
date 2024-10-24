@@ -2104,6 +2104,8 @@ public class SalesReturnProduct extends Fragment {
                                 product.setCartonPrice(productObject.optString("cartonPrice"));
                                 product.setPcsPerCarton(productObject.optString("pcsPerCarton"));
                                 product.setUnitCost(productObject.optString("price"));
+                                product.setUnitCost(productObject.optString("itemAllowFOC"));
+
                                 if (!productObject.optString("stockInHand").equals("null")){
                                     product.setStockQty(productObject.optString("stockInHand"));
                                 }else {

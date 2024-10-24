@@ -202,9 +202,10 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
                             "",
                             "",
                             model.getExchangeQty(),
-                            model.getMinimumSellingPrice(),model.getStockQty()
+                            model.getMinimumSellingPrice(),model.getStockQty(),"",model.isItemFOC
                     );
 ;
+
 
             /*dbHelper.insertCart(
                     model.getProductId(),
@@ -291,6 +292,24 @@ public class OrderDetailsAdapter extends RecyclerView.Adapter<OrderDetailsAdapte
         private String billDisc;
         private String billDiscPercentage;
         private String minimumSellingPrice;
+        private String updateTime;
+        private String isItemFOC;
+
+        public String getIsItemFOC() {
+            return isItemFOC;
+        }
+
+        public void setIsItemFOC(String isItemFOC) {
+            this.isItemFOC = isItemFOC;
+        }
+
+        public String getUpdateTime() {
+            return updateTime;
+        }
+
+        public void setUpdateTime(String updateTime) {
+            this.updateTime = updateTime;
+        }
 
         public String getMinimumSellingPrice() {
             return minimumSellingPrice;

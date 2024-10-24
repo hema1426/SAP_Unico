@@ -1,5 +1,7 @@
 package com.winapp.saperp.printpreview;
 
+import static com.winapp.saperp.activity.NewInvoiceListActivity.shortCodeStr;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -615,39 +617,78 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
                 addressLayout.setVisibility(View.VISIBLE);
                 deliveryAddressText.setText(model.getDeliveryAddress());
             }*/
-            gstTitle.setText("GST ( " + model.getTaxType() + " : " + Utils.twoDecimalPoint(Double.parseDouble(model.getTaxValue())) + " % ) ");
-            if (model.getTaxType().equals("I")) {
-                double sub_total = Double.parseDouble(model.getNetTotal()) - Double.parseDouble(model.getNetTax());
-                //billDiscountText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
-                subtotalText.setText(Utils.twoDecimalPoint(sub_total));
 
-                gstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
-                billDiscountTxt.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
-                netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
-                  outstanding_amountl.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
-                // itemDiscount.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getItemDiscount())));
-            } else {
-                // billDiscountText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
-                subtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
-                gstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
-                billDiscountTxt.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
-                netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
-                outstanding_amountl.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
-                //  outstandingText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
-                //  itemDiscount.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getItemDiscount())));
-            }
+            if(shortCodeStr.equalsIgnoreCase("FUXIN")){
+                gstTitle.setText("GST ( " + model.getTaxType() + " : " + Utils.fourDecimalPoint(Double.parseDouble(model.getTaxValue())) + " % ) ");
+                if (model.getTaxType().equals("I")) {
+                    double sub_total = Double.parseDouble(model.getNetTotal()) - Double.parseDouble(model.getNetTax());
+                    //billDiscountText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getBillDiscount())));
+                    subtotalText.setText(Utils.fourDecimalPoint(sub_total));
 
-            if (model.getSalesReturnList().size() > 0) {
-                cn_layl.setVisibility(View.VISIBLE);
-                cnno.setText(model.getSalesReturnList().get(0).getSalesReturnNumber());
-             //   Log.w("SubTotal:",model.getSalesReturnList().get(0).getsRSubTotal());
-             //   Log.w("TaxValue:",model.getSalesReturnList().get(0).getsRTaxTotal());
-              //  Log.w("NetTotalValue:",model.getSalesReturnList().get(0).getsRNetTotal());
-                cnsubtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSalesReturnList().get(0).getsRSubTotal())));
-                cngstTitle.setText("GST ( " + model.getTaxType() + " : " + Utils.twoDecimalPoint(Double.parseDouble(model.getTaxValue())) + " % ) ");
-                cngstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSalesReturnList().get(0).getsRTaxTotal())));
-                cnnetTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSalesReturnList().get(0).getsRNetTotal())));
-                balanceText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOverAllTotal())));
+                    gstText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getNetTax())));
+                    billDiscountTxt.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getBillDiscount())));
+                    netTotalText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getNetTotal())));
+                    outstanding_amountl.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
+                    // itemDiscount.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getItemDiscount())));
+                } else {
+                    // billDiscountText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getBillDiscount())));
+                    subtotalText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getSubTotal())));
+                    gstText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getNetTax())));
+                    billDiscountTxt.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getBillDiscount())));
+                    netTotalText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getNetTotal())));
+                    outstanding_amountl.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
+                    //  outstandingText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
+                    //  itemDiscount.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getItemDiscount())));
+                }
+
+                if (model.getSalesReturnList().size() > 0) {
+                    cn_layl.setVisibility(View.VISIBLE);
+                    cnno.setText(model.getSalesReturnList().get(0).getSalesReturnNumber());
+                    //   Log.w("SubTotal:",model.getSalesReturnList().get(0).getsRSubTotal());
+                    //   Log.w("TaxValue:",model.getSalesReturnList().get(0).getsRTaxTotal());
+                    //  Log.w("NetTotalValue:",model.getSalesReturnList().get(0).getsRNetTotal());
+                    cnsubtotalText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getSalesReturnList().get(0).getsRSubTotal())));
+                    cngstTitle.setText("GST ( " + model.getTaxType() + " : " + Utils.fourDecimalPoint(Double.parseDouble(model.getTaxValue())) + " % ) ");
+                    cngstText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getSalesReturnList().get(0).getsRTaxTotal())));
+                    cnnetTotalText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getSalesReturnList().get(0).getsRNetTotal())));
+                    balanceText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getOverAllTotal())));
+                }
+            }else {
+
+                gstTitle.setText("GST ( " + model.getTaxType() + " : " + Utils.twoDecimalPoint(Double.parseDouble(model.getTaxValue())) + " % ) ");
+                if (model.getTaxType().equals("I")) {
+                    double sub_total = Double.parseDouble(model.getNetTotal()) - Double.parseDouble(model.getNetTax());
+                    //billDiscountText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
+                    subtotalText.setText(Utils.twoDecimalPoint(sub_total));
+
+                    gstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
+                    billDiscountTxt.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
+                    netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
+                    outstanding_amountl.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
+                    // itemDiscount.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getItemDiscount())));
+                } else {
+                    // billDiscountText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
+                    subtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
+                    gstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
+                    billDiscountTxt.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getBillDiscount())));
+                    netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
+                    outstanding_amountl.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
+                    //  outstandingText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
+                    //  itemDiscount.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getItemDiscount())));
+                }
+
+                if (model.getSalesReturnList().size() > 0) {
+                    cn_layl.setVisibility(View.VISIBLE);
+                    cnno.setText(model.getSalesReturnList().get(0).getSalesReturnNumber());
+                    //   Log.w("SubTotal:",model.getSalesReturnList().get(0).getsRSubTotal());
+                    //   Log.w("TaxValue:",model.getSalesReturnList().get(0).getsRTaxTotal());
+                    //  Log.w("NetTotalValue:",model.getSalesReturnList().get(0).getsRNetTotal());
+                    cnsubtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSalesReturnList().get(0).getsRSubTotal())));
+                    cngstTitle.setText("GST ( " + model.getTaxType() + " : " + Utils.twoDecimalPoint(Double.parseDouble(model.getTaxValue())) + " % ) ");
+                    cngstText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSalesReturnList().get(0).getsRTaxTotal())));
+                    cnnetTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSalesReturnList().get(0).getsRNetTotal())));
+                    balanceText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOverAllTotal())));
+                }
             }
 
         }

@@ -1,5 +1,7 @@
 package com.winapp.saperp.printpreview;
 
+import static com.winapp.saperp.activity.SalesOrderListActivity.shortCodeStr;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -618,17 +620,32 @@ public class SalesOrderPrintPreview extends AppCompatActivity implements OnPageC
             }else {
                 billDiscountText.setText("0.00");
             }
-            taxTitle.setText("GST ( "+model.getTaxType()+" : "+ Utils.twoDecimalPoint(Double.parseDouble(model.getTaxValue()))+" % ) ");
-            if (model.getTaxType().equals("I")){
-                double sub_total=Double.parseDouble(model.getNetTotal()) - Double.parseDouble(model.getNetTax());
-                subtotalText.setText(Utils.twoDecimalPoint(sub_total));
+            if(shortCodeStr.equalsIgnoreCase("FUXIN")) {
+                taxTitle.setText("GST ( " + model.getTaxType() + " : " + Utils.fourDecimalPoint(Double.parseDouble(model.getTaxValue())) + " % ) ");
+                if (model.getTaxType().equals("I")) {
+                    double sub_total = Double.parseDouble(model.getNetTotal()) - Double.parseDouble(model.getNetTax());
+                    subtotalText.setText(Utils.fourDecimalPoint(sub_total));
+                } else {
+                    subtotalText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getSubTotal())));
+                }
+                taxValueText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getNetTax())));
+                netTotalText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getNetTotal())));
+                outstandingText.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
+                itemDiscount.setText(Utils.fourDecimalPoint(Double.parseDouble(model.getItemDiscount())));
             }else {
-                subtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
+
+                taxTitle.setText("GST ( " + model.getTaxType() + " : " + Utils.twoDecimalPoint(Double.parseDouble(model.getTaxValue())) + " % ) ");
+                if (model.getTaxType().equals("I")) {
+                    double sub_total = Double.parseDouble(model.getNetTotal()) - Double.parseDouble(model.getNetTax());
+                    subtotalText.setText(Utils.twoDecimalPoint(sub_total));
+                } else {
+                    subtotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getSubTotal())));
+                }
+                taxValueText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
+                netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
+                outstandingText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
+                itemDiscount.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getItemDiscount())));
             }
-            taxValueText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTax())));
-            netTotalText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getNetTotal())));
-            outstandingText.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getOutStandingAmount())));
-            itemDiscount.setText(Utils.twoDecimalPoint(Double.parseDouble(model.getItemDiscount())));
         }
 
         companyNametext.setText(company_name);

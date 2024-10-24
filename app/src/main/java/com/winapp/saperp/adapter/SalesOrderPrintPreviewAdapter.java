@@ -1,5 +1,7 @@
 package com.winapp.saperp.adapter;
 
+import static com.winapp.saperp.activity.SalesOrderListActivity.shortCodeStr;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
@@ -58,9 +60,13 @@ public class SalesOrderPrintPreviewAdapter extends RecyclerView.Adapter<SalesOrd
         }
         Log.w("so_total",""+salesList.getTotal());
       //  viewHolder.price.setText(Utils.twoDecimalPoint(Double.parseDouble(salesList.getPricevalue())));
-        viewHolder.price.setText(salesList.getPricevalue());
-
-        viewHolder.total.setText(Utils.twoDecimalPoint(Double.parseDouble(salesList.getTotal())));
+        if(shortCodeStr.equalsIgnoreCase("FUXIN")) {
+            viewHolder.price.setText(Utils.fourDecimalPoint(Double.parseDouble(salesList.getPricevalue())));
+            viewHolder.total.setText(Utils.fourDecimalPoint(Double.parseDouble(salesList.getTotal())));
+        }else{
+            viewHolder.price.setText(salesList.getPricevalue());
+            viewHolder.total.setText(Utils.twoDecimalPoint(Double.parseDouble(salesList.getTotal())));
+        }
     }
 
     @Override

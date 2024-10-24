@@ -1503,7 +1503,7 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
                             "",
                             "",
                             "",
-                            "","",""
+                            "","","","",""
                     );
 
             // Adding Return Qty Table values
@@ -1565,7 +1565,7 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
                 }
 
                 @Override
-                public void removeItem(String pid) {
+                public void removeItem(String pid, String time) {
                     showRemoveItemAlert(pid);
                 }
 
@@ -2304,7 +2304,7 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
     public void getAllProducts(JSONObject jsonObject) {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url = Utils.getBaseUrl(this) + "CustomerProductList";
+        String url = Utils.getBaseUrl(this) + "c";
         // Initialize a new JsonArrayRequest instance
         Log.w("Given_SAP_PROUCT_URL:", url + jsonObject.toString());
         productList = new ArrayList<>();

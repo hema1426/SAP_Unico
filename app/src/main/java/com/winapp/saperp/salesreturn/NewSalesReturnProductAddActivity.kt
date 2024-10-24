@@ -1056,7 +1056,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                 "",
                 "",
                 "",
-                "","")
+                "","","","")
 
             // Adding Return Qty Table values
             if (qty_value.toInt() > 0) {
@@ -1612,6 +1612,8 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                                 product.stockQty = "0"
                             }
                             product.uomCode = productObject.optString("uomCode")
+                            product.isItemFOC = productObject.optString("itemAllowFOC")
+
                             //  product.setProductBarcode(productObject.optString("BarCode")); Add values In Futue
                             // product.productBarcode = ""
 

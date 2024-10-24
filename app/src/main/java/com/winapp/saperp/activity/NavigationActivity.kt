@@ -364,31 +364,8 @@ open class NavigationActivity : AppCompatActivity() {
             helper!!.removeAllItems()
             // helper.removeSettings();
             session!!.logoutUser()
-            sharedPreferenceUtil!!.setStringPreference(
-                sharedPreferenceUtil!!.KEY_SETTING_INV_UOM,
-                ""
-            )
-            sharedPreferenceUtil!!.setStringPreference(
-                sharedPreferenceUtil!!.KEY_SETTING_SO_UOM,
-                ""
-            )
-            sharedPreferenceUtil!!.setStringPreference(
-                sharedPreferenceUtil!!.KEY_SETTING_RETURN_UOM,
-                ""
-            )
-            sharedPreferenceUtil!!.setStringPreference(
-                sharedPreferenceUtil!!.KEY_SETTLEMENT_NEXT_DATE,
-                "false"
-            )
-            //mahudoom given "shortCode": "TRAN",
-            sharedPreferenceUtil!!.setStringPreference(
-                sharedPreferenceUtil!!.KEY_SHORT_CODE,
-                ""
-            )
-            sharedPreferenceUtil!!.setStringPreference(
-                sharedPreferenceUtil!!.KEY_LAST_PRICE,
-                ""
-            )
+            clearPreference()
+
             dialog.cancel()
         }
         alertDialog.setNegativeButton(
@@ -396,6 +373,42 @@ open class NavigationActivity : AppCompatActivity() {
         ) { dialog, id -> dialog.cancel() }
         val alert11 = alertDialog.create()
         alert11.show()
+    }
+
+    fun clearPreference(){
+        sharedPreferenceUtil!!.setStringPreference(
+            sharedPreferenceUtil!!.KEY_SETTING_INV_UOM,
+            ""
+        )
+        sharedPreferenceUtil!!.setStringPreference(
+            sharedPreferenceUtil!!.KEY_SETTING_SO_UOM,
+            ""
+        )
+        sharedPreferenceUtil!!.setStringPreference(
+            sharedPreferenceUtil!!.KEY_SETTING_RETURN_UOM,
+            ""
+        )
+        sharedPreferenceUtil!!.setStringPreference(
+            sharedPreferenceUtil!!.KEY_SETTLEMENT_NEXT_DATE,
+            "false"
+        )
+        //mahudoom given "shortCode": "TRAN",
+        sharedPreferenceUtil!!.setStringPreference(
+            sharedPreferenceUtil!!.KEY_SHORT_CODE,
+            ""
+        )
+        sharedPreferenceUtil!!.setStringPreference(
+            sharedPreferenceUtil!!.KEY_LAST_PRICE,
+            ""
+        )
+        sharedPreferenceUtil!!.setStringPreference(
+            sharedPreferenceUtil!!.KEY_TOTAL_SALES,
+            ""
+        )
+        sharedPreferenceUtil!!.setStringPreference(
+            sharedPreferenceUtil!!.KEY_USER_MIDDLE_NAME,
+            ""
+        )
     }
 
     override fun onBackPressed() {
