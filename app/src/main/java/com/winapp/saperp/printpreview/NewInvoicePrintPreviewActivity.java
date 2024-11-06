@@ -715,7 +715,7 @@ public class NewInvoicePrintPreviewActivity extends AppCompatActivity {
         }
 
         if (!company_gst.isEmpty()){
-            companyGstText.setText("CO REG NO : "+company_gst);
+            companyGstText.setText("GST REG NO : "+company_gst);
             companyGstText.setVisibility(View.VISIBLE);
         }
         invoiceListView.setHasFixedSize(true);

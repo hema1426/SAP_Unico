@@ -123,6 +123,7 @@ public class Constants {
     public static String SLG_LIVE ="http://13.251.236.153:90/api/";
 
     public static String SLG_DEMO ="http://13.251.236.153:90/api/";
+    public static String SUPER_STAR_DEMO_new10 ="http://13.215.239.251:81/api/";
 
     public static String TRANS_ORIENT_DEMO ="https://c21326-EasySales-Test.cloudiax.com/api/";
     public static String FUXIN ="https://app0030.cloudtaktiks.com:11018/api/";

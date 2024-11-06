@@ -76,7 +76,7 @@ public class NewSalesReturnProductAdapter extends RecyclerView.Adapter<NewSalesR
                                     callBack.editItem(model);
                                     return true;
                                 case R.id.delete_menu:
-                                    callBack.removeItem(model.getProductCode());
+                                    callBack.removeItem(model.getProductCode(),model.getUpdateTime());
                                     return true;
                                 default:
                                     return false;
@@ -150,7 +150,7 @@ public class NewSalesReturnProductAdapter extends RecyclerView.Adapter<NewSalesR
 
     public interface CallBack{
         void searchCustomer(String letter, int pos);
-        void removeItem(String pid);
+        void removeItem(String pid,String updateTime);
         void editItem(CreateInvoiceModel model);
     }
     public ArrayList<CreateInvoiceModel> getList(){

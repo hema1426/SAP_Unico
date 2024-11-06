@@ -2946,7 +2946,7 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
             uomSpinner.setAdapter(adapter);
             setUOMCode(uomList);
             if (productsModel != null) {
-                //setuom
+                //setuom todo
                 Log.d("cg_uomsiz1", uomList.size() + "");
                 for (int i = 0; i < uomList.size(); i++) {
                     Log.w("cg_uomsiz", uomList.size() + "");

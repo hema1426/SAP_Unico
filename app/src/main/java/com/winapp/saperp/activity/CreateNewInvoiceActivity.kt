@@ -3488,7 +3488,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                             if(ischangeUOM) {
                                 setUomList(uomList!!)
                             }else{
-                                defaultUOMset(uomList!!)
+                                setUomList(uomList!!)
+                              //  defaultUOMset(uomList!!)
                             }
                         }
                     }
@@ -4133,6 +4134,7 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
         exchange_inv!!.isEnabled = true
         bill_disc_percent_ed!!.setText("0.00")
         bill_disc_amt_ed!!.setText("0.00")
+        ischangeUOM = false
 
         setSummaryTotal()
 

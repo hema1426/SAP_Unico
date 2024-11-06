@@ -155,7 +155,9 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
     var productsModel: ProductsModel? = null
     var itemCount: TextView? = null
     var noproductText: TextView? = null
+    private var isEditItem = false
     var productId: String? = null
+    var editTimeStamp: String? = null
     var productName: String? = null
     var isCartonQtyEdit = false
     var isQtyEdit = false
@@ -690,6 +692,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                             val minimumsellingprice =
                                 minimumSellingPriceText!!.getText().toString().toDouble()
                             if (minimumsellingprice <= priceText!!.getText().toString().toDouble()) {
+                                Log.w("saleReturn..","")
                                 addProduct("Add")
                             } else {
                                 showMinimumSellingpriceAlert(
@@ -703,6 +706,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                                     .toString().isEmpty() && returnQtyText!!.getText()
                                     .toString() != "0"
                             ) {
+                                Log.w("saleReturn1..","")
                                 addProduct("Add")
                             } else {
                                 Toast.makeText(
@@ -967,22 +971,23 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
     }
 
     fun addProduct(action: String?) {
+        Log.w("ProductIdView2Retr:",""+ isProductExist(productId))
         if (isProductExist(productId)) {
-            Log.w("ProductIdView:", productId!!)
             if (!qtyValue!!.text.toString().isEmpty() && qtyValue!!.text.toString()
                     .toDouble() > 0
             ) {
                 showExistingProductAlert(productId, productName)
-            } else {
-                insertProducts()
             }
+//            else {
+//                insertProducts()
+//            }
         } else {
             insertProducts()
         }
     }
 
     fun showExistingProductAlert(productId: String?, productName: String?) {
-        val builder1 = AlertDialog.Builder(applicationContext)
+        val builder1 = AlertDialog.Builder(this@NewSalesReturnProductAddActivity)
         builder1.setTitle("Warning !")
         builder1.setMessage("$productName - $productId\nAlready Exist Do you want to replace ? ")
         builder1.setCancelable(false)
@@ -1039,6 +1044,13 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
             val return_amt = return_qty.toDouble() * price_value.toDouble()
             val total = net_qty * price_value.toDouble()
             val sub_total = total - return_amt - discount.toDouble()
+            var timeStamp: String? = Calendar.getInstance().timeInMillis.toString()
+            if(isEditItem){
+                timeStamp = editTimeStamp
+            }else{
+                timeStamp = SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(Date())
+            }
+
             val insertStatus = dbHelper!!.insertCreateInvoiceCart(
                 productId.toString().trim { it <= ' ' },
                 productName,
@@ -1056,7 +1068,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                 "",
                 "",
                 "",
-                "","","","")
+                "","",timeStamp,"")
 
             // Adding Return Qty Table values
             if (qty_value.toInt() > 0) {
@@ -1091,6 +1103,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                 exchangeEditext!!.setText("")
                 discountEditext!!.setText("")
                 returnQtyText!!.setText("")
+                editTimeStamp = ""
                 focSwitch!!.isChecked = false
                 exchangeSwitch!!.isChecked = false
                 returnSwitch!!.isChecked = false
@@ -1123,14 +1136,16 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                 products,
                 object : NewSalesReturnProductAdapter.CallBack {
                     override fun searchCustomer(letter: String, pos: Int) {}
-                    override fun removeItem(pid: String) {
-                        showRemoveItemAlert(pid)
+                    override fun removeItem(pid: String,updateTime: String) {
+                        showRemoveItemAlert(pid,updateTime)
                     }
 
                     override fun editItem(model: CreateInvoiceModel) {
+                        isEditItem = true
                         salesReturn!!.isChecked = false
                         salesReturn!!.isEnabled = false
                         productId = model.productCode
+                        editTimeStamp = model.updateTime
                         productName = model.productName
                         qtyValue!!.setText("")
                         val netqty = model.netQty.toDouble()
@@ -1200,13 +1215,13 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         setSummaryTotal()
     }
 
-    fun showRemoveItemAlert(pid: String?) {
+    fun showRemoveItemAlert(pid: String?,updateTime:String) {
         try {
             SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE) // .setTitleText("Are you sure?")
                 .setContentText("Are you sure want to remove this item ?")
                 .setConfirmText("YES")
                 .setConfirmClickListener { sDialog ->
-                    dbHelper!!.deleteInvoiceProduct(pid)
+                    dbHelper!!.deleteInvoiceProductNew(pid,updateTime)
                     clearFields()
                     sDialog.dismissWithAnimation()
                     getProducts()
@@ -1278,6 +1293,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         pcsPerCarton!!.setText("")
         uomText!!.setText("")
         stockCount!!.setText("")
+        editTimeStamp = ""
         stockQtyValue!!.text = ""
         qtyValue!!.clearFocus()
         productAutoComplete!!.clearFocus()
@@ -1288,27 +1304,51 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         getProducts()
         setSummaryTotal()
     }
-
     fun isProductExist(productId: String?): Boolean {
         var isExist = false
-        try {
-            val localCart = dbHelper!!.allCartItems
-            if (localCart.size > 0) {
-                for (cart in localCart) {
-                    if (cart.carT_COLUMN_PID != null) {
-                        if (cart.carT_COLUMN_PID == productId) {
-                            Log.w("ProductIdPrint:", cart.carT_COLUMN_PID)
-                            isExist = true
-                            break
-                        }
+        // try {
+        val localCart = dbHelper!!.allInvoiceProducts
+
+        if (localCart.size > 0) {
+
+            for (cart in localCart) {
+                Log.w("localPdt1",""+cart.productCode)
+
+                if (cart.productCode != null) {
+                    if (cart.productCode == productId) {
+                        Log.w("ProductIdPrint:", cart.productCode)
+                        isExist = true
+                        break
                     }
                 }
             }
-        } catch (ex: Exception) {
-            Log.e("Exp_to_check_product:", Objects.requireNonNull(ex.message)!!)
         }
+//        } catch (ex: Exception) {
+//            Log.e("Exp_to_check_product:", Objects.requireNonNull(ex.message!!))
+//        }
         return isExist
     }
+
+//    fun isProductExist(productId: String?): Boolean {
+//        var isExist = false
+//      //  try {
+//            val localCart = dbHelper!!.allCartItems
+//            if (localCart.size > 0) {
+//                for (cart in localCart) {
+//                    if (cart.carT_COLUMN_PID != null) {
+//                        if (cart.carT_COLUMN_PID == productId) {
+//                            Log.w("ProductIdPrint:", cart.carT_COLUMN_PID)
+//                            isExist = true
+//                            break
+//                        }
+//                    }
+//                }
+//            }
+////        } catch (ex: Exception) {
+////            Log.e("Exp_to_check_product:", Objects.requireNonNull(ex.message)!!)
+////        }
+//        return isExist
+//    }
 
     fun checkLowStock() {
         var stock = 0.0
@@ -3442,6 +3482,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun showSettingsDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Need Permissions")
@@ -3530,6 +3571,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         productsModel = model
         productId = productsModel!!.productCode
         Log.w("pdtsInv1", "" + model.productName + "  .. " + model.barcode)
+        Log.w("pdtsInvCode", "" + model.productCode)
         // setUomList(model.getProductUOMList());
        // uomTextView!!.text = model.uomText
 //        if (isUomSetting) {
