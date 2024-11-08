@@ -64,7 +64,7 @@ public class NewSalesReturnProductAdapter extends RecyclerView.Adapter<NewSalesR
             viewHolder.subTotalValue.setText(model.getSubTotal());
             viewHolder.gstValue.setText(model.getGstAmount());
             viewHolder.netTotalValue.setText(model.getNetTotal());
-            viewHolder.uomtxt.setText(model.getUomText());
+            viewHolder.uomtxt.setText(String.valueOf(model.getUomCode()));
 
             viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override

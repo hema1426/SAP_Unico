@@ -1126,6 +1126,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
             if (!uomText!!.text.toString().isEmpty()) {
                 uom = uomText!!.text.toString()
             }
+            Log.w("uomsalereturn",""+uom)
             val insertStatus = dbHelper!!.insertCreateInvoiceCart(
                 productId.toString().trim { it <= ' ' },
                 productName,
@@ -1265,7 +1266,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                         }
                         focEditText!!.isEnabled = true
                         returnQtyText!!.isEnabled = true
-                        stockLayout!!.visibility = View.VISIBLE
+                       // stockLayout!!.visibility = View.VISIBLE
                         stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
                         stockQtyValue!!.text = model.stockQty
                         stockCount!!.setText(model.stockQty)
@@ -1915,6 +1916,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
 
             // stockLayout.setVisibility(View.VISIBLE);
             if (model.stockQty != null && model.stockQty != "null") {
+                pdtStockVal = model.stockQty
                 if (model.stockQty.toDouble().equals("0") || model.stockQty.toDouble() < 0) {
                     stockQtyValue!!.text = model.stockQty
                     stockQtyValue!!.setTextColor(Color.parseColor("#D24848"))
@@ -2202,6 +2204,8 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
 
             //stockLayout.setVisibility(View.VISIBLE);
             if (model.stockQty != null && model.stockQty != "null") {
+                pdtStockVal = model.stockQty
+
                 if (model.stockQty.toDouble().equals("0") || model.stockQty.toDouble() < 0) {
                     stockQtyValue!!.text = model.stockQty
                     stockQtyValue!!.setTextColor(Color.parseColor("#D24848"))
@@ -3678,19 +3682,19 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                     if (uomListEdit!!.size > 0) {
                         for (i in uomListEdit!!.indices) {
                             if (uomcode.equals("CTN", true)) {
-                                stockLayout!!.visibility = View.VISIBLE
+                               // stockLayout!!.visibility = View.VISIBLE
                                 var baseCtnQty = uomListEdit!![i].baseQty.toDouble()
-                                pdtStockl = pdtStockStr.toDouble()
-                                var ctnStockVal = pdtStockl / baseCtnQty!!
-                                stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
+                              //  pdtStockl = pdtStockStr.toDouble()
+                              //  var ctnStockVal = pdtStockl / baseCtnQty!!
+                               //// stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
 
-                                stockQtyValue!!.setText(Utils.twoDecimalPoint(ctnStockVal).toString())
+                              //  stockQtyValue!!.setText(Utils.twoDecimalPoint(ctnStockVal).toString())
                                 Log.w("baseCtnQtyEditaa", "" + baseCtnQty)
                             } else {
-                                stockLayout!!.visibility = View.VISIBLE
-                                stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
+                               // stockLayout!!.visibility = View.VISIBLE
+                               // stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
 
-                                stockQtyValue!!.text = pdtStockStr
+                               // stockQtyValue!!.text = pdtStockStr
                             }
                         }
 //                        runOnUiThread {
@@ -3779,15 +3783,15 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                     var ctnStockVal = 0.00
                     var baseCtnQty = uomList[position].baseQty.toDouble()
 
-                    var pdtStock = pdtStockVal!!.toDouble()
+                   // var pdtStock = pdtStockVal!!.toDouble()
 
-                    ctnStockVal = pdtStock / baseCtnQty
-                    stockQtyValue!!.setText(Utils.twoDecimalPoint(ctnStockVal).toString())
+                    //ctnStockVal = pdtStock / baseCtnQty
+                   // stockQtyValue!!.setText(Utils.twoDecimalPoint(ctnStockVal).toString())
                     Log.w("ctnStockaa",""+ctnStockVal+".."+ Utils.twoDecimalPoint(ctnStockVal).toString())
                     Log.w("ctnStock22",""+baseCtnQty)
                 }
                 else{
-                    stockQtyValue!!.setText(pdtStockVal.toString())
+                 //   stockQtyValue!!.setText(pdtStockVal.toString())
                 }
                 uomText!!.setText(uomList[position].uomCode)
                 priceText!!.setText(uomList[position].price)
@@ -3991,7 +3995,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         returnEditext!!.isEnabled = true
         stockLayout!!.visibility = View.VISIBLE
         if (model.stockQty != null && model.stockQty != "null") {
-            //pdtStockVal = model.stockQty
+            pdtStockVal = model.stockQty
             if (model.stockQty.toDouble() == 0.0 || model.stockQty.toDouble() < 0) {
                 stockQtyValue!!.text = model.stockQty
                 stockQtyValue!!.setTextColor(Color.parseColor("#D24848"))
@@ -4173,7 +4177,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                 saleObject.put("returnNetTotal", return_subtotal.toString() + "")
                 saleObject.put("taxCode", `object`.optString("taxCode"))
                 //                saleObject.put("uomCode",model.getUomCode());
-                saleObject.put("uomCode", settingUOMReturnval)
+                saleObject.put("uomCode", model.uomCode)
                 saleObject.put("retailPrice", "0.00")
                 saleObject.put("DamageStock", "")
                 saleObject.put("itemRemarks", "")
