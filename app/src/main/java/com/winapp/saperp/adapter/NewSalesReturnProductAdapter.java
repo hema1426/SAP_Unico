@@ -55,6 +55,7 @@ public class NewSalesReturnProductAdapter extends RecyclerView.Adapter<NewSalesR
                 viewHolder.subTotalValue.setVisibility(View.GONE);
                 viewHolder.gstValue.setVisibility(View.GONE);
                 viewHolder.netTotalValue.setVisibility(View.GONE);
+                viewHolder.uomtxt.setVisibility(View.GONE);
             }
             viewHolder.netQty.setText(String.valueOf(getQty(model.getNetQty())));
             viewHolder.returnQty.setText(model.getReturnQty());
@@ -63,6 +64,7 @@ public class NewSalesReturnProductAdapter extends RecyclerView.Adapter<NewSalesR
             viewHolder.subTotalValue.setText(model.getSubTotal());
             viewHolder.gstValue.setText(model.getGstAmount());
             viewHolder.netTotalValue.setText(model.getNetTotal());
+            viewHolder.uomtxt.setText(model.getUomText());
 
             viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -127,7 +129,7 @@ public class NewSalesReturnProductAdapter extends RecyclerView.Adapter<NewSalesR
         private TextView totalValue;
         private TextView subTotalValue;
         private TextView gstValue;
-        private TextView netTotalValue;
+        private TextView netTotalValue, uomtxt;
         private ImageView removeItem;
         private ImageView editProduct;
         public ViewHolder(View view) {
@@ -142,6 +144,7 @@ public class NewSalesReturnProductAdapter extends RecyclerView.Adapter<NewSalesR
             subTotalValue=view.findViewById(R.id.sub_total);
             gstValue=view.findViewById(R.id.tax);
             netTotalValue=view.findViewById(R.id.net_total);
+            uomtxt=view.findViewById(R.id.uom_return);
             // removeItem=view.findViewById(R.id.remove_item);
             // editProduct=view.findViewById(R.id.edit_product);
         }

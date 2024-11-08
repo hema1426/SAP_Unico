@@ -88,6 +88,7 @@ import com.winapp.saperp.model.ProductSummaryModel
 import com.winapp.saperp.model.ProductsModel
 import com.winapp.saperp.model.SalesOrderPrintPreviewModel
 import com.winapp.saperp.model.SalesOrderPrintPreviewModel.SalesList
+import com.winapp.saperp.model.UomModel
 import com.winapp.saperp.thermalprinter.PrinterUtils
 import com.winapp.saperp.utils.BarCodeScanner
 import com.winapp.saperp.utils.CaptureSignatureView
@@ -137,6 +138,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
     var cartonPrice: EditText? = null
     var loosePrice: EditText? = null
     var uomText: EditText? = null
+    private var uomName = ""
     var pcsPerCarton: EditText? = null
     var stockCount: EditText? = null
     var qtyValue: EditText? = null
@@ -156,11 +158,20 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
     var itemCount: TextView? = null
     var noproductText: TextView? = null
     private var isEditItem = false
+    private var productEditId: String? = null
+    private var pdtStockVal: String? = "0.00"
     var productId: String? = null
     var editTimeStamp: String? = null
     var productName: String? = null
+    var uomChangel: TextView? = null
+    var ed_uomTxtl: TextView? = null
+    var uomTxtTitl: TextView? = null
     var isCartonQtyEdit = false
     var isQtyEdit = false
+    var ischangeUOM = false
+    var isUomSetting = true
+    private var uomList: ArrayList<UomModel>? = null
+    private var uomListEdit: ArrayList<UomModel>? = null
     var qtyTextWatcher: TextWatcher? = null
     var cartonTextWatcher: TextWatcher? = null
     var lqtyTextWatcher: TextWatcher? = null
@@ -242,6 +253,9 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
     private var salesReturnList: ArrayList<InvoicePrintPreviewModel.SalesReturnList>? = null
     private var salesOrderHeaderDetails: ArrayList<SalesOrderPrintPreviewModel>? = null
     private var salesPrintList: ArrayList<SalesList>? = null
+    private var uomSpinnerLayl: LinearLayout? = null
+    private var uomSpinner: Spinner? = null
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -257,6 +271,11 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         progressDialog = ProgressDialog(this)
         mCompressor = FileCompressor(this)
         sharedPreferenceUtil = SharedPreferenceUtil(this)
+        uomSpinnerLayl = findViewById(R.id.uomSpinnerLay)
+        uomSpinner = findViewById(R.id.uom_spinner)
+        uomChangel = findViewById(R.id.uomChange)
+        ed_uomTxtl = findViewById(R.id.ed_uomTxt)
+        uomTxtTitl = findViewById(R.id.uomTxtTitle)
 
         settingUOMReturnval = sharedPreferenceUtil!!.getStringPreference(sharedPreferenceUtil!!.KEY_SETTING_RETURN_UOM,
             "")
@@ -374,6 +393,24 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
             customerDetails = dbHelper!!.getCustomer(selectCustomerId)
             getCustomerDetails(selectCustomerId, false, "")
         }
+
+//        val settings = dbHelper!!.settings
+//        if (settings != null) {
+//            if (settings.size > 0) {
+//                for (model in settings) {
+//                    if (model.settingName == "UomSwitch") {
+//                        Log.w("SettingNameRet:", model.settingName)
+//                        Log.w("SettingValueRet:", model.settingValue)
+//                        isUomSetting = if (model.settingValue == "1") {
+//                            true
+//                        } else {
+//                            true
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
         val bottomSheet = findViewById<View>(R.id.design_bottom_sheet)
         bottomSheet.setBackgroundColor(Color.parseColor("#F2F2F2"))
         behavior = BottomSheetBehavior.from(bottomSheet)
@@ -475,6 +512,41 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
             }
         }
         expiryReturnQty!!.addTextChangedListener(expiryQtyTextWatcher)
+
+        uomChangel!!.setOnClickListener(){
+                ischangeUOM = true
+                uomChangel!!.visibility = View.VISIBLE
+                ed_uomTxtl!!.visibility = View.GONE
+                uomSpinnerLayl!!.visibility = View.VISIBLE
+
+                val jsonObject = JSONObject()
+                if(isEditItem){
+                    try {
+                        Log.w("pdtediyyy",""+productEditId);
+                        jsonObject.put("CustomerCode", selectCustomerId)
+                        jsonObject.put("ItemCode",productEditId)
+                        getUOM(jsonObject)
+
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                        Log.w("Errort:", Objects.requireNonNull(e.message!!))
+                    }
+                }else{
+                    try {
+                        jsonObject.put("CustomerCode", selectCustomerId)
+                        jsonObject.put("ItemCode",productId)
+                        getUOM(jsonObject)
+
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                        Log.w("Errort:", Objects.requireNonNull(e.message!!))
+                    }
+                }
+//            else{
+//                Toast.makeText(this, "UOM settings not enabled", Toast.LENGTH_LONG).show()
+//
+//            }
+        }
 
         /*  expiryReturnQty.addTextChangedListener(new TextWatcher() {
             @Override
@@ -908,7 +980,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                             ).show()
                             productAutoComplete!!.clearFocus()
                             productAutoComplete!!.setText("")
-                            qtyValue!!.isEnabled = false
+                        //    qtyValue!!.isEnabled = false
                         }
                     } else {
                         productAutoComplete!!.clearFocus()
@@ -1012,6 +1084,7 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
             var return_qty = "0"
             val lPriceCalc = "0"
             var foc = "0"
+            var uom = "PCS"
             var price_value = "0"
             if (focSwitch!!.isChecked) {
                 focType = "ctn"
@@ -1050,12 +1123,14 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
             }else{
                 timeStamp = SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(Date())
             }
-
+            if (!uomText!!.text.toString().isEmpty()) {
+                uom = uomText!!.text.toString()
+            }
             val insertStatus = dbHelper!!.insertCreateInvoiceCart(
                 productId.toString().trim { it <= ' ' },
                 productName,
-                uomText!!.text.toString(),
-                "",
+                uom,
+                uom,
                 qty_value,
                 return_qty, net_qty.toString(),
                 foc,
@@ -1104,12 +1179,16 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                 discountEditext!!.setText("")
                 returnQtyText!!.setText("")
                 editTimeStamp = ""
+                uomChangel!!.visibility = View.GONE
+                ed_uomTxtl!!.visibility = View.GONE
+                uomSpinnerLayl!!.visibility = View.VISIBLE
+                ischangeUOM = false
                 focSwitch!!.isChecked = false
                 exchangeSwitch!!.isChecked = false
                 returnSwitch!!.isChecked = false
                 stockLayout!!.visibility = View.GONE
                 priceText!!.isEnabled = false
-                qtyValue!!.isEnabled = false
+               // qtyValue!!.isEnabled = false
                 focEditText!!.isEnabled = false
                 exchangeEditext!!.isEnabled = false
                 discountEditext!!.isEnabled = false
@@ -1165,6 +1244,15 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                         qtyValue!!.setSelection(qtyValue!!.text.length)
                         qtyValue!!.isEnabled = true
                         priceText!!.isEnabled = true
+                        productEditId = model.productCode
+                        pdtStockVal = model.stockProductQty
+
+                        val jsonObject = JSONObject()
+                        jsonObject.put("CustomerCode", selectCustomerId)
+                        jsonObject.put("ItemCode",productEditId)
+                        getUOMEdit(jsonObject,model.uomCode,model.stockProductQty)
+
+
                         if (model.focQty != null && !model.focQty.isEmpty() && model.focQty != "null") {
                             focEditText!!.setText(model.focQty)
                         } else {
@@ -1181,6 +1269,8 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                         stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
                         stockQtyValue!!.text = model.stockQty
                         stockCount!!.setText(model.stockQty)
+
+                        uomValueVisible(model.uomCode)
 
                         /* for (ProductsModel m:productList) {
                         if (m.getProductCode().equals(productId)) {
@@ -1300,6 +1390,10 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         focEditText!!.setText("")
         returnQtyText!!.setText("")
         stockLayout!!.visibility = View.GONE
+        uomChangel!!.visibility = View.GONE
+        ed_uomTxtl!!.visibility = View.GONE
+        uomSpinnerLayl!!.visibility = View.VISIBLE
+        ischangeUOM = false
         // priceText.setEnabled(false);
         getProducts()
         setSummaryTotal()
@@ -1382,11 +1476,18 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                     if (model.settingName == "allow_negative_switch") {
                         isAllowLowStock = model.settingValue == "1"
                     }
+                    Log.w("SettingNameRet11:", model.settingName)
                 }
-            } else {
+            }else {
                 isAllowLowStock = false
             }
         }
+    fun uomValueVisible(uomcode:String){
+        ed_uomTxtl!!.setText(uomcode)
+        uomChangel!!.visibility = View.VISIBLE
+        ed_uomTxtl!!.visibility = View.VISIBLE
+        uomSpinnerLayl!!.visibility = View.GONE
+    }
 
     fun setCalculationSummaryView(subTotal: Double) {
         try {
@@ -1783,6 +1884,16 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }*/
+                val jsonObject = JSONObject()
+                try {
+                    jsonObject.put("CustomerCode", selectCustomerId)
+                    jsonObject.put("ItemCode", model.productCode)
+                    getUOM(jsonObject)
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    Log.w("Errors:", Objects.requireNonNull(e.message!!))                }
+
+
             productAutoComplete!!.setText(model.productName + " - " + model.productCode)
             productId = model.productCode
             productName = model.productName
@@ -2073,8 +2184,16 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
             qtyValue!!.requestFocus()
             //  behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             openKeyborard(qtyValue)
-
-            // looseQtyValue.setEnabled(true);
+            val jsonObject = JSONObject()
+            try {
+                jsonObject.put("CustomerCode", selectCustomerId)
+                jsonObject.put("ItemCode", model.productCode)
+                getUOM(jsonObject)
+            } catch (e: JSONException) {
+                e.printStackTrace()
+                Log.w("Errors:", Objects.requireNonNull(e.message!!))
+            }
+                // looseQtyValue.setEnabled(true);
             cartonPrice!!.isEnabled = true
             focEditText!!.isEnabled = true
             exchangeEditext!!.isEnabled = true
@@ -3438,6 +3557,252 @@ class NewSalesReturnProductAddActivity : AppCompatActivity() {
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest)
     }
+    fun getUOM(jsonObject: JSONObject) {
+        // Initialize a new RequestQueue instance
+        val requestQueue = Volley.newRequestQueue(this)
+        val url = Utils.getBaseUrl(this) + "ItemUOMDetails"
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_UOM_URL:", url + jsonObject.toString())
+        val pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
+        pDialog.progressHelper.barColor = Color.parseColor("#A5DC86")
+        pDialog.setTitleText("Loading UOM...")
+        pDialog.setCancelable(false)
+        pDialog.show()
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST,
+            url,
+            jsonObject,
+            Response.Listener { response: JSONObject ->
+                try {
+                    uomList = ArrayList()
+                    Log.w("Res_UOM:", response.toString())
+                    // Loop through the array elements
+                    val uomArray = response.optJSONArray("responseData")
+                    if (uomArray != null && uomArray.length() > 0) {
+                        for (j in 0 until uomArray.length()) {
+                            val uomObject = uomArray.getJSONObject(j)
+                            val uomModel = UomModel()
+                            uomModel.uomCode = uomObject.optString("uomCode")
+                            uomModel.uomName = uomObject.optString("uomName")
+                            uomModel.uomEntry = uomObject.optString("uomEntry")
+                            uomModel.altQty = uomObject.optString("altQty")
+                            uomModel.baseQty = uomObject.optString("baseQty")
+                            uomModel.price = uomObject.optString("price")
+                            uomList!!.add(uomModel)
+                        }
+                    }
+                    Log.w("UOM_TEXT:", uomArray.toString())
+                    pDialog.dismiss()
+                    if (uomList!!.size > 0) {
+                        runOnUiThread {
+                            if(ischangeUOM) {
+                                setUomList(uomList!!)
+                            }else{
+                                setUomList(uomList!!)
+                                //  defaultUOMset(uomList!!)
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.w("Errory:", Objects.requireNonNull(e.message!!))
+                }
+            },
+            Response.ErrorListener { error: VolleyError ->
+                // Do something when error occurred
+                pDialog.dismiss()
+                Log.w("Error_throwing:", error.toString())
+            }) {
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                val creds =
+                    String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD)
+                val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
+                params["Authorization"] = auth
+                return params
+            }
+        }
+        jsonObjectRequest.setRetryPolicy(object : RetryPolicy {
+            override fun getCurrentTimeout(): Int {
+                return 50000
+            }
+
+            override fun getCurrentRetryCount(): Int {
+                return 50000
+            }
+
+            @Throws(VolleyError::class)
+            override fun retry(error: VolleyError) {
+            }
+        })
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest)
+    }
+    fun getUOMEdit(jsonObject: JSONObject, uomcode:String, pdtStockStr :String) {
+        // Initialize a new RequestQueue instance
+        val requestQueue = Volley.newRequestQueue(this)
+        val url = Utils.getBaseUrl(this) + "ItemUOMDetails"
+        // Initialize a new JsonArrayRequest instance
+        Log.w("Given_UOM_URL:", url + jsonObject.toString())
+        val pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
+        pDialog.progressHelper.barColor = Color.parseColor("#A5DC86")
+        pDialog.setTitleText("Loading UOM...")
+        pDialog.setCancelable(false)
+        pDialog.show()
+        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
+            Method.POST,
+            url,
+            jsonObject,
+            Response.Listener { response: JSONObject ->
+                try {
+                    uomListEdit = ArrayList()
+                    Log.w("Res_UOM:", response.toString())
+                    // Loop through the array elements
+                    val uomArray = response.optJSONArray("responseData")
+                    if (uomArray != null && uomArray.length() > 0) {
+                        for (j in 0 until uomArray.length()) {
+                            val uomObject = uomArray.getJSONObject(j)
+                            val uomModel = UomModel()
+                            uomModel.uomCode = uomObject.optString("uomCode")
+                            uomModel.uomName = uomObject.optString("uomName")
+                            uomModel.uomEntry = uomObject.optString("uomEntry")
+                            uomModel.altQty = uomObject.optString("altQty")
+                            uomModel.baseQty = uomObject.optString("baseQty")
+                            uomModel.price = uomObject.optString("price")
+                            uomListEdit!!.add(uomModel)
+                        }
+                    }
+                    Log.w("UOM_TEXT:", uomArray.toString())
+                    pDialog.dismiss()
+                    var pdtStockl = 0.0
+                    if (uomListEdit!!.size > 0) {
+                        for (i in uomListEdit!!.indices) {
+                            if (uomcode.equals("CTN", true)) {
+                                stockLayout!!.visibility = View.VISIBLE
+                                var baseCtnQty = uomListEdit!![i].baseQty.toDouble()
+                                pdtStockl = pdtStockStr.toDouble()
+                                var ctnStockVal = pdtStockl / baseCtnQty!!
+                                stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
+
+                                stockQtyValue!!.setText(Utils.twoDecimalPoint(ctnStockVal).toString())
+                                Log.w("baseCtnQtyEditaa", "" + baseCtnQty)
+                            } else {
+                                stockLayout!!.visibility = View.VISIBLE
+                                stockQtyValue!!.setTextColor(Color.parseColor("#2ECC71"))
+
+                                stockQtyValue!!.text = pdtStockStr
+                            }
+                        }
+//                        runOnUiThread {
+//                            if(ischangeUOM) {
+//                                setUomList(uomList!!)
+//                            }else{
+//                                defaultUOMset(uomList!!)
+//                            }
+//                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.w("Errory:", Objects.requireNonNull(e.message!!))
+                }
+            },
+            Response.ErrorListener { error: VolleyError ->
+                // Do something when error occurred
+                pDialog.dismiss()
+                Log.w("Error_throwing:", error.toString())
+            }) {
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                val creds =
+                    String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD)
+                val auth = "Basic " + Base64.encodeToString(creds.toByteArray(), Base64.DEFAULT)
+                params["Authorization"] = auth
+                return params
+            }
+        }
+        jsonObjectRequest.setRetryPolicy(object : RetryPolicy {
+            override fun getCurrentTimeout(): Int {
+                return 50000
+            }
+
+            override fun getCurrentRetryCount(): Int {
+                return 50000
+            }
+
+            @Throws(VolleyError::class)
+            override fun retry(error: VolleyError) {
+            }
+        })
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest)
+    }
+    private fun setUomList(uomList: ArrayList<UomModel>) {
+        Log.w("UOMList:", uomList.toString())
+        val adapter = ArrayAdapter(this, R.layout.cust_spinner_item, uomList)
+        uomSpinner!!.adapter = adapter
+        setUOMCode(uomList)
+
+//        if (productsModel != null) {
+//            //setuom
+//            Log.d("cg_uomsiz1", uomList.size.toString() + "")
+//                Log.w("cg_uomsiz", uomList.size.toString() + "")
+//                if (activityFrom == "iv" || activityFrom == "ConvertInvoice" ||
+//                    activityFrom == "Duplicate" || activityFrom == "ConvertInvoiceFromDO"
+//                    || activityFrom == "ReOrderInvoice"
+//                ) {
+//                    UOMdetail(settingUOMInvval!!,uomList)
+//                }
+//            if (activityFrom == "so" || activityFrom == "SalesEdit" || activityFrom == "ReOrderSales" ) {
+//                UOMdetail(settingUOMSOval!!,uomList)
+//            }
+//
+//            }
+
+    }
+    private fun setUOMCode(uomList: ArrayList<UomModel>) {
+        uomSpinner!!.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
+//                if (isEditItem) {
+//                    selectValue(uomList, uomName, uomPriceEd!!)
+//                    Log.w("uomentyy:", uomName + "kk"+uomPriceEd)
+//
+//                } else {
+                uomName = uomSpinner!!.selectedItem.toString()
+                uomText!!.setText(uomName)
+                Log.w("uomentyy:", uomName+pdtStockVal)
+                if(uomName.equals("CTN",true)) {
+                    var ctnStockVal = 0.00
+                    var baseCtnQty = uomList[position].baseQty.toDouble()
+
+                    var pdtStock = pdtStockVal!!.toDouble()
+
+                    ctnStockVal = pdtStock / baseCtnQty
+                    stockQtyValue!!.setText(Utils.twoDecimalPoint(ctnStockVal).toString())
+                    Log.w("ctnStockaa",""+ctnStockVal+".."+ Utils.twoDecimalPoint(ctnStockVal).toString())
+                    Log.w("ctnStock22",""+baseCtnQty)
+                }
+                else{
+                    stockQtyValue!!.setText(pdtStockVal.toString())
+                }
+                uomText!!.setText(uomList[position].uomCode)
+                priceText!!.setText(uomList[position].price)
+                Log.w("uomentyy1:", uomName)
+
+                Log.w("UOMQtyValue:", uomList[position].uomEntry)
+                Log.w("SelectedUOM:", uomName + "")
+                // }
+                qtyValue!!.setText("")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+    }
+
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {

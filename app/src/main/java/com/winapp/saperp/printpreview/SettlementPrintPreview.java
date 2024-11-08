@@ -124,7 +124,7 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
     private String company_address1;
     private String company_address2;
     private String company_address3;
-    private RelativeLayout rootLayout;
+    private LinearLayout rootLayout;
     private LinearLayout addressLayout;
     private SharedPreferences sharedPreferences;
     private String printerMacId;
@@ -207,7 +207,7 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
         expenseTotalText = findViewById(R.id.expense_total);
 
         View bottomSheet = findViewById(R.id.design_bottom_sheet);
-        behavior = BottomSheetBehavior.from(bottomSheet);
+       // behavior = BottomSheetBehavior.from(bottomSheet);
 
         checkPermission();
         requestPermission();
@@ -322,6 +322,7 @@ public class SettlementPrintPreview extends AppCompatActivity implements OnPageC
                                         model.setExpenseTotal(expenseObject.optString("amount"));
                                         expenseList.add(model);
                                     }
+                                    Log.w("expenseViewSizdd",""+expenseList.size());
                                     if (expenseList.size() > 0) {
                                         runOnUiThread(new Runnable() {
                                             @Override
