@@ -12,6 +12,15 @@ public class SalesOrderModel {
     private String address;
     private String status;
     private String salesOrderCode;
+    private String remarks;
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
     public String getSalesOrderCode() {
         return salesOrderCode;

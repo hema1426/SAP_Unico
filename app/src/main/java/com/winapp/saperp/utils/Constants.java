@@ -80,6 +80,8 @@ public class Constants {
 
     // Super Star- Demo
     public static String SUPER_STAR_DEMO ="http://13.215.239.251:81/api/";
+    //UNICO
+    public static String UNICO ="http://158.140.143.87:79/api/";
 
     // Super Star- Live
     public static String SUPER_STAR_LIVE_1 ="http://13.215.239.251:83/api/";

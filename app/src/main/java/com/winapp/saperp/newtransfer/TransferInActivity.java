@@ -277,14 +277,19 @@ public class TransferInActivity extends AppCompatActivity {
         search_ed.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {
-                if(!s.equals("")) {
+                if (!s.toString().isEmpty()) {
                     String searchtxt = s.toString();
-                    if (!searchtxt.isEmpty()) {
+                   // if (!searchtxt.isEmpty()) {
                         filter(searchtxt.toString());
-                    }
+                    //}
 //                    else{
 //                        setTransferInAdapter(transferInDetailsl);
 //                    }
+                  //  Log.w("transFiltSize",""+transferInDetailsl.size());
+
+                }else{
+                    Log.w("transFiltSizeaa",""+transferInDetailsl.size());
+                    setTransferInAdapter(transferInDetailsl);
                 }
             }
 
@@ -411,7 +416,7 @@ public class TransferInActivity extends AppCompatActivity {
                     alert.dismiss();
                     if (mode.equals("Transfer In") || mode.equals("Transfer Out") ||
                             mode.equals("Covert Transfer") || mode.equals("Stock Request")) {
-                        createJsonObject();
+                       createJsonObject();
                     }
                 }catch (Exception exception){}
             });
@@ -510,7 +515,7 @@ public class TransferInActivity extends AppCompatActivity {
     }
 
     private void createJsonObject() throws JSONException {
-        transferInDetailsl = transferInAdapter.getTransferInlist();
+       // transferInDetailsl = transferInAdapter.getTransferInlist();
 
         JSONObject rootJson=new JSONObject();
         JSONObject itemsObject =new JSONObject();
@@ -537,6 +542,8 @@ public class TransferInActivity extends AppCompatActivity {
         int index=1;
         for (TransferInModel.TransferInDetails model:transferInDetailsl){
             if(model.getQty()!=null && !model.getQty().isEmpty() && Integer.parseInt(model.getQty())> 0){
+                Log.w("transFerQtyaa",""+model.getQty());
+
                 itemsObject =new JSONObject();
                 itemsObject.put("itemCode",model.getProductCode());
                 itemsObject.put("itemName",model.getProductName());

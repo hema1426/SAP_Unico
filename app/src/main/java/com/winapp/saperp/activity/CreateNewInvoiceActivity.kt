@@ -1933,7 +1933,8 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 focEditText!!.isEnabled = true
                             } else{
                                 focEditText!!.isEnabled = false
-                            }                        }
+                            }
+                        }
                         else{
                             focEditText!!.isEnabled = false
                         }
@@ -2316,9 +2317,13 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 focEditText!!.isEnabled = true
                             } else{
                                 focEditText!!.isEnabled = false
-                            }                            }
+                            }
+                            Log.w("focStrApiAA",""+isFOCStr+model.isItemFOC)
+                        }
                         else{
                             focEditText!!.isEnabled = false
+                            Log.w("focStrApSS",""+isFOCStr+model.isItemFOC)
+
                         }
 
                         returnQtyText!!.isEnabled = true
@@ -5794,9 +5799,15 @@ class CreateNewInvoiceActivity : AppCompatActivity() , OnClickListener {
                                 outstandingAmount = `object`.optString("outstandingAmount")
                                 if(`object`.optString("allowFOC").equals("Yes",true)){
                                     focEditText!!.isEnabled = true
+                                    isFOCStr = "Yes"
+                                    Log.w("focStrApi33",""+isFOCStr)
+
                                 }
                                 else{
                                     focEditText!!.isEnabled = false
+                                    isFOCStr = "No"
+                                    Log.w("focStrApi44",""+isFOCStr)
+
                                 }
                                 //  model.setCustomerBarcode(object.optString("BarCode"));
                                 // model.setCustomerBarcode(String.valueOf(i));

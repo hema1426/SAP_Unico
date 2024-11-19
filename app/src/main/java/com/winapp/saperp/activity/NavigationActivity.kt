@@ -39,6 +39,7 @@ open class NavigationActivity : AppCompatActivity() {
     var isCheckedInvoice1 = false
     var isCheckedCustomer1 = false
     var isCheckedSalesReturn1 = false
+    var isAPIInvoice = false
     var locationCode: String? = null
 
     @JvmField
@@ -95,6 +96,7 @@ open class NavigationActivity : AppCompatActivity() {
         val customers = menu.findItem(R.id.navigation_item_customer)
         val salesorder = menu.findItem(R.id.navigation_item_salesorder)
         val invoice = menu.findItem(R.id.navigation_item_invoice)
+        val purchase_invoice = menu.findItem(R.id.navigation_item_purchase)
         val receipts = menu.findItem(R.id.navigation_item_receipts)
         val settings = menu.findItem(R.id.navigation_item_settings)
         val salesreturn = menu.findItem(R.id.navigation_item_sales_return)
@@ -133,6 +135,16 @@ open class NavigationActivity : AppCompatActivity() {
                        isCheckedSalesReturn1 = if (model.settingValue == "True") {
                            true
                        } else {
+                           false
+                       }
+                   }else if (model.settingName == "showAPInvoice") {
+                       Log.w("SettingNameApiInv:", model.settingName)
+                       Log.w("SettingValueApiInv:", model.settingValue)
+                       isAPIInvoice = if (model.settingValue == "True") {
+                           purchase_invoice.setVisible(true)
+                           true
+                       } else {
+                           purchase_invoice.setVisible(false)
                            false
                        }
                    }
@@ -191,6 +203,12 @@ open class NavigationActivity : AppCompatActivity() {
                     } else {
                         salesreturn.setVisible(false)
                     }
+
+                    "Sales Return" -> if (roll.havePermission == "true") {
+                        purchase_invoice.setVisible(true)
+                    } else {
+                        purchase_invoice.setVisible(false)
+                    }
                 }
             }
         }
@@ -230,7 +248,20 @@ open class NavigationActivity : AppCompatActivity() {
                 // mCurrentSelectedPosition = 3;
                 drawerLayout!!.closeDrawers()
                 return@OnNavigationItemSelectedListener true
-            } else if (itemId == R.id.navigation_item_settings) {
+            }else if (itemId == R.id.navigation_item_purchase) {
+                if (isAPIInvoice && (locationCode != null && !locationCode!!.isEmpty()) ) {
+                    val intent: Intent //setFragment(new TableListFragment());
+                    intent = Intent(this@NavigationActivity, PurchaseInvoiceListActivity::class.java)
+                    startActivity(intent)
+                }
+                else{
+                    Toast.makeText(this, "Check Location and Permission", Toast.LENGTH_SHORT).show()
+                }
+                // mCurrentSelectedPosition = 3;
+                drawerLayout!!.closeDrawers()
+                return@OnNavigationItemSelectedListener true
+            }
+            else if (itemId == R.id.navigation_item_settings) {
                 val intent: Intent
                 intent = Intent(this@NavigationActivity, SettingActivity::class.java)
                 startActivity(intent)

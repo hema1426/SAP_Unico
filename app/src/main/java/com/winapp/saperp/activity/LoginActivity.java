@@ -494,6 +494,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 dbHelper.insertSettings("showCatelog",object.optString("showCatelog"));
                                 dbHelper.insertSettings("showCustomer",object.optString("showCustomer"));
                                 dbHelper.insertSettings("showProduct",object.optString("showProduct"));
+                                dbHelper.insertSettings("showAPInvoice",object.optString("showAPInvoice"));
 //                                dbHelper.insertSettings("HAVESETTLEMENTBYDATE",object.optString("haveSettlementByDate"));
                                 dbHelper.insertSettings("haveEditPrice",object.optString("haveEditPrice"));
                             }

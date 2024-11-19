@@ -749,7 +749,8 @@ public class DescriptionActivity extends AppCompatActivity {
                                     !ctnQtyValue.getText().toString().equals(".")){
                                 isQtyEntered=false;
                             }else isQtyEntered= !pcsQtyValue.getText().toString().equals("0") ||
-                                    (!ctnQtyValue.getText().toString().equals("0") && !ctnQtyValue.getText().toString().equals("."));
+                                    (!ctnQtyValue.getText().toString().equals("0") &&
+                                            !ctnQtyValue.getText().toString().equals("."));
 
                             if (isQtyEntered && Double.parseDouble(netTotalTextView.getText().toString())>0){
 

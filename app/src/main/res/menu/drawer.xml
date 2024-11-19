@@ -75,6 +75,15 @@
             android:title="Invoices" />
 
     </group>
+    <group
+        android:id="@+id/drawermenu_group_52"
+        >
+        <item
+            android:id="@+id/navigation_item_purchase"
+            android:icon="@drawable/ic_invoice_menu"
+            android:title="Purchase Invoice" />
+
+    </group>
 
     <group
         android:id="@+id/drawermenu_group_51"

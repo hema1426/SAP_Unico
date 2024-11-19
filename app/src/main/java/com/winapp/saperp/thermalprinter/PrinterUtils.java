@@ -997,7 +997,7 @@ public class PrinterUtils extends AppCompatActivity {
 //            finalHeight = height + (invoiceList.size() * invoiceLineHeight) +invoiveSalesManHeight
 //                    +invoivePaynowHeight + invoiveReturnHeight + invoiveSubTotalHeight + invoiceBottomLine;
 
-                    finalHeight = height + 25 + (invoiceList.size() * invoiceLineHeight) + invoiveReturnHeight
+                    finalHeight = height  + (invoiceList.size() * invoiceLineHeight) + invoiveReturnHeight
                             + invoiveSubTotalHeight + invoiceBottomLine+invoivePaynowHeight+invoiveSalesManHeight;
 
                     Log.w("ActualFinalHeight::", finalHeight + "");
@@ -1598,8 +1598,8 @@ public class PrinterUtils extends AppCompatActivity {
 //            finalHeight = height + (invoiceList.size() * invoiceLineHeight) +invoiveSalesManHeight
 //                    +invoivePaynowHeight + invoiveReturnHeight + invoiveSubTotalHeight + invoiceBottomLine;
 
-                    finalHeight = height + 25 + (invoiceList.size() * invoiceLineHeight) + invoiveReturnHeight
-                            + invoiveSubTotalHeight + invoiceBottomLine;
+                    finalHeight = height + (invoiceList.size() * invoiceLineHeight) + invoiveReturnHeight
+                            + invoiveSubTotalHeight + invoiceBottomLine+invoivePaynowHeight+invoiveSalesManHeight;;
 
                     Log.w("ActualFinalHeight::", finalHeight + "");
 //        finalHeight = getPrintSize(height, showLogo, showQrCode, invoiceHeaderDetails.get(0).getOutStandingAmount()

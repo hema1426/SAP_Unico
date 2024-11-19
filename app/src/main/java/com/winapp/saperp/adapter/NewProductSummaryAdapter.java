@@ -49,34 +49,34 @@ public class NewProductSummaryAdapter extends RecyclerView.Adapter<NewProductSum
             CreateInvoiceModel model= summaryList.get(i);
             viewHolder.productCode.setText(model.getProductCode().trim());
             viewHolder.actualQty.setText(String.valueOf(getQty(model.getActualQty())));
+            viewHolder.product.setText(model.getProductName().trim());
 
-            if(Objects.equals(CreateNewInvoiceActivity.Companion.getActivityFrom(), "Duplicate")){
+//            if(Objects.equals(CreateNewInvoiceActivity.Companion.getActivityFrom(), "Duplicate")){
 //                stockVal = Double.parseDouble(model.getStockProductQty());
-                qtyVal = Double.parseDouble(model.getNetQty());
-                stockVal = 15;
-
-                finalStockVal = stockVal - qtyVal ;
-                Log.w("stockSumval",""+stockVal+".."+qtyVal);
-                if(stockVal < 0.0){
-                    viewHolder.product.setText(model.getProductName().trim());
-                    viewHolder.stockQtyInvoice.setText(" ( " +model.getStockProductQty()+" No Stock )");
-                    Log.w("stockSum",""+model.getStockProductQty());
-                }else{
-                    if(finalStockVal < 0.0) {
-                        viewHolder.product.setText(model.getProductName().trim());
-                        viewHolder.stockQtyInvoice.setText(" ( " + finalStockVal + " No Stock )");
-                        Log.w("stockSum1",""+finalStockVal);
-                    }
-                    else {
-                        viewHolder.product.setText(model.getProductName().trim());
-                        viewHolder.stockQtyInvoice.setText(" ( " + finalStockVal + " )");
-                        Log.w("stockSum2",""+finalStockVal);
-                    }
-                }
-            }
-            else{
-                viewHolder.product.setText(model.getProductName().trim());
-            }
+//                qtyVal = Double.parseDouble(model.getNetQty());
+//
+//                finalStockVal = stockVal - qtyVal ;
+//                Log.w("stockSumval",""+stockVal+".."+qtyVal);
+//                if(stockVal < 0.0){
+//                    viewHolder.product.setText(model.getProductName().trim());
+//                    viewHolder.stockQtyInvoice.setText(" ( " +model.getStockProductQty()+" No Stock )");
+//                    Log.w("stockSum",""+model.getStockProductQty());
+//                }else{
+//                    if(finalStockVal < 0.0) {
+//                        viewHolder.product.setText(model.getProductName().trim());
+//                        viewHolder.stockQtyInvoice.setText(" ( " + finalStockVal + " No Stock )");
+//                        Log.w("stockSum1",""+finalStockVal);
+//                    }
+//                    else {
+//                        viewHolder.product.setText(model.getProductName().trim());
+//                        viewHolder.stockQtyInvoice.setText(" ( " + finalStockVal + " )");
+//                        Log.w("stockSum2",""+finalStockVal);
+//                    }
+//                }
+//            }
+//            else{
+//                viewHolder.product.setText(model.getProductName().trim());
+           // }
 
             if (context instanceof TransferProductAddActivity){
                 viewHolder.netQty.setVisibility(View.GONE);

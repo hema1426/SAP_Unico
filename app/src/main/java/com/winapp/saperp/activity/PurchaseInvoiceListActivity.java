@@ -1,10 +1,5 @@
 package com.winapp.saperp.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -34,6 +29,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
@@ -41,9 +41,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.winapp.saperp.R;
-import com.winapp.saperp.adapter.SalesOrderAdapterNew;
+import com.winapp.saperp.adapter.PurchaseInvoiceAdapterNew;
 import com.winapp.saperp.adapter.SelectCustomerAdapter;
 import com.winapp.saperp.db.DBHelper;
 import com.winapp.saperp.fragments.CustomerFragment;
@@ -62,7 +63,6 @@ import com.winapp.saperp.utils.SessionManager;
 import com.winapp.saperp.utils.SharedPreferenceUtil;
 import com.winapp.saperp.utils.UserAdapter;
 import com.winapp.saperp.utils.Utils;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.winapp.saperp.zebraprinter.TSCPrinter;
 import com.winapp.saperp.zebraprinter.ZebraPrinterActivity;
 
@@ -87,10 +87,10 @@ import java.util.Objects;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
-public class SalesOrderListActivity extends NavigationActivity implements AdapterView.OnItemSelectedListener {
+public class PurchaseInvoiceListActivity extends NavigationActivity implements AdapterView.OnItemSelectedListener {
 
-    public static RecyclerView salesOrdersView;
-    public static SalesOrderAdapterNew salesOrderAdapter;
+    public static RecyclerView purchaseInvoiceView;
+    public static PurchaseInvoiceAdapterNew purchaseInvoiceAdapter;
     private ArrayList<SalesOrderModel> salesOrderList;
     private SweetAlertDialog pDialog;
     private SessionManager session;
@@ -117,15 +117,11 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     public TextView optionCancel;
     public TextView cancelSheet;
     public String userName;
-    public FloatingActionButton editSalesOrder;
-    public FloatingActionButton deleteSaleOrder;
-    public FloatingActionButton convertToInvoice;
+
     public FloatingActionButton printPreview;
     public String locationCode;
     public String salesOrderStatus;
-    public LinearLayout editLayout;
-    public LinearLayout deleteLayout;
-    public LinearLayout convertLayout;
+
     public LinearLayout printPreviewLayout;
     boolean isSearchCustomerNameClicked;
     boolean addnewCustomer;
@@ -158,7 +154,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     private int FILTER_CUSTOMER_CODE=134;
     String currentDate;
     private ArrayList<UserListModel> usersList;
-    private Spinner salesManSpinner;
+//    private Spinner salesManSpinner;
     private String selectedUser="";
     public static String shortCodeStr = "" ;
 
@@ -166,12 +162,12 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FrameLayout contentFrameLayout = findViewById(R.id.content_frame);
-        getLayoutInflater().inflate(R.layout.activity_sales_order_list, contentFrameLayout);
+        getLayoutInflater().inflate(R.layout.activity_purchase_invoice_list, contentFrameLayout);
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Sales Orders");
+        getSupportActionBar().setTitle("Purchase Invoice");
 
-        salesOrdersView=findViewById(R.id.salesOrderList);
+        purchaseInvoiceView =findViewById(R.id.rv_purchase_list);
         dbHelper=new DBHelper(this);
         session=new SessionManager(this);
         user=session.getUserDetails();
@@ -192,12 +188,6 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         soNumber=findViewById(R.id.so_no);
         optionCancel=findViewById(R.id.option_cancel);
         cancelSheet=findViewById(R.id.cancel_sheet);
-        editSalesOrder=findViewById(R.id.edit_salesorder);
-        deleteSaleOrder=findViewById(R.id.delete_salesorder);
-        convertToInvoice=findViewById(R.id.convert_to_invoice);
-        editLayout=findViewById(R.id.edit_layout);
-        deleteLayout=findViewById(R.id.delete_layout);
-        convertLayout=findViewById(R.id.convert_layout);
         printPreview=findViewById(R.id.print_preview);
         printPreviewLayout=findViewById(R.id.print_preview_layout);
         searchFilterView=findViewById(R.id.search_filter);
@@ -211,8 +201,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         outstandingLayout=findViewById(R.id.outstanding_layout);
         progressLayout=findViewById(R.id.progress_layout);
         createSalesOrder=findViewById(R.id.create_sales);
-        salesManSpinner=findViewById(R.id.salesman_spinner);
-        salesManSpinner.setOnItemSelectedListener(this);
+//        salesManSpinner=findViewById(R.id.salesman_spinner);
+//        salesManSpinner.setOnItemSelectedListener(this);
 
         shortCodeStr = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil
                 .KEY_SHORT_CODE,"");
@@ -289,9 +279,9 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             e.printStackTrace();
         }
 
-        salesOrdersView.setHasFixedSize(true);
-        salesOrdersView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        salesOrderAdapter=new SalesOrderAdapterNew(this, salesOrdersView, salesOrderList, new SalesOrderAdapterNew.CallBack() {
+        purchaseInvoiceView.setHasFixedSize(true);
+        purchaseInvoiceView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        purchaseInvoiceAdapter =new PurchaseInvoiceAdapterNew(this, purchaseInvoiceView, salesOrderList, new PurchaseInvoiceAdapterNew.CallBack() {
             @Override
             public void calculateNetTotal(ArrayList<SalesOrderModel> salesList) {
                 setNettotalFun(salesList);
@@ -309,7 +299,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                // viewCloseBottomSheet();
             }
         });
-        salesOrdersView.setAdapter(salesOrderAdapter);
+        purchaseInvoiceView.setAdapter(purchaseInvoiceAdapter);
 
         /*salesOrderAdapter.setOnLoadMoreListener(new SalesOrderAdapterNew.OnLoadMoreListener() {
             @Override
@@ -361,7 +351,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_COLLAPSED");
-                        getSupportActionBar().setTitle("Sales Order");
+                        getSupportActionBar().setTitle("Purchase Invoice");
                         transLayout.setVisibility(View.GONE);
                         if (redirectInvoice){
                             if (createInvoiceSetting.equals("true")){
@@ -372,7 +362,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 finish();
                             }else {
                                 CustomerFragment.isLoad=true;
-                                Intent intent=new Intent(SalesOrderListActivity.this, AddInvoiceActivityOld.class);
+                                Intent intent=new Intent(PurchaseInvoiceListActivity.this, AddInvoiceActivityOld.class);
                                 intent.putExtra("customerId",selectedCustomerId);
                                 intent.putExtra("activityFrom","SalesOrder");
                                 startActivity(intent);
@@ -439,116 +429,6 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                 }
             }
         });
-
-        editLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    viewCloseBottomSheet();
-                    if (!salesOrderStatus.equals("Closed") && !salesOrderStatus.equals("InProgress Invoice")){
-                        if (editSo.equals("true")){
-                            getSalesOrderDetails(soNumber.getText().toString(),"Edit");
-                        }else {
-                            Toast.makeText(getApplicationContext(),
-                                    "You Don't have permission to Edit",Toast.LENGTH_SHORT).show();
-                        }
-                    }else {
-                        Toast.makeText(getApplicationContext(),
-                                "This Sales order already Closed",Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        editSalesOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    viewCloseBottomSheet();
-                    if (!salesOrderStatus.equals("Closed") && !salesOrderStatus.equals("InProgress Invoice")){
-                        if (editSo.equals("true")){
-                            getSalesOrderDetails(soNumber.getText().toString(),"Edit");
-                        }else {
-                            Toast.makeText(getApplicationContext(),
-                                    "You Don't have permission to Edit",Toast.LENGTH_SHORT).show();
-                        }
-                    }else {
-                        Toast.makeText(getApplicationContext(),"This Sales order already Closed",Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        deleteLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewCloseBottomSheet();
-                if (salesOrderStatus.equals("Open")){
-                    if (editSo.equals("true")) {
-                        showRemoveAlert(soNumber.getText().toString());
-                    }else {
-                        Toast.makeText(getApplicationContext(),
-                                "You Don't have permission to Delete",Toast.LENGTH_SHORT).show();
-                    }
-                }else {
-                    Toast.makeText(getApplicationContext(),"Can't Delete Closed SalesOrder",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        deleteSaleOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewCloseBottomSheet();
-                if (salesOrderStatus.equals("Open")){
-                    if (editSo.equals("true")) {
-                        showRemoveAlert(soNumber.getText().toString());
-                    }else {
-                        Toast.makeText(getApplicationContext(),
-                                "You Don't have permission to Delete",Toast.LENGTH_SHORT).show();
-                    }
-                }else {
-                    Toast.makeText(getApplicationContext(),"Can't Delete Closed SalesOrder",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        convertLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    viewCloseBottomSheet();
-                    if (!salesOrderStatus.equals("Closed") && !salesOrderStatus.equals("InProgress Invoice")){
-                        getSalesOrderDetails(soNumber.getText().toString(),"ConvertInvoice");
-                    }else {
-                        Toast.makeText(getApplicationContext(),"This Sales order already Closed",Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        convertToInvoice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    viewCloseBottomSheet();
-                    if (!salesOrderStatus.equals("Closed") && !salesOrderStatus.equals("InProgress Invoice")){
-                        getSalesOrderDetails(soNumber.getText().toString(),"ConvertInvoice");
-                    }else {
-                        Toast.makeText(getApplicationContext(),"This Sales order already Closed",Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
         customerNameText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -564,7 +444,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             public void onClick(View view) {
               //  viewCloseBottomSheet();
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                Intent intent=new Intent(SalesOrderListActivity.this, SalesOrderPrintPreview.class);
+                Intent intent=new Intent(PurchaseInvoiceListActivity.this, PurchasePrintPreviewActivity.class);
                 intent.putExtra("soNumber",soNumber.getText().toString());
                 startActivity(intent);
             }
@@ -575,7 +455,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             public void onClick(View view) {
               //  viewCloseBottomSheet();
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                Intent intent=new Intent(SalesOrderListActivity.this, SalesOrderPrintPreview.class);
+                Intent intent=new Intent(PurchaseInvoiceListActivity.this, PurchasePrintPreviewActivity.class);
                 intent.putExtra("soNumber",soNumber.getText().toString());
                 startActivity(intent);
             }
@@ -633,7 +513,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                         }else if (salesOrderStatusSpinner.getSelectedItem().equals("OPEN")){
                             invoice_status="O";
                         }
-                        setFilterSearch(SalesOrderListActivity.this,companyId,selectedCustomerId,invoice_status,fromDateString,toDateString);
+                        setFilterSearch(PurchaseInvoiceListActivity.this,companyId,selectedCustomerId,invoice_status,fromDateString,toDateString);
                     } catch (JSONException | ParseException e) {
                         e.printStackTrace();
                     }
@@ -663,202 +543,6 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         customerPredEdit.putString("customerId", customerId);
         customerPredEdit.apply();
     }
-
-
-   /* public void getSalesOrderDetails(String soNumber,int copy) throws JSONException {
-        // Initialize a new RequestQueue instance
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("SalesOrderNo", soNumber);
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"SalesOrderDetails";
-        // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
-        salesOrderHeaderDetails =new ArrayList<>();
-        salesPrintList =new ArrayList<>();
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    try{
-                        Log.w("Sales_DetailsSAP::",response.toString());
-                        if (response.length()>0) {
-                            SalesOrderPrintPreviewModel model = new SalesOrderPrintPreviewModel();
-                            model.setSoNumber(response.optString("SoNo"));
-                            model.setSoDate(response.optString("SoDateString"));
-                            model.setCustomerCode(response.optString("CustomerCode"));
-                            model.setCustomerName(response.optString("CustomerName"));
-                            model.setAddress(response.optString("Address1"));
-                            model.setDeliveryAddress(response.optString("Address1"));
-                            model.setSubTotal(response.optString("SubTotal"));
-                            model.setNetTax(response.optString("Tax"));
-                            model.setNetTotal(response.optString("NetTotal"));
-                            model.setTaxType(response.optString("TaxType"));
-                            model.setTaxValue(response.optString("TaxPerc"));
-                            model.setOutStandingAmount(response.optString("BalanceAmount"));
-                            model.setBillDiscount(response.optString("BillDIscount"));
-                            model.setItemDiscount(response.optString("ItemDiscount"));
-                            JSONArray products = response.getJSONArray("SoDetails");
-                            for (int i = 0; i < products.length(); i++) {
-                                JSONObject object = products.getJSONObject(i);
-                                if (Double.parseDouble(object.optString("LQty")) > 0) {
-                                    SalesOrderPrintPreviewModel.SalesList salesListModel = new SalesOrderPrintPreviewModel.SalesList();
-
-                                    salesListModel.setProductCode(object.optString("ProductCode"));
-                                    salesListModel.setDescription(object.optString("ProductName"));
-                                    salesListModel.setLqty(object.optString("LQty"));
-                                    salesListModel.setCqty(object.optString("CQty"));
-                                    salesListModel.setNetQty(object.optString("LQty"));
-                                    salesListModel.setCartonPrice(object.optString("CartonPrice"));
-                                    salesListModel.setUnitPrice(object.optString("Price"));
-                                    double qty = Double.parseDouble(object.optString("LQty"));
-                                    double price = Double.parseDouble(object.optString("Price"));
-
-                                    double nettotal = qty * price;
-                                    salesListModel.setTotal(String.valueOf(nettotal));
-                                    salesListModel.setPricevalue(String.valueOf(price));
-
-                                    salesListModel.setPcsperCarton(object.optString("PcsPerCarton"));
-                                    salesListModel.setItemtax(object.optString("Tax"));
-                                    salesListModel.setSubTotal(object.optString("SubTotal"));
-                                    salesPrintList.add(salesListModel);
-
-
-                                    if (Double.parseDouble(object.optString("CQty")) > 0) {
-                                        salesListModel = new SalesOrderPrintPreviewModel.SalesList();
-                                        salesListModel.setProductCode(object.optString("ProductCode"));
-                                        salesListModel.setDescription(object.optString("ProductName"));
-                                        salesListModel.setLqty(object.optString("LQty"));
-                                        salesListModel.setCqty(object.optString("CQty"));
-                                        salesListModel.setNetQty(object.optString("CQty"));
-
-                                        double qty1 = Double.parseDouble(object.optString("CQty"));
-                                        double price1 = Double.parseDouble(object.optString("CartonPrice"));
-                                        double nettotal1 = qty1 * price1;
-                                        salesListModel.setTotal(String.valueOf(nettotal1));
-                                        salesListModel.setPricevalue(String.valueOf(price1));
-
-                                        salesListModel.setUomCode(object.optString("UOMCode"));
-                                        salesListModel.setCartonPrice(object.optString("CartonPrice"));
-                                        salesListModel.setUnitPrice(object.optString("Price"));
-                                        salesListModel.setPcsperCarton(object.optString("PcsPerCarton"));
-                                        salesListModel.setItemtax(object.optString("Tax"));
-                                        salesListModel.setSubTotal(object.optString("SubTotal"));
-                                        salesPrintList.add(salesListModel);
-                                    }
-
-                                    if (!object.optString("ReturnQty").isEmpty() && Double.parseDouble(object.optString("ReturnQty")) > 0) {
-                                        salesListModel = new SalesOrderPrintPreviewModel.SalesList();
-                                        salesListModel.setProductCode(object.optString("ProductCode"));
-                                        salesListModel.setDescription(object.optString("ProductName"));
-                                        salesListModel.setLqty(object.optString("LQty"));
-                                        salesListModel.setCqty(object.optString("CQty"));
-                                        salesListModel.setNetQty(object.optString("ReturnQty"));
-
-                                        double qty1 = Double.parseDouble(object.optString("ReturnQty"));
-                                        double price1 = Double.parseDouble(object.optString("Price"));
-                                        double nettotal1 = qty1 * price1;
-                                        salesListModel.setTotal(String.valueOf(nettotal1));
-                                        salesListModel.setPricevalue(String.valueOf(price1));
-
-                                        salesListModel.setUomCode(object.optString("UOMCode"));
-                                        salesListModel.setCartonPrice(object.optString("CartonPrice"));
-                                        salesListModel.setUnitPrice(object.optString("Price"));
-                                        salesListModel.setPcsperCarton(object.optString("PcsPerCarton"));
-                                        salesListModel.setItemtax(object.optString("Tax"));
-                                        salesListModel.setSubTotal(object.optString("SubTotal"));
-                                        salesPrintList.add(salesListModel);
-                                    }
-
-                                } else {
-                                    if (Double.parseDouble(object.optString("CQty")) > 0) {
-                                        SalesOrderPrintPreviewModel.SalesList salesListModel = new SalesOrderPrintPreviewModel.SalesList();
-                                        salesListModel.setProductCode(object.optString("ProductCode"));
-                                        salesListModel.setDescription(object.optString("ProductName"));
-                                        salesListModel.setLqty(object.optString("LQty"));
-                                        salesListModel.setCqty(object.optString("CQty"));
-                                        salesListModel.setNetQty(object.optString("Qty"));
-                                        salesListModel.setCartonPrice(object.optString("CartonPrice"));
-                                        salesListModel.setUnitPrice(object.optString("Price"));
-
-                                        double qty1 = Double.parseDouble(object.optString("CQty"));
-                                        double price1 = Double.parseDouble(object.optString("CartonPrice"));
-                                        double nettotal1 = qty1 * price1;
-                                        salesListModel.setTotal(String.valueOf(nettotal1));
-                                        salesListModel.setPricevalue(String.valueOf(price1));
-
-                                        salesListModel.setUomCode(object.optString("UOMCode"));
-                                        salesListModel.setPcsperCarton(object.optString("PcsPerCarton"));
-                                        salesListModel.setItemtax(object.optString("Tax"));
-                                        salesListModel.setSubTotal(object.optString("SubTotal"));
-                                        salesPrintList.add(salesListModel);
-
-
-                                        if (!object.optString("ReturnQty").isEmpty() && Double.parseDouble(object.optString("ReturnQty")) > 0) {
-                                            salesListModel = new SalesOrderPrintPreviewModel.SalesList();
-                                            salesListModel.setProductCode(object.optString("ProductCode"));
-                                            salesListModel.setDescription(object.optString("ProductName"));
-                                            salesListModel.setLqty(object.optString("LQty"));
-                                            salesListModel.setCqty(object.optString("CQty"));
-                                            salesListModel.setNetQty("-" + object.optString("ReturnQty"));
-
-                                            double qty12 = Double.parseDouble(object.optString("ReturnQty"));
-                                            double price12 = Double.parseDouble(object.optString("Price"));
-                                            double nettotal12 = qty12 * price12;
-                                            salesListModel.setTotal(String.valueOf(nettotal12));
-                                            salesListModel.setPricevalue(String.valueOf(price12));
-
-                                            salesListModel.setUomCode(object.optString("UOMCode"));
-                                            salesListModel.setCartonPrice(object.optString("CartonPrice"));
-                                            salesListModel.setUnitPrice(object.optString("Price"));
-                                            salesListModel.setPcsperCarton(object.optString("PcsPerCarton"));
-                                            salesListModel.setItemtax(object.optString("Tax"));
-                                            salesListModel.setSubTotal(object.optString("SubTotal"));
-                                            salesPrintList.add(salesListModel);
-                                        }
-
-                                    }
-                                }
-                            }
-                            model.setSalesList(salesPrintList);
-                            salesOrderHeaderDetails.add(model);
-                        }
-                        sentPrintDate(copy);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }, error -> {
-            // Do something when error occurred
-            Log.w("Error_throwing:",error.toString());
-        }){
-            @Override
-            public Map<String, String> getHeaders() {
-                HashMap<String, String> params = new HashMap<>();
-                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
-                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
-                params.put("Authorization", auth);
-                return params;
-            }
-        };
-        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-
-            }
-        });
-        // Add JsonArrayRequest to the RequestQueue
-        requestQueue.add(jsonObjectRequest);
-    }*/
-
-
     private void getAllUsers() throws JSONException {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url= Utils.getBaseUrl(this) +"UserList";
@@ -928,7 +612,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
 
     public void setUserListAdapter(ArrayList<UserListModel> usersList){
         UserAdapter customAdapter=new UserAdapter(getApplicationContext(),usersList);
-        salesManSpinner.setAdapter(customAdapter);
+     //   salesManSpinner.setAdapter(customAdapter);
     }
 
     @Override
@@ -946,10 +630,10 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         // Initialize a new RequestQueue instance
         JSONObject jsonObject=new JSONObject();
         //  jsonObject.put("CompanyCode",companyId);
-        jsonObject.put("SalesOrderNo", soNumber);
-        // jsonObject.put("LocationCode",locationCode);
+        jsonObject.put("InvoiceNo", soNumber);
+        jsonObject.put("LocationCode",locationCode);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"SalesOrderDetails";
+        String url= Utils.getBaseUrl(this) +"APInvoiceDetails";
         // Initialize a new JsonArrayRequest instance
         Log.w("Given_url:",url);
      //   pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
@@ -969,10 +653,10 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                             JSONObject object=responseData.optJSONObject(0);
 
                             SalesOrderPrintPreviewModel model=new SalesOrderPrintPreviewModel();
-                            model.setSoNumber(object.optString("soNumber"));
-                            model.setSoDate(object.optString("soDate"));
-                            model.setCustomerCode(object.optString("customerCode"));
-                            model.setCustomerName(object.optString("customerName"));
+                            model.setSoNumber(object.optString("poNo"));
+                            model.setSoDate(object.optString("poDate"));
+                            model.setCustomerCode(object.optString("vendorCode"));
+                            model.setCustomerName(object.optString("vendorName"));
                             model.setAddress(object.optString("address1") + object.optString("address2") + object.optString("address3"));
                             model.setAddress1(object.optString("address1"));
                             model.setAddress2(object.optString("address2"));
@@ -1002,7 +686,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 Utils.setSignature("");
                             }
 
-                            JSONArray detailsArray=object.optJSONArray("salesOrderDetails");
+                            JSONArray detailsArray=object.optJSONArray("purchaseInvoiceDetails");
                             for (int i=0;i<detailsArray.length();i++){
                                 JSONObject detailObject=detailsArray.optJSONObject(i);
 
@@ -1094,257 +778,15 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         requestQueue.add(jsonObjectRequest);
     }
 
-    private void createSignature(){
-        if (Utils.getSignature()!=null && !Utils.getSignature().isEmpty()){
-            try {
-                ImageUtil.saveStamp(this,Utils.getSignature(),"Signature");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
-        printerType=sharedPreferences.getString("printer_type","");
-        printerMacId=sharedPreferences.getString("mac_address","");
-        super.onResume();
-    }
-
-
-    private void sentPrintDate(int copy) throws IOException {
-        if (Utils.validatePrinterConfiguration(this,printerType,printerMacId)) {
-
-            if (printerType.equals("TSC Printer")) {
-                TSCPrinter printer = new TSCPrinter(SalesOrderListActivity.this, printerMacId, "SalesOrder");
-                printer.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList);
-                printer.setOnCompletionListener(() -> {
-                    Utils.setSignature("");
-                    Toast.makeText(getApplicationContext(), "SalesOrder printed successfully!", Toast.LENGTH_SHORT).show();
-                });
-            } else if (printerType.equals("Zebra Printer")) {
-                ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(SalesOrderListActivity.this, printerMacId);
-                zebraPrinterActivity.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList);
-            }
-        }
-    }
-
-
-    public static void filterSearch(String customerName, String invoiceStatus, String fromdate, String todate) {
-        try {
-            ArrayList<SalesOrderModel> filterdNames = new ArrayList<>();
-            SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
-            Date from_date=null;
-            Date to_date=null;
-            try {
-                from_date=sdf.parse(fromdate);
-                to_date=sdf.parse(todate);
-            }  catch (ParseException e) {
-                e.printStackTrace();
-            }
-            for (SalesOrderModel model: SalesOrderAdapterNew.getSalesOrderList()){
-                Date compareDate=sdf.parse(model.getDate());
-                if (from_date.equals(to_date)){
-                    if (from_date.equals(compareDate)){
-                        if (!customerName.isEmpty()){
-                            if (model.getName().toLowerCase().contains(customerName.toLowerCase())) {
-                                switch (invoiceStatus) {
-                                    case "ALL":
-                                        filterdNames.add(model);
-                                        break;
-                                    case "OPEN":
-                                        if (model.getStatus().equals("0")) {
-                                            filterdNames.add(model);
-                                        }
-                                        break;
-                                    case "CLOSED":
-                                        if (!model.getStatus().equals("0")) {
-                                            filterdNames.add(model);
-                                        }
-                                        break;
-                                }
-                                salesOrderAdapter.filterList(filterdNames);
-                            }
-                        }else {
-                            switch (invoiceStatus) {
-                                case "ALL":
-                                    filterdNames.add(model);
-                                    break;
-                                case "OPEN":
-                                    if (model.getStatus().equals("0")) {
-                                        filterdNames.add(model);
-                                    }
-                                    break;
-                                case "CLOSED":
-                                    if (!model.getStatus().equals("0")) {
-                                        filterdNames.add(model);
-                                    }
-                                    break;
-                            }
-                            salesOrderAdapter.filterList(filterdNames);
-                        }
-                    }
-                } else if(compareDate.compareTo(from_date) >= 0 && compareDate.compareTo(to_date) <= 0) {
-                    System.out.println("Compare date occurs after from date");
-                    if (!customerName.isEmpty()){
-                        if (model.getName().toLowerCase().contains(customerName.toLowerCase())) {
-                            switch (invoiceStatus) {
-                                case "ALL":
-                                    filterdNames.add(model);
-                                    break;
-                                case "OPEN":
-                                    if (model.getStatus().equals("0")) {
-                                        filterdNames.add(model);
-                                    }
-                                    break;
-                                case "CLOSED":
-                                    if (!model.getStatus().equals("0")) {
-                                        filterdNames.add(model);
-                                    }
-                                    break;
-                            }
-                            salesOrderAdapter.filterList(filterdNames);
-                        }
-                    }else {
-                        switch (invoiceStatus) {
-                            case "ALL":
-                                filterdNames.add(model);
-                                break;
-                            case "OPEN":
-                                if (model.getStatus().equals("0")) {
-                                    filterdNames.add(model);
-                                }
-                                break;
-                            case "CLOSED":
-                                if (!model.getStatus().equals("0")) {
-                                    filterdNames.add(model);
-                                }
-                                break;
-                        }
-                        salesOrderAdapter.filterList(filterdNames);
-                    }
-                }
-                salesOrderAdapter.filterList(filterdNames);
-            }
-
-            Log.w("FilteredSize:",filterdNames.size()+"");
-
-            if (filterdNames.size()>0){
-                salesOrdersView.setVisibility(View.VISIBLE);
-                outstandingLayout.setVisibility(View.VISIBLE);
-                emptyLayout.setVisibility(View.GONE);
-              //  setNettotal(filterdNames);
-                // invoiceAdapter.filterList(filterdNames);
-            }else {
-                salesOrdersView.setVisibility(View.GONE);
-                outstandingLayout.setVisibility(View.GONE);
-                emptyLayout.setVisibility(View.VISIBLE);
-            }
-
-
-       }catch (Exception ex){
-            Log.e("Error_in_filter", Objects.requireNonNull(ex.getMessage()));
-        }
-    }
-
-
-    public void setSalesOrderAdapter(Context context,ArrayList<SalesOrderModel> salesList,String invoiceStatus){
-        ArrayList<SalesOrderModel> filterdNames = new ArrayList<>();
-     /*   for (SalesOrderModel model: SalesOrderAdapterNew.getSalesOrderList()){
-            switch (invoiceStatus) {
-                case "ALL":
-                    filterdNames.add(model);
-                    break;
-                case "OPEN":
-                    if (model.getStatus().equals("0")) {
-                        filterdNames.add(model);
-                    }
-                    break;
-                case "CLOSED":
-                    if (!model.getStatus().equals("0")) {
-                        filterdNames.add(model);
-                    }
-                    break;
-            }
-        }*/
-        salesOrdersView.setHasFixedSize(true);
-        salesOrdersView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        salesOrderAdapter=new SalesOrderAdapterNew(context, salesOrdersView, salesList, new SalesOrderAdapterNew.CallBack() {
-            @Override
-            public void calculateNetTotal(ArrayList<SalesOrderModel> salesList) {
-                setNettotalFun(salesList);
-            }
-            @Override
-            public void showMoreOption(String salesorderId,String customerName,String status){
-                customerLayout.setVisibility(View.GONE);
-                salesOrderOptionLayout.setVisibility(View.VISIBLE);
-                soNumber.setText(salesorderId);
-                soCustomerName.setText(customerName);
-                salesOrderStatus =status;
-                if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }
-                // viewCloseBottomSheet();
-            }
-        });
-        salesOrdersView.setAdapter(salesOrderAdapter);
-        if (salesOrderList.size()>0){
-            setNettotalFun(salesOrderList);
-        }
-
-        selectedCustomerId="";
-    }
-
-
-    public void setNettotalFun(ArrayList<SalesOrderModel> salesOrderList){
-            double net_amount=0.0;
-            for (SalesOrderModel model:salesOrderList){
-                if (model.getNetTotal()!=null && !model.getNetTotal().equals("null")){
-                    net_amount=net_amount+Double.parseDouble(model.getNetTotal());
-                }
-            }
-            netTotalText.setText("$ "+Utils.twoDecimalPoint(net_amount));
-    }
-
-      public void showRemoveAlert(String salesOrderId){
-        new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                // .setTitleText("Are you sure?")
-                .setContentText("Are you sure want Delete SalesOrder ?")
-                .setConfirmText("YES")
-                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sDialog) {
-                        try {
-                            sDialog.dismiss();
-                           // viewCloseBottomSheet();
-                            setDeleteSalesOrder(salesOrderId);
-                            if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).showCancelButton(true)
-                .setCancelText("No")
-                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sDialog) {
-                        sDialog.cancel();
-                    }}).show();
-    }
-
-
 
     private void getSalesOrderDetails(String soNumber,String action) throws JSONException {
         // Initialize a new RequestQueue instance
         JSONObject jsonObject=new JSONObject();
-        jsonObject.put("SalesOrderNo",soNumber);
+        jsonObject.put("InvoiceNo",soNumber);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         //    EditSODetails
         //    EditSODetailsWithFOC
-        String url= Utils.getBaseUrl(this) +"EditSODetailsWithFOC";
+        String url= Utils.getBaseUrl(this) +"APInvoiceDetails";
         Log.w("JsonValue:",jsonObject.toString());
         // Initialize a new JsonArrayRequest instance
         Log.w("Given_url_salesEdit:",url);
@@ -1362,7 +804,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                             if (statusCode.equals("1")){
                                 JSONArray salesArray=response.optJSONArray("responseData");
                                 JSONObject salesObject=salesArray.optJSONObject(0);
-                                String salesorder_no=salesObject.optString("soNumber");
+                                String salesorder_no=salesObject.optString("poNo");
                                 String salesorder_code = salesObject.optString("code");
                                 String order_no=salesObject.optString("customerReferenceNo");
                                 String company_code=salesObject.optString("CompanyCode");
@@ -1452,7 +894,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                     cal.add(Calendar.MILLISECOND, millisec);
                                     Timestamp timeStamp = new Timestamp(cal.getTime().getTime());
 
-                                   dbHelper.insertCreateInvoiceCartEdit(
+                                    dbHelper.insertCreateInvoiceCartEdit(
                                             object.optString("productCode"),
                                             object.optString("productName"),
                                             object.optString("uomCode"),
@@ -1466,14 +908,14 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                             object.optString("subTotal"),
                                             object.optString("taxAmount"),
                                             object.optString("netTotal"),
-                                           "",
-                                           "",
-                                           "",
-                                           "",
-                                           object.optString("focQty"),
-                                           object.optString("minimumSellingPrice"),
-                                           object.optString("stockInHand") , String.valueOf(timeStamp),
-                                           object.optString("itemAllowFOC")
+                                            "",
+                                            "",
+                                            "",
+                                            "",
+                                            object.optString("focQty"),
+                                            object.optString("minimumSellingPrice"),
+                                            object.optString("stockInHand") , String.valueOf(timeStamp),
+                                            object.optString("itemAllowFOC")
                                     );
                                     Log.w("ProductsLength:",products.length()+""+object.optString("itemAllowFOC"));
                                     Log.w("ActualPrintProducts:",dbHelper.numberOfRowsInInvoice()+"");
@@ -1522,11 +964,224 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         requestQueue.add(jsonObjectRequest);
     }
 
+    private void createSignature(){
+        if (Utils.getSignature()!=null && !Utils.getSignature().isEmpty()){
+            try {
+                ImageUtil.saveStamp(this,Utils.getSignature(),"Signature");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
+        printerType=sharedPreferences.getString("printer_type","");
+        printerMacId=sharedPreferences.getString("mac_address","");
+        super.onResume();
+    }
+
+
+    private void sentPrintDate(int copy) throws IOException {
+        if (Utils.validatePrinterConfiguration(this,printerType,printerMacId)) {
+
+            if (printerType.equals("TSC Printer")) {
+                TSCPrinter printer = new TSCPrinter(PurchaseInvoiceListActivity.this, printerMacId, "SalesOrder");
+                printer.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList);
+                printer.setOnCompletionListener(() -> {
+                    Utils.setSignature("");
+                    Toast.makeText(getApplicationContext(), "SalesOrder printed successfully!", Toast.LENGTH_SHORT).show();
+                });
+            } else if (printerType.equals("Zebra Printer")) {
+                ZebraPrinterActivity zebraPrinterActivity = new ZebraPrinterActivity(PurchaseInvoiceListActivity.this, printerMacId);
+                zebraPrinterActivity.printSalesOrder(copy, salesOrderHeaderDetails, salesPrintList);
+            }
+        }
+    }
+
+
+    public static void filterSearch(String customerName, String invoiceStatus, String fromdate, String todate) {
+        try {
+            ArrayList<SalesOrderModel> filterdNames = new ArrayList<>();
+            SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
+            Date from_date=null;
+            Date to_date=null;
+            try {
+                from_date=sdf.parse(fromdate);
+                to_date=sdf.parse(todate);
+            }  catch (ParseException e) {
+                e.printStackTrace();
+            }
+            for (SalesOrderModel model: PurchaseInvoiceAdapterNew.getSalesOrderList()){
+                Date compareDate=sdf.parse(model.getDate());
+                if (from_date.equals(to_date)){
+                    if (from_date.equals(compareDate)){
+                        if (!customerName.isEmpty()){
+                            if (model.getName().toLowerCase().contains(customerName.toLowerCase())) {
+                                switch (invoiceStatus) {
+                                    case "ALL":
+                                        filterdNames.add(model);
+                                        break;
+                                    case "OPEN":
+                                        if (model.getStatus().equals("0")) {
+                                            filterdNames.add(model);
+                                        }
+                                        break;
+                                    case "CLOSED":
+                                        if (!model.getStatus().equals("0")) {
+                                            filterdNames.add(model);
+                                        }
+                                        break;
+                                }
+                                purchaseInvoiceAdapter.filterList(filterdNames);
+                            }
+                        }else {
+                            switch (invoiceStatus) {
+                                case "ALL":
+                                    filterdNames.add(model);
+                                    break;
+                                case "OPEN":
+                                    if (model.getStatus().equals("0")) {
+                                        filterdNames.add(model);
+                                    }
+                                    break;
+                                case "CLOSED":
+                                    if (!model.getStatus().equals("0")) {
+                                        filterdNames.add(model);
+                                    }
+                                    break;
+                            }
+                            purchaseInvoiceAdapter.filterList(filterdNames);
+                        }
+                    }
+                } else if(compareDate.compareTo(from_date) >= 0 && compareDate.compareTo(to_date) <= 0) {
+                    System.out.println("Compare date occurs after from date");
+                    if (!customerName.isEmpty()){
+                        if (model.getName().toLowerCase().contains(customerName.toLowerCase())) {
+                            switch (invoiceStatus) {
+                                case "ALL":
+                                    filterdNames.add(model);
+                                    break;
+                                case "OPEN":
+                                    if (model.getStatus().equals("0")) {
+                                        filterdNames.add(model);
+                                    }
+                                    break;
+                                case "CLOSED":
+                                    if (!model.getStatus().equals("0")) {
+                                        filterdNames.add(model);
+                                    }
+                                    break;
+                            }
+                            purchaseInvoiceAdapter.filterList(filterdNames);
+                        }
+                    }else {
+                        switch (invoiceStatus) {
+                            case "ALL":
+                                filterdNames.add(model);
+                                break;
+                            case "OPEN":
+                                if (model.getStatus().equals("0")) {
+                                    filterdNames.add(model);
+                                }
+                                break;
+                            case "CLOSED":
+                                if (!model.getStatus().equals("0")) {
+                                    filterdNames.add(model);
+                                }
+                                break;
+                        }
+                        purchaseInvoiceAdapter.filterList(filterdNames);
+                    }
+                }
+                purchaseInvoiceAdapter.filterList(filterdNames);
+            }
+
+            Log.w("FilteredSize:",filterdNames.size()+"");
+
+            if (filterdNames.size()>0){
+                purchaseInvoiceView.setVisibility(View.VISIBLE);
+                outstandingLayout.setVisibility(View.VISIBLE);
+                emptyLayout.setVisibility(View.GONE);
+              //  setNettotal(filterdNames);
+                // invoiceAdapter.filterList(filterdNames);
+            }else {
+                purchaseInvoiceView.setVisibility(View.GONE);
+                outstandingLayout.setVisibility(View.GONE);
+                emptyLayout.setVisibility(View.VISIBLE);
+            }
+
+
+       }catch (Exception ex){
+            Log.e("Error_in_filter", Objects.requireNonNull(ex.getMessage()));
+        }
+    }
+
+
+    public void setSalesOrderAdapter(Context context,ArrayList<SalesOrderModel> salesList,String invoiceStatus){
+        ArrayList<SalesOrderModel> filterdNames = new ArrayList<>();
+     /*   for (SalesOrderModel model: SalesOrderAdapterNew.getSalesOrderList()){
+            switch (invoiceStatus) {
+                case "ALL":
+                    filterdNames.add(model);
+                    break;
+                case "OPEN":
+                    if (model.getStatus().equals("0")) {
+                        filterdNames.add(model);
+                    }
+                    break;
+                case "CLOSED":
+                    if (!model.getStatus().equals("0")) {
+                        filterdNames.add(model);
+                    }
+                    break;
+            }
+        }*/
+        purchaseInvoiceView.setHasFixedSize(true);
+        purchaseInvoiceView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        purchaseInvoiceAdapter =new PurchaseInvoiceAdapterNew(context, purchaseInvoiceView, salesList, new PurchaseInvoiceAdapterNew.CallBack() {
+            @Override
+            public void calculateNetTotal(ArrayList<SalesOrderModel> salesList) {
+                setNettotalFun(salesList);
+            }
+            @Override
+            public void showMoreOption(String salesorderId,String customerName,String status){
+                customerLayout.setVisibility(View.GONE);
+                salesOrderOptionLayout.setVisibility(View.VISIBLE);
+                soNumber.setText(salesorderId);
+                soCustomerName.setText(customerName);
+                salesOrderStatus =status;
+                if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+                // viewCloseBottomSheet();
+            }
+        });
+        purchaseInvoiceView.setAdapter(purchaseInvoiceAdapter);
+        if (salesOrderList.size()>0){
+            setNettotalFun(salesOrderList);
+        }
+
+        selectedCustomerId="";
+    }
+
+
+    public void setNettotalFun(ArrayList<SalesOrderModel> salesOrderList){
+            double net_amount=0.0;
+            for (SalesOrderModel model:salesOrderList){
+                if (model.getNetTotal()!=null && !model.getNetTotal().equals("null")){
+                    net_amount=net_amount+Double.parseDouble(model.getNetTotal());
+                }
+            }
+            netTotalText.setText("$ "+Utils.twoDecimalPoint(net_amount));
+    }
+
     public void redirectActivity(String action,String customer_code,String customer_name,String salesorder_code,
                                  String order_no,String customerBill_Disc){
         //  if (products.length()==dbHelper.numberOfRowsInInvoice()){
         Log.w("acttionSO",""+action);
-        Utils.setCustomerSession(SalesOrderListActivity.this,customer_code);
+        Utils.setCustomerSession(PurchaseInvoiceListActivity.this,customer_code);
         if (action.equals("Edit")){
             Intent intent=new Intent(getApplicationContext(),CreateNewInvoiceActivity.class);
             intent.putExtra("customerName",customer_name);
@@ -1550,154 +1205,22 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             finish();
         }
     }
-
-
-/*
-    public void redirectActivity(String action,String customer_code,String customer_name,String salesorder_code){
-      //  if (products.length()==dbHelper.numberOfRowsInInvoice()){
-            Utils.setCustomerSession(SalesOrderListActivity.this,customer_code);
-            if (action.equals("Edit")){
-                if (createInvoiceSetting.equals("true")){
-                    Intent intent=new Intent(getApplicationContext(),CreateNewInvoiceActivity.class);
-                    intent.putExtra("customerName",customer_name);
-                    intent.putExtra("customerCode",customer_code);
-                    intent.putExtra("editSoNumber",salesorder_code);
-                    intent.putExtra("from","SalesEdit");
-                    startActivity(intent);
-                    finish();
-                }else {
-                    Intent intent=new Intent(SalesOrderListActivity.this,AddInvoiceActivity.class);
-                    intent.putExtra("billDiscount",bill_discount);
-                    intent.putExtra("itemDiscount",item_discount);
-                    intent.putExtra("subTotal",sub_total);
-                    intent.putExtra("customerId",customer_code);
-                    intent.putExtra("soNumber",salesorder_code);
-                    intent.putExtra("activityFrom","SalesEdit");
-                    startActivity(intent);
-                    finish();
-                }
-            }else {
-
-                if (createInvoiceSetting.equals("true")){
-                    Intent intent=new Intent(getApplicationContext(),CreateNewInvoiceActivity.class);
-                    intent.putExtra("customerName",customer_name);
-                    intent.putExtra("customerCode",customer_code);
-                    intent.putExtra("editSoNumber",salesorder_code);
-                    intent.putExtra("from","ConvertInvoice");
-                    startActivity(intent);
-                    finish();
-                }else {
-                    Intent intent=new Intent(SalesOrderListActivity.this,AddInvoiceActivity.class);
-                    intent.putExtra("billDiscount",bill_discount);
-                    intent.putExtra("itemDiscount",item_discount);
-                    intent.putExtra("subTotal",sub_total);
-                    intent.putExtra("customerId",customer_code);
-                    intent.putExtra("soNumber",salesorder_code);
-                    intent.putExtra("soDate",so_date);
-                    intent.putExtra("activityFrom","ConvertInvoice");
-                    startActivity(intent);
-                    finish();
-                }
-
-            }
-       // }
-    }
-*/
-
-
-
-    private void setDeleteSalesOrder(String soNumber) throws JSONException {
-        // Initialize a new RequestQueue instance
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("SoNo",soNumber);
-        jsonObject.put("SoStatus","O");
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"CancellationDocument";
-        // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
-        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("Deleting SalesOrder...");
-        pDialog.setCancelable(false);
-        pDialog.show();
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.POST,
-                url,
-                jsonObject,
-                response -> {
-                    try{
-                        Log.w("SaleOrder_Response_is:",response.toString());
-                       // {
-                        //    "statusCode": 1,
-                            //    "statusMessage": "Invoice Cancelled Successfully",
-                             //   "responseData": {
-                            //"docNum": "",
-                              //      "error": null
-                       // }
-                        if (response.length()>0){
-                            String statusCode=response.optString("statusCode");
-                            String message=response.optString("statusMessage");
-                          //  boolean isDeleted=response.optBoolean("IsDeleted");
-                            if (statusCode.equals("1")){
-                                Toast.makeText(getApplicationContext(),"Sales Order deleted Success...!",Toast.LENGTH_LONG).show();
-                                finish();
-                                startActivity(getIntent());
-                            }else {
-                                Toast.makeText(getApplicationContext(),"Error in Deleting SalesOrder",Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        pDialog.dismiss();
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }, error -> {
-            // Do something when error occurred
-            pDialog.dismiss();
-            Log.w("Error_throwing:",error.toString());
-        }){
-            @Override
-            public Map<String, String> getHeaders() {
-                HashMap<String, String> params = new HashMap<>();
-                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
-                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
-                params.put("Authorization", auth);
-                return params;
-            }
-        };
-        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-
-            }
-        });
-        // Add JsonArrayRequest to the RequestQueue
-        requestQueue.add(jsonObjectRequest);
-    }
-
     public void setFilterSearch(Context context, String companyId, String customerCode, String status, String fromdate, String todate) throws JSONException {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
        // {"CustomerCode":"","ReceiptNo":"","StartDate":"","EndDate":,"CompanyCode":"1"}
         JSONObject jsonObject=new JSONObject();
-        if (selectedUser!=null && !selectedUser.isEmpty()){
-            jsonObject.put("User",selectedUser);
-        }else {
-            jsonObject.put("User",userName);
-        }
+//        if (selectedUser!=null && !selectedUser.isEmpty()){
+//            jsonObject.put("User",selectedUser);
+//        }else {
+//            jsonObject.put("User",userName);
+//        }
         jsonObject.put("CustomerCode",customerCode);
         jsonObject.put("FromDate",fromdate);
         jsonObject.put("ToDate", todate);
         jsonObject.put("DocStatus",status);
         // Initialize a new JsonArrayRequest instance
-        String url = Utils.getBaseUrl(this) + "SalesOrderList";
+        String url = Utils.getBaseUrl(this) + "APinvoicelist/APInvoiceList";
         Log.w("Given_url_FilterSearch:",url+"-"+jsonObject.toString());
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
@@ -1721,15 +1244,13 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 JSONObject object=salesOrderArray.optJSONObject(i);
                                 SalesOrderModel model=new SalesOrderModel();
                                 model.setName(object.optString("customerName"));
-                                model.setDate(object.optString("soDate"));
+                                model.setDate(object.optString("invoiceDate"));
                                 model.setBalance(object.optString("balance"));
-                                model.setSaleOrderNumber(object.optString("soNumber"));
-                                model.setAddress(object.optString("Address1"));
+                                model.setSaleOrderNumber(object.optString("invoiceNumber"));
                                 model.setNetTotal(object.optString("netTotal"));
-                                model.setStatus(object.optString("soStatus"));
+                                model.setStatus(object.optString("invoiceStatus"));
                                 model.setSalesOrderCode(object.optString("code"));
-                                //  isFound=invoiceObject.optString("ErrorMessage");
-
+                                model.setRemarks(object.optString("remark"));
                                // netTotalApi +=Double.parseDouble(object.optString("netTotal"));
                                // netTotalText.setText("$ "+Utils.twoDecimalPoint(netTotalApi));
 
@@ -1788,16 +1309,11 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Initialize a new JsonArrayRequest instance
         JSONObject jsonObject=new JSONObject();
-        if (selectedUser!=null && !selectedUser.isEmpty()){
-            jsonObject.put("User",selectedUser);
-        }else {
-            jsonObject.put("User",userName);
-        }
         jsonObject.put("CustomerCode","");
         jsonObject.put("FromDate",fromdate);
         jsonObject.put("ToDate", todate);
         jsonObject.put("DocStatus","");
-        String url = Utils.getBaseUrl(this) + "SalesOrderList";
+        String url = Utils.getBaseUrl(this) + "APinvoicelist/APInvoiceList";
         Log.w("Given_url:",url+"-"+jsonObject.toString());
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
@@ -1832,21 +1348,20 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 JSONObject object=salesOrderArray.optJSONObject(i);
                                 SalesOrderModel model=new SalesOrderModel();
                                 model.setName(object.optString("customerName"));
-                                model.setDate(object.optString("soDate"));
+                                model.setDate(object.optString("invoiceDate"));
                                 model.setBalance(object.optString("balance"));
-                                model.setSaleOrderNumber(object.optString("soNumber"));
-                                model.setAddress(object.optString("Address1"));
+                                model.setSaleOrderNumber(object.optString("invoiceNumber"));
                                 model.setNetTotal(object.optString("netTotal"));
-                                model.setStatus(object.optString("soStatus"));
+                                model.setStatus(object.optString("invoiceStatus"));
                                 model.setSalesOrderCode(object.optString("code"));
+                                model.setRemarks(object.optString("remark"));
                               //  isFound=invoiceObject.optString("ErrorMessage");
                                 ArrayList<SalesOrderPrintPreviewModel.SalesList> salesLists=new ArrayList<>();
                                 model.setSalesList(salesLists);
                                 salesOrderList.add(model);
-
                             }
-                            salesOrderAdapter.setLoaded();
-                            salesOrderAdapter.notifyDataSetChanged();
+                            purchaseInvoiceAdapter.setLoaded();
+                            purchaseInvoiceAdapter.notifyDataSetChanged();
                             setShowHide();
                         }else {
                             setShowHide();
@@ -1922,11 +1437,11 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
 
     public void setShowHide(){
         if (salesOrderList.size()>0){
-            salesOrdersView.setVisibility(View.VISIBLE);
+            purchaseInvoiceView.setVisibility(View.VISIBLE);
             outstandingLayout.setVisibility(View.VISIBLE);
             emptyLayout.setVisibility(View.GONE);
         }else {
-            salesOrdersView.setVisibility(View.GONE);
+            purchaseInvoiceView.setVisibility(View.GONE);
             emptyLayout.setVisibility(View.VISIBLE);
             outstandingLayout.setVisibility(View.GONE);
         }
@@ -1944,15 +1459,13 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         }
     }
 
-
-
     public void setFilterAdapeter(){
-        salesOrdersView.setVisibility(View.VISIBLE);
+        purchaseInvoiceView.setVisibility(View.VISIBLE);
         emptyLayout.setVisibility(View.GONE);
         outstandingLayout.setVisibility(View.VISIBLE);
-        salesOrdersView.setHasFixedSize(true);
-        salesOrdersView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        salesOrderAdapter=new SalesOrderAdapterNew(this, salesOrdersView, salesOrderList, new SalesOrderAdapterNew.CallBack() {
+        purchaseInvoiceView.setHasFixedSize(true);
+        purchaseInvoiceView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        purchaseInvoiceAdapter =new PurchaseInvoiceAdapterNew(this, purchaseInvoiceView, salesOrderList, new PurchaseInvoiceAdapterNew.CallBack() {
             @Override
             public void calculateNetTotal(ArrayList<SalesOrderModel> salesList) {
                 setNettotalFun(salesList);
@@ -1971,7 +1484,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             }
 
         });
-        salesOrdersView.setAdapter(salesOrderAdapter);
+        purchaseInvoiceView.setAdapter(purchaseInvoiceAdapter);
         if (salesOrderList.size()>0){
             setNettotalFun(salesOrderList);
         }
@@ -2006,8 +1519,9 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.sorting_menu, menu);
-      //  MenuItem action_save = menu.findItem(R.id.action_filter);
-       // action_save.setVisible(false);
+        MenuItem action_add = menu.findItem(R.id.action_add);
+        action_add.setVisible(false);
+
         return true;
     }
 
@@ -2032,7 +1546,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                     // return Integer.valueOf(obj2.empId).compareTo(Integer.valueOf(obj1.empId)); // To compare integer values
                 }
             });
-            salesOrderAdapter.notifyDataSetChanged();
+            purchaseInvoiceAdapter.notifyDataSetChanged();
         }else if (item.getItemId()==R.id.action_amount){
             Collections.sort(salesOrderList, new Comparator<SalesOrderModel>(){
                 public int compare(SalesOrderModel obj1, SalesOrderModel obj2) {
@@ -2045,7 +1559,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                     // return Integer.valueOf(obj2.empId).compareTo(Integer.valueOf(obj1.empId)); // To compare integer values
                 }
             });
-            salesOrderAdapter.notifyDataSetChanged();
+            purchaseInvoiceAdapter.notifyDataSetChanged();
         }else if (item.getItemId()==R.id.action_date){
 
             try {
@@ -2070,7 +1584,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                         // return Integer.valueOf(obj2.empId).compareTo(Integer.valueOf(obj1.empId)); // To compare integer values
                     }
                 });
-                salesOrderAdapter.notifyDataSetChanged();
+                purchaseInvoiceAdapter.notifyDataSetChanged();
 
             }catch (Exception ex){
                 Log.w("Error:",ex.getMessage());
@@ -2141,7 +1655,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             if(resultCode == Activity.RESULT_OK){
                 String result=data.getStringExtra("customerCode");
                 Utils.setCustomerSession(this,result);
-                Intent intent=new Intent(SalesOrderListActivity.this, AddInvoiceActivityOld.class);
+                Intent intent=new Intent(PurchaseInvoiceListActivity.this, AddInvoiceActivityOld.class);
                 intent.putExtra("customerId",result);
                 intent.putExtra("activityFrom","SalesOrder");
                 startActivity(intent);
@@ -2194,7 +1708,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                 setCustomerDetails(customer_code);
                 selectedCustomerId=customer_code;
                 redirectInvoice=false;
-                Intent intent=new Intent(SalesOrderListActivity.this, AddInvoiceActivityOld.class);
+                Intent intent=new Intent(PurchaseInvoiceListActivity.this, AddInvoiceActivityOld.class);
                 intent.putExtra("customerId",customer_code);
                 intent.putExtra("activityFrom","SalesOrder");
                 startActivity(intent);
@@ -2232,8 +1746,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         protected String doInBackground(Void...arg0) {
             Log.d(TAG + "DoINBackGround", "On doInBackground...");
             // Initialize a new RequestQueue instance
-            RequestQueue requestQueue = Volley.newRequestQueue(SalesOrderListActivity.this);
-            String url= Utils.getBaseUrl(SalesOrderListActivity.this) +"MasterApi/GetCustomer_All?Requestdata={CompanyCode:"+companyId+"}";
+            RequestQueue requestQueue = Volley.newRequestQueue(PurchaseInvoiceListActivity.this);
+            String url= Utils.getBaseUrl(PurchaseInvoiceListActivity.this) +"MasterApi/GetCustomer_All?Requestdata={CompanyCode:"+companyId+"}";
             Log.w("Given_url:",url);
             JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
                     Request.Method.GET,
@@ -2550,7 +2064,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         mYear = c.get(Calendar.YEAR);
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(SalesOrderListActivity.this,
+        DatePickerDialog datePickerDialog = new DatePickerDialog(PurchaseInvoiceListActivity.this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
