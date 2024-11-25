@@ -9,6 +9,18 @@
         android:layout_width="match_parent"
         android:layout_height="1dip"
         android:background="#f4f4f4" />
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:layout_weight="1"
+        android:text="DESCRIPTION"
+        android:padding="4dp"
+        android:layout_marginLeft="5dp"
+        android:textColor="#212121"
+        android:textSize="10sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,15 +41,17 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/inv_code_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"
             android:layout_weight="1"
-            android:text="DESCRIPTION"
+            android:gravity="left"
+            android:text="CODE"
             android:textColor="#212121"
             android:textSize="10sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            />
 
         <TextView
             android:id="@+id/qty"

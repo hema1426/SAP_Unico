@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.winapp.saperp">
+    package="com.winapp.saperpUNICO">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -68,7 +68,7 @@
         android:required="false" />
 
     <application
-        android:name=".thermalprinter.App"
+        android:name="com.winapp.saperpUNICO.thermalprinter.App"
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:fullBackupOnly="false"
@@ -83,182 +83,182 @@
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute"
         tools:replace="allowBackup,supportsRtl">
         <activity
-            android:name=".activity.StockProductsActivity"
+            android:name="com.winapp.saperpUNICO.activity.StockProductsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false" />
         <activity
-            android:name=".salesreturn.NewSalesReturnProductAddActivity"
+            android:name="com.winapp.saperpUNICO.salesreturn.NewSalesReturnProductAddActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".salesreturn.NewSalesReturnListActivity"
+            android:name="com.winapp.saperpUNICO.salesreturn.NewSalesReturnListActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ReportPreview.ReceiptDetailPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.ReceiptDetailPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.CustomerLisrOutstandPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.CustomerLisrOutstandPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.ReceiptSummaryPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.ReceiptSummaryPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.RoCustomerOutstandPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.RoCustomerOutstandPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.SapStockSummaryOpenPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.SapStockSummaryOpenPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.RoCustomerOutstandDatePreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.RoCustomerOutstandDatePreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".ReportPreview.SapStockSummaryPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.SapStockSummaryPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.SapStockReturnPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.SapStockReturnPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.RoInvoicebyProductPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.RoInvoicebyProductPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.RoReceiptSettlePreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.RoReceiptSettlePreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.RoInvoicebySummaryPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.RoInvoicebySummaryPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.RoSettlementPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.RoSettlementPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.NewExpensePrintPreviewActivity"
+            android:name="com.winapp.saperpUNICO.activity.NewExpensePrintPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.PurchaseInvoiceListActivity"
+            android:name="com.winapp.saperpUNICO.activity.PurchaseInvoiceListActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ReportPreview.SapSalesSummaryPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.SapSalesSummaryPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ReportPreview.RoProductStockPreviewActivity"
+            android:name="com.winapp.saperpUNICO.ReportPreview.RoProductStockPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".printpreview.NewInvoicePrintPreviewActivity"
+            android:name="com.winapp.saperpUNICO.printpreview.NewInvoicePrintPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.PurchasePrintPreviewActivity"
+            android:name="com.winapp.saperpUNICO.activity.PurchasePrintPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.TransferPreviewPrintActivity"
+            android:name="com.winapp.saperpUNICO.activity.TransferPreviewPrintActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.FilterCustomerListActivity"
+            android:name="com.winapp.saperpUNICO.activity.FilterCustomerListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.StockRequestListActivity"
+            android:name="com.winapp.saperpUNICO.activity.StockRequestListActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.TransferProductAddActivity"
+            android:name="com.winapp.saperpUNICO.activity.TransferProductAddActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.NewExpenseModuleListActivity"
+            android:name="com.winapp.saperpUNICO.activity.NewExpenseModuleListActivity"
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.NewExpenseModuleAddActivity"
+            android:name="com.winapp.saperpUNICO.activity.NewExpenseModuleAddActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.CreateNewInvoiceActivity"
+            android:name="com.winapp.saperpUNICO.activity.CreateNewInvoiceActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".newtransfer.TransferInActivity"
+            android:name="com.winapp.saperpUNICO.newtransfer.TransferInActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.TransferListProductActivity"
+            android:name="com.winapp.saperpUNICO.activity.TransferListProductActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.TransferActivity"
+            android:name="com.winapp.saperpUNICO.activity.TransferActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.GRAActivity"
+            android:name="com.winapp.saperpUNICO.activity.GRAActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.GRAListActivity"
+            android:name="com.winapp.saperpUNICO.activity.GRAListActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".printpreview.SettlementPrintPreview"
+            android:name="com.winapp.saperpUNICO.printpreview.SettlementPrintPreview"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.ReportsActivity"
+            android:name="com.winapp.saperpUNICO.activity.ReportsActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.SettlementListActivity"
+            android:name="com.winapp.saperpUNICO.activity.SettlementListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.SettlementActivity"
+            android:name="com.winapp.saperpUNICO.activity.SettlementActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.DeliveryOrderListActivity"
+            android:name="com.winapp.saperpUNICO.activity.DeliveryOrderListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".printpreview.DOPrintPreview"
+            android:name="com.winapp.saperpUNICO.printpreview.DOPrintPreview"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.NewCashCollectionActivity"
+            android:name="com.winapp.saperpUNICO.activity.NewCashCollectionActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".dashboard.GraphDashboardActivity"
+            android:name="com.winapp.saperpUNICO.dashboard.GraphDashboardActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.ProductStockAnalysisActivity"
+            android:name="com.winapp.saperpUNICO.activity.ProductStockAnalysisActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".googlemap.CustomerLocationActivity" />
-        <activity android:name=".googlemap.MapBoxActivity" />
+        <activity android:name="com.winapp.saperpUNICO.googlemap.CustomerLocationActivity" />
+        <activity android:name="com.winapp.saperpUNICO.googlemap.MapBoxActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -272,32 +272,32 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".googlemap.MapsActivity"
+            android:name="com.winapp.saperpUNICO.googlemap.MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name=".activity.NewCompanySwitchActivity"
+            android:name="com.winapp.saperpUNICO.activity.NewCompanySwitchActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.ProductAnalyzeActivity"
+            android:name="com.winapp.saperpUNICO.activity.ProductAnalyzeActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.ReOrderCartActivity"
+            android:name="com.winapp.saperpUNICO.activity.ReOrderCartActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.OrderDetailsHistoryActivity"
+            android:name="com.winapp.saperpUNICO.activity.OrderDetailsHistoryActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.OrderHistoryActivity"
+            android:name="com.winapp.saperpUNICO.activity.OrderHistoryActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".receipts.ReceiptsPrintPreview"
+            android:name="com.winapp.saperpUNICO.receipts.ReceiptsPrintPreview"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".salesreturn.SalesReturnPrintPreview"
+            android:name="com.winapp.saperpUNICO.salesreturn.SalesReturnPrintPreview"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".salesreturn.SalesReturnActivity"
+            android:name="com.winapp.saperpUNICO.salesreturn.SalesReturnActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
@@ -305,61 +305,61 @@
             android:windowTranslucentNavigation="true"
             android:windowTranslucentStatus="true" />
         <activity
-            android:name=".activity.NewInvoiceListActivity"
+            android:name="com.winapp.saperpUNICO.activity.NewInvoiceListActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".printer.zqprinter.printingutils.DeviceListActivity"
+            android:name="com.winapp.saperpUNICO.printer.zqprinter.printingutils.DeviceListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".printpreview.SalesOrderPrintPreview"
+            android:name="com.winapp.saperpUNICO.printpreview.SalesOrderPrintPreview"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".printpreview.InvoicePrintPreviewActivity"
+            android:name="com.winapp.saperpUNICO.printpreview.InvoicePrintPreviewActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".printer.PrinterActivity"
+            android:name="com.winapp.saperpUNICO.printer.PrinterActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.ShowCatagoryActivity" />
+        <activity android:name="com.winapp.saperpUNICO.activity.ShowCatagoryActivity" />
         <activity
-            android:name=".receipts.ReceiptsListActivity"
+            android:name="com.winapp.saperpUNICO.receipts.ReceiptsListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activity.CategoriesActivity" />
+        <activity android:name="com.winapp.saperpUNICO.activity.CategoriesActivity" />
         <activity
-            android:name=".activity.SettingActivity"
+            android:name="com.winapp.saperpUNICO.activity.SettingActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.PrinterActivity"
+            android:name="com.winapp.saperpUNICO.activity.PrinterActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".utils.DeviceListActivity"
+            android:name="com.winapp.saperpUNICO.utils.DeviceListActivity"
             android:screenOrientation="portrait" /> <!-- android:theme="@android:style/Theme.DeviceDefault.Dialog" -->
         <!-- /> -->
         <activity
-            android:name=".activity.CashCollectionActivity"
+            android:name="com.winapp.saperpUNICO.activity.CashCollectionActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".activity.RegisterActivity"
+            android:name="com.winapp.saperpUNICO.activity.RegisterActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.AddCustomerActivity"
+            android:name="com.winapp.saperpUNICO.activity.AddCustomerActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.CustomerListActivity"
+            android:name="com.winapp.saperpUNICO.activity.CustomerListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".utils.BarCodeScanner" />
-        <activity android:name=".activity.NavigationActivity" />
+        <activity android:name="com.winapp.saperpUNICO.utils.BarCodeScanner" />
+        <activity android:name="com.winapp.saperpUNICO.activity.NavigationActivity" />
         <activity
-            android:name=".activity.MainHomeActivity"
+            android:name="com.winapp.saperpUNICO.activity.MainHomeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.AddInvoiceActivityOld"
+            android:name="com.winapp.saperpUNICO.activity.AddInvoiceActivityOld"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
@@ -367,49 +367,49 @@
             android:windowTranslucentNavigation="true"
             android:windowTranslucentStatus="true" />
         <activity
-            android:name=".activity.CustomerSelectActivity"
+            android:name="com.winapp.saperpUNICO.activity.CustomerSelectActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.DashboardActivity"
+            android:name="com.winapp.saperpUNICO.activity.DashboardActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.MainDashboardActivity"
+            android:name="com.winapp.saperpUNICO.activity.MainDashboardActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.InvoiceListActivityCopy"
+            android:name="com.winapp.saperpUNICO.activity.InvoiceListActivityCopy"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.SalesOrderListActivity"
+            android:name="com.winapp.saperpUNICO.activity.SalesOrderListActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.CartActivity"
+            android:name="com.winapp.saperpUNICO.activity.CartActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.OTPVerification"
+            android:name="com.winapp.saperpUNICO.activity.OTPVerification"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.ValidateUrlActivity"
+            android:name="com.winapp.saperpUNICO.activity.ValidateUrlActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.InvoiceTableActivity"
+            android:name="com.winapp.saperpUNICO.activity.InvoiceTableActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.DescriptionActivity"
+            android:name="com.winapp.saperpUNICO.activity.DescriptionActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.SchedulingActivity"
+            android:name="com.winapp.saperpUNICO.activity.SchedulingActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.SplashActivity"
+            android:name="com.winapp.saperpUNICO.activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
@@ -420,16 +420,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.winapp.saperpUNICO.activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.SearchProductActivity"
+            android:name="com.winapp.saperpUNICO.activity.SearchProductActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.LoginActivity"
+            android:name="com.winapp.saperpUNICO.activity.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -445,7 +445,7 @@
         </provider>
 
         <receiver
-            android:name=".utils.NetworkChangeReceiver"
+            android:name="com.winapp.saperpUNICO.utils.NetworkChangeReceiver"
             android:label="NetworkChangeReceiver"
             android:exported="true">
             <intent-filter>
@@ -453,7 +453,7 @@
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver> <!-- Firebase Notifications -->
-        <service android:name=".firebase.MyFirebaseMessagingService"
+        <service android:name="com.winapp.saperpUNICO.firebase.MyFirebaseMessagingService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

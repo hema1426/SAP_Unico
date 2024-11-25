@@ -9,10 +9,10 @@ apply plugin: 'com.google.firebase.crashlytics'
 android {
     compileSdk 34
 
-    namespace 'com.winapp.saperp'
+    namespace 'com.winapp.saperpUNICO'
 
     defaultConfig {
-        applicationId "com.winapp.saperp"
+        applicationId "com.winapp.saperpUNICO"
         minSdk 22
         targetSdk 34
         versionCode 1

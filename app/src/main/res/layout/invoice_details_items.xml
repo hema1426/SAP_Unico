@@ -28,13 +28,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:textStyle="bold"
             android:layout_weight="1"
+            android:gravity="left"
+            android:textStyle="bold"
             android:textColor="#3655D2"
-            android:text="DESCRIPTION"
+            android:text="CODE"
             android:textSize="10sp"
-            />
 
+            />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
