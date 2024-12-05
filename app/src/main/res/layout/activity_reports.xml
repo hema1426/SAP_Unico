@@ -35,7 +35,7 @@
                 android:layout_marginRight="20dp"
                 android:id="@+id/preview"
                 android:padding="5dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="@drawable/editext_border"
                 android:src="@drawable/ic_baseline_print_preview"
                 android:layout_height="wrap_content"/>
 
@@ -44,6 +44,7 @@
                 android:layout_marginRight="20dp"
                 android:id="@+id/print"
                 android:padding="5dp"
+                android:visibility="gone"
                 android:background="@drawable/editext_border"
                 android:src="@drawable/ic_baseline_print_24"
                 android:layout_height="wrap_content"/>
@@ -121,6 +122,44 @@
             android:textStyle="bold"
             android:layout_height="40dp"/>
 
+
+        <CheckBox
+            android:id="@+id/purchase_summary"
+            android:layout_width="match_parent"
+            android:text="Purchase Summary"
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:background="#f3f3f3"
+            android:textStyle="bold"
+            android:layout_height="40dp"/>
+        <CheckBox
+            android:id="@+id/supplier_statement"
+            android:layout_width="match_parent"
+            android:text="Supplier Statement"
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:background="#f3f3f3"
+            android:textStyle="bold"
+            android:layout_height="40dp"/>
+        <CheckBox
+            android:id="@+id/supplier_statement_date"
+            android:layout_width="match_parent"
+            android:text="Supplier Statement(as on Date)"
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:background="#f3f3f3"
+            android:textStyle="bold"
+            android:layout_height="40dp"/>
+
+        <CheckBox
+            android:id="@+id/postingInv_So"
+            android:layout_width="match_parent"
+            android:text="Posting Invoice &amp; UnPosting SalesOrder"
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:background="#f3f3f3"
+            android:textStyle="bold"
+            android:layout_height="40dp"/>
 
     </LinearLayout>
 

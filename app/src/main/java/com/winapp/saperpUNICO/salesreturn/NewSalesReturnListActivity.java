@@ -1251,6 +1251,8 @@ public class NewSalesReturnListActivity extends NavigationActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.sorting_menu, menu);
+        MenuItem action_addl = menu.findItem(R.id.action_add);
+        action_addl.setVisible(false);
         MenuItem item = menu.findItem(R.id.action_barcode);
         item.setVisible(false);
 

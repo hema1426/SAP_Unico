@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -95,8 +96,11 @@ import com.winapp.saperpUNICO.fragments.CustomerFragment;
 import com.winapp.saperpUNICO.fragments.PaidInvoices;
 import com.winapp.saperpUNICO.fragments.UnpaidInvoices;
 import com.winapp.saperpUNICO.model.AppUtils;
+import com.winapp.saperpUNICO.model.CustSeperateGroupModel;
 import com.winapp.saperpUNICO.model.CustomerDetails;
+import com.winapp.saperpUNICO.model.CustomerGroupModel;
 import com.winapp.saperpUNICO.model.CustomerModel;
+import com.winapp.saperpUNICO.model.DeliveryAddressModel;
 import com.winapp.saperpUNICO.model.InvoiceModel;
 import com.winapp.saperpUNICO.model.InvoicePrintPreviewModel;
 import com.winapp.saperpUNICO.model.SettingsModel;
@@ -161,6 +165,7 @@ public class NewInvoiceListActivity extends NavigationActivity
     private InvoiceAdapter invoiceAdapter;
     private ArrayList<InvoiceModel> invoiceList;
     private SweetAlertDialog pDialog;
+    private ArrayList<CustSeperateGroupModel> custSeperateGroupList;
     int pageNo = 1;
     private SessionManager session;
     private HashMap<String, String> user;
@@ -255,6 +260,7 @@ public class NewInvoiceListActivity extends NavigationActivity
     public boolean redirectInvoice = false;
     public static String selectCustomerId = "";
     public static String selectCustomerName = "";
+    public static String userPermission = "";
     private int customerSelectCode = 23;
 
     public static int REQUEST_PERMISSIONS = 154;
@@ -305,7 +311,12 @@ public class NewInvoiceListActivity extends NavigationActivity
 
     private int FILTER_CUSTOMER_CODE = 134;
     private Spinner salesManSpinner;
+    private SearchableSpinner custGroupSpinner;
+    private String selectCustGroupCode = "";
+    private String selectCustGroupName = "";
     private String selectedUser = "";
+
+
     private ArrayList<UserListModel> usersList;
     public String locationCode;
     public static String shortCodeStr = "" ;
@@ -413,6 +424,7 @@ public class NewInvoiceListActivity extends NavigationActivity
         doPrintLayout = findViewById(R.id.do_print_layout);
         deliveryOrderPrint = findViewById(R.id.do_print);
         doPrintPreview = findViewById(R.id.do_print_preview);
+        custGroupSpinner = findViewById(R.id.custGroup_spinner);
         salesManSpinner = findViewById(R.id.salesman_spinner);
         salesManSpinner.setOnItemSelectedListener(this);
 
@@ -439,6 +451,7 @@ public class NewInvoiceListActivity extends NavigationActivity
         printerMacId = sharedPreferences.getString("mac_address", "");
 
         isLastSales = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_TOTAL_SALES, "");
+        userPermission = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_ADMIN_PERMISSION,"");
 
         // PrinterUtils printerUtils=new PrinterUtils(this,printerMacId);
         //   printerUtils.connectPrinter();
@@ -456,6 +469,11 @@ public class NewInvoiceListActivity extends NavigationActivity
             getAllUsers();
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+        if(Utils.getCustSeperGroupList() != null && Utils.getCustSeperGroupList().size() > 0) {
+            setCustomerGroupSpinner(Utils.getCustSeperGroupList());
+        }else{
+            getCustGroupSeperate();
         }
 
         AppUtils.setProductsList(null);
@@ -731,6 +749,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                         String toDateString = new SimpleDateFormat("yyyyMMdd").format(toDate);
                         System.out.println(fromDateString + "-" + toDateString); // 2011-01-18
                         String invoice_status = "";
+                        String usernamel = "";
                         if (invoiceStatus.getSelectedItem().equals("ALL")) {
                             invoice_status = "";
                         } else if (invoiceStatus.getSelectedItem().equals("PAID")) {
@@ -739,15 +758,21 @@ public class NewInvoiceListActivity extends NavigationActivity
                             invoice_status = "O";
                             fromDateString = "" ;
                         }
-                        if (selectedUser != null && !selectedUser.isEmpty()) {
-                            username = selectedUser;
+                        if (userPermission.equalsIgnoreCase("True")) {
+                            usernamel = "All" ;
+                        }else {
+                            usernamel  = username;
                         }
-                        invoices.filterSearch(NewInvoiceListActivity.this, username, selectCustomerCode, invoice_status, fromDateString, toDateString, locationCode);
+
+                        invoices.filterSearch(NewInvoiceListActivity.this, usernamel,
+                                selectCustomerCode, invoice_status, fromDateString, toDateString,
+                                locationCode,selectCustGroupCode);
                     } catch (JSONException | ParseException e) {
                         e.printStackTrace();
                     }
                     // AllInvoices.filterSearch(customer_name,invoiceStatus.getSelectedItem().toString(),fromDate.getText().toString(),toDate.getText().toString());
                     invoiceStatus.setSelection(0);
+                    custGroupSpinner.setSelection(0);
                 }
             }
         });
@@ -759,11 +784,11 @@ public class NewInvoiceListActivity extends NavigationActivity
                 isSearchCustomerNameClicked = false;
                 selectCustomerId = "";
                 customerNameText.setText("");
-                invoiceStatus.setSelection(0);
                 fromDate.setText(formattedDate);
                 toDate.setText(formattedDate);
                 searchFilterView.setVisibility(View.GONE);
                 invoiceStatus.setSelection(0);
+                custGroupSpinner.setSelection(0);
                 AllInvoices invoices = new AllInvoices();
                 invoices.filterCancel();
             }
@@ -1202,13 +1227,13 @@ public class NewInvoiceListActivity extends NavigationActivity
 
         } else if (invoiceStatus.equals("Partial")) {
             //   editInvoiceLayout.setVisibility(View.GONE);
-            cashCollectionLayout.setVisibility(View.VISIBLE);
+           // cashCollectionLayout.setVisibility(View.VISIBLE);
             deleteInvoiceLayout.setVisibility(View.GONE);
             invoiceStatusValue = "PR";
         } else if (invoiceStatus.equals("Open") || invoiceStatus.equals("O")) {
             // editInvoiceLayout.setVisibility(View.VISIBLE);
-            cashCollectionLayout.setVisibility(View.VISIBLE);
-            duplicateInvoiceLayout.setVisibility(View.VISIBLE);
+//            cashCollectionLayout.setVisibility(View.VISIBLE);
+//            duplicateInvoiceLayout.setVisibility(View.VISIBLE);
             invoiceStatusValue = "O";
             // deleteInvoiceLayout.setVisibility(View.VISIBLE);
         }
@@ -1792,6 +1817,113 @@ public class NewInvoiceListActivity extends NavigationActivity
 
     }
 
+
+    public void getCustGroupSeperate(){
+        // Initialize a new RequestQueue instance
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url=Utils.getBaseUrl(this) +"customerGroupList";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (userPermission.equalsIgnoreCase("True")) {
+                jsonObject.put("User", "All");
+            }else {
+                jsonObject.put("User", username);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        custSeperateGroupList=new ArrayList<>();
+
+        Log.w("url_custGroupSepert:",url);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                url, jsonObject,
+                response -> {
+                    try {
+                        Log.w("SAP_GROUP_seperat:", response.toString());
+                        String statusCode=response.optString("statusCode");
+                        if (statusCode.equals("1")){
+                            JSONArray customerDetailArray=response.optJSONArray("responseData");
+                            for (int i=0;i<customerDetailArray.length();i++){
+                                JSONObject object=customerDetailArray.optJSONObject(i);
+                                CustSeperateGroupModel model = new CustSeperateGroupModel();
+                                model.setCustomerGroupCode(object.optString("customerGroupCode"));
+                                model.setCustomerGroupName(object.optString("customerGroupName"));
+                                custSeperateGroupList.add(model);
+                            }
+                        }else {
+                            Toast.makeText(getApplicationContext(),"Error,in getting Customer Group list",Toast.LENGTH_LONG).show();
+                        }
+                        if (custSeperateGroupList.size()>0){
+                            Utils.setCustSeperGroupList(custSeperateGroupList);
+                            setCustomerGroupSpinner(custSeperateGroupList);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                },
+                error -> {
+                    //dialog.dismiss();
+                    // Do something when error occurred
+                    Log.w("Error_throwing:",error.toString());
+                }){
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private void setCustomerGroupSpinner(ArrayList<CustSeperateGroupModel> custSeperateGroupList) {
+       CustSeperateGroupModel custGroupModel = new CustSeperateGroupModel();
+//        custGroupModel.setCustomerGroupName("Select Customer Group");
+//        custGroupModel.setCustomerGroupCode("");
+
+        ArrayList<CustSeperateGroupModel> custGroupModels = new ArrayList<>();
+      //  custGroupModels.add(0,custGroupModel);
+        custGroupModels.addAll(custSeperateGroupList);
+
+        ArrayAdapter<CustSeperateGroupModel> adapter = new ArrayAdapter<>(this, R.layout.cust_spinner_item,
+                custGroupModels);
+
+        custGroupSpinner.setAdapter(adapter);
+//
+        custGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectCustGroupCode = custSeperateGroupList.get(position).getCustomerGroupCode();
+                selectCustGroupName = custSeperateGroupList.get(position).getCustomerGroupName();
+
+                            Log.w("selectgroup :", selectCustGroupCode );
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
     private void setDeleteInvoice(String invoiceNumber, String status, String invoiceDate) throws JSONException {
         // Initialize a new RequestQueue instance
 
@@ -1888,15 +2020,18 @@ public class NewInvoiceListActivity extends NavigationActivity
 
         MenuItem addInvoice = menu.findItem(R.id.action_add);
         addInvoice.setVisible(false);
-        if (createInvoiceSetting.equals("true")) {
-            if (company_name.equals("AADHI INTERNATIONAL PTE LTD")) {
-                addInvoice.setVisible(false);
-            } else {
-                addInvoice.setVisible(true);
-            }
-        } else {
-            addInvoice.setVisible(false);
-        }
+        //todo unico hide
+//        if (createInvoiceSetting.equals("true")) {
+//            if (company_name.equals("AADHI INTERNATIONAL PTE LTD")) {
+//                addInvoice.setVisible(false);
+//            } else {
+//                addInvoice.setVisible(true);
+//            }
+//        } else {
+//            addInvoice.setVisible(false);
+//        }
+
+
       /*  ArrayList<UserRoll> userRolls=helper.getUserPermissions();
         if (userRolls.size()>0) {
             for (UserRoll roll : userRolls) {
@@ -2061,6 +2196,7 @@ public class NewInvoiceListActivity extends NavigationActivity
         } else if (requestCode == FILTER_CUSTOMER_CODE && resultCode == Activity.RESULT_OK) {
             selectCustomerCode = data.getStringExtra("customerCode");
             selectCustomerName = data.getStringExtra("customerName");
+
             customerNameText.setText(selectCustomerName);
             Log.w("CustomerCode:", selectCustomerCode);
         }

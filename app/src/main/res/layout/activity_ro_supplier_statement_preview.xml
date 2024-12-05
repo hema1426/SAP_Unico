@@ -85,7 +85,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="12sp"
             android:singleLine="true"
-            android:text="Customer Outstanding Period Report"
+            android:text="Supplier Statement"
             android:textColor="@color/colorPrimary"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -111,6 +111,7 @@
                     android:layout_height="wrap_content">
 
                     <LinearLayout
+                        android:id="@+id/fromdate_sup_lay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5sp"
@@ -184,7 +185,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Customer :"
+                        android:text="Supplier :"
                         android:textColor="@color/black"
                         android:textSize="12dp"
                         android:textStyle="normal" />
@@ -282,7 +283,7 @@
 
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_customerlist"
+                android:id="@+id/rv_supState_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:listitem="@layout/ro_customer_preview_item">
@@ -367,7 +368,7 @@
         <LinearLayout
             android:id="@+id/ArCustlistLay"
             android:orientation="vertical"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -533,16 +534,6 @@
         </LinearLayout>
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginLeft="5sp"
-            android:layout_marginTop="12dp"
-            android:singleLine="true"
-            android:text="Customer Signature &amp; Company Stamp"
-            android:textColor="@color/black"
-            android:textSize="12sp" />
 
 
     </LinearLayout>

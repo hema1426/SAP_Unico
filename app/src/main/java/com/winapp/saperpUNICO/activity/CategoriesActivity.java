@@ -305,7 +305,8 @@ public class CategoriesActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_urlGroup:", url+jsonObject);
+
+        Log.w("Given_urlGroup:", url);
         dialog = new ProgressDialog(CategoriesActivity.this);
         dialog.setMessage("Loading Customers Groups...");
         dialog.setCancelable(false);
@@ -413,7 +414,7 @@ public class CategoriesActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.w("AllCustomerUrl:", url);
+                Log.w("AllCustomerUrl:", url+jsonObject);
                 JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
                         response -> {
                             try {

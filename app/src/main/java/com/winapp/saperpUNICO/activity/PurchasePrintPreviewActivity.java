@@ -535,17 +535,14 @@ public class PurchasePrintPreviewActivity extends AppCompatActivity implements O
             companyAddress1Text.setVisibility(View.VISIBLE);
             companyAddress1Text.setText(company_address1);
         }
-
         if (!company_address2.isEmpty()){
             companyAddress2Text.setVisibility(View.VISIBLE);
             companyAddress2Text.setText(company_address2);
         }
-
         if (!company_address3.isEmpty()){
             companyAddress3Text.setVisibility(View.VISIBLE);
             companyAddress3Text.setText(company_address3);
         }
-
         if (!company_phone.isEmpty()){
             companyPhoneText.setText("TEL : "+company_phone);
             companyPhoneText.setVisibility(View.VISIBLE);

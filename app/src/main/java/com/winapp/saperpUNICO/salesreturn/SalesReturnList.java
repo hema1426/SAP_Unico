@@ -433,13 +433,14 @@ public class SalesReturnList extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         String url=Utils.getBaseUrl(getActivity()) +"BPGroupList";
         customerList=new ArrayList<>();
-        JSONObject jsonObject=new JSONObject();
-        try {
-            jsonObject.put("GroupCode",groupCode);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.w("Given_urlcustGroup:",url+jsonObject);
+//        JSONObject jsonObject = new JSONObject();
+//        try {
+//            jsonObject.put("User", username);
+//            jsonObject.put("LocationCode", locationCode);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+        Log.w("Given_urlcustGroup:",url);
         dialog=new ProgressDialog(getActivity());
         dialog.setMessage("Loading Customers Groups...");
         dialog.setCancelable(false);
@@ -448,7 +449,7 @@ public class SalesReturnList extends Fragment {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
-                jsonObject,
+                null,
                 response -> {
                     try {
                         Log.w("SAP_CUSTOMERS_GROUP:", response.toString());

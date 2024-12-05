@@ -300,6 +300,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 String shortCode =object.optString("shortCode");
                                 String lastPrice =object.optString("showlastSalesPrice");
                                 String totalSales =object.optString("invoiceListShowBalance");
+                                String adminPermission =object.optString("adminPermission");
 
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_INV_UOM, invUOM);
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_SO_UOM, salesUOM);
@@ -310,6 +311,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_LAST_PRICE, lastPrice);
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_TOTAL_SALES, totalSales);
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_USER_MIDDLE_NAME, userMiddlename);
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_ADMIN_PERMISSION, adminPermission);
+
 
                                 session.createLoginSession(
                                         username,password,rollname,locationCode,"1",ispermission,

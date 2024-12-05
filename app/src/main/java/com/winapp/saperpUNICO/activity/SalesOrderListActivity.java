@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -42,12 +43,14 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 import com.winapp.saperpUNICO.R;
 import com.winapp.saperpUNICO.adapter.SalesOrderAdapterNew;
 import com.winapp.saperpUNICO.adapter.SelectCustomerAdapter;
 import com.winapp.saperpUNICO.db.DBHelper;
 import com.winapp.saperpUNICO.fragments.CustomerFragment;
 import com.winapp.saperpUNICO.model.AppUtils;
+import com.winapp.saperpUNICO.model.CustSeperateGroupModel;
 import com.winapp.saperpUNICO.model.CustomerDetails;
 import com.winapp.saperpUNICO.model.CustomerModel;
 import com.winapp.saperpUNICO.model.SalesOrderModel;
@@ -93,6 +96,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     public static SalesOrderAdapterNew salesOrderAdapter;
     private ArrayList<SalesOrderModel> salesOrderList;
     private SweetAlertDialog pDialog;
+    private ArrayList<CustSeperateGroupModel> custSeperateGroupList;
+
     private SessionManager session;
     private HashMap<String,String > user;
     private String companyId;
@@ -157,10 +162,14 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     public String editSo="false";
     private int FILTER_CUSTOMER_CODE=134;
     String currentDate;
+    private SearchableSpinner custGroupSpinner;
+    private String selectCustGroupCode = "";
+    private String selectCustGroupName = "";
     private ArrayList<UserListModel> usersList;
     private Spinner salesManSpinner;
     private String selectedUser="";
     public static String shortCodeStr = "" ;
+    public String userPermission = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,10 +221,12 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         progressLayout=findViewById(R.id.progress_layout);
         createSalesOrder=findViewById(R.id.create_sales);
         salesManSpinner=findViewById(R.id.salesman_spinner);
+        custGroupSpinner = findViewById(R.id.custGroup_spinnerSO);
         salesManSpinner.setOnItemSelectedListener(this);
 
-        shortCodeStr = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil
-                .KEY_SHORT_CODE,"");
+        shortCodeStr = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SHORT_CODE,"");
+        userPermission = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_ADMIN_PERMISSION,"");
+
         Date c = Calendar.getInstance().getTime();
         System.out.println("Current time => " + c);
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -237,6 +248,12 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        if(Utils.getCustSeperGroupList() != null && Utils.getCustSeperGroupList().size() > 0) {
+            setCustomerGroupSpinner(Utils.getCustSeperGroupList());
+        }else{
+            getCustGroupSeperate();
+        }
+
         AppUtils.setProductsList(null);
 
         ArrayList<SettingsModel> settings=dbHelper.getSettings();
@@ -626,6 +643,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                         String toDateString = new SimpleDateFormat("yyyyMMdd").format(toDate);
                         System.out.println(fromDateString+"-"+toDateString); // 2011-01-18
                         String invoice_status="";
+                        String usernamel="";
+
                         if (salesOrderStatusSpinner.getSelectedItem().equals("ALL")){
                             invoice_status="";
                         }else if (salesOrderStatusSpinner.getSelectedItem().equals("CLOSED")){
@@ -633,12 +652,20 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                         }else if (salesOrderStatusSpinner.getSelectedItem().equals("OPEN")){
                             invoice_status="O";
                         }
-                        setFilterSearch(SalesOrderListActivity.this,companyId,selectedCustomerId,invoice_status,fromDateString,toDateString);
+                        if (userPermission.equalsIgnoreCase("True")) {
+                            usernamel = "All" ;
+                        }else {
+                            usernamel  = userName;
+                        }
+
+                        setFilterSearch(SalesOrderListActivity.this,usernamel,companyId,selectedCustomerId,
+                                invoice_status,fromDateString,toDateString,selectCustGroupCode);
                     } catch (JSONException | ParseException e) {
                         e.printStackTrace();
                     }
                     ///filterSearch(customer_name, salesOrderStatusSpinner.getSelectedItem().toString(),fromDate.getText().toString(),toDate.getText().toString());
                     salesOrderStatusSpinner.setSelection(0);
+                    custGroupSpinner.setSelection(0);
                 }
             }
         });
@@ -652,6 +679,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                 toDate.setText(formattedDate);
                 searchFilterView.setVisibility(View.GONE);
                 salesOrderStatusSpinner.setSelection(0);
+                custGroupSpinner.setSelection(0);
                 setFilterAdapeter();
             }
         });
@@ -1605,6 +1633,109 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
 */
 
 
+    public void getCustGroupSeperate(){
+        // Initialize a new RequestQueue instance
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url=Utils.getBaseUrl(this) +"customerGroupList";
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (userPermission.equalsIgnoreCase("True")) {
+                jsonObject.put("User", "All");
+            }else {
+                jsonObject.put("User", userName);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        custSeperateGroupList=new ArrayList<>();
+
+        Log.w("url_custGroupSepert:",url);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                url, jsonObject,
+                response -> {
+                    try {
+                        Log.w("SAP_GROUP_seperat:", response.toString());
+                        String statusCode=response.optString("statusCode");
+                        if (statusCode.equals("1")){
+                            JSONArray customerDetailArray=response.optJSONArray("responseData");
+                            for (int i=0;i<customerDetailArray.length();i++){
+                                JSONObject object=customerDetailArray.optJSONObject(i);
+                                CustSeperateGroupModel model = new CustSeperateGroupModel();
+                                model.setCustomerGroupCode(object.optString("customerGroupCode"));
+                                model.setCustomerGroupName(object.optString("customerGroupName"));
+                                custSeperateGroupList.add(model);
+                            }
+                        }else {
+                            Toast.makeText(getApplicationContext(),"Error,in getting Customer Group list",Toast.LENGTH_LONG).show();
+                        }
+                        if (custSeperateGroupList.size()>0){
+                            Utils.setCustSeperGroupList(custSeperateGroupList);
+                            setCustomerGroupSpinner(custSeperateGroupList);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                },
+                error -> {
+                    //dialog.dismiss();
+                    // Do something when error occurred
+                    Log.w("Error_throwing:",error.toString());
+                }){
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                String creds = String.format("%s:%s", Constants.API_SECRET_CODE, Constants.API_SECRET_PASSWORD);
+                String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+                params.put("Authorization", auth);
+                return params;
+            }
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonObjectRequest);
+    }
+    private void setCustomerGroupSpinner(ArrayList<CustSeperateGroupModel> custSeperateGroupList) {
+        CustSeperateGroupModel custGroupModel = new CustSeperateGroupModel();
+//        custGroupModel.setCustomerGroupName("Select Customer Group");
+//        custGroupModel.setCustomerGroupCode("");
+
+        ArrayList<CustSeperateGroupModel> custGroupModels = new ArrayList<>();
+        //  custGroupModels.add(0,custGroupModel);
+        custGroupModels.addAll(custSeperateGroupList);
+
+        ArrayAdapter<CustSeperateGroupModel> adapter = new ArrayAdapter<>(this, R.layout.cust_spinner_item,
+                custGroupModels);
+
+        custGroupSpinner.setAdapter(adapter);
+//
+        custGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectCustGroupCode = custSeperateGroupList.get(position).getCustomerGroupCode();
+                selectCustGroupName = custSeperateGroupList.get(position).getCustomerGroupName();
+                Log.w("selectgroup :", selectCustGroupCode );
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
 
     private void setDeleteSalesOrder(String soNumber) throws JSONException {
         // Initialize a new RequestQueue instance
@@ -1682,17 +1813,16 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void setFilterSearch(Context context, String companyId, String customerCode, String status, String fromdate, String todate) throws JSONException {
+    public void setFilterSearch(Context context, String userName,String companyId,
+                                String customerCode, String status, String fromdate, String todate,String groupCode) throws JSONException {
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
        // {"CustomerCode":"","ReceiptNo":"","StartDate":"","EndDate":,"CompanyCode":"1"}
         JSONObject jsonObject=new JSONObject();
-        if (selectedUser!=null && !selectedUser.isEmpty()){
-            jsonObject.put("User",selectedUser);
-        }else {
-            jsonObject.put("User",userName);
-        }
+
+        jsonObject.put("User",userName);
         jsonObject.put("CustomerCode",customerCode);
+        jsonObject.put("CustomerGroupCode",groupCode);
         jsonObject.put("FromDate",fromdate);
         jsonObject.put("ToDate", todate);
         jsonObject.put("DocStatus",status);
@@ -1788,11 +1918,13 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         // Initialize a new JsonArrayRequest instance
         JSONObject jsonObject=new JSONObject();
-        if (selectedUser!=null && !selectedUser.isEmpty()){
-            jsonObject.put("User",selectedUser);
+        if (userPermission.equalsIgnoreCase("True")) {
+            jsonObject.put("User","All");
+
         }else {
             jsonObject.put("User",userName);
         }
+
         jsonObject.put("CustomerCode","");
         jsonObject.put("FromDate",fromdate);
         jsonObject.put("ToDate", todate);
@@ -2007,7 +2139,9 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.sorting_menu, menu);
       //  MenuItem action_save = menu.findItem(R.id.action_filter);
-       // action_save.setVisible(false);
+        MenuItem action_addl = menu.findItem(R.id.action_add);
+
+        action_addl.setVisible(false);
         return true;
     }
 
@@ -2075,41 +2209,44 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             }catch (Exception ex){
                 Log.w("Error:",ex.getMessage());
             }
-        }else if (item.getItemId()==R.id.action_add){
+        }
 
-            Intent intent=new Intent(getApplicationContext(),CustomerListActivity.class);
-            intent.putExtra("from","so");
-            startActivityForResult(intent,customerSelectCode);
-
-          /*  isSearchCustomerNameClicked=false;
-            addnewCustomer=true;
-            SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
-                String selectCustomerId = sharedPreferences.getString("customerId", "");
-                if (selectCustomerId!=null && !selectCustomerId.isEmpty()) {
-                    customerDetails = dbHelper.getCustomer(selectCustomerId);
-                    if (customerDetails.size()>0){
-                        showCustomerDialog(this,customerDetails.get(0).getCustomerName(),customerDetails.get(0).getCustomerCode(),customerDetails.get(0).getCustomerAddress1());
-                    }else {
-                        customerLayout.setVisibility(View.VISIBLE);
-                        searchFilterView.setVisibility(View.GONE);
-                        salesOrderOptionLayout.setVisibility(View.GONE);
-                        //viewCloseBottomSheet();
-                        if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                        }
-                    }
-                }else {
-                    customerLayout.setVisibility(View.VISIBLE);
-                    searchFilterView.setVisibility(View.GONE);
-                    salesOrderOptionLayout.setVisibility(View.GONE);
-                    //viewCloseBottomSheet();
-                    if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                    }
-                }*/
-
-
-        } else if (item.getItemId() == R.id.action_barcode) {
+//        else if (item.getItemId()==R.id.action_add){
+//
+//            Intent intent=new Intent(getApplicationContext(),CustomerListActivity.class);
+//            intent.putExtra("from","so");
+//            startActivityForResult(intent,customerSelectCode);
+//
+//          /*  isSearchCustomerNameClicked=false;
+//            addnewCustomer=true;
+//            SharedPreferences sharedPreferences = getSharedPreferences("customerPref",MODE_PRIVATE);
+//                String selectCustomerId = sharedPreferences.getString("customerId", "");
+//                if (selectCustomerId!=null && !selectCustomerId.isEmpty()) {
+//                    customerDetails = dbHelper.getCustomer(selectCustomerId);
+//                    if (customerDetails.size()>0){
+//                        showCustomerDialog(this,customerDetails.get(0).getCustomerName(),customerDetails.get(0).getCustomerCode(),customerDetails.get(0).getCustomerAddress1());
+//                    }else {
+//                        customerLayout.setVisibility(View.VISIBLE);
+//                        searchFilterView.setVisibility(View.GONE);
+//                        salesOrderOptionLayout.setVisibility(View.GONE);
+//                        //viewCloseBottomSheet();
+//                        if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+//                            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//                        }
+//                    }
+//                }else {
+//                    customerLayout.setVisibility(View.VISIBLE);
+//                    searchFilterView.setVisibility(View.GONE);
+//                    salesOrderOptionLayout.setVisibility(View.GONE);
+//                    //viewCloseBottomSheet();
+//                    if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+//                        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//                    }
+//                }*/
+//
+//
+//        }
+        else if (item.getItemId() == R.id.action_barcode) {
             Intent intent=new Intent(getApplicationContext(), BarCodeScanner.class);
             startActivity(intent);
         }else if (item.getItemId()==R.id.action_filter){

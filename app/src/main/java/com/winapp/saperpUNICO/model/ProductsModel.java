@@ -7,6 +7,7 @@ public class ProductsModel {
     private String companyCode;
     private String productCode;
     private String productName;
+    private String foreignName;
     private String productImage;
     private String pcsPerCarton;
     private String customerItemCode;
@@ -31,6 +32,19 @@ public class ProductsModel {
     private String defaultUom;
     private String barcode;
     private String isItemFOC;
+    private String imageURL;
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    public String getForeignName() {
+        return foreignName;
+    }
+
+    public void setForeignName(String foreignName) {
+        this.foreignName = foreignName;
+    }
 
     public String getIsItemFOC() {
         return isItemFOC;

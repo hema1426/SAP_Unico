@@ -92,6 +92,7 @@ public class RoCustomerOutstandDatePreviewActivity extends AppCompatActivity {
     private String customer_code;
     private String username;
     private String allUserFilter;
+    private String custGroup_code = "";
     private String url;
 
     @Override
@@ -134,6 +135,7 @@ public class RoCustomerOutstandDatePreviewActivity extends AppCompatActivity {
             customer_code=getIntent().getStringExtra("customerCode");
             username=getIntent().getStringExtra("userName");
             allUserFilter=getIntent().getStringExtra("allUserFilter");
+            custGroup_code=getIntent().getStringExtra("customerGroupCodeRP");
 
             fromdat.setText(from_date);
             todat.setText(to_date);
@@ -156,13 +158,13 @@ public class RoCustomerOutstandDatePreviewActivity extends AppCompatActivity {
         String toDateString = new SimpleDateFormat("yyyyMMdd").format(toDate);
 
         try {
-            getCustomerStatement(customer_code,toDateString,"O",1);
+            getCustomerStatement(customer_code,toDateString,"O",custGroup_code,1);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private void getCustomerStatement(String customer_id,String to_date, String status,int copy) throws JSONException {
+    private void getCustomerStatement(String customer_id,String to_date, String status,String custGroupId,int copy) throws JSONException {
 
         // Initialize a new RequestQueue instance
         JSONObject jsonObject=new JSONObject();
@@ -171,6 +173,8 @@ public class RoCustomerOutstandDatePreviewActivity extends AppCompatActivity {
         jsonObject.put("FromDate","");
         jsonObject.put("ToDate",to_date);
         jsonObject.put("LocationCode",locationCode);
+        jsonObject.put("CustomerGroupCode",custGroupId);
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         url= Utils.getBaseUrl(this) +"reportcustomerstatementToDate";
         // Initialize a new JsonArrayRequest instance

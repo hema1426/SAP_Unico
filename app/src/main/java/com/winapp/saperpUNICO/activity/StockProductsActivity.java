@@ -162,6 +162,7 @@ public class StockProductsActivity extends NavigationActivity {
         JSONObject jsonObject=new JSONObject();
         try {
             jsonObject.put("WarehouseCode",locationCode);
+            jsonObject.put("ItemGroupCode","All");
             getAllProducts(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -758,7 +759,8 @@ public class StockProductsActivity extends NavigationActivity {
     public void getAllProducts(JSONObject jsonObject){
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(StockProductsActivity.this);
-        String url=Utils.getBaseUrl(this) +"ProductListForTransfer";
+        //String url=Utils.getBaseUrl(this) +"ProductListForTransfer"; //todo mahudoom changed product api 5.12.24
+        String url=Utils.getBaseUrl(this) +"ProductList";
         // Initialize a new JsonArrayRequest instance
         Log.w("Given_pdt_stock_URL:",url+jsonObject);
         productList=new ArrayList<>();
@@ -794,6 +796,9 @@ public class StockProductsActivity extends NavigationActivity {
                                 product.setCartonPrice(productObject.optString("cartonPrice"));
                                 product.setPcsPerCarton(productObject.optString("pcsPerCarton"));
                                 product.setUnitCost(productObject.optString("price"));
+                                product.setForeignName(productObject.optString("foreignName"));
+                                product.setImageURL(productObject.optString("imageURL"));
+
                                 if (!productObject.optString("stockInHand").equals("null")){
                                     product.setStockQty(productObject.optString("stockInHand"));
                                 }else {

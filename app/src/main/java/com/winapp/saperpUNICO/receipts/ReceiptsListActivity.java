@@ -575,7 +575,7 @@ public class ReceiptsListActivity extends NavigationActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_urlcustGroup:",url+jsonObject);
+        Log.w("Given_urlcustGroup:",url);
         dialog=new ProgressDialog(ReceiptsListActivity.this);
         dialog.setMessage("Loading Customers Groups...");
         dialog.setCancelable(false);
@@ -584,7 +584,7 @@ public class ReceiptsListActivity extends NavigationActivity {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
-                null,
+                jsonObject,
                 response -> {
                     try {
                         Log.w("SAP_CUSTOMERS_GROUP:", response.toString());

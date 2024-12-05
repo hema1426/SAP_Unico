@@ -86,7 +86,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="12sp"
             android:singleLine="true"
-            android:text="Invoice By Summary"
+            android:text="Purchase Summary"
             android:textColor="@color/colorPrimary"
             android:textSize="13dp"
             android:textStyle="bold" />
@@ -207,7 +207,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:padding="8dp"
+                android:padding="6dp"
                 android:background="@color/lit_blue"
                 android:orientation="horizontal">
 
@@ -222,18 +222,18 @@
                         android:id="@+id/item_sNo"
                         android:layout_width="40dp"
                         android:layout_height="wrap_content"
-                        android:text="Sno"
+                        android:text="SNO"
                         android:gravity="center"
                         android:layout_gravity="center"
                         android:textColor="@color/black"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
                         />
 
                     <TextView
                         android:id="@+id/item_transfNo"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="VendorName / Inv No"
+                        android:text="Customer / Inv No"
                         android:layout_weight="3"
                         android:gravity="center"
                         android:layout_gravity="center"
@@ -246,17 +246,30 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:text="Amount"
+                        android:visibility="invisible"
                         android:layout_weight="3"
                         android:textColor="@color/black"
                         android:textSize="12sp" />
 
                     <TextView
+                        android:id="@+id/item_amt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="Balance"
+                        android:text="Amount"
                         android:layout_weight="2"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/item_type"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="Type"
+                        android:layout_weight="1"
                         android:textColor="@color/black"
                         android:textSize="12sp" />
 
@@ -265,10 +278,10 @@
 
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_invsum_perv_list"
+                android:id="@+id/rv_purchaseSum_perv_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/ro_purchase_summary_preview_item"
+                tools:listitem="@layout/ro_invbysummary_preview_item"
                 android:background="@color/lit_grey"
                 >
 

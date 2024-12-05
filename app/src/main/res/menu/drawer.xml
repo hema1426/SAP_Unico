@@ -134,6 +134,7 @@
         <item
             android:icon="@drawable/ic_calendar_menu"
             android:id="@+id/navigation_settlement"
+            android:visible="false"
             android:title="Settlement" />
 
     </group>
@@ -170,6 +171,7 @@
         <item
             android:icon="@drawable/ic_sales_order_menu"
             android:id="@+id/navigation_expense"
+            android:visible="false"
             android:title="Expense" />
 
     </group>

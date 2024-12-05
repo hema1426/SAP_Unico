@@ -1,6 +1,7 @@
 package com.winapp.saperpUNICO.fragments;
 
 import static com.winapp.saperpUNICO.activity.NewInvoiceListActivity.isLastSales;
+import static com.winapp.saperpUNICO.activity.NewInvoiceListActivity.userPermission;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -137,7 +138,7 @@ public class AllInvoices extends Fragment {
         System.out.println("Current time => " + c);
         SimpleDateFormat df1 = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
         currentDate = df1.format(c);
-        getInvoices(companyId,String.valueOf(pageNo),"ALL",currentDate,currentDate);
+        getInvoices(companyId,String.valueOf(pageNo),"ALL",currentDate,currentDate,"");
 
         if(isLastSales.equalsIgnoreCase("True")){
             totalSalesLayout.setVisibility(View.VISIBLE);
@@ -228,19 +229,26 @@ public class AllInvoices extends Fragment {
 
     }
 
-    public void getInvoices(String companyCode,String pageNo,String action,String fromdate,String todate) {
+    public void getInvoices(String companyCode,String pageNo,String action,
+                            String fromdate,String todate,String groupCode) {
         try {
             Log.w("LoadingAction:",action);
             // Initialize a new RequestQueue instance
             RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
             // Initialize a new JsonArrayRequest instance
             JSONObject jsonObject=new JSONObject();
-            jsonObject.put("User",username);
+            if (userPermission.equalsIgnoreCase("True")) {
+                jsonObject.put("User","All");
+            }else {
+                jsonObject.put("User",username);
+            }
             jsonObject.put("LocationCode",locationCode);
             jsonObject.put("CustomerCode","");
+            jsonObject.put("CustomerGroupCode",groupCode);
             jsonObject.put("FromDate",fromdate);
             jsonObject.put("ToDate", todate);
             jsonObject.put("DocStatus","");
+
             String url = Utils.getBaseUrl(getActivity()) + "InvoiceList";
             Log.w("Given_url_AllInvoices:", url+"/"+jsonObject.toString());
             pDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
@@ -445,10 +453,12 @@ public class AllInvoices extends Fragment {
     public  void filterCancel() {
       //  setFilterAdapter(displayInvoiceList);
         invoiceList=new ArrayList<>();
-        getInvoices(companyId,String.valueOf(pageNo),"ALL",currentDate,currentDate);
+        getInvoices(companyId,String.valueOf(pageNo),"ALL",currentDate,currentDate,"");
     }
 
-    public  void filterSearch(Context context,String username, String customerCode, String invoiceStatus, String fromdate, String todate,String location) throws JSONException {
+    public  void filterSearch(Context context,String username, String customerCode,
+                              String invoiceStatus, String fromdate, String todate,
+                              String location,String groupCode) throws JSONException {
        try {
             // Initialize a new RequestQueue instance
           //  http://94.237.70.51:153/es/data/api/SalesApi/GetAllInvoiceList?
@@ -458,6 +468,7 @@ public class AllInvoices extends Fragment {
             JSONObject jsonObject=new JSONObject();
             jsonObject.put("User",username);
             jsonObject.put("CustomerCode",customerCode);
+           jsonObject.put("CustomerGroupCode",groupCode);
             jsonObject.put("FromDate",fromdate);
             jsonObject.put("ToDate",todate);
             jsonObject.put("LocationCode",location);

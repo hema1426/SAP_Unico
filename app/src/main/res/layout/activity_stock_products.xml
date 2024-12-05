@@ -246,6 +246,7 @@
                     android:id="@+id/searchRecyclerview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/lit_grey_new"
                     android:visibility="gone"
                     app:layout_constraintRight_toRightOf="parent"
                     tools:layout_constraintLeft_creator="1"

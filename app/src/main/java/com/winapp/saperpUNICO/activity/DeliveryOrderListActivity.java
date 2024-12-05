@@ -1736,7 +1736,8 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
         getMenuInflater().inflate(R.menu.sorting_menu, menu);
         // MenuItem action_save = menu.findItem(R.id.action_filter);
         // action_save.setVisible(false);
-
+        MenuItem action_addl = menu.findItem(R.id.action_add);
+        action_addl.setVisible(false);
         MenuItem action_barcode = menu.findItem(R.id.action_barcode);
         action_barcode.setVisible(false);
         return true;
@@ -1747,11 +1748,13 @@ public class DeliveryOrderListActivity extends NavigationActivity implements Del
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {//finish();
             onBackPressed();
-        }else if (item.getItemId()==R.id.action_add){
-            Intent intent=new Intent(getApplicationContext(),CustomerListActivity.class);
-            intent.putExtra("from","do");
-            startActivityForResult(intent,customerSelectCode);
-        }else if (item.getItemId()==R.id.action_filter){
+        }
+//        else if (item.getItemId()==R.id.action_add){
+//            Intent intent=new Intent(getApplicationContext(),CustomerListActivity.class);
+//            intent.putExtra("from","do");
+//            startActivityForResult(intent,customerSelectCode);
+//        }
+        else if (item.getItemId()==R.id.action_filter){
             if (searchFilterView.getVisibility()==View.VISIBLE){
                 searchFilterView.setVisibility(View.GONE);
                 customerNameText.setText("");

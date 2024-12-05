@@ -29,14 +29,13 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.winapp.saperpUNICO.R;
 import com.winapp.saperpUNICO.ReportPreview.adapter.RoInvoicebySummaryPreviewAdapter;
-import com.winapp.saperpUNICO.ReportPreview.adapter.SapSalesSumPreviewPrintAdapter;
-import com.winapp.saperpUNICO.ReportPreview.adapter.SapSalesSum_InvoicePreviewPrintAdapter;
+import com.winapp.saperpUNICO.ReportPreview.adapter.SapPosting_INVPreviewPrintAdapter;
+import com.winapp.saperpUNICO.ReportPreview.adapter.SapPosting_SOPreviewPrintAdapter;
 import com.winapp.saperpUNICO.model.InvoiceSummaryModel;
-import com.winapp.saperpUNICO.model.ReportSalesSummaryModel;
+import com.winapp.saperpUNICO.model.ReportPostingInvSOModel;
 import com.winapp.saperpUNICO.utils.Constants;
 import com.winapp.saperpUNICO.utils.Utils;
 import com.winapp.saperpUNICO.zebraprinter.TSCPrinter;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,14 +52,14 @@ import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
+public class SapPostingInv_SOPreviewActivity extends AppCompatActivity {
     private TextView companyNametext;
     private TextView companyAddress1Text;
     private TextView companyAddress2Text;
     private TextView companyAddress3Text;
     private TextView companyPhoneText;
     private LinearLayout Invoicelist_lay;
-    public LinearLayout cashSalesLayl;
+    public LinearLayout SOlist_lay;
     private TextView companyGstText;
     private String company_name;
     private String company_address1;
@@ -75,16 +74,17 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
     private TextView gst_txt;
     private SweetAlertDialog pDialog;
     private String doNo;
-    private RecyclerView rv_salessum_Previewlist;
-    private RecyclerView rv_salesSum_Invoicelist;
-    double sum_salesummaryamt = 0.0;
-    double sum_invsummaryamt =0.0;
-    double sum_invsummarybalance = 0.0;
-    private ArrayList<ReportSalesSummaryModel> reportSalesSummaryList;
-    private ArrayList<ReportSalesSummaryModel.ReportSalesSummaryDetails> reportSalesSummaryDetailsList;
-    private ArrayList<ReportSalesSummaryModel.ReportSalesSummaryInvDetails> reportSalesSummaryInvDetailsList;
-    public SapSalesSumPreviewPrintAdapter sapSalesSumPreviewPrintAdapter;
-    public SapSalesSum_InvoicePreviewPrintAdapter sapSalesSumInvoicePreviewPrintAdapter;
+    private RecyclerView rv_postInv_list;
+    private RecyclerView rv_postSo_list;
+    double sum_totalInv = 0.0;
+    double sum_BalInv = 0.0;
+    double sum_totalSO = 0.0;
+    double sum_BalSO = 0.0;
+    private ArrayList<ReportPostingInvSOModel> reportPostingInvSOModelArrayList;
+    private ArrayList<ReportPostingInvSOModel.ReportInvoiceDetails> reportInvoiceDetailsArrayList;
+    private ArrayList<ReportPostingInvSOModel.ReportSODetails> reportSODetailsArrayList;
+    public SapPosting_SOPreviewPrintAdapter sapPostingSoPreviewPrintAdapter;
+    public SapPosting_INVPreviewPrintAdapter sapPostingInvPreviewPrintAdapter;
     private TextView fromdatel;
     private TextView totalreceived;
     private TextView totalreceivedInv;
@@ -119,9 +119,10 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
     private String locationCode;
     private String customer_name;
     private String customer_code = "";
-    private String custGroup_code = "";
     private JSONObject jsonObject;
     private String url;
+    TextView balSo_listl,totalSo_listl,balInv_listl,totalInv_listl ;
+
     private RequestQueue requestQueue;
     private JsonObjectRequest jsonObjectRequest;
 
@@ -129,8 +130,8 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sap_ro_salessummary_preview_print);
-        getSupportActionBar().setTitle("Sales Summary Report");
+        setContentView(R.layout.activity_sap_ro_postinginv_so_preview_print);
+        getSupportActionBar().setTitle("Posting Invoice & UnPosting SalesOrder");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Log.w("activity_cg",getClass().getSimpleName().toString());
 
@@ -141,16 +142,14 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
         companyGstText =findViewById (R.id.company_gst);
         companyPhoneText =findViewById (R.id.company_phone);
 
-        Invoicelist_lay =findViewById (R.id.summaryInv_lay);
-        totalreceived = findViewById (R.id.total_receivd);
-        totalreceivedInv = findViewById (R.id.total_receivd_inv);
-        Invbalance = findViewById (R.id.balance_inv);
-        totalSales = findViewById (R.id.total_sales);
-        totalcash_received = findViewById (R.id.total_cashReceivd);
-        totalrefund = findViewById (R.id.total_refunded);
-        totalcashinhand = findViewById (R.id.total_cash_inHand);
-        cashSalesLayl = findViewById (R.id.cashSalesLay);
-
+        SOlist_lay = findViewById (R.id.postingSo_lay);
+        Invoicelist_lay =findViewById (R.id.postingInv_lay);
+        rv_postInv_list =findViewById (R.id.rv_postinv_perview_list);
+        rv_postSo_list =findViewById (R.id.rv_post_so_list);
+        balSo_listl =findViewById (R.id.balSo_list);
+       totalSo_listl =findViewById (R.id.totalSo_list);
+        balInv_listl =findViewById (R.id.balInv_list);
+        totalInv_listl =findViewById (R.id.totalInv_list);
         todatel =findViewById (R.id.todate);
         fromdatel =findViewById (R.id.fromdate);
         userName =findViewById (R.id.user_pre);
@@ -166,7 +165,6 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
             loccodetxt=getIntent().getStringExtra("locationCode");
             customer_name=getIntent().getStringExtra("customerName");
             customer_code=getIntent().getStringExtra("customerCode");
-            custGroup_code=getIntent().getStringExtra("customerGroupCodeRP");
             username=getIntent().getStringExtra("userName");
             status=getIntent().getStringExtra("status");
         }
@@ -193,45 +191,43 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
         String fromDateString = new SimpleDateFormat("yyyyMMdd").format(fromDate);
         String toDateString = new SimpleDateFormat("yyyyMMdd").format(toDate);
 
-        rv_salessum_Previewlist =findViewById (R.id.rv_salessum_perview_list);
-        rv_salesSum_Invoicelist =findViewById (R.id.rv_salessum_invoice_list);
+
 
         try {
-            getReportSalesSummary(1,fromDateString,toDateString,username,status,custGroup_code);
+            getPostingInvSoSummary(1,fromDateString,toDateString,username,status);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
 
-    private void getReportSalesSummary(int copy,String fromDate,String toDate,String user,String status,String custGroupId) throws JSONException {
+    private void getPostingInvSoSummary(int copy,String fromDate,String toDate,String user,String status) throws JSONException {
         // Initialize a new RequestQueue instance
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("FromDate",fromDate);
 //        jsonBody.put("LocationCode",loccodetxt);
         jsonBody.put("CustomerCode",customer_code);
-        jsonBody.put("CustomerGroupCode",custGroupId);
-        jsonBody.put("Status",status);
+        jsonBody.put("DocStatus","");
         jsonBody.put("ToDate",toDate);
         jsonBody.put("User",user);
 //        "Warehouse":"VAN 5"
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url= Utils.getBaseUrl(this) +"ReportSalesSummary";
+        String url= Utils.getBaseUrl(this) +"ReportPostingInvoiceUnPostingSalesOrder";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url_Report:",url+jsonBody);
+        Log.w("Given_url_PostInv:",url+jsonBody);
         pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setTitleText("Processing Please wait...");
         pDialog.setCancelable(false);
         pDialog.show();
-        reportSalesSummaryList =new ArrayList<>();
-        reportSalesSummaryDetailsList =new ArrayList<>();
-        reportSalesSummaryInvDetailsList =new ArrayList<>();
+        reportPostingInvSOModelArrayList =new ArrayList<>();
+        reportInvoiceDetailsArrayList =new ArrayList<>();
+        reportSODetailsArrayList =new ArrayList<>();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
                 response -> {
                     try{
-                        Log.w("ReportSalesSummary:",response.toString());
+                        Log.w("Report_PostInvSO:",response.toString());
 
                         pDialog.dismiss();
                         String statusCode=response.optString("statusCode");
@@ -240,65 +236,59 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
                             JSONArray  summaryDetailsArray=response.optJSONArray("responseData");
                             assert summaryDetailsArray != null;
                             JSONObject detailObject=summaryDetailsArray.optJSONObject(0);
-                            ReportSalesSummaryModel model=new ReportSalesSummaryModel();
+                            ReportPostingInvSOModel model=new ReportPostingInvSOModel();
+
                             model.setCompanyId(detailObject.optString("user"));
                             userName.setText(detailObject.optString("user"));
 
+                            JSONArray detailArray=detailObject.optJSONArray("invoiceList");
+                            for (int i = 0; i< Objects.requireNonNull(detailArray).length(); i++){
+                                JSONObject objectItem= detailArray.optJSONObject(i);
+                                ReportPostingInvSOModel.ReportInvoiceDetails reportInvoiceDetailsModel =
+                                        new ReportPostingInvSOModel.ReportInvoiceDetails();
+//
+                                reportInvoiceDetailsModel.setInvoiceNo(objectItem.optString("invoiceNo"));
+                                reportInvoiceDetailsModel.setCustomerCode(objectItem.optString("customerCode"));
+                                reportInvoiceDetailsModel.setCustomerName(objectItem.optString("customerName"));
+                                reportInvoiceDetailsModel.setBalance(objectItem.optString("balance"));
+                                reportInvoiceDetailsModel.setTotal(objectItem.optString("total"));
+                                reportInvoiceDetailsModel.setInvoiceDate(objectItem.optString("invoiceDate"));
 
-                            model.setCashInHand(detailObject.optString("cashInHand"));
-                            model.setTotalSales(detailObject.optString("totalSales"));
-                            model.setCashReceived(detailObject.optString("cashReceived"));
-                            model.setRefunded(detailObject.optString("refunded"));
-                            JSONArray cashSalesArray=detailObject.optJSONArray("cashSales");
-                            for (int i = 0; i< Objects.requireNonNull(cashSalesArray).length(); i++){
-                                JSONObject objectItem= cashSalesArray.optJSONObject(i);
-                                ReportSalesSummaryModel.ReportSalesSummaryDetails reportSalesSummaryModel =
-                                        new ReportSalesSummaryModel.ReportSalesSummaryDetails();
+                                reportInvoiceDetailsArrayList.add(reportInvoiceDetailsModel);
 
-                                reportSalesSummaryModel.setTransNo(objectItem.optString("transactionNo"));
-                                reportSalesSummaryModel.setCustomer(objectItem.optString("customerName"));
-                                reportSalesSummaryModel.setAmount(objectItem.optString("amount"));
-                                reportSalesSummaryModel.setType(objectItem.optString("type"));
-                                reportSalesSummaryModel.setPaymentDate(objectItem.optString("paymentDate"));
+                                sum_totalInv += Double.parseDouble(reportInvoiceDetailsModel.getTotal());
+                                sum_BalInv += Double.parseDouble(reportInvoiceDetailsModel.getBalance());
 
-                                sum_salesummaryamt += Double.parseDouble(reportSalesSummaryModel.getAmount());
-
-                                reportSalesSummaryDetailsList.add(reportSalesSummaryModel);
                             }
-                            JSONArray invoiceArray=detailObject.optJSONArray("otherSales");
-                            for (int i = 0; i< Objects.requireNonNull(invoiceArray).length(); i++){
-                                JSONObject objectInv= invoiceArray.optJSONObject(i);
-                                ReportSalesSummaryModel.ReportSalesSummaryInvDetails reportSalesSummaryInvModel =
-                                        new ReportSalesSummaryModel.ReportSalesSummaryInvDetails();
+                            JSONArray detailArray1=detailObject.optJSONArray("salesOrderList");
+                            for (int i = 0; i< Objects.requireNonNull(detailArray1).length(); i++){
+                                JSONObject objectItem1= detailArray1.optJSONObject(i);
+                                ReportPostingInvSOModel.ReportSODetails reportSODetailsModel =
+                                        new ReportPostingInvSOModel.ReportSODetails();
 
-                                reportSalesSummaryInvModel.setTransNo(objectInv.optString("transactionNo"));
-                                reportSalesSummaryInvModel.setCustomer(objectInv.optString("customerName"));
-                                reportSalesSummaryInvModel.setAmount(objectInv.optString("amount"));
-                                reportSalesSummaryInvModel.setType(objectInv.optString("type"));
-                                reportSalesSummaryInvModel.setBalanceAmount(objectInv.optString("balanceAmount"));
-                                reportSalesSummaryInvModel.setPaymentDate(objectInv.optString("paymentDate"));
+                                reportSODetailsModel.setInvoiceNo(objectItem1.optString("soNo"));
+                                reportSODetailsModel.setCustomerCode(objectItem1.optString("customerCode"));
+                                reportSODetailsModel.setCustomerName(objectItem1.optString("customerName"));
+                                reportSODetailsModel.setBalance(objectItem1.optString("balance"));
+                                reportSODetailsModel.setTotal(objectItem1.optString("total"));
+                                reportSODetailsModel.setInvoiceDate(objectItem1.optString("soDate"));
 
-                                sum_invsummaryamt += Double.parseDouble(reportSalesSummaryInvModel.getAmount());
-                                sum_invsummarybalance += Double.parseDouble(reportSalesSummaryInvModel.getBalanceAmount());
+                                reportSODetailsArrayList.add(reportSODetailsModel);
 
-                                reportSalesSummaryInvDetailsList.add(reportSalesSummaryInvModel);
+                                sum_totalSO += Double.parseDouble(reportSODetailsModel.getTotal());
+                                sum_BalSO += Double.parseDouble(reportSODetailsModel.getBalance());
                             }
-                            if(reportSalesSummaryDetailsList.size()>0) {
-                                cashSalesLayl.setVisibility(View.VISIBLE);
-                                model.setReportSalesSummaryDetailsList(reportSalesSummaryDetailsList);
-                                setAdapter(reportSalesSummaryDetailsList);
-                            }
-                            if(reportSalesSummaryInvDetailsList.size()>0) {
-                                model.setReportSalesSummaryInvDetailsList(reportSalesSummaryInvDetailsList);
+                            if(reportInvoiceDetailsArrayList.size()>0) {
                                 Invoicelist_lay.setVisibility(View.VISIBLE);
-                                setAdapterInvoice(reportSalesSummaryInvDetailsList);
+                                model.setReportInvoiceDetailsArrayList(reportInvoiceDetailsArrayList);
+                                setAdapterInvoice(reportInvoiceDetailsArrayList);
                             }
-                            reportSalesSummaryList.add(model);
-                            totalSales.setText(Utils.twoDecimalPoint(Double.parseDouble(reportSalesSummaryList.get(0).getTotalSales())));
-                            totalcash_received.setText(Utils.twoDecimalPoint(Double.parseDouble(reportSalesSummaryList.get(0).getCashReceived())));
-                            totalrefund.setText(Utils.twoDecimalPoint(Double.parseDouble(reportSalesSummaryList.get(0).getRefunded())));
-                            totalcashinhand.setText(Utils.twoDecimalPoint(Double.parseDouble(reportSalesSummaryList.get(0).getCashInHand())));
-
+                            if(reportSODetailsArrayList.size()>0) {
+                                model.setReportSODetailsArrayList(reportSODetailsArrayList);
+                                SOlist_lay.setVisibility(View.VISIBLE);
+                                setAdapterSO(reportSODetailsArrayList);
+                            }
+                            reportPostingInvSOModelArrayList.add(model);
                         }else {
                             Toast.makeText(getApplicationContext(),statusMessage,Toast.LENGTH_SHORT).show();
                         }
@@ -338,21 +328,27 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void setAdapter(ArrayList<ReportSalesSummaryModel.ReportSalesSummaryDetails> salesSummaryDetailsArrayList ) {
-        totalreceived.setText(twoDecimalPoint(sum_salesummaryamt));
-        rv_salessum_Previewlist.setHasFixedSize(true);
-        rv_salessum_Previewlist.setLayoutManager(new LinearLayoutManager(SapSalesSummaryPreviewActivity.this, LinearLayoutManager.VERTICAL, false));
-        sapSalesSumPreviewPrintAdapter = new SapSalesSumPreviewPrintAdapter(SapSalesSummaryPreviewActivity.this, salesSummaryDetailsArrayList, "sales summary");
-        rv_salessum_Previewlist.setAdapter(sapSalesSumPreviewPrintAdapter);
-    }
+    public void setAdapterInvoice(ArrayList<ReportPostingInvSOModel.ReportInvoiceDetails> invoiceDetailsArrayList ) {
+       balInv_listl.setText(twoDecimalPoint(sum_BalInv));
+       totalInv_listl.setText(twoDecimalPoint(sum_totalInv));
 
-    public void setAdapterInvoice(ArrayList<ReportSalesSummaryModel.ReportSalesSummaryInvDetails> salesSummaryDetailsArrayList ) {
-        totalreceivedInv.setText(twoDecimalPoint(sum_invsummaryamt));
-        Invbalance.setText(twoDecimalPoint(sum_invsummarybalance));
-        rv_salesSum_Invoicelist.setHasFixedSize(true);
-        rv_salesSum_Invoicelist.setLayoutManager(new LinearLayoutManager(SapSalesSummaryPreviewActivity.this, LinearLayoutManager.VERTICAL, false));
-        sapSalesSumInvoicePreviewPrintAdapter = new SapSalesSum_InvoicePreviewPrintAdapter(SapSalesSummaryPreviewActivity.this, salesSummaryDetailsArrayList, "sales summary");
-        rv_salesSum_Invoicelist.setAdapter(sapSalesSumInvoicePreviewPrintAdapter);
+        rv_postInv_list.setHasFixedSize(true);
+        rv_postInv_list.setLayoutManager(new LinearLayoutManager(SapPostingInv_SOPreviewActivity.this,
+                LinearLayoutManager.VERTICAL, false));
+        sapPostingInvPreviewPrintAdapter = new SapPosting_INVPreviewPrintAdapter(SapPostingInv_SOPreviewActivity.this,
+                invoiceDetailsArrayList);
+        rv_postInv_list.setAdapter(sapPostingInvPreviewPrintAdapter);
+    }
+    public void setAdapterSO(ArrayList<ReportPostingInvSOModel.ReportSODetails> soDetailsArrayList ) {
+        balSo_listl.setText(twoDecimalPoint(sum_BalSO));
+        totalSo_listl.setText(twoDecimalPoint(sum_totalSO));
+
+        rv_postSo_list.setHasFixedSize(true);
+        rv_postSo_list.setLayoutManager(new LinearLayoutManager(SapPostingInv_SOPreviewActivity.this,
+                LinearLayoutManager.VERTICAL, false));
+        sapPostingSoPreviewPrintAdapter = new SapPosting_SOPreviewPrintAdapter(SapPostingInv_SOPreviewActivity.this,
+                soDetailsArrayList);
+        rv_postSo_list.setAdapter(sapPostingSoPreviewPrintAdapter);
     }
 
     @Override
@@ -377,7 +373,7 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
                 // Bluetooth is enabled
                 if (!printerType.isEmpty()){
                     try {
-                        setInvoiceSummaryPrint(1);
+                        setPostingInvSoPrint(1);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -412,11 +408,11 @@ public class SapSalesSummaryPreviewActivity extends AppCompatActivity {
         return printetCheck;
     }
 
-    public void setInvoiceSummaryPrint(int copy) throws IOException {
+    public void setPostingInvSoPrint(int copy) throws IOException {
         if (validatePrinterConfiguration()){
             if (printerType.equals("TSC Printer")){
-                TSCPrinter printer=new TSCPrinter(this,printerMacId,"InvoiceBySummary");
-                printer.printReportSalesSummary(copy,from_date, to_date,reportSalesSummaryList);
+                TSCPrinter printer=new TSCPrinter(this,printerMacId,"POstingInvSo");
+                printer.printPostingInvSOReport(copy,from_date, to_date,reportPostingInvSOModelArrayList);
             }
         }else {
             Toast.makeText(getApplicationContext(),"Please configure the Printer",Toast.LENGTH_SHORT).show();

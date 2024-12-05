@@ -101,7 +101,19 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name="com.winapp.saperpUNICO.ReportPreview.RoSupplierStatementPreviewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.winapp.saperpUNICO.ReportPreview.SapPurchaseSummaryPreviewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="com.winapp.saperpUNICO.ReportPreview.CustomerLisrOutstandPreviewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.winapp.saperpUNICO.ReportPreview.SapPostingInv_SOPreviewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

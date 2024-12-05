@@ -24,8 +24,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.winapp.saperpUNICO.db.DBHelper;
+import com.winapp.saperpUNICO.model.CustSeperateGroupModel;
 import com.winapp.saperpUNICO.model.NewLocationModel;
 import com.winapp.saperpUNICO.model.ProductsModel;
+import com.winapp.saperpUNICO.model.SupplierModel;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -64,7 +66,8 @@ public class Utils {
     public static String orderDate="";
     public static String orderNo="";
     public static ArrayList<NewLocationModel.LocationDetails> locationDetails;
-
+    public static ArrayList<SupplierModel> supplierList;
+    public static ArrayList<CustSeperateGroupModel> custSeperateGroupListl;
     public static String getOrderDate() {
         return orderDate;
     }
@@ -205,6 +208,22 @@ public class Utils {
 
     public static void setLocationList(ArrayList<NewLocationModel.LocationDetails> locationList) {
         Utils.locationDetails = locationList;
+    }
+
+    public static ArrayList<SupplierModel> getSupplierList() {
+        return supplierList;
+    }
+
+    public static void setSupplierList(ArrayList<SupplierModel> supplierArrayList) {
+        Utils.supplierList = supplierArrayList;
+    }
+
+    public static ArrayList<CustSeperateGroupModel> getCustSeperGroupList() {
+        return custSeperateGroupListl;
+    }
+
+    public static void setCustSeperGroupList(ArrayList<CustSeperateGroupModel> custSeperateGroupListl) {
+        Utils.custSeperateGroupListl = custSeperateGroupListl;
     }
     // email validation
     public static boolean isValidMail(String email) {

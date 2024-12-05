@@ -2887,7 +2887,8 @@ public class CreateNewInvoiceActivityCopy extends AppCompatActivity {
         ArrayList<DeliveryAddressModel> deliveryAddressModels = new ArrayList<>();
         deliveryAddressModels.add(0,addressModel);
         deliveryAddressModels.addAll(addrList);
-        ArrayAdapter<DeliveryAddressModel> adapter = new ArrayAdapter<>(this, R.layout.cust_spinner_item, deliveryAddressModels);
+        ArrayAdapter<DeliveryAddressModel> adapter = new ArrayAdapter<>(this,
+                R.layout.cust_spinner_item, deliveryAddressModels);
 
         delivery_addrSpinner.setAdapter(adapter);
 

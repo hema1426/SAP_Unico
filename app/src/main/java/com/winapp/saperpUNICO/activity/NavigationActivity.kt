@@ -332,13 +332,15 @@ open class NavigationActivity : AppCompatActivity() {
                 startActivity(intent)
                 drawerLayout!!.closeDrawers()
                 return@OnNavigationItemSelectedListener true
-            } else if (itemId == R.id.navigation_settlement) {
+            }
+            else if (itemId == R.id.navigation_settlement) {
                 val intent: Intent
                 intent = Intent(this@NavigationActivity, SettlementListActivity::class.java)
                 startActivity(intent)
                 drawerLayout!!.closeDrawers()
                 return@OnNavigationItemSelectedListener true
-            } else if (itemId == R.id.navigation_reports) {
+            }
+            else if (itemId == R.id.navigation_reports) {
                 val intent: Intent
                 intent = Intent(this@NavigationActivity, ReportsActivity::class.java)
                 startActivity(intent)
@@ -438,6 +440,10 @@ open class NavigationActivity : AppCompatActivity() {
         )
         sharedPreferenceUtil!!.setStringPreference(
             sharedPreferenceUtil!!.KEY_USER_MIDDLE_NAME,
+            ""
+        )
+        sharedPreferenceUtil!!.setStringPreference(
+            sharedPreferenceUtil!!.KEY_ADMIN_PERMISSION,
             ""
         )
     }

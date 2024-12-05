@@ -17,7 +17,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="12sp"
             android:singleLine="true"
-            android:text="Sales Summary"
+            android:text="Purchase Summary"
             android:textColor="@color/colorPrimary"
             android:textSize="13dp"
             android:textStyle="bold" />
@@ -117,7 +117,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
-                        android:text="Sales person :"
+                        android:text="User :"
                         android:textColor="@color/black"
                         android:textSize="12dp" />
 
@@ -136,12 +136,13 @@
             </RelativeLayout>
 
         </LinearLayout>
-    <LinearLayout
-        android:id="@+id/cashSalesLay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:orientation="vertical">
+<LinearLayout
+    android:id="@+id/cashSalesLay"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    android:orientation="vertical">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -149,7 +150,7 @@
             android:layout_marginTop="10sp"
             android:layout_marginLeft="5dp"
             android:singleLine="true"
-            android:text="Cash Sales"
+            android:text="Cash Purchase"
             android:textColor="@color/colorPrimary"
             android:textSize="13dp"
             android:textStyle="bold" />
@@ -251,7 +252,8 @@
             </LinearLayout>
 
         </LinearLayout>
-    </LinearLayout>
+</LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -420,7 +422,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Total Sales:$   "
+                android:text="Total Purchase:$   "
                 android:textColor="@color/black"
                 android:textSize="13dp" />
 
