@@ -396,6 +396,7 @@ public class SalesOrderAdapterNew extends RecyclerView.Adapter<RecyclerView.View
                                     salesListModel.setUnitPrice(detailObject.optString("price"));
                                     double qty=Double.parseDouble(detailObject.optString("quantity"));
                                     double price=Double.parseDouble(detailObject.optString("price"));
+                                    salesListModel.setUomCode(detailObject.optString("uomCode"));
 
                                     double nettotal=qty * price;
                                     salesListModel.setTotal(String.valueOf(nettotal));
@@ -404,6 +405,8 @@ public class SalesOrderAdapterNew extends RecyclerView.Adapter<RecyclerView.View
                                     salesListModel.setPcsperCarton(detailObject.optString("pcsPerCarton"));
                                     salesListModel.setItemtax(detailObject.optString("totalTax"));
                                     salesListModel.setSubTotal(detailObject.optString("subTotal"));
+                                    salesListModel.setRowStatus(detailObject.optString("rowStatus"));
+
                                     salesOrdernewList.add(salesListModel);
 
                                    /* if (Double.parseDouble(detailObject.optString("quantity")) > 0) {
@@ -449,6 +452,7 @@ public class SalesOrderAdapterNew extends RecyclerView.Adapter<RecyclerView.View
                                         salesListModel.setPcsperCarton(detailObject.optString("PcsPerCarton"));
                                         salesListModel.setItemtax(detailObject.optString("Tax"));
                                         salesListModel.setSubTotal(detailObject.optString("subTotal"));
+                                        salesListModel.setRowStatus(detailObject.optString("rowStatus"));
                                         salesOrdernewList.add(salesListModel);
                                     }
 

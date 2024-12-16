@@ -473,14 +473,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1.9">
+                        android:layout_weight="0.9">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
                             android:layout_gravity="center"
-                            android:text="PRODUCT"
+                            android:text="Item Code/Name"
                             android:textColor="@color/colorPrimary"
                             android:textSize="10sp"
                             android:textStyle="bold" />
@@ -492,7 +492,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="0.9"
+                        android:layout_weight="1.1"
                         android:gravity="center"
                         android:text="QTY"
                         android:textColor="@color/colorPrimary"
@@ -503,7 +503,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="0.9">
+                        android:layout_weight="1.1">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -521,7 +521,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="0.9">
+                        android:layout_weight="1.1">
 
                         <TextView
                             android:layout_width="wrap_content"

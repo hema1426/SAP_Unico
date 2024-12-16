@@ -81,7 +81,7 @@
         <item
             android:id="@+id/navigation_item_purchase"
             android:icon="@drawable/ic_invoice_menu"
-            android:title="Purchase Invoice" />
+            android:title="A/P Invoice" />
 
     </group>
 
@@ -144,6 +144,7 @@
         <item
             android:icon="@drawable/ic_baseline_transform_24"
             android:id="@+id/navigation_transfer"
+            android:visible="false"
             android:title="Transfer" />
 
     </group>
@@ -153,6 +154,7 @@
         <item
             android:icon="@drawable/ic_baseline_transform_24"
             android:id="@+id/navigation_stock_request"
+            android:visible="false"
             android:title="Stock Request" />
 
     </group>

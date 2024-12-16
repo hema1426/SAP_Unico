@@ -301,6 +301,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 String lastPrice =object.optString("showlastSalesPrice");
                                 String totalSales =object.optString("invoiceListShowBalance");
                                 String adminPermission =object.optString("adminPermission");
+                                String salesPersonCode =object.optString("salesPersonCode");
 
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_INV_UOM, invUOM);
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SETTING_SO_UOM, salesUOM);
@@ -312,6 +313,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_TOTAL_SALES, totalSales);
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_USER_MIDDLE_NAME, userMiddlename);
                                 sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_ADMIN_PERMISSION, adminPermission);
+                                sharedPreferenceUtil.setStringPreference(sharedPreferenceUtil.KEY_SALESPERSON_CODE, salesPersonCode);
 
 
                                 session.createLoginSession(
@@ -495,6 +497,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 dbHelper.insertSettings("showCustomer",object.optString("showCustomer"));
                                 dbHelper.insertSettings("showProduct",object.optString("showProduct"));
                                 dbHelper.insertSettings("showAPInvoice",object.optString("showAPInvoice"));
+                                dbHelper.insertSettings("showPurchaseReport",object.optString("showPurchaseReport"));
 //                                dbHelper.insertSettings("HAVESETTLEMENTBYDATE",object.optString("haveSettlementByDate"));
                                 dbHelper.insertSettings("haveEditPrice",object.optString("haveEditPrice"));
                             }

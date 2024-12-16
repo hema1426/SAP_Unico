@@ -392,6 +392,8 @@ public class SalesOrderPrintPreview extends AppCompatActivity implements OnPageC
                                     salesListModel.setUnitPrice(detailObject.optString("price"));
                                     double qty=Double.parseDouble(detailObject.optString("quantity"));
                                     double price=Double.parseDouble(detailObject.optString("price"));
+                                    salesListModel.setRowStatus(detailObject.optString("rowStatus"));
+                                    salesListModel.setUomCode(detailObject.optString("uomCode"));
 
                                     double nettotal=qty * price;
                                     salesListModel.setTotal(String.valueOf(nettotal));
@@ -432,13 +434,14 @@ public class SalesOrderPrintPreview extends AppCompatActivity implements OnPageC
                                         salesListModel.setLqty(detailObject.optString("LQty"));
                                         salesListModel.setCqty(detailObject.optString("CQty"));
                                         salesListModel.setNetQty(detailObject.optString("ReturnQty"));
+                                        salesListModel.setUomCode(detailObject.optString("uomCode"));
 
                                         double qty1 = Double.parseDouble(detailObject.optString("ReturnQty"));
                                         double price1 = Double.parseDouble(detailObject.optString("Price"));
                                         double nettotal1 = qty1 * price1;
                                         salesListModel.setTotal(String.valueOf(nettotal1));
                                         salesListModel.setPricevalue(String.valueOf(price1));
-
+                                        salesListModel.setRowStatus(detailObject.optString("rowStatus"));
                                         salesListModel.setUomCode(detailObject.optString("uomCode"));
                                         salesListModel.setCartonPrice(detailObject.optString("CartonPrice"));
                                         salesListModel.setUnitPrice(detailObject.optString("Price"));

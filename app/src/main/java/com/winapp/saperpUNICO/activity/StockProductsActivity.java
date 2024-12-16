@@ -146,7 +146,7 @@ public class StockProductsActivity extends NavigationActivity {
 
         productList=new ArrayList<>();
         // productList= dbHelper.getAllProducts();
-        productList = AppUtils.getProductsList();
+     //  productList = AppUtils.getProductsList();
       /*  if (productList!=null && productList.size()>0){
             populateProductsData(productList);
         }else {
@@ -211,9 +211,10 @@ public class StockProductsActivity extends NavigationActivity {
 
                 if (editable.toString().length()>0){
                     filter(editable.toString());
-                }else {
+                }
+                else {
                     // populateProductsData(dbHelper.getAllProducts());
-                    populateProductsData(AppUtils.getProductsList());
+                    populateProductsData(productList);
                 }
             }
         });
@@ -620,11 +621,14 @@ public class StockProductsActivity extends NavigationActivity {
             //new array list that will hold the filtered data
             ArrayList<ProductsModel> filterdNames = new ArrayList<>();
             //looping through existing elements
-            for (ProductsModel s : adapter.getProductsList()) {
-                //if the existing elements contains the search input
-                if (s.getProductName().toLowerCase().contains(text.toLowerCase())) {
-                    //adding the element to filtered list
-                    filterdNames.add(s);
+            //for (ProductsModel s : adapter.getProductsList()) {
+            if(productList.size() > 0) {
+                for (ProductsModel s : productList) {
+                    //if the existing elements contains the search input
+                    if (s.getProductName().toLowerCase().contains(text.toLowerCase())) {
+                        //adding the element to filtered list
+                        filterdNames.add(s);
+                    }
                 }
             }
             //calling a method of the adapter class and passing the filtered list
@@ -813,12 +817,13 @@ public class StockProductsActivity extends NavigationActivity {
                         }
                         HomePageModel.productsList=new ArrayList<>();
                         HomePageModel.productsList.addAll(productList);
+                        Log.w("pdtlistt",""+productList);
                         if (productList.size()>0){
                             populateProductsData(productList);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    AppUtils.setProductsList(productList);
+                                   // AppUtils.setProductsList(productList);
                                   //  setPdtAdapter(productList);
                                     //setProductsDisplay("All Products");
                                     dialog.dismiss();
@@ -826,7 +831,7 @@ public class StockProductsActivity extends NavigationActivity {
                             });
                         }
                         else{
-                            AppUtils.setProductsList(productList);
+                          //  AppUtils.setProductsList(productList);
 
                             emptyLayout.setVisibility(View.VISIBLE);
                             productRecyclerView.setVisibility(View.GONE);

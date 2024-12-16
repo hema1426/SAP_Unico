@@ -4973,7 +4973,7 @@ public class TSCPrinter {
 //                            }
 //                        } else {
                             y += LINE_SPACING + 10;
-                            TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,10,10,\"" + "Purchase Invoice" + "\"\n");
+                            TscDll.sendcommand("TEXT 200," + y + ",\"Bold.TTF\",0,10,10,\"" + "A/P Invoice" + "\"\n");
                       //  }
 
                         y += LINE_SPACING + 10;

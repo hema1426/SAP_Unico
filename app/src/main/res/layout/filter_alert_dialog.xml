@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
@@ -11,15 +11,30 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="10dp"
+        android:padding="8dp"
         android:id="@+id/customer_list_layout"
         android:background="@drawable/invoice_edit_text"
         android:layout_height="wrap_content">
 
-        <com.toptoche.searchablespinnerlibrary.SearchableSpinner
-            android:id="@+id/customer_list_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:padding="5dp" />
+            <TextView
+                android:id="@+id/customer_list_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="@color/black"
+                android:hint="Select Customer"
+                android:textSize="12sp" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginRight="@dimen/_3sdp"
+            android:src="@drawable/ic_keyboard_arrow_down_accent_24dp"
+            app:tint="@color/gray" />
+
 
     </LinearLayout>
 
@@ -93,27 +108,42 @@
         android:id="@+id/custGroup_lay"
         android:layout_marginTop="10dp"
         android:visibility="gone"
+        android:padding="8dp"
         android:background="@drawable/invoice_edit_text"
         android:layout_height="wrap_content">
 
-        <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+        <TextView
             android:id="@+id/custGroup_spinner"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            />
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/black"
+            android:hint="Select Customer Group"
+            android:textSize="12sp" />
+
 
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/supplierRp_lay"
+        android:layout_marginTop="10dp"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:background="@drawable/invoice_edit_text"
+        android:layout_height="wrap_content">
 
-
-        <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+        <TextView
             android:id="@+id/suppler_ro_list_spinner"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp"
-            android:visibility="gone"
-            android:background="@drawable/invoice_edit_text"
-            android:padding="5dp" />
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/black"
+            android:hint="Select Supplier"
+            android:textSize="12sp" />
 
+
+    </LinearLayout>
 
 
     <LinearLayout

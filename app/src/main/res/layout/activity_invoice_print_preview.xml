@@ -445,11 +445,11 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:text="Description"
+                android:text="Item Code/Name"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="#042B97"
-                android:layout_weight="1"
+                android:layout_weight="0.9"
                 android:layout_height="wrap_content"/>
 
             <TextView
@@ -459,14 +459,14 @@
                 android:textSize="12sp"
                 android:textColor="#042B97"
                 android:textStyle="bold"
-                android:layout_weight="1"
+                android:layout_weight="1.1"
                 android:layout_height="wrap_content"/>
 
 
             <TextView
                 android:layout_width="match_parent"
                 android:text="Price"
-                android:layout_weight="1"
+                android:layout_weight="1.1"
                 android:textColor="#042B97"
                 android:textStyle="bold"
                 android:textSize="12sp"
@@ -481,7 +481,7 @@
                 android:textSize="12sp"
                 android:textColor="#042B97"
                 android:textStyle="bold"
-                android:layout_weight="1"
+                android:layout_weight="1.1"
                 android:layout_height="wrap_content"/>
 
         </LinearLayout>
@@ -747,6 +747,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"
+            android:visibility="gone"
             android:layout_height="wrap_content">
 
             <LinearLayout

@@ -435,8 +435,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Code"
+                    android:layout_weight="0.9"
+                    android:text="Item Code/Name"
                     android:textColor="#042B97"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -444,7 +444,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.1"
                     android:gravity="center"
                     android:text="Qty"
                     android:textColor="#042B97"
@@ -454,7 +454,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.1"
                     android:gravity="center"
                     android:text="Price"
                     android:textColor="#042B97"
@@ -465,7 +465,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.1"
                     android:gravity="center"
                     android:text="Total"
                     android:textColor="#042B97"
@@ -487,7 +487,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/sales_details_view_items" />
+                tools:listitem="@layout/sales_order_print_preview" />
 
         </LinearLayout>
 
@@ -741,6 +741,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="horizontal">
 
 

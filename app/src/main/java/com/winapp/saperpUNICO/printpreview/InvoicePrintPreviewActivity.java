@@ -305,7 +305,7 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url,
                 jsonObject, response -> {
                     try {
-                      //  Log.w("DetailsResponse::", response.toString());
+                        Log.w("DetailsResponse::", response.toString());
                         String statusCode=response.optString("statusCode");
                         if (statusCode.equals("1")){
                             JSONArray responseData=response.getJSONArray("responseData");
@@ -392,6 +392,7 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUomCode(detailObject.optString("uomCode"));
                                     invoiceListModel.setUnitPrice(detailObject.optString("price"));
                                     double qty = Double.parseDouble(detailObject.optString("quantity"));
                                     double price = Double.parseDouble(detailObject.optString("price"));
@@ -424,6 +425,7 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUomCode(detailObject.optString("uomCode"));
                                     invoiceListModel.setUnitPrice(detailObject.optString("price"));
                                     double qty = Double.parseDouble(detailObject.optString("quantity"));
                                     double price = Double.parseDouble(detailObject.optString("price"));
@@ -457,6 +459,7 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                                     }
                                     invoiceListModel.setReturnQty(detailObject.optString("returnQty"));
                                     invoiceListModel.setCartonPrice(detailObject.optString("cartonPrice"));
+                                    invoiceListModel.setUomCode(detailObject.optString("uomCode"));
                                     invoiceListModel.setUnitPrice(detailObject.optString("price"));
                                     double qty = Double.parseDouble(detailObject.optString("quantity"));
                                     double price = Double.parseDouble(detailObject.optString("price"));
@@ -477,6 +480,7 @@ public class InvoicePrintPreviewActivity extends AppCompatActivity implements On
                                     InvoicePrintPreviewModel.InvoiceList invoiceListModel = new InvoicePrintPreviewModel.InvoiceList();
                                     invoiceListModel.setProductCode(detailObject.optString("productCode"));
                                     invoiceListModel.setDescription(detailObject.optString("productName"));
+                                    invoiceListModel.setUomCode(detailObject.optString("uomCode"));
                                     invoiceListModel.setLqty(detailObject.optString("unitQty"));
                                     invoiceListModel.setCqty(detailObject.optString("cartonQty"));
                                     invoiceListModel.setNetQty(detailObject.optString("quantity"));

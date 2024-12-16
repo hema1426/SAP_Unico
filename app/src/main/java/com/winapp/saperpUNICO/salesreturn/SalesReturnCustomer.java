@@ -46,6 +46,7 @@ import com.winapp.saperpUNICO.model.CustomerModel;
 import com.winapp.saperpUNICO.utils.BarCodeScanner;
 import com.winapp.saperpUNICO.utils.Constants;
 import com.winapp.saperpUNICO.utils.SessionManager;
+import com.winapp.saperpUNICO.utils.SharedPreferenceUtil;
 import com.winapp.saperpUNICO.utils.Utils;
 
 import org.json.JSONArray;
@@ -93,12 +94,15 @@ public class SalesReturnCustomer extends Fragment {
     View progressLayout;
     private ArrayList<CustomerDetails> allCustomersList;
     private String selectCustomerId;
+    public static String userPermission = "";
+    private String salesPersonCode = "";
+    public String locationCode;
     ProgressDialog dialog;
     private SharedPreferences sharedPreferences;
     private Spinner customerGroupSpinner;
     private ArrayList<CustomerGroupModel> customersGroupList;
     private String username;
-
+    private SharedPreferenceUtil sharedPreferenceUtil;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,6 +112,8 @@ public class SalesReturnCustomer extends Fragment {
         dbHelper=new DBHelper(getActivity());
         companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
         username=user.get(SessionManager.KEY_USER_NAME);
+        locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
+
         customerObject=new JSONObject();
         customerCodeEdittext=view.findViewById(R.id.customer_code);
         customerName=view.findViewById(R.id.customer_name_value);
@@ -122,6 +128,8 @@ public class SalesReturnCustomer extends Fragment {
         selectCustomer=view.findViewById(R.id.select_customer);
         customerGroupSpinner=view.findViewById(R.id.customer_group);
         progressLayout=view.findViewById(R.id.progress_layout);
+
+        sharedPreferenceUtil = new SharedPreferenceUtil(getContext());
 
         if (SalesReturnList.isEdit){
             selectCustomer.setEnabled(false);
@@ -148,6 +156,8 @@ public class SalesReturnCustomer extends Fragment {
                 customerCodeEdittext.setText(customerDetails.get(0).getCustomerCode());
             }
         }
+        userPermission = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_ADMIN_PERMISSION,"");
+        salesPersonCode = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SALESPERSON_CODE,"");
 
        /* customerList=dbHelper.getAllCustomers();
         if (customerList!=null && customerList.size()>0){
@@ -358,17 +368,25 @@ public class SalesReturnCustomer extends Fragment {
         String url=Utils.getBaseUrl(getContext()) +"CustomerList";
         customerList=new ArrayList<>();
         allCustomersList=new ArrayList<>();
-        Log.w("Given_url:",url);
         ProgressDialog dialog=new ProgressDialog(getContext());
         dialog.setMessage("Loading Customers List...");
         dialog.setCancelable(false);
         dialog.show();
         JSONObject jsonObject=new JSONObject();
+
         try {
-            jsonObject.put("GroupCode",groupCode);
+            if (userPermission.equalsIgnoreCase("True")) {
+                jsonObject.put("SalesPersonCode", "All");
+            }else {
+                jsonObject.put("SalesPersonCode", salesPersonCode);
+            }
+            jsonObject.put("GroupCode", groupCode);
+            jsonObject.put("LocationCode", locationCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.w("Given_urlcus:",url+jsonObject);
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,

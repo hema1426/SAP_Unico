@@ -17,6 +17,7 @@ public class SalesOrderPrintPreviewModel {
     private String netTotal;
     private String taxType;
     private String taxValue;
+
     private String outStandingAmount;
 
     private String address1;
@@ -28,6 +29,7 @@ public class SalesOrderPrintPreviewModel {
     private ArrayList<SalesList> salesList;
 
     private String allowDeliveryAddress;
+
 
     public String getAllowDeliveryAddress() {
         return allowDeliveryAddress;
@@ -214,6 +216,14 @@ public class SalesOrderPrintPreviewModel {
         private String pricevalue;
         private String uomCode;
 
+        private String rowStatus;
+        public String getRowStatus() {
+            return rowStatus;
+        }
+
+        public void setRowStatus(String rowStatus) {
+            this.rowStatus = rowStatus;
+        }
 
         public String getUomCode() {
             return uomCode;

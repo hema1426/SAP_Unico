@@ -50,35 +50,18 @@
 
                     </LinearLayout>
 
-                    <RelativeLayout
-                        android:id="@+id/spinner_lay_loc"
+                    <TextView
+                        android:id="@+id/supplier_name_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="@dimen/_5sdp"
-                        android:layout_marginRight="5dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginTop="10dp"
                         android:background="@drawable/invoice_edit_text"
-                        android:orientation="horizontal"
-                        android:visibility="visible">
-
-                        <com.toptoche.searchablespinnerlibrary.SearchableSpinner
-                            android:id="@+id/supplier_name_spinner"
-                            android:layout_width="match_parent"
-                            android:layout_height="35dp"
-                            />
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:layout_centerVertical="true"
-                            android:layout_gravity="center"
-                            android:visibility="gone"
-                            android:layout_marginRight="@dimen/_3sdp"
-                            android:src="@drawable/ic_keyboard_arrow_down_accent_24dp"
-                            app:tint="@color/gray" />
-
-                    </RelativeLayout>
+                        android:hint="Select Supplier"
+                        android:padding="8dp"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
 
                 </LinearLayout>
 

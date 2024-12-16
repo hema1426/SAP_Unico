@@ -185,6 +185,7 @@ public class Utils {
 //            Utils.setReceiptMode("");
 //        }
     }
+
     public static String getNextInvoiceDate(String date) throws ParseException {
         String dt = date;  // Start date
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");

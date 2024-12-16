@@ -204,7 +204,7 @@ open class NavigationActivity : AppCompatActivity() {
                         salesreturn.setVisible(false)
                     }
 
-                    "Sales Return" -> if (roll.havePermission == "true") {
+                    "A/P Invoice" -> if (roll.havePermission == "true") {
                         purchase_invoice.setVisible(true)
                     } else {
                         purchase_invoice.setVisible(false)
@@ -446,6 +446,11 @@ open class NavigationActivity : AppCompatActivity() {
             sharedPreferenceUtil!!.KEY_ADMIN_PERMISSION,
             ""
         )
+        sharedPreferenceUtil!!.setStringPreference(
+            sharedPreferenceUtil!!.KEY_SALESPERSON_CODE,
+            ""
+        )
+
     }
 
     override fun onBackPressed() {

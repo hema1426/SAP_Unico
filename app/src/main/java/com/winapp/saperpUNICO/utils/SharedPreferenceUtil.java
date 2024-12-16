@@ -23,6 +23,7 @@ public class SharedPreferenceUtil {
     public  String KEY_TOTAL_SALES = "total_sales";
     public  String KEY_USER_MIDDLE_NAME = "user_middle_name";
     public  String KEY_ADMIN_PERMISSION = "admin_permission";
+    public  String KEY_SALESPERSON_CODE="salesperson_code";
 
     private static SharedPreferences sharedPreferences;
     public static final boolean DEFAULT_BOOLEAN = false;

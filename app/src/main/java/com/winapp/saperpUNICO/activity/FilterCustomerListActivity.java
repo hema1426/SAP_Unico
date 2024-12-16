@@ -46,6 +46,7 @@ import com.winapp.saperpUNICO.model.UserRoll;
 import com.winapp.saperpUNICO.utils.BarCodeScanner;
 import com.winapp.saperpUNICO.utils.Constants;
 import com.winapp.saperpUNICO.utils.SessionManager;
+import com.winapp.saperpUNICO.utils.SharedPreferenceUtil;
 import com.winapp.saperpUNICO.utils.Utils;
 
 import org.json.JSONArray;
@@ -87,7 +88,12 @@ public class FilterCustomerListActivity extends NavigationActivity {
     ProgressDialog dialog;
     String message;
     private ArrayList<CustomerDetails> allCustomersList;
+    private String locationCode;
     private String outstandingAmount;
+    private SharedPreferenceUtil sharedPreferenceUtil;
+    public static String userPermission = "";
+    private String salesPersonCode = "";
+
     private String username;
 
     public String createInvoiceSetting="false";
@@ -125,7 +131,13 @@ public class FilterCustomerListActivity extends NavigationActivity {
         showLocationLayout=findViewById(R.id.location_layout);
         showLocation=findViewById(R.id.show_location);
         customerGroupSpinner=findViewById(R.id.customer_group);
+
+        locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
+        sharedPreferenceUtil = new SharedPreferenceUtil(this);
         dbHelper=new DBHelper(this);
+
+        userPermission = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_ADMIN_PERMISSION,"");
+        salesPersonCode = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SALESPERSON_CODE,"");
 
       /*  if (getIntent()!=null){
             message=getIntent().getStringExtra("Message");
@@ -590,11 +602,18 @@ public class FilterCustomerListActivity extends NavigationActivity {
         allCustomersList=new ArrayList<>();
         JSONObject jsonObject=new JSONObject();
         try {
-            jsonObject.put("GroupCode",groupCode);
+            if (userPermission.equalsIgnoreCase("True")) {
+                jsonObject.put("SalesPersonCode", "All");
+            }else {
+                jsonObject.put("SalesPersonCode", salesPersonCode);
+            }
+            jsonObject.put("GroupCode", groupCode);
+            jsonObject.put("LocationCode", locationCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("Given_url:",url);
+
+        Log.w("Given_urlCust:",url+jsonObject);
         dialog=new ProgressDialog(FilterCustomerListActivity.this);
         dialog.setMessage("Loading Customers List...");
         dialog.setCancelable(false);

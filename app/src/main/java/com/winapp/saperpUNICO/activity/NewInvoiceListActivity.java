@@ -35,12 +35,12 @@ import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -98,9 +98,7 @@ import com.winapp.saperpUNICO.fragments.UnpaidInvoices;
 import com.winapp.saperpUNICO.model.AppUtils;
 import com.winapp.saperpUNICO.model.CustSeperateGroupModel;
 import com.winapp.saperpUNICO.model.CustomerDetails;
-import com.winapp.saperpUNICO.model.CustomerGroupModel;
 import com.winapp.saperpUNICO.model.CustomerModel;
-import com.winapp.saperpUNICO.model.DeliveryAddressModel;
 import com.winapp.saperpUNICO.model.InvoiceModel;
 import com.winapp.saperpUNICO.model.InvoicePrintPreviewModel;
 import com.winapp.saperpUNICO.model.SettingsModel;
@@ -149,9 +147,9 @@ import java.util.Objects;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class NewInvoiceListActivity extends NavigationActivity
+public class NewInvoiceListActivity extends SearchableSpinnerCustomDialog
         implements View.OnClickListener, TabLayout.OnTabSelectedListener, OnPageChangeListener,
-        OnLoadCompleteListener, AdapterView.OnItemSelectedListener {
+        OnLoadCompleteListener, AdapterView.OnItemSelectedListener , SearchableSpinnerCustomDialog.CustomerGroupClickListener {
 
     // Define the Button Variables
     private TextView allInvoiceButton;
@@ -182,6 +180,8 @@ public class NewInvoiceListActivity extends NavigationActivity
     private SortAdapter adapter;
     private ArrayList<String> letters;
     private SearchableSpinner PartSpinner;
+    static NewInvoiceListActivity customerGroupClickListener ;
+
     private ArrayList<String> PartName;
     private List<String> PartId;
     public static TextView selectCustomer;
@@ -208,6 +208,7 @@ public class NewInvoiceListActivity extends NavigationActivity
     private EditText customerNameText;
     private EditText fromDate;
     private LinearLayout fromDatelay;
+            RelativeLayout custGroup_layl;
     private EditText toDate;
     private Spinner invoiceStatus;
     private int mYear, mMonth, mDay, mHour, mMinute;
@@ -311,7 +312,7 @@ public class NewInvoiceListActivity extends NavigationActivity
 
     private int FILTER_CUSTOMER_CODE = 134;
     private Spinner salesManSpinner;
-    private SearchableSpinner custGroupSpinner;
+    private TextView custGroupSpinner;
     private String selectCustGroupCode = "";
     private String selectCustGroupName = "";
     private String selectedUser = "";
@@ -347,6 +348,7 @@ public class NewInvoiceListActivity extends NavigationActivity
         pdfGenerateDialog = new ProgressDialog(this);
         pdfGenerateDialog.setCancelable(false);
         pdfGenerateDialog.setMessage("Invoice Pdf generating please wait...");
+        customerGroupClickListener = this ;
 
         allInvoiceButton = findViewById(R.id.btn_all_invoice);
         paidInvoiceButton = findViewById(R.id.btn_paid_invoice);
@@ -426,6 +428,7 @@ public class NewInvoiceListActivity extends NavigationActivity
         doPrintPreview = findViewById(R.id.do_print_preview);
         custGroupSpinner = findViewById(R.id.custGroup_spinner);
         salesManSpinner = findViewById(R.id.salesman_spinner);
+        custGroup_layl = findViewById(R.id.custGroup_lay);
         salesManSpinner.setOnItemSelectedListener(this);
 
         shareLayout = findViewById(R.id.share_layout);
@@ -471,11 +474,13 @@ public class NewInvoiceListActivity extends NavigationActivity
             e.printStackTrace();
         }
         if(Utils.getCustSeperGroupList() != null && Utils.getCustSeperGroupList().size() > 0) {
-            setCustomerGroupSpinner(Utils.getCustSeperGroupList());
+//            setCustomerGroupSpinner(Utils.getCustSeperGroupList());
+          //  searchableDialog(custSeperateGroupList);
+            custSeperateGroupList = Utils.getCustSeperGroupList();
         }else{
             getCustGroupSeperate();
         }
-
+        getCustGroupSeperate();
         AppUtils.setProductsList(null);
         verifyStoragePermissions(this);
         checkPermission();
@@ -621,7 +626,13 @@ public class NewInvoiceListActivity extends NavigationActivity
                 Log.i("BottomSheetCallback", "slideOffset: " + slideOffset);
             }
         });
+        custGroup_layl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    searchable_CustgroupDialog("Invoice",custSeperateGroupList,custSeperateGroupList);
+                }
 
+            });
         duplicateInvoiceLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -677,14 +688,18 @@ public class NewInvoiceListActivity extends NavigationActivity
                 try {
                     ((TextView) parent.getChildAt(0)).setTextColor(Color.BLUE);
                     ((TextView) parent.getChildAt(0)).setTextSize(12);
-                     if (invoiceStatus.getSelectedItem().equals("UNPAID")) {
-                      //  invoice_status = "O";
-                         fromDatelay.setAlpha(0.4F);
-                         fromDatelay.setEnabled(false);
-                     } else {
-                         fromDatelay.setAlpha(0.9F);
-                         fromDatelay.setEnabled(true);
-                     }
+//                     if (invoiceStatus.getSelectedItem().equals("UNPAID")) {
+//                      //  invoice_status = "O";
+//                         fromDatelay.setAlpha(0.4F);
+//                         fromDatelay.setEnabled(false);
+//                         fromDate.setClickable(false);
+//                         fromDate.setEnabled(false);
+//                     } else {
+//                         fromDatelay.setAlpha(0.9F);
+//                         fromDatelay.setEnabled(true);
+//                         fromDate.setClickable(true);
+//                         fromDate.setEnabled(true);
+//                     }
                 } catch (Exception ed) {
                 }
             }
@@ -756,7 +771,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                             invoice_status = "C";
                         } else if (invoiceStatus.getSelectedItem().equals("UNPAID")) {
                             invoice_status = "O";
-                            fromDateString = "" ;
+                            //fromDateString = "" ;
                         }
                         if (userPermission.equalsIgnoreCase("True")) {
                             usernamel = "All" ;
@@ -772,7 +787,10 @@ public class NewInvoiceListActivity extends NavigationActivity
                     }
                     // AllInvoices.filterSearch(customer_name,invoiceStatus.getSelectedItem().toString(),fromDate.getText().toString(),toDate.getText().toString());
                     invoiceStatus.setSelection(0);
-                    custGroupSpinner.setSelection(0);
+                    custGroupSpinner.setText("");
+                    selectCustomerId = "";
+                    selectCustGroupCode = "" ;
+                    selectCustomerCode = "" ;
                 }
             }
         });
@@ -782,13 +800,16 @@ public class NewInvoiceListActivity extends NavigationActivity
             @Override
             public void onClick(View view) {
                 isSearchCustomerNameClicked = false;
-                selectCustomerId = "";
                 customerNameText.setText("");
                 fromDate.setText(formattedDate);
                 toDate.setText(formattedDate);
                 searchFilterView.setVisibility(View.GONE);
                 invoiceStatus.setSelection(0);
-                custGroupSpinner.setSelection(0);
+                custGroupSpinner.setText("");
+                selectCustomerId = "";
+                selectCustGroupCode = "" ;
+                selectCustomerCode = "" ;
+//                custGroupSpinner.setSelection(0);
                 AllInvoices invoices = new AllInvoices();
                 invoices.filterCancel();
             }
@@ -1836,7 +1857,7 @@ public class NewInvoiceListActivity extends NavigationActivity
 
         custSeperateGroupList=new ArrayList<>();
 
-        Log.w("url_custGroupSepert:",url);
+        Log.w("url_custGroupSepert:",url+jsonObject);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url, jsonObject,
@@ -1858,7 +1879,10 @@ public class NewInvoiceListActivity extends NavigationActivity
                         }
                         if (custSeperateGroupList.size()>0){
                             Utils.setCustSeperGroupList(custSeperateGroupList);
-                            setCustomerGroupSpinner(custSeperateGroupList);
+                            custSeperateGroupList = Utils.getCustSeperGroupList();
+
+                          //  searchableDialog(custSeperateGroupList,custSeperateGroupList);
+                            //setCustomerGroupSpinner(custSeperateGroupList);
                         }
                     }catch (Exception e){
                         e.printStackTrace();
@@ -1896,34 +1920,34 @@ public class NewInvoiceListActivity extends NavigationActivity
         requestQueue.add(jsonObjectRequest);
     }
 
-    private void setCustomerGroupSpinner(ArrayList<CustSeperateGroupModel> custSeperateGroupList) {
-       CustSeperateGroupModel custGroupModel = new CustSeperateGroupModel();
-//        custGroupModel.setCustomerGroupName("Select Customer Group");
-//        custGroupModel.setCustomerGroupCode("");
-
-        ArrayList<CustSeperateGroupModel> custGroupModels = new ArrayList<>();
-      //  custGroupModels.add(0,custGroupModel);
-        custGroupModels.addAll(custSeperateGroupList);
-
-        ArrayAdapter<CustSeperateGroupModel> adapter = new ArrayAdapter<>(this, R.layout.cust_spinner_item,
-                custGroupModels);
-
-        custGroupSpinner.setAdapter(adapter);
+//    private void setCustomerGroupSpinner(ArrayList<CustSeperateGroupModel> custSeperateGroupList) {
+//       CustSeperateGroupModel custGroupModel = new CustSeperateGroupModel();
+////        custGroupModel.setCustomerGroupName("Select Customer Group");
+////        custGroupModel.setCustomerGroupCode("");
 //
-        custGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectCustGroupCode = custSeperateGroupList.get(position).getCustomerGroupCode();
-                selectCustGroupName = custSeperateGroupList.get(position).getCustomerGroupName();
-
-                            Log.w("selectgroup :", selectCustGroupCode );
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-    }
+//        ArrayList<CustSeperateGroupModel> custGroupModels = new ArrayList<>();
+//      //  custGroupModels.add(0,custGroupModel);
+//        custGroupModels.addAll(custSeperateGroupList);
+//
+//        ArrayAdapter<CustSeperateGroupModel> adapter = new ArrayAdapter<>(this, R.layout.cust_spinner_item,
+//                custGroupModels);
+//        custGroupSpinner.setTitle("Select Customer Group");
+//        custGroupSpinner.setAdapter(adapter);
+////
+//        custGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                selectCustGroupCode = custSeperateGroupList.get(position).getCustomerGroupCode();
+//                selectCustGroupName = custSeperateGroupList.get(position).getCustomerGroupName();
+//
+//                            Log.w("selectgroup :", selectCustGroupCode );
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//            }
+//        });
+//    }
     private void setDeleteInvoice(String invoiceNumber, String status, String invoiceDate) throws JSONException {
         // Initialize a new RequestQueue instance
 
@@ -2156,6 +2180,7 @@ public class NewInvoiceListActivity extends NavigationActivity
                     }
             }*/
         } else if (item.getItemId() == R.id.action_filter) {
+
             if (searchFilterView.getVisibility() == View.VISIBLE) {
                 searchFilterView.setVisibility(View.GONE);
                 customerNameText.setText("");
@@ -2279,6 +2304,12 @@ public class NewInvoiceListActivity extends NavigationActivity
         } else {
             finish();
         }
+    }
+
+    @Override
+    public void groupSelected(String custGroupCode) {
+        custGroupSpinner.setText(custGroupCode);
+        selectCustGroupCode = custGroupCode ;
     }
 
     private class GetCustomersTask extends AsyncTask<Void, Integer, String> {
@@ -2932,6 +2963,9 @@ public class NewInvoiceListActivity extends NavigationActivity
         }
     }
 */
+//    public interface CustomerGroupClickListener {
+//        void groupSelected(String message);
+//    }
     public void hideKeyboard() {
         try {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);

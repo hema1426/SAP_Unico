@@ -435,18 +435,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Code"
-                    android:textColor="#042B97"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Description"
+                    android:layout_weight="0.9"
+                    android:text="Item Code/Name"
                     android:textColor="#042B97"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -455,7 +445,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.1"
                     android:gravity="center"
                     android:text="Qty"
                     android:textColor="#042B97"
@@ -465,7 +455,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.1"
                     android:gravity="center"
                     android:text="Price"
                     android:textColor="#042B97"
@@ -476,7 +466,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.1"
                     android:gravity="center"
                     android:text="Total"
                     android:textColor="#042B97"

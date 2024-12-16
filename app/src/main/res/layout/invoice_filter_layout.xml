@@ -129,9 +129,10 @@
                 </LinearLayout>
 
                 <RelativeLayout
-                    android:id="@+id/spinner_lay_loc"
+                    android:id="@+id/custGroup_lay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:padding="8dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginRight="5dp"
@@ -139,11 +140,14 @@
                     android:orientation="horizontal"
                     android:visibility="visible">
 
-                    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                    <TextView
                         android:id="@+id/custGroup_spinner"
                         android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        />
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:textColor="@color/black"
+                        android:hint="Select Customer Group"
+                        android:textSize="12sp" />
 
                     <ImageView
                         android:layout_width="wrap_content"

@@ -1,16 +1,36 @@
 package com.winapp.saperpUNICO.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.widget.AdapterView
+import android.widget.EditText
+import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.winapp.saperpUNICO.R
+import com.winapp.saperpUNICO.activity.CreateNewInvoiceActivity
+import com.winapp.saperpUNICO.model.AppUtils
+import com.winapp.saperpUNICO.model.CreditLimitDialogResponse
+import com.winapp.saperpUNICO.model.ItemGroupList
+import com.winapp.saperpUNICO.model.ProductsModel
+import org.json.JSONException
+import org.json.JSONObject
+import java.util.Locale
+import java.util.Objects
+import android.widget.ArrayAdapter
 
+@SuppressLint("StaticFieldLeak")
 object CommonMethodKotl {
     var mDialog: Dialog? = null
-
 
     fun cancelProgressDialog() {
         if (mDialog != null
@@ -56,5 +76,7 @@ object CommonMethodKotl {
             mDialog!!.show()
         }
     }
+
+
 
 }

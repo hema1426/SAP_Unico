@@ -10,20 +10,60 @@
         android:layout_width="match_parent"
         android:background="#f4f4f4"
         android:layout_height="1dip"/>
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top"
-        android:textStyle="bold"
-        android:layout_marginLeft="5dp"
-        android:padding="4dp"
-        android:ellipsize="end"
-        android:textColor="#212121"
-        android:id="@+id/description"
-        android:gravity="left"
-        android:text="DESCRIPTION"
-        android:textSize="10sp"
-        />
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:textStyle="bold"
+            android:layout_marginLeft="5dp"
+            android:padding="4dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:textColor="#212121"
+            android:id="@+id/description"
+            android:gravity="left"
+            android:text="DESCRIPTION"
+            android:textSize="10sp"
+            />
+        <LinearLayout
+            android:id="@+id/statusLaySo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:textStyle="bold"
+                android:layout_marginLeft="5dp"
+                android:padding="4dp"
+                android:ellipsize="end"
+                android:textColor="@color/pink_clr"
+                android:gravity="left"
+                android:text="Status"
+                android:textSize="10sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:textStyle="bold"
+                android:layout_marginLeft="5dp"
+                android:padding="4dp"
+                android:ellipsize="end"
+                android:textColor="@color/lit_green_dark"
+                android:id="@+id/soStatusItem"
+                android:gravity="left"
+                android:text=""
+                android:textSize="10sp"/>
+        </LinearLayout>
+    </LinearLayout>
 
 
     <LinearLayout
@@ -53,13 +93,13 @@
             android:gravity="left"
             android:id="@+id/code"
             android:textColor="#212121"
-            android:layout_weight="1"
+            android:layout_weight="0.9"
             android:layout_height="wrap_content"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:layout_weight="1"
+            android:layout_weight="1.1"
             android:textColor="#212121"
             android:gravity="center"
             android:id="@+id/qty"
@@ -77,7 +117,7 @@
             android:gravity="center"
             android:textColor="#212121"
             android:id="@+id/price"
-            android:layout_weight="1"
+            android:layout_weight="1.1"
             android:textStyle="bold"
             android:text="PRICE"
             android:textSize="10sp"
@@ -90,7 +130,7 @@
             android:layout_gravity="top"
             android:gravity="center"
             android:textColor="#212121"
-            android:layout_weight="1"
+            android:layout_weight="1.1"
             android:id="@+id/total"
             android:textStyle="bold"
             android:text="TOTAL"

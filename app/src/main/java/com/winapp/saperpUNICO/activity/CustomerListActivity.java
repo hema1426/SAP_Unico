@@ -48,6 +48,7 @@ import com.winapp.saperpUNICO.salesreturn.NewSalesReturnProductAddActivity;
 import com.winapp.saperpUNICO.utils.BarCodeScanner;
 import com.winapp.saperpUNICO.utils.Constants;
 import com.winapp.saperpUNICO.utils.SessionManager;
+import com.winapp.saperpUNICO.utils.SharedPreferenceUtil;
 import com.winapp.saperpUNICO.utils.Utils;
 
 import org.json.JSONArray;
@@ -85,6 +86,7 @@ public class CustomerListActivity extends NavigationActivity {
     FloatingActionButton showLocation;
     FloatingActionButton addReceipt;
     DBHelper dbHelper;
+    private SharedPreferenceUtil sharedPreferenceUtil;
     int RESULT_CODE = 12;
     LinearLayout createInvoiceLayout;
     LinearLayout addReceiptLayout;
@@ -96,7 +98,7 @@ public class CustomerListActivity extends NavigationActivity {
     private ArrayList<CustomerDetails> allCustomersList;
     private String outstandingAmount;
     private String username;
-
+    public static String userPermission = "";
     private String billDiscApi;
 
     public String createInvoiceSetting = "false";
@@ -111,6 +113,7 @@ public class CustomerListActivity extends NavigationActivity {
     private LinearLayout customerPrintLayout;
     private FloatingActionButton customerPrint;
     private String locationCode;
+    private String salesPersonCode = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +128,7 @@ public class CustomerListActivity extends NavigationActivity {
         companyId = user.get(SessionManager.KEY_COMPANY_CODE);
         username = user.get(SessionManager.KEY_USER_NAME);
         locationCode = user.get(SessionManager.KEY_LOCATION_CODE);
+
         customerNameEdittext = findViewById(R.id.customer_search);
         totalCustomers = findViewById(R.id.total_customers);
         transLayout = findViewById(R.id.trans_layout);
@@ -146,7 +150,12 @@ public class CustomerListActivity extends NavigationActivity {
         customerPrint = findViewById(R.id.customer_outstanding_print);
         customerPrintLayout = findViewById(R.id.outstanding_print);
         addReceipt = findViewById(R.id.add_receipt);
+
+        sharedPreferenceUtil = new SharedPreferenceUtil(this);
         dbHelper = new DBHelper(this);
+
+        userPermission = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_ADMIN_PERMISSION,"");
+        salesPersonCode = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SALESPERSON_CODE,"");
 
       /*  if (getIntent()!=null){
             message=getIntent().getStringExtra("Message");
@@ -670,13 +679,20 @@ public class CustomerListActivity extends NavigationActivity {
         String url = Utils.getBaseUrl(this) + "CustomerList";
         customerList = new ArrayList<>();
         allCustomersList = new ArrayList<>();
+
         JSONObject jsonObject = new JSONObject();
         try {
+            if (userPermission.equalsIgnoreCase("True")) {
+                jsonObject.put("SalesPersonCode", "All");
+            }else {
+                jsonObject.put("SalesPersonCode", salesPersonCode);
+            }
             jsonObject.put("GroupCode", groupCode);
             jsonObject.put("LocationCode", locationCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         Log.w("Given_urlCustli:", url + "" + jsonObject.toString());
         dialog = new ProgressDialog(CustomerListActivity.this);
         dialog.setMessage("Loading Customers List...");

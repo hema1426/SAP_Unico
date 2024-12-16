@@ -722,7 +722,7 @@ public class PurchasePrintPreviewActivity extends AppCompatActivity implements O
 
     public void showPrintAlert(){
         AlertDialog.Builder builder1 = new AlertDialog.Builder(PurchasePrintPreviewActivity.this);
-        builder1.setMessage("Do you want to print this Purchase Invoice ?.");
+        builder1.setMessage("Do you want to print this A/P Invoice ?.");
         builder1.setCancelable(false);
         builder1.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -787,7 +787,7 @@ public class PurchasePrintPreviewActivity extends AppCompatActivity implements O
                 ActionBar.LayoutParams.MATCH_PARENT,
                 Gravity.CENTER);
         TextView textviewTitle = viewActionBar.findViewById(R.id.actionbar_textview);
-        textviewTitle.setText("Purchase Invoice");
+        textviewTitle.setText("A/P Invoice");
         Objects.requireNonNull(abar).setCustomView(viewActionBar, params);
         abar.setDisplayShowCustomEnabled(true);
         abar.setDisplayShowTitleEnabled(false);

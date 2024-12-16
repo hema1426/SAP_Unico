@@ -361,7 +361,11 @@
             android:name="com.winapp.saperpUNICO.activity.AddCustomerActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.winapp.saperpUNICO.activity.CustomerListActivity"
+            android:name=".activity.CustomerListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.winapp.saperpUNICO.activity.SearchableSpinnerCustomDialog"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="com.winapp.saperpUNICO.utils.BarCodeScanner" />

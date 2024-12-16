@@ -1,5 +1,7 @@
 package com.winapp.saperpUNICO.activity;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 
@@ -47,6 +49,7 @@ import com.winapp.saperpUNICO.ReportPreview.SapSalesSummaryPreviewActivity;
 import com.winapp.saperpUNICO.ReportPreview.SapStockReturnPreviewActivity;
 import com.winapp.saperpUNICO.ReportPreview.SapStockSummaryOpenPreviewActivity;
 import com.winapp.saperpUNICO.ReportPreview.SapStockSummaryPreviewActivity;
+import com.winapp.saperpUNICO.db.DBHelper;
 import com.winapp.saperpUNICO.model.CustSeperateGroupModel;
 import com.winapp.saperpUNICO.model.CustomerModel;
 import com.winapp.saperpUNICO.model.CustomerStateModel;
@@ -57,6 +60,7 @@ import com.winapp.saperpUNICO.model.ReceiptSummaryModel;
 import com.winapp.saperpUNICO.model.ReportPostingInvSOModel;
 import com.winapp.saperpUNICO.model.ReportSalesSummaryModel;
 import com.winapp.saperpUNICO.model.ReportStockSummaryModel;
+import com.winapp.saperpUNICO.model.SettingsModel;
 import com.winapp.saperpUNICO.model.SettlementReceiptDetailModel;
 import com.winapp.saperpUNICO.model.SettlementReceiptModel;
 import com.winapp.saperpUNICO.model.StockBadRequestReturnModel;
@@ -86,7 +90,9 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class ReportsActivity extends NavigationActivity implements View.OnClickListener {
+public class ReportsActivity extends SearchableSpinnerCustomDialog implements
+        View.OnClickListener , SearchableSpinnerCustomDialog.CustomerGroupClickListener,
+        SearchableSpinnerCustomDialog.SupplierClickListener, SearchableSpinnerCustomDialog.CustomerClickListener {
     // Variables Declarations
     private CheckBox invoiceByProduct;
     private CheckBox invoiceSummary;
@@ -107,7 +113,6 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
 
     private ArrayList<SupplierModel> supplierList;
     private ArrayList<String> searchableSupplierList;
-    private SearchableSpinner customerListSpinner;
     private SearchableSpinner userListSpinner;
     private SearchableSpinner statusListSpinner;
     private SessionManager session;
@@ -141,14 +146,19 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     public SharedPreferences sharedPreferences;
     public Button decreaseButton;
     public Button increaseButton;
-    public SearchableSpinner supplerListSpinner;
-    public SearchableSpinner custGroupSpinner;
+    public TextView supplerListSpinner;
+    public TextView custGroupSpinner;
+    private TextView customerListSpinner;
+    static ReportsActivity customerGroupClickListenerRo ;
+    static ReportsActivity customerClickListenerRo ;
+    static ReportsActivity supplierClickListenerRo ;
     private String selectCustGroupName = "";
     private String selectCustGroupCode = "";
 
     public TextView noOfCopyText;
     public String companyCode;
     public String locationCode;
+    private String salesPersonCode = "";
     int minteger = 1;
     private ArrayList<CustSeperateGroupModel> custSeperateGroupList;
     private ArrayList<ReportSalesSummaryModel> reportSalesSummaryList;
@@ -181,6 +191,8 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     private ImageView printPreview;
     private ImageView printView;
     boolean isPrintEnable=false;
+    public DBHelper dbHelper;
+
     private ProgressDialog progressDialog;
     private String isLocationPermissionAuthentication;
     private ArrayList<UserListModel> usersList;
@@ -197,10 +209,15 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
 
         session=new SessionManager(this);
         user=session.getUserDetails();
+        dbHelper=new DBHelper(this);
+
         username=user.get(SessionManager.KEY_USER_NAME);
         companyCode=user.get(SessionManager.KEY_COMPANY_CODE);
         locationCode=user.get(SessionManager.KEY_LOCATION_CODE);
         isLocationPermissionAuthentication=user.get(SessionManager.IS_LOCATION_PERMISSION);
+        customerGroupClickListenerRo = this ;
+        supplierClickListenerRo = this ;
+        customerClickListenerRo = this ;
 
         invoiceByProduct=findViewById(R.id.invoice_by_product);
         invoiceSummary=findViewById(R.id.invoice_by_summary);
@@ -260,7 +277,29 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         Log.w("Printer_Type:",printerType);
 
         userPermission = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_ADMIN_PERMISSION,"");
+        salesPersonCode = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SALESPERSON_CODE,"");
 
+        ArrayList<SettingsModel> settings=dbHelper.getSettings();
+        if (settings!=null) {
+            if (settings.size() > 0) {
+                for (SettingsModel model : settings) {
+                    if (model.getSettingName().equals("showPurchaseReport")) {
+                        Log.w("SettingNameRo:", model.getSettingName());
+                        Log.w("SettingValueRo:", model.getSettingValue());
+                        if (model.getSettingValue().equalsIgnoreCase("True")) {
+                            purchase_summaryl.setVisibility(View.VISIBLE);
+                            supplier_statementl.setVisibility(View.VISIBLE);
+                            supplier_statement_datel.setVisibility(View.VISIBLE);
+                        } else {
+                            purchase_summaryl.setVisibility(View.GONE);
+                            supplier_statementl.setVisibility(View.GONE);
+                            supplier_statement_datel.setVisibility(View.GONE);
+                        }
+
+                    }
+                }
+            }
+        }
 
         printPreview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -298,6 +337,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
         customer_id = "" ;
         customer_name = "";
         supplier_id = "";
+        selectCustGroupCode = "";
 
         if (view.getId()==R.id.invoice_by_product){
             if (invoiceByProduct.isChecked()){
@@ -592,7 +632,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             final View customLayout = getLayoutInflater().inflate(R.layout.filter_alert_dialog, null);
             builder.setView(customLayout);
             // add a button
-            customerListSpinner=customLayout.findViewById(R.id.customer_list_spinner);
+
             userListSpinner=customLayout.findViewById(R.id.user_list_spinner);
             fromDate=customLayout.findViewById(R.id.from_date);
             toDate=customLayout.findViewById(R.id.to_date);
@@ -607,11 +647,14 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             LinearLayout customerListLayout =customLayout.findViewById(R.id.customer_list_layout);
             LinearLayout userListLayout=customLayout.findViewById(R.id.user_list_layout);
             LinearLayout custGroup_layout=customLayout.findViewById(R.id.custGroup_lay);
+            LinearLayout supplier_layout=customLayout.findViewById(R.id.supplierRp_lay);
             supplerListSpinner =customLayout.findViewById(R.id.suppler_ro_list_spinner);
             custGroupSpinner = customLayout.findViewById(R.id.custGroup_spinner);
+            customerListSpinner=customLayout.findViewById(R.id.customer_list_spinner);
 
-            customerListSpinner.setTitle("Select Customer");
-            supplerListSpinner.setTitle("Select Supplier");
+           // customerListSpinner.setTitle("Select Customer");
+           // supplerListSpinner.setTitle("Select Supplier");
+            //custGroupSpinner.setTitle("Select Customer Group");
 
            // customerListSpinner.setVisibility(View.GONE);
             if (isLocationPermissionAuthentication.equals("Y")){
@@ -627,16 +670,32 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                 userName.setVisibility(View.VISIBLE);
             }
             userName.setText(username);
+            customerListLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (customerList.size()>0){
+                        //  setDataToAdapter(searchableCustomerList);
+                        searchableCustDialog("Report",searchableCustomerList,customerList);
+                    }
+                }
+            });
+            custGroup_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (custSeperateGroupList!=null && custSeperateGroupList.size() > 0){
+                        searchable_CustgroupDialog("Report",custSeperateGroupList,custSeperateGroupList);
+                    }
+                }
+            });
+            supplier_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (supplierList.size()>0){
+                        searchable_supplierDialog("Report",searchableSupplierList,supplierList);
+                    }
+                }
+            });
 
-            if (customerList.size()>0){
-                setDataToAdapter(searchableCustomerList);
-            }
-            if (supplierList.size()>0){
-                setSupplierAdapter(searchableSupplierList);
-            }
-            if (custSeperateGroupList!=null && custSeperateGroupList.size() > 0){
-                setCustomerGroupSpinner(custSeperateGroupList);
-            }
             if (salesManList!=null && salesManList.size() > 1){
                 setUserAdapter(salesManList);
             }
@@ -657,17 +716,17 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             if (title.equals("Stock Summary") || title.equals("Bad Stock Report")
              || title.equals("Stock Summary Opening Balance")){
 
-                customerListSpinner.setVisibility(View.GONE);
+                customerListLayout.setVisibility(View.GONE);
             }
             if (title.equals("Purchase Summary") || title.equals("Supplier Statement")
                     || title.equals("Supplier Statement Date")){
 
-                supplerListSpinner.setVisibility(View.VISIBLE);
-                customerListSpinner.setVisibility(View.GONE);
+                supplier_layout.setVisibility(View.VISIBLE);
+                customerListLayout.setVisibility(View.GONE);
             }
 
             if (title.equals("Settlement With Receipt")){
-                customerListSpinner.setVisibility(View.GONE);
+                customerListLayout.setVisibility(View.GONE);
                 stattusLayout.setVisibility(View.GONE);
                 toDate.setVisibility(View.GONE);
                 userName.setVisibility(View.VISIBLE);
@@ -729,14 +788,14 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                     if (!toDate.getText().toString().isEmpty()){
                         to_date=toDate.getText().toString();
                     }
-                    if (!customerListSpinner.getSelectedItem().toString().equals("Select Customer")){
-                        customername=customerListSpinner.getSelectedItem().toString().split("~");
-                        customer_id=customername[1];
-                    }
-                    if (!supplerListSpinner.getSelectedItem().toString().equals("Select Supplier")){
-                        suppliername=supplerListSpinner.getSelectedItem().toString().split("~");
-                        supplier_id=suppliername[1];
-                    }
+//                    if (!customerListSpinner.getSelectedItem().toString().equals("Select Customer")){
+//                        customername=customerListSpinner.getSelectedItem().toString().split("~");
+//                        customer_id=customername[1];
+//                    }
+//                    if (!supplerListSpinner.getSelectedItem().toString().equals("Select Supplier")){
+//                        suppliername=supplerListSpinner.getSelectedItem().toString().split("~");
+//                        supplier_id=suppliername[1];
+//                    }
                     if (!from_date.isEmpty() && !to_date.isEmpty()){
                         Date fromDate = null;
                         try {
@@ -836,7 +895,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                 }
                                 break;
                             case "Supplier Statement":
-                                if (!supplerListSpinner.getSelectedItem().toString().equals("Select Supplier")) {
+                                if (!supplerListSpinner.getText().toString().equals("")) {
 
                                 dialog.dismiss();
                                 progressDialog.setMessage("Printing in Progress...!");
@@ -866,7 +925,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                 }
                                 break;
                             case "Supplier Statement Date":
-                                if (!supplerListSpinner.getSelectedItem().toString().equals("Select Supplier")) {
+                                if (!supplerListSpinner.getText().toString().equals("")) {
 
                                     dialog.dismiss();
                                     progressDialog.setMessage("Printing in Progress...!");
@@ -897,14 +956,14 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                 break;
 
                             case "Customer Outstanding Period":
-                                if (!customerListSpinner.getSelectedItem().toString().equals("Select Customer")) {
+                                if (!customerListSpinner.getText().toString().equals("")) {
                                     dialog.dismiss();
                                     progressDialog.setMessage("Printing in Progress...!");
                                     progressDialog.show();
                                     if (isPrintEnable){
                                         try {
                                             getCustomerStatement(customer_id, customername[0].toString(),
-                                                    fromDateString, toDateString,selectCustGroupCode, "O",
+                                                    fromDateString, toDateString, "O",selectCustGroupCode,
                                                     Integer.parseInt(noOfCopyText.getText().toString()));
                                         } catch (JSONException e) {
                                             e.printStackTrace();
@@ -927,7 +986,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
                                 }
                                 break;
                             case "Customer Outstanding Statement (as on Date)":
-                                if (!customerListSpinner.getSelectedItem().toString().equals("Select Customer")) {
+                                if (!customerListSpinner.getText().toString().equals("")) {
                                     dialog.dismiss();
                                     progressDialog.setMessage("Printing in Progress...!");
                                     progressDialog.show();
@@ -1550,16 +1609,24 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
        requestQueue = Volley.newRequestQueue(this);
        url= Utils.getBaseUrl(this) +"CustomerList";
        jsonObject=new JSONObject();
+
        try {
-           jsonObject.put("GroupCode","All");
-           jsonObject.put("LocationCode",locationCode);
+           if (userPermission.equalsIgnoreCase("True")) {
+               jsonObject.put("SalesPersonCode", "All");
+           }else {
+               jsonObject.put("SalesPersonCode", salesPersonCode);
+           }
+           jsonObject.put("GroupCode", "All");
+           jsonObject.put("LocationCode", locationCode);
        } catch (JSONException e) {
            e.printStackTrace();
        }
+
        customerList=new ArrayList<>();
        searchableCustomerList=new ArrayList<>();
-       searchableCustomerList.add("Select Customer");
-       Log.w("Given_url_customer:",url);
+     //  searchableCustomerList.add("Select Customer");
+
+       Log.w("Given_url_customer:",url+jsonObject);
        ProgressDialog progressDialog=new ProgressDialog(this);
        progressDialog.setCancelable(false);
        progressDialog.setMessage("Customer List Loading....");
@@ -1651,7 +1718,7 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
 
         supplierList=new ArrayList<>();
         searchableSupplierList=new ArrayList<>();
-        searchableSupplierList.add("Select Supplier");
+      //  searchableSupplierList.add("Select Supplier");
         ProgressDialog progressDialog=new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Supplier List Loading....");
@@ -3607,33 +3674,33 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             Toast.makeText(getApplicationContext(),"Please configure the Printer",Toast.LENGTH_SHORT).show();
         }
     }
-    private void setCustomerGroupSpinner(ArrayList<CustSeperateGroupModel> custSeperateGroupList) {
-        CustSeperateGroupModel custGroupModel = new CustSeperateGroupModel();
-//        custGroupModel.setCustomerGroupName("Select Customer Group");
-//        custGroupModel.setCustomerGroupCode("");
-
-        ArrayList<CustSeperateGroupModel> custGroupModels = new ArrayList<>();
-        //  custGroupModels.add(0,custGroupModel);
-        custGroupModels.addAll(custSeperateGroupList);
-
-        ArrayAdapter<CustSeperateGroupModel> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
-                custGroupModels);
-
-        custGroupSpinner.setAdapter(adapter);
+//    private void setCustomerGroupSpinner(ArrayList<CustSeperateGroupModel> custSeperateGroupList) {
+//        CustSeperateGroupModel custGroupModel = new CustSeperateGroupModel();
+////        custGroupModel.setCustomerGroupName("Select Customer Group");
+////        custGroupModel.setCustomerGroupCode("");
 //
-        custGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectCustGroupCode = custSeperateGroupList.get(position).getCustomerGroupCode();
-                selectCustGroupName = custSeperateGroupList.get(position).getCustomerGroupName();
-                Log.w("selectgroup :", selectCustGroupCode );
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-    }
+//        ArrayList<CustSeperateGroupModel> custGroupModels = new ArrayList<>();
+//        //  custGroupModels.add(0,custGroupModel);
+//        custGroupModels.addAll(custSeperateGroupList);
+//
+//        ArrayAdapter<CustSeperateGroupModel> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
+//                custGroupModels);
+//
+//        custGroupSpinner.setAdapter(adapter);
+////
+//        custGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                selectCustGroupCode = custSeperateGroupList.get(position).getCustomerGroupCode();
+//                selectCustGroupName = custSeperateGroupList.get(position).getCustomerGroupName();
+//                Log.w("selectgroup :", selectCustGroupCode );
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//            }
+//        });
+//    }
     public void getCustGroupSeperate(){
         // Initialize a new RequestQueue instance
         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -3645,13 +3712,12 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
             }else {
                 jsonObject.put("User", username);
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
         custSeperateGroupList=new ArrayList<>();
 
-        Log.w("url_custGroupSepert:",url);
+        Log.w("url_custGroupSepert:",url+jsonObject);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url, jsonObject,
@@ -3726,34 +3792,34 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     }
 
 
-    public void setDataToAdapter(ArrayList<String> arrayList) {
-        try {
-            // Creating ArrayAdapter using the string array and default spinner layout
-            customerListSpinner.setTitle("Select Customer");
-            arrayAdapter = new ArrayAdapter<String>(ReportsActivity.this, android.R.layout.simple_spinner_item,
-                    arrayList);
-            // Specify layout to be used when list of choices appears
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            // Applying the adapter to our spinner
-            customerListSpinner.setAdapter(arrayAdapter);
-            // customerListSpinner.setOnItemSelectedListener(this);
-        }catch (Exception e){}
-
-    }
-    public void setSupplierAdapter(ArrayList<String> arrayList) {
-        try {
-            // Creating ArrayAdapter using the string array and default spinner layout
-            supplerListSpinner.setTitle("Select Supplier");
-            arrayAdapter = new ArrayAdapter<String>(ReportsActivity.this, android.R.layout.simple_spinner_item,
-                    arrayList);
-            // Specify layout to be used when list of choices appears
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            // Applying the adapter to our spinner
-            supplerListSpinner.setAdapter(arrayAdapter);
-            // customerListSpinner.setOnItemSelectedListener(this);
-        }catch (Exception e){}
-
-    }
+//    public void setDataToAdapter(ArrayList<String> arrayList) {
+//        try {
+//            // Creating ArrayAdapter using the string array and default spinner layout
+//            customerListSpinner.setTitle("Select Customer");
+//            arrayAdapter = new ArrayAdapter<String>(ReportsActivity.this, android.R.layout.simple_spinner_item,
+//                    arrayList);
+//            // Specify layout to be used when list of choices appears
+//            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            // Applying the adapter to our spinner
+//            customerListSpinner.setAdapter(arrayAdapter);
+//            // customerListSpinner.setOnItemSelectedListener(this);
+//        }catch (Exception e){}
+//
+//    }
+//    public void setSupplierAdapter(ArrayList<String> arrayList) {
+//        try {
+//            // Creating ArrayAdapter using the string array and default spinner layout
+//            supplerListSpinner.setTitle("Select Supplier");
+//            arrayAdapter = new ArrayAdapter<String>(ReportsActivity.this, android.R.layout.simple_spinner_item,
+//                    arrayList);
+//            // Specify layout to be used when list of choices appears
+//            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            // Applying the adapter to our spinner
+//            supplerListSpinner.setAdapter(arrayAdapter);
+//            // customerListSpinner.setOnItemSelectedListener(this);
+//        }catch (Exception e){}
+//
+//    }
 
 
     public void setUserAdapter(ArrayList<String> arrayList) {
@@ -3800,5 +3866,33 @@ public class ReportsActivity extends NavigationActivity implements View.OnClickL
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    @Override
+    public void groupSelected(@Nullable String id) {
+        custGroupSpinner.setText(id);
+        selectCustGroupCode = id ;
+    }
+
+    @Override
+    public void supplierSelected(@NonNull String supplierName) {
+        String[] selectName = new String[0];
+        String supNamel = "" ;
+        selectName = supplierName.split("~");
+        supplier_id=selectName[1];
+        supNamel=selectName[0];
+
+        supplerListSpinner.setText(supNamel);
+    }
+
+    @Override
+    public void custSelected(@NonNull String customerName) {
+        String[] selectName = new String[0];
+        String custNamel = "" ;
+        selectName = customerName.split("~");
+        customer_id=selectName[1];
+        custNamel=selectName[0];
+
+        customerListSpinner.setText(custNamel);
     }
 }

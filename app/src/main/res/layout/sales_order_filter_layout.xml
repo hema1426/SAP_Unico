@@ -128,22 +128,42 @@
 
                 </LinearLayout>
 
-                <RelativeLayout
-                    android:id="@+id/spinner_lay_loc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginRight="5dp"
-                    android:background="@drawable/invoice_edit_text"
-                    android:orientation="horizontal"
-                    android:visibility="visible">
 
-                    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
-                        android:id="@+id/custGroup_spinnerSO"
+
+                    <RelativeLayout
+                        android:id="@+id/custGroup_lay"
                         android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        />
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginRight="5dp"
+                        android:background="@drawable/invoice_edit_text"
+                        android:orientation="horizontal"
+                        android:visibility="visible">
+
+                        <TextView
+                            android:id="@+id/custGroup_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:textSize="12sp"
+                            android:textColor="@color/black"
+                            android:hint="Select Customer Group" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:visibility="gone"
+                            android:layout_marginRight="@dimen/_3sdp"
+                            android:src="@drawable/ic_keyboard_arrow_down_accent_24dp"
+                            app:tint="@color/gray" />
+
+                    </RelativeLayout>
+
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -155,8 +175,6 @@
                         android:layout_marginRight="@dimen/_3sdp"
                         android:src="@drawable/ic_keyboard_arrow_down_accent_24dp"
                         app:tint="@color/gray" />
-
-                </RelativeLayout>
 
             </LinearLayout>
 

@@ -1,25 +1,20 @@
 package com.winapp.saperpUNICO.activity
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -34,21 +29,17 @@ import cn.pedant.SweetAlert.SweetAlertDialog
 import com.android.volley.Response
 import com.android.volley.RetryPolicy
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.toptoche.searchablespinnerlibrary.SearchableSpinner
 import com.winapp.saperpUNICO.R
 import com.winapp.saperpUNICO.adapter.PurchaseInvoiceAdapterNew
-import com.winapp.saperpUNICO.adapter.SelectCustomerAdapter
 import com.winapp.saperpUNICO.db.DBHelper
 import com.winapp.saperpUNICO.fragments.CustomerFragment
 import com.winapp.saperpUNICO.model.AppUtils
 import com.winapp.saperpUNICO.model.CustomerDetails
-import com.winapp.saperpUNICO.model.CustomerModel
 import com.winapp.saperpUNICO.model.SalesOrderModel
 import com.winapp.saperpUNICO.model.SalesOrderPrintPreviewModel
 import com.winapp.saperpUNICO.model.SalesOrderPrintPreviewModel.SalesList
@@ -67,7 +58,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -80,7 +70,8 @@ import java.util.Date
 import java.util.Locale
 import java.util.Objects
 
-class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener {
+class PurchaseInvoiceListActivity : SearchableSpinnerCustomDialog(),
+    OnItemSelectedListener ,SearchableSpinnerCustomDialog.SupplierClickListener{
     private var salesOrderList: ArrayList<SalesOrderModel>? = null
     private var pDialog: SweetAlertDialog? = null
     private var session1: SessionManager? = null
@@ -103,7 +94,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
     private var customerDetails: ArrayList<CustomerDetails>? = null
     var transLayout: LinearLayout? = null
     var customerLayout: View? = null
-    private var supplierSpinner: SearchableSpinner? = null
+    private var supplierSpinner: TextView? = null
     private var selectSupplierName: String? = ""
     private var selectSuppliercode: String? = ""
     var salesOrderOptionLayout: View? = null
@@ -149,6 +140,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
     private val FILTER_CUSTOMER_CODE = 134
     var currentDate: String? = null
     private var usersList: ArrayList<UserListModel>? = null
+    var searchableSupplierListl:ArrayList<String>? = null
 
     //    private Spinner salesManSpinner;
     private var selectedUser = ""
@@ -157,7 +149,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
         val contentFrameLayout = findViewById<FrameLayout>(R.id.content_frame)
         layoutInflater.inflate(R.layout.activity_purchase_invoice_list, contentFrameLayout)
         Objects.requireNonNull(supportActionBar)!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setTitle("Purchase Invoice")
+        supportActionBar!!.setTitle("A/P Invoice")
         purchaseInvoiceView = findViewById(R.id.rv_purchase_list)
         dbHelper = DBHelper(this)
         session1 = SessionManager(this)
@@ -210,21 +202,25 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
         Log.w("Printer_Type:", printerType!!)
         dbHelper!!.removeAllItems()
         dbHelper!!.removeAllInvoiceItems()
+        supplierClickListenerPurchase = this
         try {
             allUsers
         } catch (e: JSONException) {
             e.printStackTrace()
         }
         AppUtils.setProductsList(null)
+//        if( Utils.getSupplierList() != null && Utils.getSupplierList().size > 0){
+//            supplierList = Utils.getSupplierList()
+//        }else{
+//            getVendorList()
+//        }
+        getVendorList()
 
-        if( Utils.getSupplierList() != null && Utils.getSupplierList().size > 0){
-            setSupplierSpinner(supplierList!!)
-
-        }else{
-            getVendorList()
+        supplierSpinner!!.setOnClickListener{
+            if (supplierList!!.size > 0) {
+                searchable_supplierDialog("Purchase", searchableSupplierListl!!, supplierList!!)
+            }
         }
-
-
 
         val settings = dbHelper!!.settings
         if (settings != null) {
@@ -360,7 +356,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
 
                     BottomSheetBehavior.STATE_COLLAPSED -> {
                         Log.i("BottomSheetCallback", "BottomSheetBehavior.STATE_COLLAPSED")
-                        supportActionBar!!.setTitle("Purchase Invoice")
+                        supportActionBar!!.setTitle("A/P Invoice")
                         transLayout!!.setVisibility(View.GONE)
                         if (redirectInvoice) {
                             if (createInvoiceSetting == "true") {
@@ -716,7 +712,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
                                     val nettotal12 = qty12 * price12
                                     salesListModel.total = nettotal12.toString()
                                     salesListModel.pricevalue = price12.toString()
-                                    salesListModel.uomCode = detailObject.optString("UOMCode")
+                                    salesListModel.uomCode = detailObject.optString("uomCode")
                                     salesListModel.cartonPrice =
                                         detailObject.optString("CartonPrice")
                                     salesListModel.unitPrice = detailObject.optString("Price")
@@ -784,7 +780,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
         Log.w("Given_url_salesEdit:", url)
         pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
         pDialog!!.progressHelper.barColor = Color.parseColor("#A5DC86")
-        pDialog!!.setTitleText("Getting SalesOrder Details...")
+        pDialog!!.setTitleText("Getting A/P invoice Details...")
         pDialog!!.setCancelable(false)
         pDialog!!.show()
         val jsonObjectRequest: JsonObjectRequest =
@@ -1062,7 +1058,8 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
         }
         selectSuppliercode = ""
         selectSupplierName = ""
-        supplierSpinner!!.setSelection(0)
+        supplierSpinner!!.setText("")
+
 
     }
 
@@ -1134,7 +1131,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
         Log.w("Given_url_FilterSearch:", "$url-$jsonObject")
         pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
         pDialog!!.progressHelper.barColor = Color.parseColor("#A5DC86")
-        pDialog!!.setTitleText("Getting SalesOrders...")
+        pDialog!!.setTitleText("Getting A/P invoice...")
         pDialog!!.setCancelable(false)
         pDialog!!.show()
         salesOrderList = ArrayList()
@@ -1232,7 +1229,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
         Log.w("Given_url:", "$url-$jsonObject")
         pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
         pDialog!!.progressHelper.barColor = Color.parseColor("#A5DC86")
-        pDialog!!.setTitleText("Getting Salesorder...")
+        pDialog!!.setTitleText("Getting A/P invoice...")
         pDialog!!.setCancelable(false)
         if (pageNo == "1") {
             pDialog!!.show()
@@ -1545,7 +1542,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
                 searchFilterView!!.visibility = View.GONE
                 selectSupplierName = ""
                 selectSuppliercode = ""
-                supplierSpinner!!.setSelection(0)
+                supplierSpinner!!.setText("")
 
                 isSearchCustomerNameClicked = false
                 if (behavior!!.state == BottomSheetBehavior.STATE_EXPANDED) {
@@ -1555,7 +1552,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
             } else {
                 selectSupplierName = ""
                 selectSuppliercode = ""
-                supplierSpinner!!.setSelection(0)
+                supplierSpinner!!.setText("")
 
                 isSearchCustomerNameClicked = false
                 searchFilterView!!.visibility = View.VISIBLE
@@ -1567,40 +1564,40 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
         }
         return true
     }
-    fun setSupplierSpinner(spinnerlist: ArrayList<SupplierModel>) {
-        val spinnerlst = SupplierModel(
-            customerName = "Select Supplier",
-            customerCode = "", currencyCode = "", currencyName = "",
-            taxCode = "", taxName = "", taxPercentage = "", taxType = ""
-        )
-        spinnerlist.add(0, spinnerlst)
-        Log.w("spinnnVal", "" + spinnerlist)
-        val adapter = ArrayAdapter<String>(this, R.layout.cust_spinner_item)
-        for (i in spinnerlist.indices) {
-            adapter.add(spinnerlist[i].customerName)
-        }
-        supplierSpinner!!.adapter = adapter
-        supplierSpinner!!.setTitle("")
-        supplierSpinner!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapter: AdapterView<*>, v: View, position: Int, id: Long) {
-                // On selecting a spinner item
-                selectSuppliercode = spinnerlist[position].customerCode
-                selectSupplierName = spinnerlist[position].customerName
-//                currencyCode = spinnerlist[position].currencyCode
-//                taxCode = spinnerlist[position].taxCode
-//                taxPercentage = spinnerlist[position].taxPercentage
-//                taxType = spinnerlist[position].taxType
-                Log.w("spinnnVal1", "" + spinnerlist[position].taxType)
-
-//                if (!selectSupplierName!!.equals("Select Supplier")) {
-//                    serviceNameTxtl!!.isEnabled = true
-//                    service_amount_Txt!!.isEnabled = true
-//                }
-            }
-
-            override fun onNothingSelected(arg0: AdapterView<*>?) {}
-        }
-    }
+//    fun setSupplierSpinner(spinnerlist: ArrayList<SupplierModel>) {
+//        val spinnerlst = SupplierModel(
+//            customerName = "Select Supplier",
+//            customerCode = "", currencyCode = "", currencyName = "",
+//            taxCode = "", taxName = "", taxPercentage = "", taxType = ""
+//        )
+//        spinnerlist.add(0, spinnerlst)
+//        Log.w("spinnnVal", "" + spinnerlist)
+//        val adapter = ArrayAdapter<String>(this, R.layout.cust_spinner_item)
+//        for (i in spinnerlist.indices) {
+//            adapter.add(spinnerlist[i].customerName)
+//        }
+//        supplierSpinner!!.adapter = adapter
+//        supplierSpinner!!.setTitle("")
+//        supplierSpinner!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+//            override fun onItemSelected(adapter: AdapterView<*>, v: View, position: Int, id: Long) {
+//                // On selecting a spinner item
+//                selectSuppliercode = spinnerlist[position].customerCode
+//                selectSupplierName = spinnerlist[position].customerName
+////                currencyCode = spinnerlist[position].currencyCode
+////                taxCode = spinnerlist[position].taxCode
+////                taxPercentage = spinnerlist[position].taxPercentage
+////                taxType = spinnerlist[position].taxType
+//                Log.w("spinnnVal1", "" + spinnerlist[position].taxType)
+//
+////                if (!selectSupplierName!!.equals("Select Supplier")) {
+////                    serviceNameTxtl!!.isEnabled = true
+////                    service_amount_Txt!!.isEnabled = true
+////                }
+//            }
+//
+//            override fun onNothingSelected(arg0: AdapterView<*>?) {}
+//        }
+//    }
     @Throws(JSONException::class)
     private fun getVendorList() {
         // CommonMethods.showProgressDialog(this)
@@ -1613,6 +1610,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
         Log.w("url_vendorlist:", url)
 
         supplierList = ArrayList()
+    searchableSupplierListl =ArrayList()
 
         val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(
             Method.GET,
@@ -1645,12 +1643,18 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
                                     )
 
                                     supplierList!!.add(model)
+                                    searchableSupplierListl!!.add(
+                                        obj.optString("vendorName") + "~" + obj.optString(
+                                            "vendorCode"
+                                        )
+                                    )
+
                                 }
 
                                 withContext(Dispatchers.Main) {
                                     if (supplierList!!.size > 0) {
                                         Utils.setSupplierList(supplierList!!)
-                                        setSupplierSpinner(supplierList!!)
+                                        //setSupplierSpinner(supplierList!!)
                                     }
                                 }
                             }
@@ -1810,6 +1814,7 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
         var outstandingLayout: LinearLayout? = null
 //        var selectedCustomerId: String? = ""
         var shortCodeStr = ""
+        var supplierClickListenerPurchase: PurchaseInvoiceListActivity? = null
         fun filterSearch(
             customerName: String,
             invoiceStatus: String?,
@@ -1920,5 +1925,14 @@ class PurchaseInvoiceListActivity : NavigationActivity(), OnItemSelectedListener
                 Log.e("Error_in_filter", ex.message!!)
             }
         }
+    }
+
+    override fun supplierSelected(supplierName: String) {
+        var selectName = arrayOfNulls<String>(0)
+        var supNamel: String? = ""
+        selectName = supplierName.split("~".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        selectSuppliercode = selectName[1]
+        supNamel = selectName[0]
+        supplierSpinner!!.setText(supNamel)
     }
 }

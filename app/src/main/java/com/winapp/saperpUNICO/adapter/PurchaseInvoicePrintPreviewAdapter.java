@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,12 +46,16 @@ public class PurchaseInvoicePrintPreviewAdapter extends RecyclerView.Adapter<Pur
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         SalesOrderPrintPreviewModel.SalesList salesList = this.salesList.get(position);
         viewHolder.slNo.setText(String.valueOf(position+1));
+
         viewHolder.code.setText(salesList.getProductCode());
+        viewHolder.statusRo.setText(salesList.getRowStatus());
+
         if (salesList.getUomCode()!=null && !salesList.getUomCode().equals("null") && !salesList.getUomCode().isEmpty()){
             viewHolder.description.setText(salesList.getDescription()+"("+salesList.getUomCode()+")");
         }else {
             viewHolder.description.setText(salesList.getDescription());
         }
+        viewHolder.statusLayl.setVisibility(View.GONE);
 //        if (Double.parseDouble(salesList.getTotal()) < 0.00){
 //            viewHolder.qtyValue.setText((int)Double.parseDouble(salesList.getNetQty())+" (as Return)");
 //        }else if (Double.parseDouble(salesList.getTotal())==0.00){
@@ -66,7 +71,7 @@ public class PurchaseInvoicePrintPreviewAdapter extends RecyclerView.Adapter<Pur
             viewHolder.price.setText(Utils.fourDecimalPoint(Double.parseDouble(salesList.getPricevalue())));
             viewHolder.total.setText(Utils.fourDecimalPoint(Double.parseDouble(salesList.getTotal())));
         }else{
-            viewHolder.price.setText(salesList.getPricevalue());
+            viewHolder.price.setText(Utils.twoDecimalPoint(Double.parseDouble(salesList.getPricevalue())));
             viewHolder.total.setText(Utils.twoDecimalPoint(Double.parseDouble(salesList.getTotal())));
         }
     }
@@ -82,7 +87,8 @@ public class PurchaseInvoicePrintPreviewAdapter extends RecyclerView.Adapter<Pur
         private TextView code;
         private TextView qtyValue;
         private TextView price;
-        private TextView total;
+        private LinearLayout statusLayl;
+        private TextView total, statusRo;
         public ViewHolder(View view) {
             super(view);
             slNo=view.findViewById(R.id.sl_no);
@@ -91,6 +97,8 @@ public class PurchaseInvoicePrintPreviewAdapter extends RecyclerView.Adapter<Pur
             qtyValue=view.findViewById(R.id.qty);
             price=view.findViewById(R.id.price);
             total=view.findViewById(R.id.total);
+            statusRo=view.findViewById(R.id.soStatusItem);
+            statusLayl=view.findViewById(R.id.statusLaySo);
         }
     }
 

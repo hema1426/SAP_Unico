@@ -65,6 +65,7 @@ import com.winapp.saperpUNICO.utils.BarCodeScanner;
 import com.winapp.saperpUNICO.utils.Constants;
 import com.winapp.saperpUNICO.utils.ImageUtil;
 import com.winapp.saperpUNICO.utils.SessionManager;
+import com.winapp.saperpUNICO.utils.SharedPreferenceUtil;
 import com.winapp.saperpUNICO.utils.Utils;
 import com.winapp.saperpUNICO.zebraprinter.TSCPrinter;
 import com.winapp.saperpUNICO.zebraprinter.ZebraPrinterActivity;
@@ -155,12 +156,14 @@ public class ReceiptsListActivity extends NavigationActivity {
     ArrayList<String> searchableCustomerList;
     SearchableSpinner customerListSpinner;
     View progressLayout;
-
+    private SharedPreferenceUtil sharedPreferenceUtil;
     private String printerMacId;
     private String printerType;
     private SharedPreferences sharedPreferences;
     public String receiptNo;
     public String noofCopy;
+    public static String userPermission = "";
+    private String salesPersonCode = "";
     private ArrayList<ReceiptPrintPreviewModel> receiptsHeaderDetails;
     private ArrayList<ReceiptPrintPreviewModel.ReceiptsDetails> receiptsPrintList;
     public String payMode;
@@ -226,12 +229,17 @@ public class ReceiptsListActivity extends NavigationActivity {
         customerListSpinner=findViewById(R.id.customer_list_spinner);
         customerGroupSpinner=findViewById(R.id.customer_group);
         customerNameTextView=findViewById(R.id.customer_name_text);
+
+        sharedPreferenceUtil = new SharedPreferenceUtil(this);
         customerListSpinner.setTitle("Select Customer");
         receiptsList =new ArrayList<>();
 
         sharedPreferences = getSharedPreferences("PrinterPref", MODE_PRIVATE);
         printerType=sharedPreferences.getString("printer_type","");
         printerMacId=sharedPreferences.getString("mac_address","");
+
+        userPermission = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_ADMIN_PERMISSION,"");
+        salesPersonCode = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SALESPERSON_CODE,"");
 
         Log.w("Printer_Mac_Id:",printerMacId);
         Log.w("Printer_Type:",printerType);
@@ -1586,13 +1594,20 @@ public class ReceiptsListActivity extends NavigationActivity {
         customerList=new ArrayList<>();
         searchableCustomerList=new ArrayList<>();
         searchableCustomerList.add("Select Customer");
-        Log.w("Given_url_customer:",url);
+
         JSONObject jsonObject=new JSONObject();
         try {
-            jsonObject.put("GroupCode",groupCode);
+            if (userPermission.equalsIgnoreCase("True")) {
+                jsonObject.put("SalesPersonCode", "All");
+            }else {
+                jsonObject.put("SalesPersonCode", salesPersonCode);
+            }
+            jsonObject.put("GroupCode", groupCode);
+            jsonObject.put("LocationCode", locationCode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.w("Given_url_customer:",url+jsonObject);
         JsonObjectRequest jsonArrayRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,

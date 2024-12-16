@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:layout_weight="1"
+            android:layout_weight="0.9"
             android:gravity="left"
             android:text="CODE"
             android:textColor="#212121"
@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:layout_weight="1"
+            android:layout_weight="1.1"
             android:gravity="center"
             android:text="QTY"
             android:textColor="#212121"
@@ -67,13 +67,12 @@
 
             />
 
-
         <TextView
             android:id="@+id/price"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:layout_weight="1"
+            android:layout_weight="1.1"
             android:gravity="center"
             android:text="PRICE"
             android:textColor="#212121"
@@ -86,7 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:layout_weight="1"
+            android:layout_weight="1.1"
             android:gravity="center"
             android:text="TOTAL"
             android:textColor="#212121"

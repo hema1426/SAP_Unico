@@ -1,6 +1,7 @@
 package com.winapp.saperpUNICO.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,12 +26,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,7 +44,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 import com.winapp.saperpUNICO.R;
 import com.winapp.saperpUNICO.adapter.SalesOrderAdapterNew;
 import com.winapp.saperpUNICO.adapter.SelectCustomerAdapter;
@@ -90,7 +90,8 @@ import java.util.Objects;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
-public class SalesOrderListActivity extends NavigationActivity implements AdapterView.OnItemSelectedListener {
+public class SalesOrderListActivity extends SearchableSpinnerCustomDialog implements
+        AdapterView.OnItemSelectedListener, SearchableSpinnerCustomDialog.CustomerGroupClickListener {
 
     public static RecyclerView salesOrdersView;
     public static SalesOrderAdapterNew salesOrderAdapter;
@@ -161,8 +162,11 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
     public String createInvoiceSetting="true";
     public String editSo="false";
     private int FILTER_CUSTOMER_CODE=134;
+
+    static SalesOrderListActivity customerGroupClickListenerSO ;
     String currentDate;
-    private SearchableSpinner custGroupSpinner;
+    TextView custGroupSpinner;
+    RelativeLayout custGroup_layl;
     private String selectCustGroupCode = "";
     private String selectCustGroupName = "";
     private ArrayList<UserListModel> usersList;
@@ -189,6 +193,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         companyId=user.get(SessionManager.KEY_COMPANY_CODE);
         userName=user.get(SessionManager.KEY_USER_NAME);
         locationCode=user.get((SessionManager.KEY_LOCATION_CODE));
+        customerGroupClickListenerSO = this ;
 
         customerView=findViewById(R.id.customerList);
         netTotalText=findViewById(R.id.net_total_List);
@@ -221,8 +226,9 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         progressLayout=findViewById(R.id.progress_layout);
         createSalesOrder=findViewById(R.id.create_sales);
         salesManSpinner=findViewById(R.id.salesman_spinner);
-        custGroupSpinner = findViewById(R.id.custGroup_spinnerSO);
+        custGroupSpinner = findViewById(R.id.custGroup_spinner);
         salesManSpinner.setOnItemSelectedListener(this);
+        custGroup_layl = findViewById(R.id.custGroup_lay);
 
         shortCodeStr = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_SHORT_CODE,"");
         userPermission = sharedPreferenceUtil.getStringPreference(sharedPreferenceUtil.KEY_ADMIN_PERMISSION,"");
@@ -249,7 +255,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
             e.printStackTrace();
         }
         if(Utils.getCustSeperGroupList() != null && Utils.getCustSeperGroupList().size() > 0) {
-            setCustomerGroupSpinner(Utils.getCustSeperGroupList());
+           // setCustomerGroupSpinner(Utils.getCustSeperGroupList());
+            custSeperateGroupList = Utils.getCustSeperGroupList();
         }else{
             getCustGroupSeperate();
         }
@@ -565,7 +572,13 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                 }
             }
         });
+        custGroup_layl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchable_CustgroupDialog("SalesOrder",custSeperateGroupList,custSeperateGroupList);
+            }
 
+        });
         customerNameText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -665,7 +678,10 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                     }
                     ///filterSearch(customer_name, salesOrderStatusSpinner.getSelectedItem().toString(),fromDate.getText().toString(),toDate.getText().toString());
                     salesOrderStatusSpinner.setSelection(0);
-                    custGroupSpinner.setSelection(0);
+                    custGroupSpinner.setText("");
+                    selectedCustomerId = "";
+                    selectCustGroupCode = "" ;
+
                 }
             }
         });
@@ -677,9 +693,11 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                 customerNameText.setText("");
                 fromDate.setText(formattedDate);
                 toDate.setText(formattedDate);
+                selectedCustomerId = "";
+                selectCustGroupCode = "" ;
                 searchFilterView.setVisibility(View.GONE);
                 salesOrderStatusSpinner.setSelection(0);
-                custGroupSpinner.setSelection(0);
+                custGroupSpinner.setText("");
                 setFilterAdapeter();
             }
         });
@@ -979,7 +997,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url= Utils.getBaseUrl(this) +"SalesOrderDetails";
         // Initialize a new JsonArrayRequest instance
-        Log.w("Given_url:",url);
+        Log.w("Given_url:",url+jsonObject);
      //   pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
      //   pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
       //  pDialog.setTitleText("Generating Print Preview...");
@@ -1042,6 +1060,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                 salesListModel.setNetQty(detailObject.optString("quantity"));
                                 salesListModel.setCartonPrice(detailObject.optString("cartonPrice"));
                                 salesListModel.setUnitPrice(detailObject.optString("price"));
+                                salesListModel.setRowStatus(detailObject.optString("rowStatus"));
 
                                 double qty1 = Double.parseDouble(detailObject.optString("quantity"));
                                 double price1 = Double.parseDouble(detailObject.optString("price"));
@@ -1063,6 +1082,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                     salesListModel.setLqty(detailObject.optString("LQty"));
                                     salesListModel.setCqty(detailObject.optString("CQty"));
                                     salesListModel.setNetQty("-"+detailObject.optString("ReturnQty"));
+                                    salesListModel.setRowStatus(detailObject.optString("rowStatus"));
 
                                     double qty12 = Double.parseDouble(detailObject.optString("ReturnQty"));
                                     double price12 = Double.parseDouble(detailObject.optString("Price"));
@@ -1070,7 +1090,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                                     salesListModel.setTotal(String.valueOf(nettotal12));
                                     salesListModel.setPricevalue(String.valueOf(price12));
 
-                                    salesListModel.setUomCode(detailObject.optString("UOMCode"));
+                                    salesListModel.setUomCode(detailObject.optString("uomCode"));
                                     salesListModel.setCartonPrice(detailObject.optString("CartonPrice"));
                                     salesListModel.setUnitPrice(detailObject.optString("Price"));
                                     salesListModel.setPcsperCarton(detailObject.optString("PcsPerCarton"));
@@ -1650,7 +1670,7 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         }
         custSeperateGroupList=new ArrayList<>();
 
-        Log.w("url_custGroupSepert:",url);
+        Log.w("url_custGroupSepert:",url+jsonObject);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url, jsonObject,
@@ -1672,7 +1692,8 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
                         }
                         if (custSeperateGroupList.size()>0){
                             Utils.setCustSeperGroupList(custSeperateGroupList);
-                            setCustomerGroupSpinner(custSeperateGroupList);
+                            custSeperateGroupList = Utils.getCustSeperGroupList();
+                           // setCustomerGroupSpinner(custSeperateGroupList);
                         }
                     }catch (Exception e){
                         e.printStackTrace();
@@ -1709,33 +1730,34 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonObjectRequest);
     }
-    private void setCustomerGroupSpinner(ArrayList<CustSeperateGroupModel> custSeperateGroupList) {
-        CustSeperateGroupModel custGroupModel = new CustSeperateGroupModel();
-//        custGroupModel.setCustomerGroupName("Select Customer Group");
-//        custGroupModel.setCustomerGroupCode("");
-
-        ArrayList<CustSeperateGroupModel> custGroupModels = new ArrayList<>();
-        //  custGroupModels.add(0,custGroupModel);
-        custGroupModels.addAll(custSeperateGroupList);
-
-        ArrayAdapter<CustSeperateGroupModel> adapter = new ArrayAdapter<>(this, R.layout.cust_spinner_item,
-                custGroupModels);
-
-        custGroupSpinner.setAdapter(adapter);
+//    private void setCustomerGroupSpinner(ArrayList<CustSeperateGroupModel> custSeperateGroupList) {
+//        CustSeperateGroupModel custGroupModel = new CustSeperateGroupModel();
+////        custGroupModel.setCustomerGroupName("Select Customer Group");
+////        custGroupModel.setCustomerGroupCode("");
 //
-        custGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectCustGroupCode = custSeperateGroupList.get(position).getCustomerGroupCode();
-                selectCustGroupName = custSeperateGroupList.get(position).getCustomerGroupName();
-                Log.w("selectgroup :", selectCustGroupCode );
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-    }
+//        ArrayList<CustSeperateGroupModel> custGroupModels = new ArrayList<>();
+//        //  custGroupModels.add(0,custGroupModel);
+//        custGroupModels.addAll(custSeperateGroupList);
+//
+//        ArrayAdapter<CustSeperateGroupModel> adapter = new ArrayAdapter<>(this, R.layout.cust_spinner_item,
+//                custGroupModels);
+//        custGroupSpinner.setTitle("Select Customer Group");
+//
+//        custGroupSpinner.setAdapter(adapter);
+////
+//        custGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                selectCustGroupCode = custSeperateGroupList.get(position).getCustomerGroupCode();
+//                selectCustGroupName = custSeperateGroupList.get(position).getCustomerGroupName();
+//                Log.w("selectgroup :", selectCustGroupCode );
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//            }
+//        });
+//    }
 
     private void setDeleteSalesOrder(String soNumber) throws JSONException {
         // Initialize a new RequestQueue instance
@@ -2356,6 +2378,11 @@ public class SalesOrderListActivity extends NavigationActivity implements Adapte
         });
     }
 
+    @Override
+    public void groupSelected(@Nullable String custGroupCode) {
+        custGroupSpinner.setText(custGroupCode);
+        selectCustGroupCode = custGroupCode ;
+    }
 
 
     private class GetCustomersTask extends AsyncTask<Void, Integer, String> {

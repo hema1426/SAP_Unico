@@ -111,14 +111,15 @@ public class AllInvoices extends Fragment {
         View view=inflater.inflate(R.layout.invoices_layout, container, false);
 
         invoiceListView =view.findViewById(R.id.invoiceList);
-        netTotalText=view.findViewById(R.id.net_total_value);
-        emptyLayout=view.findViewById(R.id.empty_layout);
-        outstandingLayout=view.findViewById(R.id.outstanding_layout);
-        totalSalesLayout=view.findViewById(R.id.totalSales_layout);
-        total_sales_valuel=view.findViewById(R.id.total_sales_value);
-        progressLayout=view.findViewById(R.id.progress_layout);
-        titletext=view.findViewById(R.id.title);
-        createNewInvoice=view.findViewById(R.id.create_invoice);
+        netTotalText =view.findViewById(R.id.net_total_value);
+        emptyLayout =view.findViewById(R.id.empty_layout);
+        outstandingLayout =view.findViewById(R.id.outstanding_layout);
+        totalSalesLayout =view.findViewById(R.id.totalSales_layout);
+        total_sales_valuel =view.findViewById(R.id.total_sales_value);
+        progressLayout =view.findViewById(R.id.progress_layout);
+        titletext =view.findViewById(R.id.title);
+        createNewInvoice =view.findViewById(R.id.create_invoice);
+
         titletext.setText("All Invoices Loading....");
         session=new SessionManager(getActivity());
         user=session.getUserDetails();

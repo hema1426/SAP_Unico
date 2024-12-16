@@ -389,6 +389,7 @@ public class PurchaseInvoiceAdapterNew extends RecyclerView.Adapter<RecyclerView
                                 salesListModel.setUnitPrice(detailObject.optString("price"));
                                 double qty=Double.parseDouble(detailObject.optString("quantity"));
                                 double price=Double.parseDouble(detailObject.optString("price"));
+                                salesListModel.setUomCode(detailObject.optString("uomCode"));
 
                                 double nettotal=qty * price;
                                 salesListModel.setTotal(String.valueOf(nettotal));
