@@ -148,6 +148,7 @@ public class ReportsActivity extends SearchableSpinnerCustomDialog implements
     public Button increaseButton;
     public TextView supplerListSpinner;
     public TextView custGroupSpinner;
+    LinearLayout customerListLayout ,custGroup_layout;
     private TextView customerListSpinner;
     static ReportsActivity customerGroupClickListenerRo ;
     static ReportsActivity customerClickListenerRo ;
@@ -583,6 +584,11 @@ public class ReportsActivity extends SearchableSpinnerCustomDialog implements
             settle_receiptReport.setChecked(false);
             supplier_statement_datel.setChecked(false);
 
+            customerListLayout.setAlpha(0.9f);
+            customerListLayout.setEnabled(true);
+            custGroup_layout.setAlpha(0.9f);
+            custGroup_layout.setEnabled(true);
+
         }catch (Exception exception){}
     }
 
@@ -644,13 +650,18 @@ public class ReportsActivity extends SearchableSpinnerCustomDialog implements
             increaseButton=customLayout.findViewById(R.id.increase);
             noOfCopyText=customLayout.findViewById(R.id.no_of_copy);
             LinearLayout stattusLayout=customLayout.findViewById(R.id.status_layout);
-            LinearLayout customerListLayout =customLayout.findViewById(R.id.customer_list_layout);
+            customerListLayout =customLayout.findViewById(R.id.customer_list_layout);
             LinearLayout userListLayout=customLayout.findViewById(R.id.user_list_layout);
-            LinearLayout custGroup_layout=customLayout.findViewById(R.id.custGroup_lay);
+            custGroup_layout=customLayout.findViewById(R.id.custGroup_lay);
             LinearLayout supplier_layout=customLayout.findViewById(R.id.supplierRp_lay);
             supplerListSpinner =customLayout.findViewById(R.id.suppler_ro_list_spinner);
             custGroupSpinner = customLayout.findViewById(R.id.custGroup_spinner);
             customerListSpinner=customLayout.findViewById(R.id.customer_list_spinner);
+
+            customerListLayout.setAlpha(0.9f);
+            customerListLayout.setEnabled(true);
+            custGroup_layout.setAlpha(0.9f);
+            custGroup_layout.setEnabled(true);
 
            // customerListSpinner.setTitle("Select Customer");
            // supplerListSpinner.setTitle("Select Supplier");
@@ -816,7 +827,11 @@ public class ReportsActivity extends SearchableSpinnerCustomDialog implements
                         }else if (statusListSpinner.getSelectedItem().toString().equals("NOT PAID")){
                             status_value="O";
                         }else {
-                            status_value="All";
+                            if(title.equals("Invoice By Products")){
+                                status_value="";
+                            }else{
+                                status_value="All";
+                            }
                         }
                         String fromDateString = new SimpleDateFormat("yyyyMMdd").format(fromDate);
                         String toDateString = new SimpleDateFormat("yyyyMMdd").format(toDate);
@@ -956,7 +971,8 @@ public class ReportsActivity extends SearchableSpinnerCustomDialog implements
                                 break;
 
                             case "Customer Outstanding Period":
-                                if (!customerListSpinner.getText().toString().equals("")) {
+                                if (!customerListSpinner.getText().toString().equals("") ||
+                                        !custGroupSpinner.getText().toString().equals("")) {
                                     dialog.dismiss();
                                     progressDialog.setMessage("Printing in Progress...!");
                                     progressDialog.show();
@@ -982,11 +998,12 @@ public class ReportsActivity extends SearchableSpinnerCustomDialog implements
                                         startActivity(intent);
                                     }
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "Select Customer", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Select Customer or Group", Toast.LENGTH_SHORT).show();
                                 }
                                 break;
                             case "Customer Outstanding Statement (as on Date)":
-                                if (!customerListSpinner.getText().toString().equals("")) {
+                                if (!customerListSpinner.getText().toString().equals("") ||
+                                        !custGroupSpinner.getText().toString().equals("")) {
                                     dialog.dismiss();
                                     progressDialog.setMessage("Printing in Progress...!");
                                     progressDialog.show();
@@ -1013,7 +1030,7 @@ public class ReportsActivity extends SearchableSpinnerCustomDialog implements
                                         startActivity(intent);
                                     }
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "Select Customer", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Select Customer or Group", Toast.LENGTH_SHORT).show();
                                 }
                                 break;
                             case "Receipt Details":
@@ -3871,7 +3888,14 @@ public class ReportsActivity extends SearchableSpinnerCustomDialog implements
     @Override
     public void groupSelected(@Nullable String id) {
         custGroupSpinner.setText(id);
-        selectCustGroupCode = id ;
+        selectCustGroupCode = id;
+        if (!selectCustGroupCode.isEmpty() && !selectCustGroupCode.equals("")) {
+            custGroup_layout.setAlpha(0.9f);
+            custGroup_layout.setEnabled(true);
+
+            customerListLayout.setAlpha(0.4f);
+            customerListLayout.setEnabled(false);
+        }
     }
 
     @Override
@@ -3893,6 +3917,13 @@ public class ReportsActivity extends SearchableSpinnerCustomDialog implements
         customer_id=selectName[1];
         custNamel=selectName[0];
 
+        if(!custNamel.isEmpty() && !custNamel.equals("")){
+            customerListLayout.setAlpha(0.9f);
+            customerListLayout.setEnabled(true);
+
+            custGroup_layout.setAlpha(0.4f);
+            custGroup_layout.setEnabled(false);
+        }
         customerListSpinner.setText(custNamel);
     }
 }

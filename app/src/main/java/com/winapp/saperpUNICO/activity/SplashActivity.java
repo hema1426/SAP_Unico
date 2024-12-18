@@ -36,6 +36,7 @@ import com.android.volley.toolbox.Volley;
 import com.winapp.saperpUNICO.R;
 import com.winapp.saperpUNICO.db.DBHelper;
 import com.winapp.saperpUNICO.utils.Constants;
+import com.winapp.saperpUNICO.utils.InternetConnector_Receiver;
 import com.winapp.saperpUNICO.utils.SessionManager;
 import com.winapp.saperpUNICO.utils.Utils;
 
@@ -148,28 +149,28 @@ public class SplashActivity extends AppCompatActivity {
 
         new Handler().postDelayed(() -> {
             // Testing Function
-            if (session.isLoggedIn()){
-                startActivity(
-                        new Intent(SplashActivity.this,DashboardActivity.class)
-                );
-                finish();
-            }else {
-        //String apiUrl=Constants.RAYMANG_URL_JULY;
-     // String apiUrl=Constants.FUXIN;
-      //String apiUrl=Constants.test_URL_OCT24;
-          //String apiUrl=Constants.aadhi_URL_JULY;
-       //   String apiUrl=Constants.SUPER_STAR_DEMO;
-          String apiUrl=Constants.UNICO;
-                //   String apiUrl=Constants.SUPER_STAR_DEMO_new10;
-          // String apiUrl=Constants.TRANS_ORIENT_DEMO;
-
-                dbHelper.insertUrl(apiUrl);
-                startActivity(new Intent(SplashActivity.this,LoginActivity.class));
-                finish();
-            }
+//            if (session.isLoggedIn()){
+//                startActivity(
+//                        new Intent(SplashActivity.this,DashboardActivity.class)
+//                );
+//                finish();
+//            }else {
+//        //String apiUrl=Constants.RAYMANG_URL_JULY;
+//     // String apiUrl=Constants.FUXIN;
+//      //String apiUrl=Constants.test_URL_OCT24;
+//          //String apiUrl=Constants.aadhi_URL_JULY;
+//       //   String apiUrl=Constants.SUPER_STAR_DEMO;
+//          String apiUrl=Constants.UNICO;
+//                //   String apiUrl=Constants.SUPER_STAR_DEMO_new10;
+//          // String apiUrl=Constants.TRANS_ORIENT_DEMO;
+//
+//                dbHelper.insertUrl(apiUrl);
+//                startActivity(new Intent(SplashActivity.this,LoginActivity.class));
+//                finish();
+//            }
 
             // Real execute function with licence code
-          /*  if (InternetConnector_Receiver.isConnectingToInternet(SplashActivity.this)){
+            if (InternetConnector_Receiver.isConnectingToInternet(SplashActivity.this)){
                 if (api_url!=null && !api_url.isEmpty()){
                     // setValidateURL(api_url.toString());
                     setLicenceValidate();
@@ -180,7 +181,7 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }else {
                 Toast.makeText(getApplicationContext(),"No Internet Found...!",Toast.LENGTH_SHORT).show();
-            }*/
+            }
 
         }, SPLASH_TIME);
 
